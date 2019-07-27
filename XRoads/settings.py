@@ -91,10 +91,10 @@ WSGI_APPLICATION = 'XRoads.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'xroadsdb',
-        'USER': 'djangouser',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
+        'NAME': 'xroads',
+        'USER': 'xroads',
+        'PASSWORD': 'SNE!QMsnHwv362uk',
+        'HOST': 'itexmachina.com',
         'PORT': '5432',
     }
 }
