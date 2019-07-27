@@ -15,9 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from . import views
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('forums/', include('forum.urls')),
-    path('accounts/', include('accounts.urls')),
+    path('', views.home, name='home'),
+    # path('forum', views.show_forums, name='forums'),
+    # path('forum/<str: name>', views.spec_forum, name='spec_forum'),
+    # path('forum/<str: name>/post/<int: id>', views.forum_post, name='forum_post')
+    # TODO add easier to read urls
 ]
