@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from accounts.models import CustomUser
 import accounts.AccountModelExceptions as ModelExceptions
 
+
 class UserModelTests(TestCase):
     def setUp(self):
         self.User = get_user_model()
