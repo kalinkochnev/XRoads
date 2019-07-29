@@ -2,10 +2,14 @@ from django.db import models
 from accounts.models import CustomUser
 
 
+# overall the forum models are pretty self explanatory for now
+
+
 class SubForum(models.Model):
     name = models.CharField(max_length=25)
     description = models.CharField(max_length=500)
-    # TODO add admins and owner/creator
+
+    # TODO add admins and owner/creator group permission
 
     def __str__(self):
         return self.name

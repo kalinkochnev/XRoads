@@ -1,9 +1,8 @@
 from django.shortcuts import render
 
 
-# Create your views here.
+# TODO create links to other pages for easier basic navigation while making the site
 def home(request):
-    # get data here from database
     return render(request, 'forum/home.html', {'blah': 123})
 
 

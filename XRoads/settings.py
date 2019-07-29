@@ -27,9 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,6 +41,7 @@ INSTALLED_APPS = [
     'social_django',
 ]
 
+# Planning on adding google authentication in the future
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.open_id.OpenIdAuth',  # for Google authentication
     'social_core.backends.google.GoogleOpenId',  # for Google authentication
@@ -66,6 +65,7 @@ ROOT_URLCONF = 'XRoads.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        # django searches for the templates in appname/templates and XRoads/templates
         'DIRS': ['', 'XRoads/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -87,7 +87,6 @@ WSGI_APPLICATION = 'XRoads.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -99,13 +98,12 @@ DATABASES = {
     }
 }
 
-# User model
+# CustomUser model that we implemented must be specified for authentication to work
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -144,5 +142,4 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'eJOjfCBif1V0lWgFes8i6suR'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-
 STATIC_URL = '/static/'

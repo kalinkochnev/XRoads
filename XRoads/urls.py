@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+# TODO think about different URL structure
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('forum.urls')),
