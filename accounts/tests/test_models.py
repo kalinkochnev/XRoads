@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from accounts.models import CustomUser
 import accounts.AccountModelExceptions as ModelExceptions
 
@@ -75,8 +75,8 @@ class UserModelTests(TestCase):
         user2 = self.User.objects.create_user(email='diffemail@user.com', alias='otherusername', password='testpassword')
         user1.user_tag = 5000
         user2.user_tag = 5000
-        user1.update_tag()
-        user2.update_tag()
+        user1.update_user()
+        user2.update_user()
 
         # make sure that in given cases these exceptions are raised
         with self.assertRaises(ModelExceptions.TagTaken):
@@ -88,3 +88,31 @@ class UserModelTests(TestCase):
         with self.assertRaises(ModelExceptions.OutOfBounds):
             user1.validate_tag(99999)
 
+    def test_authentication(self):
+        # check that auth returns a user object that is the expected one
+        user_email = 'email@user.com'
+        user_password = 'testpassword'
+        user1 = self.User.objects.create_user(email=user_email, alias='otherusername', password=user_password)
+        returned_user = authenticate(email=user_email, password=user_password)
+        self.assertEqual(user1, returned_user)
+
+        # check that None is returned if password is incorrect
+        user_email = 'email@user.com'
+        user_wrong_password = 'yikes'
+        user2 = self.User.objects.create_user(email='email2@user.com', alias='otherusername', password='testpassword')
+        returned_user = authenticate(email=user_email, password=user_wrong_password)
+        self.assertIsNone(returned_user)
+
+    def test_signup(self):
+        # should return a user object since it doesn't exist
+        user_email = 'new@email.com'
+        user_pass = 'somepass'
+        user_alias = 'testuser'
+        new_user = self.User.objects.signup(user_email, user_alias, user_pass)
+        self.assertEqual(new_user.email, user_email)
+        self.assertTrue(new_user.check_password(user_pass))
+        self.assertEqual(new_user.alias, user_alias)
+
+        # should return none since user with that email already exists
+        other_user = self.User.objects.signup(user_email, 'blah', 'password')
+        self.assertIsNone(other_user)

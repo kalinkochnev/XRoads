@@ -49,30 +49,15 @@ class CustomUserManager(BaseUserManager):
         # creates a user using parameters given and extra fields provides superuser status
         return self.create_user(email, alias, password, **extra_fields)
 
-    # TODO create test
-    @staticmethod
-    # most often will be used in a view to login the user with given email and password
-    def authenticate(email=None, password=None):
-        # Recommended to use get_user_model instead of importing the CustomUser because we're using a custom manager
-        User = get_user_model()
-
-        # tries to get user object with same email, makes sure passwords match, return user if passes
-        try:
-            user = User.objects.get(email=email)
-            if user.check_password(password, user.password):
-                return user
-        # means the user doesn't exist or passwords don't match, returns None
-        except User.DoesNotExist:
-            return None
-
+    # Use default authentication method for login
     # TODO create tests
     def signup(self, email, alias, password):
         User = get_user_model()
 
         # create a user if no users with the same email exist. Email is already validated by the form
-        if not User.objects.filter(email=email).exists():
-            # IMPORTANT make sure there is something to handle aliases with all tags taken
-            user = self.create_user(email, alias, password)
-            return user
-        else:
+        try:
+            user = User.objects.get(email=email)
             return None
+        except User.DoesNotExist:
+            user = self.create_user(email=email, alias=alias, password=password)
+            return user

@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from .forms import CreateUserForm
+from .forms import SignupForm
 from django.contrib import messages
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login
 from django.shortcuts import redirect
 
 
@@ -17,7 +17,7 @@ def signup(request):
     # form submissions are always POST requests so run form processing if it is POST
     if request.method == 'POST':
         # use the imported form that was made in forms.py
-        form = CreateUserForm(request.POST)
+        form = SignupForm(request.POST)
 
         # django checks that the fields of the form pass criteria based on the field type specified
         if form.is_valid():
@@ -33,17 +33,18 @@ def signup(request):
                 user = User.objects.signup(email, alias, password)
                 if user is not None:
                     messages.success(request, 'Your account was created successfully!')
-                    return redirect('login')
+                    login(request, user)
+                    return redirect('home')
                 else:
                     messages.error(request, 'The email or password you entered may already be taken')
             else:
-                messages.error(request, 'Your passwords do not match')
+                messages.warning(request, 'Your passwords do not match')
         else:
-            messages.error(request, 'Incorrect data was entered into a field')
+            messages.warning(request, 'Incorrect data was entered into a field')
 
     # if a different request type is made this is run. If there are any errors with the form this also runs
-    form = CreateUserForm()
-    return render(request, 'signup.html', {'form': form})
+    form = SignupForm()
+    return render(request, 'signup.html', {'form': form, })
 
 
 # TODO make logout view

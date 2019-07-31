@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from django.contrib.messages import constants as message_constants
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,15 +39,15 @@ INSTALLED_APPS = [
 
     'forum.apps.ForumConfig',
     'accounts.apps.AccountsConfig',
-    'social_django',
+
+    'crispy_forms',
 ]
+
+# crispy templates pack
 
 # Planning on adding google authentication in the future
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.open_id.OpenIdAuth',  # for Google authentication
-    'social_core.backends.google.GoogleOpenId',  # for Google authentication
-    'social_core.backends.google.GoogleOAuth2',  # for Google authentication
-
+    # TODO add google authentication
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -75,8 +76,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
 
-                'social_django.context_processors.backends',
-                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -134,11 +133,14 @@ USE_L10N = True
 USE_TZ = True
 
 # Used for 3rd party authentication
-# TODO configure 0Auth for final product correctly
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'home'
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '1053877924271-shjmp4eelsi03bsd0fm8fna2uklsb4f2.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'eJOjfCBif1V0lWgFes8i6suR'
+
+# modifying message types for better bootstrap alert compatibility
+MESSAGE_TAGS = {message_constants.DEBUG: 'debug',
+                message_constants.INFO: 'info',
+                message_constants.SUCCESS: 'success',
+                message_constants.WARNING: 'warning',
+                message_constants.ERROR: 'danger', }
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/

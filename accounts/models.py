@@ -33,10 +33,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def set_tag(self, tag, *args, **kwargs):
         self.user_tag = tag
         # updates the model with the changes made
-        self.update_tag()
+        self.update_user()
 
-    def update_tag(self):
-        super().save(update_fields=['user_tag'])
+    def update_user(self, *args, **kwargs):
+        super().save(*args, **kwargs)
 
     # makes sure the tag is valid
     def validate_tag(self, tag, **testargs):

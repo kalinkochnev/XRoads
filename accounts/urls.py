@@ -19,8 +19,7 @@ from forum.views import home
 from . import views
 
 urlpatterns = [
-    re_path(r'^login/$', views.login, name='login'),
-    re_path(r'^logout/$', views.logout, name='logout'),
+    path('login/', views.login, name='login'),
+    path('logout/', views.logout, name='logout'),
     path('signup/', views.signup, name="signup"),
-    re_path(r'^$', home, name='home'),
 ]

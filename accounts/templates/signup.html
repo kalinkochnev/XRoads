@@ -1,10 +1,66 @@
 {% extends 'layout.html' %}
+{% load crispy_forms_tags %}
+
 
 {% block content %}
-    <h2>Sign up!</h2>
-    <form method="POST" class="post-form">
-        {% csrf_token %}
-        {{ form.as_p }}
-    <button type="submit" class="save btn btn-default">Save</button>
-    </form>
-{% endblock content %}
+    <style>
+        .asteriskField {
+            display: none;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        #top-field {
+            border-top-left-radius: 0.25rem;
+            border-top-right-radius: 0.25rem;
+        }
+
+        #bottom-field {
+            border-bottom-left-radius: 0.25rem;
+            border-bottom-right-radius: 0.25rem;
+        }
+
+        body {
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-align: center;
+            align-items: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #f5f5f5;
+        }
+
+        .form-signin {
+            width: 100%;
+            max-width: 330px;
+            padding: 15px;
+            margin: auto;
+        }
+
+        div {
+            margin-bottom: -1px;
+            border-radius: 0;
+
+        }
+
+        .form-signin .form-control {
+            position: relative;
+            box-sizing: border-box;
+            height: auto;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 0;
+        }
+
+    </style>
+    <body class="text-center">
+    {% crispy form %}
+    </body>
+
+{% endblock content %}s
+
+
+
