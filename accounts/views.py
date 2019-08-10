@@ -34,12 +34,12 @@ def view_login(request):
             user = User.objects.login(email, password)
             if user is not None:
                 login(request, user)
-                messages.success(request, 'Login successful!')
+                messages.success(request, 'Login successful! Welcome, ' + user.alias + '#' + str(user.user_tag))
                 return redirect('home')
             else:
-                messages.error(request, 'The username or password you entered was incorrect')
+                messages.error(request, 'Incorrect username or password! Please try again.')
         else:
-            messages.warning(request, 'Incorrect data was entered into a field')
+            messages.warning(request, 'Incorrect data was entered into a field. Please try again.')
 
     # if a different request type is made this is run. If there are any errors with the form this also runs
     form = LoginForm()
@@ -68,15 +68,15 @@ def signup(request):
                 # tries to create a new user object, if it is None that means that the user is already taken
                 user = User.objects.signup(email, alias, password)
                 if user is not None:
-                    messages.success(request, 'Your account was created successfully!')
+                    messages.success(request, 'Your account was created successfully! Welcome, ' + user.alias + '#' + str(user.tag))
                     login(request, user)
                     return redirect('home')
                 else:
-                    messages.error(request, 'The email or password you entered may already be taken')
+                    messages.error(request, 'The email you entered is already in use! Please try again.')
             else:
-                messages.warning(request, 'Your passwords do not match')
+                messages.warning(request, 'Passwords do not match! Please try again.')
         else:
-            messages.warning(request, 'Incorrect data was entered into a field')
+            messages.warning(request, 'Incorrect data was entered into a field. Please try again.')
 
     # if a different request type is made this is run. If there are any errors with the form this also runs
     form = SignupForm()
