@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model, login, logout
 from django.shortcuts import redirect
 
 
-@login_required  # TODO: Adding Redirect
+@login_required   # TODO: Adding Redirect
 def view_logout(request):
     if request.method == 'POST':
         logout(request)
