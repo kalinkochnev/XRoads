@@ -1,6 +1,8 @@
 from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth.hashers import check_password
 
 
 class CustomUserManager(BaseUserManager):
@@ -9,6 +11,16 @@ class CustomUserManager(BaseUserManager):
     The manager deals with user management functionality (creation, deletion, modification etc)
     This is a custom manager that extends from BaseUserManager which is a stripped down version of django's default
     user manager that comes with it by default"""
+
+    # Get a User with the given email
+    def login(self, email, password):
+        if not email:
+            raise ValueError(_('The email must be set'))
+        if not password:
+            raise ValueError(_('The password must be set'))
+        user = authenticate(username=email, password=password)
+        return user
+
 
     # Create and save a User with the given email and password, automatically generate a tag
     def create_user(self, email, alias, password, **extra_fields):

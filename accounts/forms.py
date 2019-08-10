@@ -51,3 +51,24 @@ class SignupForm(forms.Form):
             return True
         else:
             return False
+
+
+class LoginForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super(LoginForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-signin'
+        self.helper.form_method = 'POST'
+        self.helper.form_show_labels = False
+        self.helper.add_input(
+            Submit('Login', 'Submit', css_class='btn btn-lg btn-primary btn-block', style="margin-top: 20px;"))
+        self.helper.layout = Layout(
+            HTML("""<h1 class="h3 mb-3 font-weight-normal">Log In</h1>"""),
+            Field('email', placeholder='Email address', css_class='form-control', id='top-field'),
+            Field('password', placeholder='Password', css_class='form-control'),
+
+        )
+
+    email = forms.EmailField()
+    password = forms.CharField(max_length=128, widget=forms.PasswordInput)
