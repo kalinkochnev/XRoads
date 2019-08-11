@@ -18,11 +18,11 @@ class SubForum(models.Model):
 class Post(models.Model):
     sub_forum = models.ForeignKey(SubForum, on_delete=models.SET_NULL, null=True)
     user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
-    comment = models.ForeignKey('Comment', on_delete=models.SET_NULL, null=True)
+    comment = models.ForeignKey('Comment', on_delete=models.SET_NULL, null=True, blank=True)
 
     title = models.CharField(max_length=50)
     text = models.TextField(max_length=20000)
-    attached_file = models.FileField()
+    attached_file = models.FileField(blank=True)
     up_votes = models.IntegerField()
     down_votes = models.IntegerField()
 

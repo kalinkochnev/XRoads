@@ -1,11 +1,21 @@
 from django.shortcuts import render
 
-
 # TODO create links to other pages for easier basic navigation while making the site
+from forum.models import SubForum, Post
+
+
 def home(request):
+    subforums = SubForum.objects.all()
+    return render(request, 'forum/home.html', {'subforums': subforums})
 
-    return render(request, 'forum/home.html', {'blah': 123})
+
+def show_posts(request):
+    id = request.POST.get('forumid')
+    forum = Post.objects.all().filter(sub_forum=id)
+    return render(request, 'forum/forum.html', {'forum': forum})
 
 
-def show_forums(request):
-    return render(request, 'forum/forum.html')
+def show_post(request):
+    id = request.POST.get('postid')
+    post = Post.objects.all().get(id=id)
+    return render(request, 'forum/post.html', {'post': post})

@@ -4,31 +4,28 @@
 {% block content %}
 
     <div class="container">
-        <button id="btn">Get new posts</button>
-
+        {% for subforum in subforums %}
         <div class="card">
             <div class="card-body">
                 <div class="float-left w-80">
                     <h5 class="card-title" id="post-title">
-                        123456789012345678901234567890123456789012345678901234567890123451234512345?</h5>
-                    <h6 class="card-subtitle mb-2 text-muted" id="post-user">RandomUser#12345</h6>
-                </div>
-                <div class="float-right align-middle">
-                    <form action="#">
-                        <input type="submit" value="Upvote">
-                    </form>
-                    <form action="http://google.com">
-                        <input type="submit" value="Downvote">
-                    </form>
+                        <form id={{ subforum.id }} action={% url 'forums' %} method="post">
+                            {% csrf_token %}
+                            <a href="javascript:{}" onclick="document.getElementById({{ subforum.id }}).submit();">{{ subforum.name }}</a>
+                            <input type="hidden" name="forumid" value={{ subforum.id }}>
+                        </form>
+                    </h5>
+                    <h6 class="card-subtitle mb-2 text-muted" id="post-user">{{ subforum.description }}</h6>
                 </div>
             </div>
         </div>
+        {% endfor %}
     </div>
 
 
-    <script>
+    <!--<script>
         var jsonURL = "{% static 'test_posts.json' %}";
-    </script>
+    </script>-->
     <script src="{% static 'home.js' %}"></script>
 
 {% endblock content %}
