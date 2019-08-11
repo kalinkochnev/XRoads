@@ -29,6 +29,9 @@
                         {% csrf_token %}
                         <input type="hidden" />
                     </form>
+                    {% if request.user.is_superuser %}
+                        <a class="nav-item nav-link" href="/xroads_admin">Admin Panel</a>
+                    {% endif %}
                 {% else %}
                     <a class="nav-item nav-link" href="{% url 'signup' %}">Signup</a>
                     <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
