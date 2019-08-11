@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from .forms import SignupForm
 from .forms import LoginForm
@@ -7,7 +8,7 @@ from django.contrib.auth import get_user_model, login, logout
 from django.shortcuts import redirect
 
 
-@login_required  # TODO: Adding Redirect
+@login_required  # TODO: Add Redirect
 def view_logout(request):
     if request.method == 'POST':
         logout(request)

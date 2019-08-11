@@ -145,3 +145,8 @@ MESSAGE_TAGS = {message_constants.DEBUG: 'debug',
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+STATICFILES_DIR = [
+    os.path.join(BASE_DIR, 'XRoads/static/'),
+]
