@@ -20,7 +20,6 @@ class ForumModelTests(TestCase):
         self.post = Post(
             sub_forum=self.subforum,
             user=self.user,
-            comment=self.comment,
             title='Test Title',
             text='Filler Test text',
             attached_file=None,

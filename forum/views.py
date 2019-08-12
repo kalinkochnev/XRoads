@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect
 
 # TODO create links to other pages for easier basic navigation while making the site
@@ -28,6 +29,7 @@ def show_post(request):
     else:
         return redirect('home')
 
+
 def view_post(request):
     if request.method == 'GET':
         id = request.GET.get('id')
@@ -40,11 +42,10 @@ def create_post(request):
         form = CreatePostForm(request.POST)
 
         if form.is_valid():
-            pass
-
+            form.create_post(request.user)
+            messages.success(request, 'Your post was published')
         else:
-            messages.warning('Incorrect data was entered into the fields')
-
+            messages.error(request, 'An incorrect field was entered')
     else:
         form = CreatePostForm()
 

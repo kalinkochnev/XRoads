@@ -35,7 +35,7 @@ def view_login(request):
             user = User.objects.login(email, password)
             if user is not None:
                 login(request, user)
-                messages.success(request, 'Login successful! Welcome, ' + user.alias + '#' + str(user.user_tag))
+                messages.success(request, 'Login successful! Welcome, ' + str(user))
                 return redirect('home')
             else:
                 messages.error(request, 'Incorrect username or password! Please try again.')
@@ -69,7 +69,7 @@ def signup(request):
                 # tries to create a new user object, if it is None that means that the user is already taken
                 user = User.objects.signup(email, alias, password)
                 if user is not None:
-                    messages.success(request, 'Your account was created successfully! Welcome, ' + user.alias + '#' + str(user.tag))
+                    messages.success(request, 'Your account was created successfully! Welcome, ' + str(user))
                     login(request, user)
                     return redirect('home')
                 else:

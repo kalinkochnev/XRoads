@@ -29,7 +29,6 @@ class SignupForm(forms.Form):
         self.helper.form_show_labels = False
         self.helper.layout = Layout(
             HTML("""<h1 class="h3 mb-3 font-weight-normal">Signup</h1>"""),
-
             Field('email', placeholder='Email address', css_class='form-control', id='top-field'),
             Field('alias', placeholder='Username', css_class='form-control'),
             Field('password', placeholder='Password', css_class='form-control'),

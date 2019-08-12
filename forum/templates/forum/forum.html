@@ -4,45 +4,55 @@
 {% block content %}
 
     <div class="container">
-        <p><center><h1>{{ subforum.name }}</h1></center></p>
-        <div class="card">
-            <div class="d-flex flex-row">
-                <a href={% url 'home' %}><button type="button" class="btn btn-primary float-left">Back</button></a>
-                <a><button type="button" class="btn btn-secondary">Refresh Posts</button></a>
+        <p>
+        <center><h1>{{ subforum.name }}</h1></center>
+        </p>
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col">
+                    <a href="{% url 'home' %}">
+                        <button type="button" class="btn btn-primary">Back</button>
+                    </a>
+                    <a>
+                        <button type="button" class="btn btn-secondary float-left">Refresh Posts</button>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'create_post' %}">
+                        <button type="button" class="btn btn-success">Create Post</button>
+                    </a>
+                </div>
+
             </div>
         </div>
         {% for post in forum %}
-        <div class="card">
-            <div class="card-body">
-                <div class="float-left w-80">
-                    <h5 class="card-title" id="post-title">
-                        <form id={{ post.id }} action={% url 'post' %} method="post">
-                            {% csrf_token %}
-                            <a href="javascript:{}" onclick="document.getElementById({{ post.id }}).submit();">{{ post.title }}</a>
-                            <input type="hidden" name="postid" value={{ post.id }}>
+            <div class="card">
+                <div class="card-body">
+                    <div class="float-left w-80">
+                        <h5 class="card-title" id="post-title">
+                            <form id={{ post.id }} action={% url 'post' %} method="post">
+                                {% csrf_token %}
+                                <a href="javascript:{}"
+                                   onclick="document.getElementById({{ post.id }}).submit();">{{ post.title }}</a>
+                                <input type="hidden" name="postid" value={{ post.id }}>
+                            </form>
+                        </h5>
+                        <h6 class="card-subtitle mb-2 text-muted"
+                            id="post-user">{{ post.user.alias }}#{{ post.user.user_tag }}</h6>
+                    </div>
+                    <div class="float-right align-middle">
+                        <form action="#">
+                            <label for="uv">{{ post.up_votes }}</label>
+                            <input type="submit" id="uv" value="Upvote">
                         </form>
-                    </h5>
-                    <h6 class="card-subtitle mb-2 text-muted" id="post-user">{{ post.user.alias }}#{{ post.user.user_tag }}</h6>
-                </div>
-                <div class="float-right align-middle">
-                    <form action="#">
-                        <label for="uv">{{ post.up_votes }}</label>
-                        <input type="submit" id="uv" value="Upvote">
-                    </form>
-                    <form action="#">
-                        <label for="dv">{{ post.down_votes }}</label>
-                        <input type="submit" id="dv" value="Downvote">
-                    </form>
+                        <form action="#">
+                            <label for="dv">{{ post.down_votes }}</label>
+                            <input type="submit" id="dv" value="Downvote">
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
         {% endfor %}
     </div>
-
-
-    <!--<script>
-        var jsonURL = "{% static 'test_posts.json' %}";
-    </script>-->
-    <script src="{% static 'home.js' %}"></script>
 
 {% endblock content %}
