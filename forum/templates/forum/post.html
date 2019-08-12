@@ -4,12 +4,26 @@
 {% block content %}
 
     <div class="container">
+        <p><center><h1>View Post</h1></center></p>
         <div class="card">
-            <form id='back' action={% url 'forums' %} method="post">
-                {% csrf_token %}
-                <a href="javascript:{}" onclick="document.getElementById('back').submit();"><button type="button" class="btn btn-primary float-left">Back</button></a>
-                <input type="hidden" name="forumid" value={{ post.sub_forum.id }}>
-            </form>
+            <div class="d-flex flex-row">
+                <form id='back' action={% url 'forums' %} method="post" class="align-left">
+                    {% csrf_token %}
+                    <a href="javascript:{}" onclick="document.getElementById('back').submit();"><button type="button" class="btn btn-primary float-left">Back</button></a>
+                    <input type="hidden" name="forumid" value={{ post.sub_forum.id }}>
+                </form>
+            </div>
+        </div>
+        <div class="card d-flex flex-row">
+            <a href="javascript:{}" onclick="copyLink()"><button type="button" class="btn btn-secondary">Copy PermaLink</button></a>
+            <input type="text" id="permalink" value="http://127.0.0.1:8000{% url 'postpermalink' %}?id={{ post.id }}">
+            <script type="text/javascript">
+                function copyLink() {
+                    var copyText = document.getElementById("permalink");
+                    copyText.select();
+                    document.execCommand('copy');
+                }
+            </script>
         </div>
         <div class="card">
             <div class="card-body">
