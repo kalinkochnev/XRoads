@@ -21,7 +21,8 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
     path('forum/', views.show_posts, name='forums'),
-    path('post/', views.show_post, name='post')
+    path('post/', views.show_post, name='post'),
+    path('create_post/', views.create_post, name='create_post')
     # path('forum/<str: name>', views.spec_forum, name='spec_forum'),
     # path('forum/<str: name>/post/<int: id>', views.forum_post, name='forum_post')
     # TODO add easier to read urls

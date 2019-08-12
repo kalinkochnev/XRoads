@@ -27,15 +27,14 @@ class SignupForm(forms.Form):
         self.helper.form_class = 'form-signin'
         self.helper.form_method = 'POST'
         self.helper.form_show_labels = False
-        self.helper.add_input(
-            Submit('Sign up', 'Submit', css_class='btn btn-lg btn-primary btn-block', style="margin-top: 20px;"))
         self.helper.layout = Layout(
             HTML("""<h1 class="h3 mb-3 font-weight-normal">Signup</h1>"""),
+
             Field('email', placeholder='Email address', css_class='form-control', id='top-field'),
             Field('alias', placeholder='Username', css_class='form-control'),
             Field('password', placeholder='Password', css_class='form-control'),
             Field('confirm_pass', placeholder='Confirm password', css_class='form-control', id='bottom-field'),
-
+            Submit('Sign up', 'Submit', css_class='btn btn-lg btn-primary btn-block', style="margin-top: 20px;")
         )
 
     email = forms.EmailField()
@@ -61,13 +60,11 @@ class LoginForm(forms.Form):
         self.helper.form_class = 'form-signin'
         self.helper.form_method = 'POST'
         self.helper.form_show_labels = False
-        self.helper.add_input(
-            Submit('Login', 'Submit', css_class='btn btn-lg btn-primary btn-block', style="margin-top: 20px;"))
         self.helper.layout = Layout(
             HTML("""<h1 class="h3 mb-3 font-weight-normal">Log In</h1>"""),
             Field('email', placeholder='Email address', css_class='form-control', id='top-field'),
-            Field('password', placeholder='Password', css_class='form-control'),
-
+            Field('password', placeholder='Password', css_class='form-control', id='bottom-field'),
+            Submit('Login', 'Submit', css_class='btn btn-lg btn-primary btn-block', style="margin-top: 20px;")
         )
 
     email = forms.EmailField()
