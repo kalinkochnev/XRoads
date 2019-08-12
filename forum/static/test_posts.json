@@ -1,0 +1,20 @@
+[
+  {
+    "user": "test user",
+    "title": "1",
+    "body": "Here is the post body of the post that I will be using",
+    "date_created": "10-10-10"
+  },
+  {
+    "user": "test user 2",
+    "title": "2",
+    "body": "Here is the post body of the post that I will be using",
+    "date_created": "11-11-11"
+  },
+  {
+    "user": "test user 2",
+    "title": "3",
+    "body": "Here is the post body of the post that I will be using",
+    "date_created": "12-12-12"
+  }
+]
