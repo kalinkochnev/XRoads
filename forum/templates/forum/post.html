@@ -4,23 +4,18 @@
 {% block content %}
 
     <div class="container">
-
         <div class="card">
-            <div class="d-flex flex-row">
-                <a href={% url 'home' %}><button type="button" class="btn btn-primary float-left">Back</button></a>
-                <a><button type="button" class="btn btn-secondary">Refresh Posts</button></a>
-            </div>
+            <form id='back' action={% url 'forums' %} method="post">
+                {% csrf_token %}
+                <a href="javascript:{}" onclick="document.getElementById('back').submit();"><button type="button" class="btn btn-primary float-left">Back</button></a>
+                <input type="hidden" name="forumid" value={{ post.sub_forum.id }}>
+            </form>
         </div>
-        {% for post in forum %}
         <div class="card">
             <div class="card-body">
                 <div class="float-left w-80">
                     <h5 class="card-title" id="post-title">
-                        <form id={{ post.id }} action={% url 'post' %} method="post">
-                            {% csrf_token %}
-                            <a href="javascript:{}" onclick="document.getElementById({{ post.id }}).submit();">{{ post.title }}</a>
-                            <input type="hidden" name="postid" value={{ post.id }}>
-                        </form>
+                        {{ post.title }}
                     </h5>
                     <h6 class="card-subtitle mb-2 text-muted" id="post-user">{{ post.user.alias }}#{{ post.user.user_tag }}</h6>
                 </div>
@@ -36,7 +31,14 @@
                 </div>
             </div>
         </div>
-        {% endfor %}
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <div class="float-left w-80">
+                    {{ post.text }}
+                </div>
+            </div>
+        </div>
     </div>
 
 
