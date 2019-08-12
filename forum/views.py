@@ -7,7 +7,7 @@ import accounts
 from forum.models import SubForum, Post, Comment
 
 
-# from forum.forms import CreatePostForm
+from forum.forms import CreatePostForm
 
 
 def home(request):
