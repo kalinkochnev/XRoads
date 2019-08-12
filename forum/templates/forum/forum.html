@@ -14,28 +14,28 @@
                         <button type="button" class="btn btn-primary">Back</button>
                     </a>
                     <a>
-                        <button type="button" class="btn btn-secondary float-left">Refresh Posts</button>
+                        <button type="button" class="btn btn-secondary">Refresh Posts</button>
                     </a>
                 </div>
-                <div class="col">
-                    <a href="{% url 'create_post' %}">
-                        <button type="button" class="btn btn-success">Create Post</button>
-                    </a>
+                <div class="col"></div>
+                <div class="col"></div>
+                <div class="col"></div>
+                <div class="col align-right">
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'create_post' %}">
+                            <button type="button" class="btn btn-success">Create Post</button>
+                        </a>
+                    {% endif %}
                 </div>
-
             </div>
         </div>
+        <br>
         {% for post in forum %}
             <div class="card">
                 <div class="card-body">
                     <div class="float-left w-80">
                         <h5 class="card-title" id="post-title">
-                            <form id={{ post.id }} action={% url 'post' %} method="post">
-                                {% csrf_token %}
-                                <a href="javascript:{}"
-                                   onclick="document.getElementById({{ post.id }}).submit();">{{ post.title }}</a>
-                                <input type="hidden" name="postid" value={{ post.id }}>
-                            </form>
+                            <a href="{% url 'post' %}?id={{ post.id }}">{{ post.title }}</a>
                         </h5>
                         <h6 class="card-subtitle mb-2 text-muted"
                             id="post-user">{{ post.user.alias }}#{{ post.user.user_tag }}</h6>

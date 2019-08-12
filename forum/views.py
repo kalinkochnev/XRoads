@@ -1,10 +1,13 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 # TODO create links to other pages for easier basic navigation while making the site
 import accounts
-from forum.models import SubForum, Post
-from forum.forms import CreatePostForm
+from forum.models import SubForum, Post, Comment
+
+
+# from forum.forms import CreatePostForm
 
 
 def home(request):
@@ -21,22 +24,19 @@ def show_posts(request):
         return redirect('home')
 
 
+@login_required()
 def show_post(request):
-    if request.method == 'POST':
-        id = request.POST.get('postid')
+    if request.method == 'GET':
+        id = request.GET.get('id')
         post = Post.objects.all().get(id=id)
-        return render(request, 'forum/post.html', {'post': post})
+        comments = Comment.objects.all().filter(post=id)
+        return render(request, 'forum/post.html', {'post': post, 'comments': comments})
     else:
         return redirect('home')
 
 
-def view_post(request):
-    if request.method == 'GET':
-        id = request.GET.get('id')
-        post = Post.objects.all().get(id=id)
-        return render(request, 'forum/post.html', {'post': post})
 
-
+@login_required()
 def create_post(request):
     if request.method == 'POST':
         form = CreatePostForm(request.POST)

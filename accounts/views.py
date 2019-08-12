@@ -36,9 +36,13 @@ def view_login(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, 'Login successful! Welcome, ' + str(user))
-                return redirect('home')
+                if request.GET.get('next') is not None:
+                    return redirect(request.GET.get('next'))
+                else:
+                    return redirect('home')
             else:
                 messages.error(request, 'Incorrect username or password! Please try again.')
+                #TODO: Fix the fact that this is still top
         else:
             messages.warning(request, 'Incorrect data was entered into a field. Please try again.')
 

@@ -150,3 +150,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIR = [
     os.path.join(BASE_DIR, 'XRoads/static/'),
 ]
+
+LOGIN_URL = '/accounts/login/'

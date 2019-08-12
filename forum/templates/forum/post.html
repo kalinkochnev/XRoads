@@ -16,7 +16,7 @@
         </div>
         <div class="card d-flex flex-row">
             <a href="javascript:{}" onclick="copyLink()"><button type="button" class="btn btn-secondary">Copy PermaLink</button></a>
-            <input type="text" id="permalink" value="http://127.0.0.1:8000{% url 'postpermalink' %}?id={{ post.id }}">
+            <input type="text" id="permalink" value="http://127.0.0.1:8000{% url 'post' %}?id={{ post.id }}">
             <script type="text/javascript">
                 function copyLink() {
                     var copyText = document.getElementById("permalink");
@@ -50,6 +50,40 @@
             <div class="card-body">
                 <div class="float-left w-80">
                     {{ post.text }}
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <div class="float-left w-80">
+                    <h5 class="card-title">
+                        Comments ({{ comments.count }})
+                    </h5>
+                    <input type="text">
+                    <br>
+                    {% for comment in comments %}
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="float-left w-80">
+                                    <h5 class="card-title" id="post-title">
+                                        {{ comment.text }}
+                                    </h5>
+                                    <h6 class="card-subtitle mb-2 text-muted" id="post-user">{{ comment.user.alias }}#{{ comment.user.user_tag }}</h6>
+                                </div>
+                                <div class="float-right align-middle">
+                                    <form action="#">
+                                        <label for="uv">{{ post.up_votes }}</label>
+                                        <input type="submit" id="uv" value="Upvote">
+                                    </form>
+                                    <form action="#">
+                                        <label for="dv">{{ post.down_votes }}</label>
+                                        <input type="submit" id="dv" value="Downvote">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
