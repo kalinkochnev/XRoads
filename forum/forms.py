@@ -11,16 +11,17 @@ class CreatePostForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CreatePostForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
+        self.helper = FormHelper()
         self.helper.form_class = "form-add-post"
         self.helper.form_method = 'POST'
         self.helper.form_show_labels = False
         self.helper.layout = Layout(
-            Field('title', placeholder='Post title'),
-            Field('subforum'),
-            Field('text', placeholder='Post Body'),
-            Field('attached_file', label='Attach a file'),
-            Submit('Post', 'Submit'),
+            HTML("""<h1 class="h3 mb-3 font-weight-normal">Create Post</h1>"""),
+            Field('title', placeholder='Post title', css_class='form-control', id='top-field'),
+            Field('subforum', css_class='form-control'),
+            Field('text', placeholder='Post Body', css_class='form-control'),
+            Field('attached_file', label='Attach a file', css_class='form-control', id='bottom-field'),
+            Submit('Post', 'Submit', css_class='btn btn-lg btn-primary btn-block', style="margin-top: 20px;"),
         )
 
     form_choices = [(str(subforum), str(subforum)) for subforum in SubForum.objects.all()]

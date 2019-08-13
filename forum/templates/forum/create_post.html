@@ -3,7 +3,47 @@
 
 
 {% block content %}
+    <style>
+        .asteriskField {
+            display: none;
+        }
 
+        #top-field {
+            border-top-left-radius: 0.25rem;
+            border-top-right-radius: 0.25rem;
+        }
+
+        #bottom-field {
+            border-bottom-left-radius: 0.25rem;
+            border-bottom-right-radius: 0.25rem;
+        }
+
+        .form-add-post {
+            width: 100%;
+            max-width: 330px;
+            padding: 15px;
+            margin: auto;
+        }
+
+        div {
+            margin-bottom: -1px;
+            border-radius: 0;
+
+        }
+
+        .form-add-post .form-control {
+            position: relative;
+            box-sizing: border-box;
+            height: auto;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 0;
+        }
+
+    </style>
+
+    <div class="container text-center">
+    <br>
     {% crispy form %}
-
+    </div>
 {% endblock %}

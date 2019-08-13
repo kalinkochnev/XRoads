@@ -51,7 +51,11 @@
                     <h5 class="card-title">
                         Comments ({{ comments.count }})
                     </h5>
-                    <input type="text">
+                    <form action="{% url 'post' %}" method="post">
+                        {% csrf_token %}
+                        <input type="text" name="message">
+                        <input type="hidden" value="{{ post.id }}" name="post">
+                        <input type="submit" class="btn btn-info">
                     <br>
                     {% for comment in comments %}
                         <div class="card">
