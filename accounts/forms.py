@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import get_user_model
 from django import forms
@@ -41,14 +42,38 @@ class SignupForm(forms.Form):
     password = forms.CharField(max_length=128, widget=forms.PasswordInput)
     confirm_pass = forms.CharField(max_length=128, widget=forms.PasswordInput)
 
+    def signup_user(self, request, *args, **kwargs):
+        User = get_user_model()
+
+        if self.fields_correct():
+            cd = self.cleaned_data
+            email = cd.get('email')
+            alias = cd.get('alias')
+            password = cd.get('password')
+
+            return User.objects.signup(email, alias, password)
+
+        elif self.pwd_match():
+            messages.warning(request, 'Passwords do not match! Please try again.')
+        else:
+            messages.error(request, 'Incorrect data was entered. Please try again.')
+
+        return None
+
     # used to verify if the passwords match in to form field
     def pwd_match(self):
-        # cleaned data is the form data that django makes sure is valid so it can be used safely
-        cd = self.cleaned_data
-        if cd.get('password') == cd.get('confirm_pass'):
+        if self.is_valid():
+            # cleaned data is the form data that django makes sure is valid so it can be used safely
+            cd = self.cleaned_data
+            if cd.get('password') == cd.get('confirm_pass'):
+                return True
+            else:
+                return False
+
+    def fields_correct(self):
+        if self.pwd_match() and self.is_valid():
             return True
-        else:
-            return False
+        return False
 
 
 class LoginForm(forms.Form):
@@ -63,8 +88,20 @@ class LoginForm(forms.Form):
             HTML("""<h1 class="h3 mb-3 font-weight-normal">Log In</h1>"""),
             Field('email', placeholder='Email address', css_class='form-control', id='top-field'),
             Field('password', placeholder='Password', css_class='form-control', id='bottom-field'),
-            Submit('Login', 'Submit', css_class='btn btn-lg btn-primary btn-block', style="margin-top: 20px;")
+            Submit('Submit', 'Login', css_class='btn btn-lg btn-primary btn-block', style="margin-top: 20px;")
         )
 
     email = forms.EmailField()
     password = forms.CharField(max_length=128, widget=forms.PasswordInput)
+
+    def login_user(self, request):
+        User = get_user_model()
+
+        if self.is_valid():
+            cd = self.cleaned_data
+            email = cd.get('email')
+            password = cd.get('password')
+
+            return User.objects.login(email, password)
+        else:
+            messages.warning(request, 'Incorrect data was entered into a field. Please try again.')

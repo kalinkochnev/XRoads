@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model, authenticate
 from accounts.models import CustomUser
-import accounts.AccountModelExceptions as ModelExceptions
+import accounts.AccountExceptions as ModelExceptions
 
 
 class UserModelTests(TestCase):

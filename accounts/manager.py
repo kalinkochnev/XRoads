@@ -62,7 +62,6 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, alias, password, **extra_fields)
 
     # Use default authentication method for login
-    # TODO create tests
     def signup(self, email, alias, password):
         User = get_user_model()
 

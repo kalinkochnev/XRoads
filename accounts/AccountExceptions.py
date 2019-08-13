@@ -1,4 +1,3 @@
-# TODO make a better name for the custom exceptions file
 
 
 # when the tags are out of range of the possible ones

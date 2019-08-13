@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render
 from .forms import SignupForm
 from .forms import LoginForm
@@ -15,39 +15,25 @@ def view_logout(request):
 
 
 def view_login(request):
-    # gets user model using get_user_model
-    User = get_user_model()
-
-    # form submissions are always POST requests so run form processing if it is POST
-    if request.method == 'POST':
-        # use the imported form that was made in forms.py
+    if request.method == 'POST' and request.POST:
+        # tries to create a new user object, if it is None that means that the user is already taken
         form = LoginForm(request.POST)
+        user = form.login_user(request)
 
-        # django checks that the fields of the form pass criteria based on the field type specified
-        if form.is_valid():
-            cd = form.cleaned_data
+        if user is not None:
+            login(request, user)
 
-            email = cd.get('email')
-            password = cd.get('password')
+            messages.success(request, 'Login successful! Welcome, ' + str(user))
 
-            # tries to create a new user object, if it is None that means that the user is already taken
-            user = User.objects.login(email, password)
-            if user is not None:
-                login(request, user)
-                messages.success(request, 'Login successful! Welcome, ' + str(user))
-                if request.GET.get('next') is not None:
-                    return redirect(request.GET.get('next'))
-                else:
-                    return redirect('home')
+            # TODO what does this do? Does it redirect to the page if you need to login? Please document
+            if request.GET.get('next') is not None:
+                return redirect(request.GET.get('next'))
             else:
-                messages.error(request, 'Incorrect username or password! Please try again.')
-                #TODO: Fix the fact that this is still top
+                return redirect('home')
         else:
-            messages.warning(request, 'Incorrect data was entered into a field. Please try again.')
+            messages.error(request, 'Incorrect username or password! Please try again.')
 
-    # if a different request type is made this is run. If there are any errors with the form this also runs
-    form = LoginForm()
-    return render(request, 'login.html', {'form': form, })
+    return render(request, 'accounts/login.html', {'form': LoginForm()})
 
 
 def signup(request):
@@ -55,38 +41,24 @@ def signup(request):
     User = get_user_model()
 
     # form submissions are always POST requests so run form processing if it is POST
-    if request.method == 'POST':
+    if request.method == 'POST' and request.POST:
         # use the imported form that was made in forms.py
         form = SignupForm(request.POST)
 
-        # django checks that the fields of the form pass criteria based on the field type specified
-        if form.is_valid():
-            cd = form.cleaned_data
-
-            # makes sures the passwords match using method in CreateUserForm
-            if form.pwd_match():
-                email = cd.get('email')
-                alias = cd.get('alias')
-                password = cd.get('password')
-
-                # tries to create a new user object, if it is None that means that the user is already taken
-                user = User.objects.signup(email, alias, password)
-                if user is not None:
-                    messages.success(request, 'Your account was created successfully! Welcome, ' + str(user))
-                    login(request, user)
-                    return redirect('home')
-                else:
-                    messages.error(request, 'The email you entered is already in use! Please try again.')
-            else:
-                messages.warning(request, 'Passwords do not match! Please try again.')
+        # tries to create a new user object, if it is None that means that the user is already taken
+        user = form.signup_user(request)
+        if user is not None:
+            messages.success(request, 'Your account was created successfully! Welcome, ' + str(user))
+            login(request, user)
+            return redirect('home')
         else:
-            messages.warning(request, 'Incorrect data was entered into a field. Please try again.')
+            messages.error(request, 'The email you entered is already in use! Please try again.')
 
     # if a different request type is made this is run. If there are any errors with the form this also runs
     form = SignupForm()
-    return render(request, 'signup.html', {'form': form, })
+    return render(request, 'accounts/signup.html', {'form': form, })
 
 
 @login_required
 def account(request):
-    return render(request, "accountsettings.html", {'user': request.user});
+    return render(request, "accounts/accountsettings.html", {'user': request.user});

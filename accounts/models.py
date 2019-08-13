@@ -4,11 +4,12 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from random import choice
 from accounts.manager import CustomUserManager
-from . import AccountModelExceptions
+from . import AccountExceptions
 from django.utils import timezone
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    # TODO make alphanumeric requirement for alias and email
     # all the attributes of the custom user
     alias = models.CharField(max_length=15, default=None)
     email = models.EmailField(_('email address'), unique=True)
@@ -53,13 +54,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         available_tags = list(tag_range - taken_tags)
 
         # validates that the tag in the parameter passes certain criteria
-        # Custom exceptions can be found in AccountModelExceptions.py
+        # Custom exceptions can be found in AccountExceptions.py
         if 1000 < tag > 9999:
-            raise AccountModelExceptions.OutOfBounds()
+            raise AccountExceptions.OutOfBounds()
         if len(available_tags) == 0:
-            raise AccountModelExceptions.NoAvailableTags()
+            raise AccountExceptions.NoAvailableTags()
         if tag in taken_tags:
-            raise AccountModelExceptions.TagTaken()
+            raise AccountExceptions.TagTaken()
 
     # Tag is guaranteed to not be repeated because of query for existing tags for alias
     def generate_unique_tag(self):
@@ -71,9 +72,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         try:
             available_tag = choice(list(tag_range - taken_tags))
             self.validate_tag(available_tag)
-        except AccountModelExceptions.NoAvailableTags:
+        except AccountExceptions.NoAvailableTags:
             pass
-        except AccountModelExceptions.OutOfBounds:
+        except AccountExceptions.OutOfBounds:
             pass
         else:
             self.user_tag = available_tag
