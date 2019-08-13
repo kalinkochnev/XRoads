@@ -4,13 +4,17 @@
 {% block content %}
 
     <div class="container">
-        <p><center><h1>View Post</h1></center></p>
+        <p>
+        <center><h1>View Post</h1></center>
+        </p>
         <div class="container">
             <div class="row justify-content-between">
                 <div class="col">
                     <form id='back' action={% url 'forums' %} method="post" class="align-left">
                         {% csrf_token %}
-                        <a href="javascript:{}" onclick="document.getElementById('back').submit();"><button type="button" class="btn btn-primary float-left">Back</button></a>
+                        <a href="javascript:{}" onclick="document.getElementById('back').submit();">
+                            <button type="button" class="btn btn-primary float-left">Back</button>
+                        </a>
                         <input type="hidden" name="forumid" value={{ post.sub_forum.id }}>
                     </form>
                 </div>
@@ -23,7 +27,8 @@
                     <h5 class="card-title" id="post-title">
                         {{ post.title }}
                     </h5>
-                    <h6 class="card-subtitle mb-2 text-muted" id="post-user">{{ post.user.alias }}#{{ post.user.user_tag }}</h6>
+                    <h6 class="card-subtitle mb-2 text-muted"
+                        id="post-user">{{ post.user.alias }}#{{ post.user.user_tag }}</h6>
                 </div>
                 <div class="float-right align-middle">
                     <form action="#">
@@ -56,7 +61,8 @@
                         <input type="text" name="message">
                         <input type="hidden" value="{{ post.id }}" name="post">
                         <input type="submit" class="btn btn-info">
-                    <br>
+                        <br>
+                    </form>
                     {% for comment in comments %}
                         <div class="card">
                             <div class="card-body">
@@ -64,7 +70,8 @@
                                     <h5 class="card-title" id="post-title">
                                         {{ comment.text }}
                                     </h5>
-                                    <h6 class="card-subtitle mb-2 text-muted" id="post-user">{{ comment.user.alias }}#{{ comment.user.user_tag }}</h6>
+                                    <h6 class="card-subtitle mb-2 text-muted"
+                                        id="post-user">{{ comment.user.alias }}#{{ comment.user.user_tag }}</h6>
                                 </div>
                                 <div class="float-right align-middle">
                                     <form action="#">

@@ -8,7 +8,7 @@ from accounts.models import CustomUser
 class SubForum(models.Model):
     name = models.CharField(max_length=25)
     description = models.CharField(max_length=500)
-
+    url_name = models.CharField(max_length=25, default=None, null=True)
     # TODO add admins and owner/creator group permission
 
     def __str__(self):
