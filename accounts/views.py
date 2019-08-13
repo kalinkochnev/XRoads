@@ -10,9 +10,8 @@ from django.shortcuts import redirect
 
 @login_required  # TODO: Add Redirect
 def view_logout(request):
-    if request.method == 'POST':
-        logout(request)
-        return redirect('home')
+    logout(request)
+    return redirect('home')
 
 
 def view_login(request):
@@ -86,3 +85,8 @@ def signup(request):
     # if a different request type is made this is run. If there are any errors with the form this also runs
     form = SignupForm()
     return render(request, 'signup.html', {'form': form, })
+
+
+@login_required
+def account(request):
+    return render(request, "accountsettings.html", {'user': request.user});
