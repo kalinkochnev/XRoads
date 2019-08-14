@@ -31,13 +31,19 @@
                         id="post-user">{{ post.user.alias }}#{{ post.user.user_tag }}</h6>
                 </div>
                 <div class="float-right align-middle">
-                    <form action="#">
-                        <label for="uv">{{ post.up_votes }}</label>
-                        <input type="submit" id="uv" value="Upvote">
+                    <form action="{% url 'post' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ post.id }}" name="uv-post">
+                        <input type="submit" value="Upvote ({{ post.up_votes }})" class="btn btn-success">
                     </form>
-                    <form action="#">
-                        <label for="dv">{{ post.down_votes }}</label>
-                        <input type="submit" id="dv" value="Downvote">
+                    <form action="{% url 'post' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ post.id }}" name="dv-post">
+                        <input type="submit" value="Downvote ({{ post.down_votes }})" class="btn btn-danger">
+                    </form>
+                    <form action="{% url 'post' %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-warning" id="report-post" value="Report">
                     </form>
                 </div>
             </div>
@@ -74,13 +80,23 @@
                                         id="post-user">{{ comment.user.alias }}#{{ comment.user.user_tag }}</h6>
                                 </div>
                                 <div class="float-right align-middle">
-                                    <form action="#">
-                                        <label for="uv">{{ post.up_votes }}</label>
-                                        <input type="submit" id="uv" value="Upvote">
+                                    <form action="{% url 'post' %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{ post.id }}" name="post">
+                                        <input type="hidden" value="{{ comment.id }}" name="uv-comment">
+                                        <input type="submit" value="Upvote ({{ comment.up_votes }})" class="btn btn-success">
                                     </form>
-                                    <form action="#">
-                                        <label for="dv">{{ post.down_votes }}</label>
-                                        <input type="submit" id="dv" value="Downvote">
+                                    <form action="{% url 'post' %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{ post.id }}" name="post">
+                                        <input type="hidden" value="{{ post.id }}" name="dv-comment">
+                                        <input type="submit" value="Downvote ({{ comment.down_votes }})" class="btn btn-danger">
+                                    </form>
+                                    <form action="{% url 'post' %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{ post.id }}" name="post">
+                                        <input type="hidden" value="{{ comment.id }}" name="report-comment">
+                                        <input type="submit" value="Report" class="btn btn-warning" >
                                     </form>
                                 </div>
                             </div>
