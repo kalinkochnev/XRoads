@@ -84,7 +84,6 @@ def show_post(request):
         return redirect('home')
 
 
-
 @login_required()
 def create_post(request):
     if request.method == 'POST':
@@ -99,3 +98,10 @@ def create_post(request):
         form = CreatePostForm()
 
     return render(request, 'forum/create_post.html', {'form': form})
+
+
+def terms_of_service(request):
+    return render(request, 'forum/tos.html')
+
+def privacy_policy(request):
+    return render(request, 'forum/pp.html')

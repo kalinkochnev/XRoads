@@ -24,6 +24,8 @@ urlpatterns = [
     path('post/', views.show_post, name='post'),
     path('create-post/', views.create_post, name='create_post'),
     # path('forum/<str: name>', views.spec_forum, name='spec_forum'),
-    # path('forum/<str: name>/post/<int: id>', views.forum_post, name='forum_post')
+    # path('forum/<str: name>/post/<int: id>', views.forum_post, name='forum_post'),
+    path('tos/', views.terms_of_service, name='tos'),
+    path('privacy/', views.privacy_policy, name='pp'),
     # TODO add easier to read urls
 ]
