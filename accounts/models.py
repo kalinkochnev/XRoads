@@ -36,6 +36,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         # updates the model with the changes made
         self.update_user()
 
+    def set_alias(self, newalias, *args, **kwargs):
+        self.alias = newalias
+        # updates the model with the changes made
+        self.update_user()
+
     def update_user(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
