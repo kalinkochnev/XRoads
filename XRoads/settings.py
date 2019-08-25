@@ -56,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -89,10 +90,10 @@ WSGI_APPLICATION = 'XRoads.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'xroads',
-        'USER': 'xroads',
-        'PASSWORD': 'SNE!QMsnHwv362uk',
-        'HOST': 'itexmachina.com',
+        'NAME': 'xroadsdb',
+        'USER': 'djangouser',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }

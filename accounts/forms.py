@@ -6,6 +6,10 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, HTML
 
 
+# NOTE if there is a database query in a form, create tests for migration with the model it queries
+# NOTE if migration errors happen as a result of form, move the query to the __init__ someway
+
+
 # These next two are for the admin page
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
@@ -21,54 +25,56 @@ class CustomUserChangeForm(UserChangeForm):
 
 # This is the form used for signing up on the signup view
 class SignupForm(forms.Form):
-
-    def __init__(self, *args, **kwargs):
-        super(SignupForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_class = 'form-signin'
-        self.helper.form_method = 'POST'
-        self.helper.form_show_labels = False
-        self.helper.layout = Layout(
-            HTML("""<h1 class="h3 mb-3 font-weight-normal">Signup</h1>"""),
-            Field('email', placeholder='Email address', css_class='form-control', id='top-field'),
-            Field('alias', placeholder='Username', css_class='form-control'),
-            Field('password', placeholder='Password', css_class='form-control'),
-            Field('confirm_pass', placeholder='Confirm password', css_class='form-control', id='bottom-field'),
-            Submit('Sign up', 'Submit', css_class='btn btn-lg btn-primary btn-block', style="margin-top: 20px;")
-        )
-
     email = forms.EmailField()
     alias = forms.CharField(max_length=15)
     password = forms.CharField(max_length=128, widget=forms.PasswordInput)
     confirm_pass = forms.CharField(max_length=128, widget=forms.PasswordInput)
 
-    def signup_user(self, request, *args, **kwargs):
+    def signup_user(self):
         User = get_user_model()
+        cd = self.cleaned_data
+        return User.objects.signup(email=cd.get('email'), alias=cd.get('alias'), password=cd.get('password'))
 
-        if self.fields_correct():
-            cd = self.cleaned_data
-            email = cd.get('email')
-            alias = cd.get('alias')
-            password = cd.get('password')
+    def clean_confirm_pass(self):
+        cd = self.cleaned_data
+        password = cd.get('confirm_pass')
+        if password is None:
+            raise forms.ValidationError('You did not confirm your password')
+        return password
 
-            return User.objects.signup(email, alias, password)
+    def clean_password(self):
+        cd = self.cleaned_data
+        password = cd.get('password')
+        if password is None:
+            # TODO create message system that gets first value from form errors and displays it
+            raise forms.ValidationError('Password was not entered')
+        return password
 
-        elif self.pwd_match():
-            messages.warning(request, 'Passwords do not match! Please try again.')
-        else:
-            messages.error(request, 'Incorrect data was entered. Please try again.')
+    def clean_email(self):
+        cd = self.cleaned_data
+        email = cd.get('email')
+        if email is None:
+            raise forms.ValidationError('Email was not entered')
+        return email
 
-        return None
+    def clean_alias(self):
+        cd = self.cleaned_data
+        alias = cd.get('alias')
+        if alias is None:
+            raise forms.ValidationError('Username was not entered')
+        return alias
+
+    def clean(self):
+        password = self.clean_password()
+        confirm_pass = self.clean_confirm_pass()
+        if password != confirm_pass:
+            raise forms.ValidationError('Passwords do not match')
 
     # used to verify if the passwords match in to form field
     def pwd_match(self):
         if self.is_valid():
             # cleaned data is the form data that django makes sure is valid so it can be used safely
             cd = self.cleaned_data
-            if cd.get('password') == cd.get('confirm_pass'):
-                return True
-            else:
-                return False
 
     def fields_correct(self):
         if self.pwd_match() and self.is_valid():
@@ -77,31 +83,34 @@ class SignupForm(forms.Form):
 
 
 class LoginForm(forms.Form):
-
-    def __init__(self, *args, **kwargs):
-        super(LoginForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_class = 'form-signin'
-        self.helper.form_method = 'POST'
-        self.helper.form_show_labels = False
-        self.helper.layout = Layout(
-            HTML("""<h1 class="h3 mb-3 font-weight-normal">Log In</h1>"""),
-            Field('email', placeholder='Email address', css_class='form-control', id='top-field'),
-            Field('password', placeholder='Password', css_class='form-control', id='bottom-field'),
-            Submit('Submit', 'Login', css_class='btn btn-lg btn-primary btn-block', style="margin-top: 20px;")
-        )
-
     email = forms.EmailField()
     password = forms.CharField(max_length=128, widget=forms.PasswordInput)
 
-    def login_user(self, request):
-        User = get_user_model()
-
-        if self.is_valid():
-            cd = self.cleaned_data
-            email = cd.get('email')
-            password = cd.get('password')
-
-            return User.objects.login(email, password)
+    def clean_email(self):
+        cd = self.cleaned_data
+        email = cd.get('email')
+        if email is None:
+            raise forms.ValidationError('A field was blank')
         else:
-            messages.warning(request, 'Incorrect data was entered into a field. Please try again.')
+            return email
+
+    def clean_password(self):
+        cd = self.cleaned_data
+        password = cd.get('password')
+        if password is None:
+            raise forms.ValidationError('A field was blank')
+        else:
+            return password
+
+    def clean(self):
+        User = get_user_model()
+        email = self.clean_email()
+        password = self.clean_password()
+
+        if User.objects.login(email, password) is None:
+            raise forms.ValidationError('Incorrect username or password! Please try again')
+
+    def login_user(self):
+        User = get_user_model()
+        cd = self.cleaned_data
+        return User.objects.login(cd['email'], cd['password'])

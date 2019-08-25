@@ -27,7 +27,7 @@ class TestLoginView(TestCase):
             'password': 'testpassword'
         }
         response = self.client.post(self.login_url, login_form_data, follow=True)
-        self.assertRedirects(response, reverse('home'), 302, 200)
+        self.assertRedirects(response, reverse('forumsapp:home'), 302, 200)
 
     def test_POST_incorrect_data(self):
         signup_data = {
@@ -65,7 +65,7 @@ class TestSignupView(TestCase):
             'confirm_pass': 'testpassword'
         }
         response = self.client.post(self.signup_url, data=signup_data, follow=True)
-        self.assertRedirects(response, reverse('home'), 302, 200)
+        self.assertRedirects(response, reverse('forumsapp:home'), 302, 200)
 
     def test_POST_incorrect_data(self):
         signup_data = {

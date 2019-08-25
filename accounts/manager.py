@@ -21,7 +21,6 @@ class CustomUserManager(BaseUserManager):
         user = authenticate(username=email, password=password)
         return user
 
-
     # Create and save a User with the given email and password, automatically generate a tag
     def create_user(self, email, alias, password, **extra_fields):
 
@@ -45,7 +44,7 @@ class CustomUserManager(BaseUserManager):
         return user
 
     # Create and save a superuser with the given email and password, automatically generates a tag
-    def create_superuser(self, email, alias,  password, **extra_fields):
+    def create_superuser(self, email, alias, password, **extra_fields):
         """extra_fields is a dictionary that can be iterated through for additional parameters to be entered that aren't
         directly list above. This sets these key and value pairs as true because the user has super status"""
         extra_fields.setdefault('is_staff', True)

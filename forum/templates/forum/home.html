@@ -3,30 +3,21 @@
 
 {% block content %}
 
+    <br>
     <div class="container">
-        <p><center><h1>XRoads Forums</h1></center></p>
-        {% for subforum in subforums %}
-        <div class="card">
-            <div class="card-body">
-                <div class="float-left w-80">
-                    <h5 class="card-title" id="post-title">
-                        <form id={{ subforum.id }} action={% url 'forums' %} method="post">
-                            {% csrf_token %}
-                            <a href="javascript:{}" onclick="document.getElementById({{ subforum.id }}).submit();">{{ subforum.name }}</a>
-                            <input type="hidden" name="forumid" value={{ subforum.id }}>
-                        </form>
-                    </h5>
-                    <h6 class="card-subtitle mb-2 text-muted" id="post-user">{{ subforum.description }}</h6>
+        {% for forum in forum_list %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="float-left w-80">
+                        <h5 class="card-title" id="post-title">
+                            <a href="{% url 'forumsapp:forum' forum_name=forum.url_name %}">{{ forum.name }}</a>
+                        </h5>
+                        <h6 class="card-subtitle mb-2 text-muted" id="post-user">{{ forum.description }}</h6>
+                    </div>
                 </div>
             </div>
-        </div>
         {% endfor %}
     </div>
 
-
-    <!--<script>
-        var jsonURL = "{% static 'test_posts.json' %}";
-    </script>-->
-    <script src="{% static 'home.js' %}"></script>
 
 {% endblock content %}

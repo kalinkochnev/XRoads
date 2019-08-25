@@ -1,5 +1,4 @@
 {% extends 'layout_minbar.html' %}
-{% load crispy_forms_tags %}
 
 
 {% block content %}
@@ -57,7 +56,36 @@
 
     </style>
     <body class="text-center">
-    {% crispy form %}
+
+    <form method="post" class="form-signin">
+        {% csrf_token %}
+        <h1 class="h3 mb-3 font-weight-normal">Log In</h1>
+        <div class="control-group">
+            <div class="controls">
+                <input type="email" name="email" placeholder="Email address" class="form-control" required
+                       id="top-field">
+            </div>
+            <div class="controls">
+                <input type="text" name="alias" placeholder="Username" class="form-control" maxlength="15" required
+                       id="id_alias">
+            </div>
+
+            <div class="controls">
+                <input type="password" class="form-control" placeholder="Password" name="password" maxlength="128"
+                       required>
+            </div>
+            <div class="controls">
+                <input type="password" class="form-control" placeholder="Confirm password" name="confirm_pass"
+                       maxlength="128" id="bottom-field"
+                       required>
+            </div>
+        </div>
+
+        <input type="submit" name="Submit" value="Login" class="btn-lg btn-primary btn-block"
+               id="submit-id-submit" style="margin-top: 20px;"/>
+    </form>
+
+
     </body>
 
 {% endblock content %}s

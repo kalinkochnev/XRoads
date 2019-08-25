@@ -9,12 +9,19 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-    <title>XRoads</title>
+    <link rel="stylesheet" href="https://use.typekit.net/vaq0nkv.css">
+    <title>xroads</title>
 </head>
 
+<style>
+    nav {
+        box-shadow: 0px 3px 5px grey;
+    }
+</style>
+
 <nav class="navbar fixed-bottom navbar-light bg-light">
-    <a class="navbar-brand text-muted" href="{% url 'home' %}">XRoads</a>
+    <a class="navbar-brand text-muted" href="{% url 'forumsapp:home' %}"
+       style="font-family: houschka-rounded, sans-serif; font-weight: 700;">xroads</a>
 </nav>
 
 
@@ -26,7 +33,7 @@
 <!-- Shows all messages that the view puts in -->
 {% if messages %}
     {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show fixed-bottom text-center mb-0"
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show fixed-top text-center mb-0"
              role="alert"
              style="border-radius: 0">
             {{ message }}
@@ -37,11 +44,9 @@
     {% endfor %}
 {% endif %}
 
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>

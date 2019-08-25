@@ -4,6 +4,7 @@ from accounts.forms import SignupForm, LoginForm
 
 
 class TestSignupForm(TestCase):
+    # TODO add form field cleaning tests
 
     # testing with all correct fields
     def test_valid_fields(self):
@@ -13,8 +14,8 @@ class TestSignupForm(TestCase):
             'password': 'validpassword',
             'confirm_pass': 'validpassword'
         }
-        form = SignupForm(data=form_data)
-        self.assertTrue(form.fields_correct())
+        form = SignupForm(form_data)
+        self.assertTrue(form.is_valid())
 
     def test_invalid_fields(self):
         form_data = {
@@ -23,8 +24,8 @@ class TestSignupForm(TestCase):
             'password': 'notvalidpassword',
             'confirm_pass': 'validpassword'
         }
-        form = SignupForm(data=form_data)
-        self.assertFalse(form.fields_correct())
+        form = SignupForm(form_data)
+        self.assertFalse(form.is_valid())
 
     def test_password_matching(self):
         form_data = {
@@ -33,8 +34,8 @@ class TestSignupForm(TestCase):
             'password': 'wrongpass',
             'confirm_pass': 'validpassword'
         }
-        form = SignupForm(data=form_data)
-        self.assertFalse(form.pwd_match())
+        form = SignupForm(form_data)
+        self.assertFalse(form.is_valid())
 
         form_data = {
             'email': 'validgmail.com',
@@ -42,13 +43,13 @@ class TestSignupForm(TestCase):
             'password': 'wrongpass',
             'confirm_pass': 'validpassword'
         }
-        form = SignupForm(data=form_data)
-        self.assertFalse(form.pwd_match())
+        form = SignupForm(form_data)
+        self.assertFalse(form.is_valid())
 
     def test_data_is_blank(self):
         form_data = {}
-        form = SignupForm(data=form_data)
-        self.assertFalse(form.fields_correct())
+        form = SignupForm(form_data)
+        self.assertFalse(form.is_valid())
 
 
 class TestLoginForm(TestCase):
@@ -61,10 +62,10 @@ class TestLoginForm(TestCase):
                 'email': 'valid@gmail.com',
                 'password': 'validpassword',
             }
-            form = LoginForm(data=form_data)
+            form = LoginForm(form_data)
             self.assertIsNotNone(form.is_valid())
 
     def test_data_is_blank(self):
         form_data = {}
-        form = LoginForm(data=form_data)
+        form = LoginForm(form_data)
         self.assertFalse(form.is_valid())

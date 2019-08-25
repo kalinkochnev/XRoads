@@ -10,7 +10,8 @@
         <div class="container">
             <div class="row justify-content-between">
                 <div class="col">
-                    <form id='back' action={% url 'forums' %} method="post" class="align-left">
+                    <!-- TODO fix broken form -->
+                    <form id='back' action="" method="post" class="align-left">
                         {% csrf_token %}
                         <a href="javascript:{}" onclick="document.getElementById('back').submit();">
                             <button type="button" class="btn btn-primary float-left">Back</button>
@@ -21,6 +22,7 @@
             </div>
         </div>
         <br>
+
         <div class="card">
             <div class="card-body">
                 <div class="float-left w-80">
@@ -31,23 +33,24 @@
                         id="post-user">{{ post.user.alias }}#{{ post.user.user_tag }}</h6>
                 </div>
                 <div class="float-right align-middle">
-                    <form action="{% url 'post' %}" method="post">
+                    <form action="" method="post">
                         {% csrf_token %}
                         <input type="hidden" value="{{ post.id }}" name="uv-post">
                         <input type="submit" value="Upvote ({{ post.up_votes }})" class="btn btn-success">
                     </form>
-                    <form action="{% url 'post' %}" method="post">
+                    <form action="" method="post">
                         {% csrf_token %}
                         <input type="hidden" value="{{ post.id }}" name="dv-post">
                         <input type="submit" value="Downvote ({{ post.down_votes }})" class="btn btn-danger">
                     </form>
-                    <form action="{% url 'post' %}" method="post">
+                    <form action="" method="post">
                         {% csrf_token %}
                         <input type="submit" class="btn btn-warning" id="report-post" value="Report">
                     </form>
                 </div>
             </div>
         </div>
+
         <div class="card">
             <div class="card-body">
                 <div class="float-left w-80">
@@ -56,20 +59,21 @@
             </div>
         </div>
         <br>
+
         <div class="card">
             <div class="card-body">
                 <div class="float-left w-80">
                     <h5 class="card-title">
                         Comments ({{ comments.count }})
                     </h5>
-                    <form action="{% url 'post' %}" method="post">
+                    <form action="" method="post">
                         {% csrf_token %}
                         <input type="text" name="message">
                         <input type="hidden" value="{{ post.id }}" name="post">
                         <input type="submit" class="btn btn-info">
                         <br>
                     </form>
-                    {% for comment in comments %}
+                    {% for comment in comments_list %}
                         <div class="card">
                             <div class="card-body">
                                 <div class="float-left w-80">
@@ -80,19 +84,19 @@
                                         id="post-user">{{ comment.user.alias }}#{{ comment.user.user_tag }}</h6>
                                 </div>
                                 <div class="float-right align-middle">
-                                    <form action="{% url 'post' %}" method="post">
+                                    <form action="" method="post">
                                         {% csrf_token %}
                                         <input type="hidden" value="{{ post.id }}" name="post">
                                         <input type="hidden" value="{{ comment.id }}" name="uv-comment">
                                         <input type="submit" value="Upvote ({{ comment.up_votes }})" class="btn btn-success">
                                     </form>
-                                    <form action="{% url 'post' %}" method="post">
+                                    <form action="" method="post">
                                         {% csrf_token %}
                                         <input type="hidden" value="{{ post.id }}" name="post">
                                         <input type="hidden" value="{{ post.id }}" name="dv-comment">
                                         <input type="submit" value="Downvote ({{ comment.down_votes }})" class="btn btn-danger">
                                     </form>
-                                    <form action="{% url 'post' %}" method="post">
+                                    <form action="" method="post">
                                         {% csrf_token %}
                                         <input type="hidden" value="{{ post.id }}" name="post">
                                         <input type="hidden" value="{{ comment.id }}" name="report-comment">
@@ -107,10 +111,5 @@
         </div>
     </div>
 
-
-    <!--<script>
-        var jsonURL = "{% static 'test_posts.json' %}";
-    </script>-->
-    <script src="{% static 'home.js' %}"></script>
 
 {% endblock content %}
