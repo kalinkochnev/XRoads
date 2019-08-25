@@ -147,6 +147,7 @@ def show_post(request):
         id = request.GET.get('id')
         post = Post.objects.all().get(id=id)
         comments = Comment.objects.all().filter(post=id)
+        return render(request, 'forum/post.html', {'post': post, 'comments': comments})
     elif request.method == 'POST':
         for key in request.POST:
             print(key)
@@ -206,3 +207,11 @@ class CreatePostView(AjaxResponseMixin, FormView):
     def form_invalid(self, form):
         messages.error(self.request, 'Your post could not be published. Please try again')
         return HttpResponseRedirect(reverse('create_post'))
+
+
+def terms_of_service(request):
+    return render(request, 'forum/tos.html')
+
+
+def privacy_policy(request):
+    return render(request, 'forum/pp.html')

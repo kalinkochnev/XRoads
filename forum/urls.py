@@ -28,4 +28,6 @@ urlpatterns = [
     path('forum/<str:forum_name>/<int:post_id>/', PostDetails.as_view(), name='forum_post'),
     path('post/<int:post_id>/', PostDetails.as_view(), name='post'),
     path('create-post/', CreatePostView.as_view(), name='create_post'),
+    path('tos/', views.terms_of_service, name='tos'),
+    path('privacy/', views.privacy_policy, name='pp'),
 ]
