@@ -51,7 +51,6 @@ class VotePostForm(forms.Form):
         return postid
 
 
-
 class CreatePostForm(forms.ModelForm):
     class Meta:
         model = Post
@@ -59,6 +58,7 @@ class CreatePostForm(forms.ModelForm):
 
     subforum = forms.CharField(widget=forms.Select())
 
+    # TODO clean the file field and make sure it is an image
     def create_post(self, user_obj):
         data = self.cleaned_data
 

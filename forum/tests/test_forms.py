@@ -1,8 +1,9 @@
 from django import forms
 from django.test import TestCase
 from accounts.models import CustomUser
-from forum.forms import TestAjaxForm, VotePostForm
+from forum.forms import TestAjaxForm, VotePostForm, CreatePostForm
 from forum.models import Post, SubForum
+from unittest import skip
 
 
 class TestAjaxTestForm(TestCase):
@@ -65,3 +66,50 @@ class TestVotingForm(TestCase):
         Form = VotePostForm(data)
 
         self.assertFalse(Form.is_valid())
+
+
+# TODO add tests for file field
+class TestCreatePostForm(TestCase):
+
+    def setUp(self):
+        self.subforum = SubForum.objects.create(name='Test Forum', description='testing description')
+        self.user = CustomUser.objects.create_user(email='norm@user.com', alias='testuser', password='testpassword')
+
+    def test_valid_fields(self):
+        data = {
+            'title': 'Test Post',
+            'text': 'Testing text',
+            'attached_file': None,
+            'subforum': str(self.subforum),
+        }
+        Form = CreatePostForm(data)
+        self.assertTrue(Form.is_valid())
+
+    # TODO validate the file field
+    @skip("The File field has no validator created yet")
+    def test_invalid_file(self):
+        data = {
+            'title': 'Test Post',
+            'text': 'Testing text',
+            'attached_file': " ",
+            'subforum': str(self.subforum),
+        }
+        Form = CreatePostForm(data)
+        self.assertFalse(Form.is_valid())
+
+    def test_create_post(self):
+        data = {
+            'title': 'Test Title',
+            'text': 'Filler Test text',
+            'attached_file': None,
+            'subforum': str(self.subforum),
+        }
+        Form = CreatePostForm(data)
+        self.assertTrue(Form.is_valid())
+        Form.create_post(user_obj=self.user)
+
+        self.assertTrue(Post.objects.filter(title='Test Title').exists())
+        post = Post.objects.get(title='Test Title')
+        self.assertEqual(post.title, 'Test Title')
+        self.assertEqual(post.text, 'Filler Test text')
+        self.assertEqual(post.sub_forum, self.subforum)

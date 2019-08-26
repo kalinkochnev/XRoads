@@ -1,5 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.urls import reverse
+
 from forum.models import SubForum, Post, Comment
 from accounts.models import CustomUser
 
@@ -24,12 +26,14 @@ class ForumModelTests(TestCase):
         self.assertEqual(self.subforum.description, 'testing description')
 
     def test_post_creation(self):
-
         self.assertEqual(self.post.sub_forum, self.subforum)
         self.assertEqual(self.post.user, self.user)
         self.assertEqual(self.post.title, 'Test Title')
         self.assertEqual(self.post.text, 'Filler Test text')
         self.assertEqual(self.post.attached_file, None)
+
+    def test_post_absolute_url(self):
+        self.assertEqual(reverse('forumsapp:post', kwargs={'post_id': self.post.id}), self.post.get_absolute_url())
 
     def test_comment_filtering_by_post(self):
         self.assertEqual(Comment.objects.get(post=self.post.id), self.comment)
@@ -67,8 +71,7 @@ class ForumModelTests(TestCase):
         self.assertEqual(self.post.downvote_count, 1)
         self.post.upvote(self.user)
         self.assertEqual(self.post.upvote_count, 1)
-        self.assertEqual(self.post.downvote_count, 0
-                         )
+        self.assertEqual(self.post.downvote_count, 0)
 
     def test_downvote_no_prev_vote(self):
         self.post.downvote(self.user)

@@ -81,6 +81,10 @@ class Post(models.Model):
             post.downvotes.remove(user)
             self.downvote_html_classes = ""
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('forumsapp:post', kwargs={'post_id': self.id})
+
 
 class Comment(models.Model):
     post = models.ForeignKey('Post', on_delete=models.CASCADE, null=True)

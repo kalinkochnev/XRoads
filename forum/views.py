@@ -20,10 +20,11 @@ class MultiAjaxHandler:
 
     def ajax_handler(self, request, *args, **kwargs):
         self.request = request
-        Form = self.action_router()
-        Form = Form(request.POST)
 
-        if Form is not None:
+        if request.POST is not None:
+            Form = self.action_router()
+            Form = Form(request.POST)
+
             return self.form_processing(Form, *args, **kwargs)
 
     def action_router(self):
@@ -42,10 +43,13 @@ class MultiAjaxHandler:
             return False
 
     def form_processing(self, form, *args, **kwargs):
+        if form is None:
+            return JsonResponse({'status': 'Error. Form blank'})
+
         if form.is_valid():
             cd = form.cleaned_data
             self.complete_action(*args, **cd, **kwargs)
-            return JsonResponse({'success': 'The response was processed successfully'})
+            return JsonResponse({'status': 'success'})
         else:
             return JsonResponse(form.errors, status=400)
 
@@ -190,7 +194,7 @@ def show_post(request):
 
 class CreatePostView(AjaxResponseMixin, FormView):
     form_class = CreatePostForm
-    template_name = 'forum/templates/forum/create_post.html'
+    template_name = 'forum/create_post.html'
     success_url = reverse_lazy('forumsapp:home')
 
     def get_context_data(self, **kwargs):

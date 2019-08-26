@@ -38,7 +38,6 @@ class TestLoginView(TestCase):
         }
         response = self.client.post(self.login_url, data=signup_data, follow=True)
         self.assertEqual(response.status_code, 200)
-    # add test for absolute url https://django-testing-docs.readthedocs.io/en/latest/views.html#id1
 
 
 class TestSignupView(TestCase):
