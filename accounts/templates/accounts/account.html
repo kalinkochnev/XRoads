@@ -1,0 +1,52 @@
+{% extends 'XRoads/templates/blank-layout.html' %}
+{% load static %}
+
+
+{% block content %}
+    <div class="div-block-4">
+        <a id="w-node-a70958d43727-58d43726" href="{% url 'forumsapp:home' %}" class="link-block w-inline-block">
+            <h1 class="faded-website-heading">xroads</h1>
+        </a>
+    </div>
+    <body class="body-4">
+    <div class="setting-block">
+        <div class="profile-pic-div">
+            <h3 class="profile-pic-header">Add a profile picture</h3><a href="#" class="file-upload-btn w-button">Upload
+            a photo</a></div>
+        <div class="add-class-div">
+            <div class="add-class-section-1">
+                <form action="/search" class="class-search w-clearfix w-form"><input type="search"
+                                                                                     class="search-input class-search w-input"
+                                                                                     maxlength="256" name="query"
+                                                                                     placeholder="Search…" id="search"
+                                                                                     required=""><input type="submit"
+                                                                                                        value=" "
+                                                                                                        class="search-submit class-submit w-button">
+                </form>
+                <h3 class="add-class-header">Add Classes</h3>
+            </div>
+            <div class="add-class-section-2">
+                <div class="class-name-div">
+                    <h4 class="class-name-header">Class name 1</h4><a href="#" class="remove-class w-button"><strong
+                        class="minus-symbol">-</strong></a></div>
+                <div class="class-name-div">
+                    <h4 class="class-name-header">Class name 2</h4><a href="#" class="remove-class w-button"><strong
+                        class="minus-symbol">-</strong></a></div>
+                <div class="class-name-div">
+                    <h4 class="class-name-header">Class name 3</h4><a href="#" class="remove-class w-button"><strong
+                        class="minus-symbol">-</strong></a></div>
+            </div>
+        </div>
+        <div class="button-div"><a href="#" class="cancel-btn w-button">Cancel</a><a href="#"
+                                                                                     class="update-profile-btn w-button">Update
+            Profile</a></div>
+    </div>
+    <script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.4.1.min.220afd743d.js" type="text/javascript"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="{% static 'javascript/webflow.js' %}" type="text/javascript"></script>
+    <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script>
+    <![endif] -->
+    </body>
+
+
+{% endblock %}

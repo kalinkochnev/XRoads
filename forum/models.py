@@ -33,6 +33,9 @@ class Post(models.Model):
     text = models.TextField(max_length=20000)
     attached_file = models.FileField(blank=True)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     upvotes = models.ManyToManyField(CustomUser, blank=True, related_name='post_upvotes')
     downvotes = models.ManyToManyField(CustomUser, blank=True, related_name='post_downvotes')
 

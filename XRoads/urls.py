@@ -15,12 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from forum import views
 from django.conf import settings
 from django.conf.urls.static import static
 
 # TODO think about different URL structure
 urlpatterns = [
     path('xroads_admin/', admin.site.urls),
-    path('', include('forum.urls')),
+    path('', views.xroads_home),
+    path('forum/', include('forum.urls')),
     path('accounts/', include('accounts.urls')),
 ]

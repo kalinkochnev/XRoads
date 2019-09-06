@@ -79,3 +79,7 @@ class CreatePostForm(forms.ModelForm):
             attached_file=file,
         )
         new_post.save()
+
+
+class AccountSettingsForm(forms.ModelForm):
+    pass

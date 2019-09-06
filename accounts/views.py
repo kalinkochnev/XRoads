@@ -3,7 +3,7 @@ from django.contrib.auth.views import LoginView
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import FormView
+from django.views.generic import FormView, TemplateView
 
 from accounts import AccountExceptions
 from accounts.models import CustomUser
@@ -52,6 +52,9 @@ class SignupClass(FormView):
         messages.success(self.request, f'Signup successful! Welcome {str(user)}')
         return super().form_valid(form)
 
+
+class AccountView(TemplateView):
+    template_name = "accounts/account.html"
 
 @login_required
 def account(request):

@@ -14,6 +14,12 @@ from forum.forms import CreatePostForm, VotePostForm
 from forum.models import SubForum, Post, Comment
 
 
+def xroads_home(request):
+    if request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('forumsapp:home'))
+    return render(request, 'forum/xroads_home.html')
+
+
 class MultiAjaxHandler:
     handler_dict = {}
     request = None
@@ -86,9 +92,9 @@ class AjaxResponseMixin(object):
 
 # B4COMMIT add login required to cbv
 class HomeView(ListView):
-    template_name = "forum/home.html"
-    queryset = SubForum.objects.all()
-    context_object_name = 'forum_list'
+    template_name = "forum/forum_home.html"
+    queryset = Post.objects.all()
+    context_object_name = 'post_list'
 
 
 class ListPosts(MultiAjaxHandler, ListView):
