@@ -2,24 +2,52 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-from forum.models import SubForum, Post, Comment
+from forum.models import SubForum, Post, Comment, SchoolClass
 from accounts.models import CustomUser
+
+
+class SchoolClassTests(TestCase):
+    def setUp(self):
+        self.teacher = CustomUser.objects.signup(email="teacher@email.com", alias="bestteacher", password="password")
+        self.student1 = CustomUser.objects.signup(email="student@email.com", alias="student1", password="password")
+        self.student2 = CustomUser.objects.signup(email="otherstudent@email.com", alias="student2", password="password")
+        self.SchoolClass = SchoolClass.objects.create(class_name='class 1', class_grade=11, class_placement="Honors",
+                                                      class_teacher=self.teacher)
+        self.SchoolClass.class_students.add(self.student1, self.student2)
+
+    def test_SchoolClass_creation(self):
+        self.assertEqual(self.SchoolClass.class_name, 'class 1')
+        self.assertEqual(self.SchoolClass.class_grade, 11)
+        self.assertEqual(self.SchoolClass.class_placement, "Honors")
+        self.assertEqual(str(self.SchoolClass), "class 1 Honors")
+
+    def test_SchoolClass_teacher(self):
+        self.assertEqual(SchoolClass.objects.get(class_teacher=self.teacher), self.SchoolClass)
+
+    def test_SchoolClass_students(self):
+        self.assertEqual(self.SchoolClass.class_students.count(), 2)
 
 
 class ForumModelTests(TestCase):
     def setUp(self):
         User = get_user_model()
+        self.post_class = SchoolClass.objects.create(
+            class_name="class 1",
+            class_grade=11,
+            class_placement="Honors",
+        )
         self.user = User.objects.create_user(email='test@user.com', alias='testuser', password='test_password')
         self.subforum = SubForum.objects.create(name='Test Forum', description='testing description')
         self.post = Post.objects.create(
             sub_forum=self.subforum,
             user=self.user,
             title='Test Title',
-            text='Filler Test text',
-            attached_file=None,
+            text='Filler Test body',
+            file=None,
+            post_class=self.post_class,
         )
 
-        self.comment = Comment.objects.create(user=self.user, post=self.post, text='test text')
+        self.comment = Comment.objects.create(user=self.user, post=self.post, text='test body')
 
     def test_SubForum_creation(self):
         self.assertEqual(self.subforum.name, 'Test Forum')
@@ -29,11 +57,11 @@ class ForumModelTests(TestCase):
         self.assertEqual(self.post.sub_forum, self.subforum)
         self.assertEqual(self.post.user, self.user)
         self.assertEqual(self.post.title, 'Test Title')
-        self.assertEqual(self.post.text, 'Filler Test text')
-        self.assertEqual(self.post.attached_file, None)
+        self.assertEqual(self.post.text, 'Filler Test body')
+        self.assertEqual(self.post.file, None)
 
     def test_post_absolute_url(self):
-        self.assertEqual(reverse('forumsapp:post', kwargs={'post_id': self.post.id}), self.post.get_absolute_url())
+        self.assertEqual(reverse('forumsapp:post', kwargs={'post_id': self.post.id}), self.post.get_absolute_url)
 
     def test_comment_filtering_by_post(self):
         self.assertEqual(Comment.objects.get(post=self.post.id), self.comment)
@@ -52,7 +80,7 @@ class ForumModelTests(TestCase):
 
     def test_comment_creation(self):
         self.assertEqual(self.comment.user, self.user)
-        self.assertEqual(self.comment.text, 'test text')
+        self.assertEqual(self.comment.text, 'test body')
         # TODO add voting to comment
 
     def test_upvote_no_prev_vote(self):

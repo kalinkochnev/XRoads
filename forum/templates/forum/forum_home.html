@@ -11,57 +11,92 @@
 
     {% for post in post_list %}
         <div class="post-block w-clearfix">
-            <div class="post-left-buttons w-clearfix"><a href="#" class="user-profile-class w-button"></a>
-                <div class="voting-div"><a href="#" class="upvote-class w-button"></a><a href="#"
-                                                                                         class="downvote-class w-button"></a>
+            <div class="post-left-buttons w-clearfix">
+                <a href="#" class="user-profile-class w-button"></a>
+                <div class="voting-div">
+                    <a href="#" class="upvote-class w-button"></a>
+                    <a href="#" class="downvote-class w-button"></a>
                 </div>
             </div>
             <a href="#" class="post-link w-inline-block">
                 <h3 class="post-title">{{ post.title }}</h3>
-                <p class="post-body">{{ post.body }}</p>
+                <p class="post-body">{{ post.text }}</p>
             </a>
-            <div class="post-right-buttons"><a href="#" class="bookmark-class w-button"></a><a href="#"
-                                                                                               class="options-class w-button"></a>
+            <div class="post-right-buttons"><a href="#" class="bookmark-class w-button"></a>
+                <a href="#" class="options-class w-button"></a>
             </div>
         </div>
     {% endfor %}
 
     <div class="create-post-block w-form">
+        <form class="form-add-post" method="post" enctype="multipart/form-data" id="post-form"
+              data-url="{{ request.build_absolute_uri|safe }}">
+            {% csrf_token %}
+            <div class="control-group">
+                <div class="controls">
+
+                    <input type="text" name="title" maxlength="50"
+                           class="form-control textInput" placeholder="Post title" id="post-title" required>
+
+                    <select name="subforum" class="form-control select" id="post-choice" placeholder="Forums">
+                        {% for forum in forum_list %}
+                            <option value="{{ forum }}">{{ forum }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <textarea name="text" rows="10" maxlength="20000" class="form-control textarea"
+                              placeholder="Post Body" id="post-body"></textarea>
+
+                    <input type="file" name="attached_file" class="form-control clearablefileinput"
+                           label="Attach a file" id="bottom-field" id="post-file">
+                </div>
+            </div>
+
+            <input type="submit" name="Post" value="Post" class="btn-lg btn-primary btn-block"
+                   style="margin-top: 20px;"/>
+        </form>
+
+    <div class="create-post-block w-form">
         <form id="email-form" name="email-form" data-name="Email Form" class="post-form">
-            <div class="post-form-top"><input type="text" class="post-title-field w-node-9c5609533870-c181d164 w-input"
-                                              autofocus="true" maxlength="256" name="post-title" data-name="post-title"
-                                              placeholder="Start a post with a title! (click to toggle)"
-                                              data-w-id="e7ec7961-dc7f-3fb5-f223-9c5609533870" id="post-title"
-                                              required=""><input type="submit" value=" "
-                                                                 id="w-node-78f3f8c11c94-c181d164"
-                                                                 class="post-submit w-button"></div>
-            <div style="display:none" class="post-form-middle"><input type="text"
-                                                                      class="post-grade-field w-node-2dd53cb481db-c181d164 w-input"
-                                                                      maxlength="256" name="grade-input"
-                                                                      data-name="grade-input" placeholder="Grade"
-                                                                      id="grade-input" required=""><select id="field"
-                                                                                                           name="field"
-                                                                                                           class="post-placement-field w-node-ace839d7e0cb-c181d164 w-select">
-                <option value="">Placement</option>
-                <option value="R">Regents</option>
-                <option value="H">Honors</option>
-                <option value="AP">AP</option>
-            </select><select id="subject-field" name="subject-field" data-name="subject-field" required=""
-                             class="post-subject-field w-node-63ef9b7e4416-c181d164 w-select">
-                <option value="">Subject</option>
-                <option value="general">General</option>
-                <option value="Value 1">Subject 1</option>
-                <option value="Value 2">Subject 2</option>
-                <option value="Value 3">Subject 3</option>
-            </select></div>
-            <div style="display:none" class="comment-form-bottom"><textarea placeholder="Say something awesome here!"
-                                                                            maxlength="5000" id="post-body"
-                                                                            name="post-body" data-name="post-body"
-                                                                            required=""
-                                                                            class="comment-field w-input"></textarea>
+            <div class="post-form-top">
+                <input type="text" class="post-title-field w-node-9c5609533870-c181d164 w-input"
+                       autofocus="true" maxlength="256" name="title" data-name="title"
+                       placeholder="Start a post with a title! (click to toggle)"
+                       data-w-id="e7ec7961-dc7f-3fb5-f223-9c5609533870" id="post-title"
+                       required="">
+                <input type="submit" value=" " id="w-node-78f3f8c11c94-c181d164" class="post-submit w-button">
+            </div>
+            <div style="display:none" class="post-form-middle">
+                <input type="text" class="post-grade-field w-node-2dd53cb481db-c181d164 w-input" maxlength="256"
+                       name="grade-input"
+                       data-name="grade-input" placeholder="Grade"
+                       id="grade-input" required="">
+                <select id="field"
+                        name="field"
+                        class="post-placement-field w-node-ace839d7e0cb-c181d164 w-select">
+                    <option value="">Placement</option>
+                    <option value="N">None</option>
+                    <option value="R">Regents</option>
+                    <option value="H">Honors</option>
+                    <option value="AP">AP</option>
+                </select>
+                <select id="subject-field" name="subject-field" data-name="subject-field" required=""
+                        class="post-subject-field w-node-63ef9b7e4416-c181d164 w-select">
+                    <option value="">Topic</option>
+                    <option value="general">General</option>
+                    {% for class in class_list %}
+                        <option value="{{ class_name }}">{{ class_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="display:none" class="comment-form-bottom">
+                <textarea placeholder="Say something awesome here!"
+                          maxlength="5000" id="post-body"
+                          name="post-body" data-name="post-body"
+                          required=""
+                          class="comment-field w-input"></textarea>
             </div>
         </form>
-        6
         <div class="w-form-done">
             <div>Thank you! Your submission has been received!</div>
         </div>

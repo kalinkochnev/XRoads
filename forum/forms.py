@@ -3,7 +3,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, HTML
 
 from accounts.models import CustomUser
-from forum.models import Post, SubForum
+from forum.models import Post, SubForum, SchoolClass
 
 
 # NOTE if there is a database query in a form, create tests for migration with the model it queries
@@ -19,11 +19,11 @@ class TestAjaxForm(forms.Form):
         else:
             raise forms.ValidationError('Action is not valid')
 
-    def complete_action(self, *args, **kwargs):
-        do_action = True
-        if not do_action:
-            return None
-
+    def do_action(self, *args, **kwargs):
+        throw_exception = kwargs.get('throw_exception')
+        print(throw_exception)
+        if throw_exception:
+            raise TypeError
         return 'Action was done'
 
 
@@ -54,32 +54,84 @@ class VotePostForm(forms.Form):
 class CreatePostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'text', 'attached_file']
+        fields = ['title', 'text']
 
-    subforum = forms.CharField(widget=forms.Select())
+    school_class_id = forms.IntegerField()
+    action = forms.CharField()
+
+    def clean_action(self):
+        action = self.cleaned_data['action']
+        if action != 'create-post':
+            raise forms.ValidationError
+        else:
+            return action
+
+    def clean_school_class_id(self):
+        class_id = self.cleaned_data['school_class_id']
+        try:
+            SchoolClass.objects.get(id=class_id)
+            return class_id
+        except SchoolClass.DoesNotExist:
+            raise forms.ValidationError('The class does not exist')
+
+
+"""class CreatePostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'text', 'file']
+
+    class_id = forms.IntegerField()
 
     # TODO clean the file field and make sure it is an image
     def create_post(self, user_obj):
         data = self.cleaned_data
 
         title = data.get('title')
-        body = data.get('text')
+        body = data.get('body')
         file = data.get('file')
-        subforum = data.get('subforum')
+        class_id = data.get('class_id')
 
-        for forum in SubForum.objects.all():
-            if str(forum) == subforum:
-                subforum = forum
+        for forum in SchoolClass.objects.all():
+            if str(forum) == class_id:
+                class_id = forum
 
         new_post = Post(
             sub_forum=subforum,
             user=user_obj,
             title=title,
             text=body,
-            attached_file=file,
+            file=file,
         )
         new_post.save()
+"""
 
 
 class AccountSettingsForm(forms.ModelForm):
     pass
+
+
+class GetSchoolTopics(forms.Form):
+    action = forms.CharField(max_length=25)
+    grade = forms.IntegerField()
+    placement = forms.CharField(max_length=7)
+
+    def clean_action(self):
+        action = self.cleaned_data.get('action')
+        if action != 'list_topics':
+            raise forms.ValidationError('Not a valid action')
+        else:
+            return action
+
+    def clean_grade(self):
+        grade = self.cleaned_data.get('grade')
+        if grade not in range(9, 13):
+            raise forms.ValidationError('Not a valid grade')
+        else:
+            return grade
+
+    def clean_placement(self):
+        placement = self.cleaned_data.get('placement')
+        if placement not in ['N', 'R', 'H', 'AP']:
+            raise forms.ValidationError('Not a valid placement level')
+        else:
+            return placement

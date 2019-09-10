@@ -19,7 +19,6 @@ from forum import views
 from django.conf import settings
 from django.conf.urls.static import static
 
-# TODO think about different URL structure
 urlpatterns = [
     path('xroads_admin/', admin.site.urls),
     path('', views.xroads_home),

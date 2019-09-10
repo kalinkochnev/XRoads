@@ -2,7 +2,7 @@ from django import forms
 from django.test import TestCase
 from accounts.models import CustomUser
 from forum.forms import TestAjaxForm, VotePostForm, CreatePostForm
-from forum.models import Post, SubForum
+from forum.models import Post, SubForum, SchoolClass
 from unittest import skip
 
 
@@ -30,8 +30,8 @@ class TestVotingForm(TestCase):
             sub_forum=self.subforum,
             user=self.user,
             title='Test Title',
-            text='Filler Test text',
-            attached_file=None,
+            text='Filler Test body',
+            file=None,
         )
 
     def test_action_valid_clean(self):
@@ -72,15 +72,18 @@ class TestVotingForm(TestCase):
 class TestCreatePostForm(TestCase):
 
     def setUp(self):
-        self.subforum = SubForum.objects.create(name='Test Forum', description='testing description')
+        # TODO make signup for teachers
+        self.teacher = CustomUser.objects.signup(email="teacher@email.com", alias="bestteacher", password="password")
+        self.school_class = SchoolClass.objects.create(class_name="class 1", class_grade=11, class_placement="AP",
+                                                       class_teacher=self.teacher)
         self.user = CustomUser.objects.create_user(email='norm@user.com', alias='testuser', password='testpassword')
 
     def test_valid_fields(self):
         data = {
-            'title': 'Test Post',
-            'text': 'Testing text',
-            'attached_file': None,
-            'subforum': str(self.subforum),
+            'action': 'create-post',
+            'title': 'Test Title',
+            'text': 'Test post text',
+            'school_class_id': self.school_class.id,
         }
         Form = CreatePostForm(data)
         self.assertTrue(Form.is_valid())
@@ -89,27 +92,10 @@ class TestCreatePostForm(TestCase):
     @skip("The File field has no validator created yet")
     def test_invalid_file(self):
         data = {
-            'title': 'Test Post',
-            'text': 'Testing text',
-            'attached_file': " ",
-            'subforum': str(self.subforum),
+            'action': 'create-post',
+            'title': 'Test Title',
+            'text': 'Test post text',
+            'school_class_id': self.school_class.id,
         }
         Form = CreatePostForm(data)
         self.assertFalse(Form.is_valid())
-
-    def test_create_post(self):
-        data = {
-            'title': 'Test Title',
-            'text': 'Filler Test text',
-            'attached_file': None,
-            'subforum': str(self.subforum),
-        }
-        Form = CreatePostForm(data)
-        self.assertTrue(Form.is_valid())
-        Form.create_post(user_obj=self.user)
-
-        self.assertTrue(Post.objects.filter(title='Test Title').exists())
-        post = Post.objects.get(title='Test Title')
-        self.assertEqual(post.title, 'Test Title')
-        self.assertEqual(post.text, 'Filler Test text')
-        self.assertEqual(post.sub_forum, self.subforum)

@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=50)),
                 ('text', models.TextField(max_length=20000)),
-                ('attached_file', models.FileField(upload_to='')),
+                ('file', models.FileField(upload_to='')),
                 ('up_votes', models.IntegerField()),
                 ('down_votes', models.IntegerField()),
                 ('comment', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='forum.Comment')),

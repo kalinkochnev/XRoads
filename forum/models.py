@@ -1,5 +1,6 @@
 from django.db import models
 from accounts.models import CustomUser
+from django.urls import reverse
 
 
 # TODO rename class to Forum instead of SubForum
@@ -26,12 +27,26 @@ class SubForum(models.Model):
         return self.name
 
 
+class SchoolClass(models.Model):
+    class_name = models.CharField(max_length=50)
+    class_grade = models.IntegerField()
+    class_placement = models.CharField(max_length=10)
+
+    class_teacher = models.ForeignKey(CustomUser, on_delete=models.PROTECT, blank=True)
+    class_students = models.ManyToManyField(CustomUser, related_name="class_students", blank=True)
+
+    def __str__(self):
+        return f"{self.class_name} {self.class_placement}"
+
+
 class Post(models.Model):
     sub_forum = models.ForeignKey(SubForum, on_delete=models.SET_NULL, null=True)
     user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=150)
     text = models.TextField(max_length=20000)
-    attached_file = models.FileField(blank=True)
+    file = models.FileField(blank=True)
+
+    post_school_class = models.ForeignKey(SchoolClass, on_delete=models.PROTECT)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -84,8 +99,8 @@ class Post(models.Model):
             post.downvotes.remove(user)
             self.downvote_html_classes = ""
 
+    @property
     def get_absolute_url(self):
-        from django.urls import reverse
         return reverse('forumsapp:post', kwargs={'post_id': self.id})
 
 

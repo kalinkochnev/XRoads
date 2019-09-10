@@ -15,8 +15,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
     user_tag = models.IntegerField(default=1000)
     profile_pic = models.ImageField()
+
     is_staff = models.BooleanField(default=False)
+    is_teacher = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+
     date_joined = models.DateTimeField(default=timezone.now)
 
     # used for making sure the admin login and signup page works correctly

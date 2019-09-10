@@ -12,7 +12,6 @@ from .forms import LoginForm
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
 from django.shortcuts import redirect
-from forum.views import AjaxResponseMixin
 
 
 @login_required  # TODO: Add Redirect
@@ -55,6 +54,7 @@ class SignupClass(FormView):
 
 class AccountView(TemplateView):
     template_name = "accounts/account.html"
+
 
 @login_required
 def account(request):

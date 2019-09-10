@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='post',
-            name='attached_file',
+            name='file',
             field=models.FileField(blank=True, upload_to=''),
         ),
     ]
