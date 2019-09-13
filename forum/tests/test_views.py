@@ -1,3 +1,5 @@
+import json
+
 from django.http import JsonResponse
 from django.test import TestCase, RequestFactory, Client
 from django.urls import reverse
@@ -139,7 +141,10 @@ class TestQuerySchoolClass(TestCase):
             'placement': 'Honors',
         }
         response = self.client.get(self.url, data=data)
+
         print(response.content)
+        correct_response = b"""[{"pk": 1, "fields": {"class_name": "class 1"}}, {"pk": 2, "fields": {"class_name": "class 2"}}]"""
+        self.assertEqual(response.content, correct_response)
 
 
 class TestHomeView(TestCase):

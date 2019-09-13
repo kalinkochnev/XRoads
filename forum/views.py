@@ -129,56 +129,6 @@ class FormRouter:
         return None
 
 
-"""class MultiAjaxHandler:
-    handler_dict = {}
-    request = None
-    on_success = JsonResponse({'status': 'success'})
-    on_failure = JsonResponse({'status': 'error'})
-
-    def ajax_handler(self, request, *args, **kwargs):
-        self.request = request
-
-        if request.POST is not None:
-            Form = self.action_router()
-            Form = Form(request.POST)
-
-            return self.form_processing(Form, *args, **kwargs)
-
-    def action_router(self):
-        if self.request_is_valid():
-            data = self.request.POST
-            Form = self.handler_dict[data.get('action')]
-            return Form
-        else:
-            return None
-
-    def request_is_valid(self):
-        action = self.request.POST.get('action')
-        if self.request.is_ajax() and action in self.handler_dict.keys():
-            return True
-        elif self.request.is_ajax() or action not in self.handler_dict.keys():
-            return False
-
-    # TODO add tests
-    def get_data(self):
-        Form = self.action_router()
-        if Form.is_valid() and self.request_is_valid():
-            return Form.cleaned_data
-
-    def form_processing(self, form, *args, **kwargs):
-        if form is None:
-            return self.on_failure
-
-        if form.is_valid():
-            cd = form.cleaned_data
-            self.complete_action(*args, **cd, **kwargs)
-            return self.on_success
-        else:
-            return self.on_failure
-
-    def complete_action(self, *args, **kwargs):
-        pass"""
-
 """class AjaxResponseMixin(object):
 
     Mixin to add AJAX support to a form.
@@ -207,13 +157,41 @@ class FormRouter:
 
 
 class QuerySchoolClass(View):
+    data = None
 
     def get(self, request, *args, **kwargs):
-        data = request.GET
-        school_class_list = SchoolClass.objects.filter(class_grade=data.get('grade')).filter(
-            class_placement=data.get('placement'))
-        output = serializers.serialize('python', school_class_list, fields="")
-        return HttpResponse(output, content_type='application/json')
+        self.data = request.GET
+
+        if self.validate_grade() and self.validate_placement():
+            return self.schoolclass_json_response()
+        return JsonResponse({'failure': 'Invalid query'})
+
+    def validate_grade(self):
+        if self.data.get('grade') not in ['9', '10', '11', '12']:
+            return False
+        return True
+
+    def validate_placement(self):
+        if self.data.get('placement') not in ['Regents', 'Honors', 'AP', 'None']:
+            return False
+        return True
+
+    def schoolclass_json_response(self):
+        grade = self.data.get('grade')
+        placement = self.data.get('placement')
+        school_class_list = SchoolClass.objects.filter(class_grade=grade).filter(class_placement=placement)
+        output = serializers.serialize('python', school_class_list, fields=('class_name'))
+        for school_class in output:
+            school_class.pop('model')
+
+        return JsonResponse(output, safe=False)
+
+
+class CreatePostView(View):
+
+    def post(self):
+        CreatePostForm()
+
 
 
 # B4COMMIT add login required to cbv

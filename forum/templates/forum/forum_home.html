@@ -29,34 +29,6 @@
     {% endfor %}
 
     <div class="create-post-block w-form">
-        <form class="form-add-post" method="post" enctype="multipart/form-data" id="post-form"
-              data-url="{{ request.build_absolute_uri|safe }}">
-            {% csrf_token %}
-            <div class="control-group">
-                <div class="controls">
-
-                    <input type="text" name="title" maxlength="50"
-                           class="form-control textInput" placeholder="Post title" id="post-title" required>
-
-                    <select name="subforum" class="form-control select" id="post-choice" placeholder="Forums">
-                        {% for forum in forum_list %}
-                            <option value="{{ forum }}">{{ forum }}</option>
-                        {% endfor %}
-                    </select>
-
-                    <textarea name="text" rows="10" maxlength="20000" class="form-control textarea"
-                              placeholder="Post Body" id="post-body"></textarea>
-
-                    <input type="file" name="attached_file" class="form-control clearablefileinput"
-                           label="Attach a file" id="bottom-field" id="post-file">
-                </div>
-            </div>
-
-            <input type="submit" name="Post" value="Post" class="btn-lg btn-primary btn-block"
-                   style="margin-top: 20px;"/>
-        </form>
-
-    <div class="create-post-block w-form">
         <form id="email-form" name="email-form" data-name="Email Form" class="post-form">
             <div class="post-form-top">
                 <input type="text" class="post-title-field w-node-9c5609533870-c181d164 w-input"
@@ -71,18 +43,20 @@
                        name="grade-input"
                        data-name="grade-input" placeholder="Grade"
                        id="grade-input" required="">
-                <select id="field"
-                        name="field"
+                <select id="field" name="subject-input"
                         class="post-placement-field w-node-ace839d7e0cb-c181d164 w-select">
-                    <option value="">Placement</option>
-                    <option value="N">None</option>
-                    <option value="R">Regents</option>
-                    <option value="H">Honors</option>
-                    <option value="AP">AP</option>
+                    <option value="" disabled selected>Subject</option>
+                    <option value="art">Art</option>
+                    <option value="english">English</option>
+                    <option value="language">Foreign Language</option>
+                    <option value="history">History</option>
+                    <option value="math">Math</option>
+                    <option value="music">Music</option>
+                    <option value="science">Science</option>
                 </select>
-                <select id="subject-field" name="subject-field" data-name="subject-field" required=""
+                <select id="subject-field" name="class-field" data-name="subject-field" required=""
                         class="post-subject-field w-node-63ef9b7e4416-c181d164 w-select">
-                    <option value="">Topic</option>
+                    <option value="" disabled selected>-- Topics/Classes --</option>
                     <option value="general">General</option>
                     {% for class in class_list %}
                         <option value="{{ class_name }}">{{ class_name }}</option>
@@ -105,12 +79,21 @@
         </div>
     </div>
 
+
     <script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.4.1.min.220afd743d.js" type="text/javascript"
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <script src="{% static 'javascript/webflow.js' %}" type="text/javascript"></script>
     <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script>
     <![endif] -->
+    <script type="text/javascript">
+        var class_query_url = "{% url 'forumsapp:query/classes' %}";
+    </script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="{% static 'javascript/default.js' %}" type="text/javascript"></script>
+    <script src="{% static 'javascript/post.js' %}" type="text/javascript"></script>
+    </script>
+    <
+    script;
+    src = "{% static 'javascript/default.js' %}";
+    type = "text/javascript" ></script>
     </body>
 {% endblock %}

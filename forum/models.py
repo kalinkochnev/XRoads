@@ -40,11 +40,10 @@ class SchoolClass(models.Model):
 
 
 class Post(models.Model):
-    sub_forum = models.ForeignKey(SubForum, on_delete=models.SET_NULL, null=True)
+    school_class = models.ForeignKey(SchoolClass, on_delete=models.SET_NULL, null=True, related_name="post_schoolclass")
     user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=150)
     text = models.TextField(max_length=20000)
-    file = models.FileField(blank=True)
 
     post_school_class = models.ForeignKey(SchoolClass, on_delete=models.PROTECT)
 
