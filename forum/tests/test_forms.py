@@ -80,10 +80,11 @@ class TestCreatePostForm(TestCase):
 
     def test_valid_fields(self):
         data = {
-            'action': 'create-post',
             'title': 'Test Title',
             'text': 'Test post text',
-            'school_class_id': self.school_class.id,
+            'schoolclass_field': self.school_class.id,
+            'grade': 11,
+            'subject_input': 'history',
         }
         Form = CreatePostForm(data)
         self.assertTrue(Form.is_valid())

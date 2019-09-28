@@ -188,9 +188,29 @@ class QuerySchoolClass(View):
 
 
 class CreatePostView(View):
+    http_method_names = ['post']
 
     def post(self):
-        CreatePostForm()
+        form = CreatePostForm(self.request.POST)
+
+        if form.is_valid():
+            cd = form.cleaned_data
+            self.create_post(data=cd)
+
+    def create_post(self, data):
+        title = data.get('title')
+        text = data.get('text')
+        school_class = data.get('schoolclass_field')
+
+        Post.objects.create(
+            school_class=school_class,
+            user=self.request.user,
+            title=title,
+            text=text,
+        )
+
+
+
 
 
 

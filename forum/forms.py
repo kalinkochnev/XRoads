@@ -56,23 +56,28 @@ class CreatePostForm(forms.ModelForm):
         model = Post
         fields = ['title', 'text']
 
-    school_class_id = forms.IntegerField()
-    action = forms.CharField()
+    schoolclass_field = forms.IntegerField()
+    subject_input = forms.CharField(max_length=20)
+    grade = forms.IntegerField()
 
-    def clean_action(self):
-        action = self.cleaned_data['action']
-        if action != 'create-post':
-            raise forms.ValidationError
+
+    def clean_grade(self):
+        grade = self.cleaned_data['grade']
+        if grade not in [9, 10, 11, 12]:
+            raise forms.ValidationError('Not a valid grade')
         else:
-            return action
+            return grade
 
-    def clean_school_class_id(self):
-        class_id = self.cleaned_data['school_class_id']
+    def clean_class_field(self):
+        class_id = self.cleaned_data['schoolclass_field']
         try:
             SchoolClass.objects.get(id=class_id)
             return class_id
         except SchoolClass.DoesNotExist:
             raise forms.ValidationError('The class does not exist')
+
+
+
 
 
 """class CreatePostForm(forms.ModelForm):
