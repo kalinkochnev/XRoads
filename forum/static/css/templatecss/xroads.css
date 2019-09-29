@@ -710,6 +710,7 @@
     margin-right: auto;
     margin-bottom: 0px;
     margin-left: auto;
+    z-index: 3;
 }
 
 .post-submit {

@@ -81,7 +81,7 @@ class TestCreatePostForm(TestCase):
             'title': 'Test Title',
             'text': 'Test post text',
             'schoolclass_field': self.school_class.id,
-            'grade': 11,
+            'grade_input': 11,
             'subject_input': 'history',
         }
         Form = CreatePostForm(data)

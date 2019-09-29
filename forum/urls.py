@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.urls import path, re_path
 
-from forum.views import HomeView, ListPosts, PostDetails, QuerySchoolClass, CreatePostView
+from forum.views import HomeView, ListPosts, PostDetails, QuerySchoolClass, CreatePostView, PopularView, GeneralView
 from . import views
 
 # for passing context into class views
@@ -24,8 +24,10 @@ from forum.models import SubForum
 app_name = 'forumsapp'
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
-    path('forum/<str:forum_name>/', ListPosts.as_view(), name='forum'),
-    path('forum/<str:forum_name>/<int:post_id>/', PostDetails.as_view(), name='forum_post'),
+    path('<str:forum_name>/', ListPosts.as_view(), name='forum'),
+    path('popular', PopularView.as_view(), name="popular"),
+    path('general', GeneralView.as_view(), name="general"),
+    path('<str:forum_name>/<int:post_id>/', PostDetails.as_view(), name='forum_post'),
     path('post/<int:post_id>/', PostDetails.as_view(), name='post'),
     path('post/create/', CreatePostView.as_view(), name="post/create"),
     path('tos/', views.terms_of_service, name='tos'),

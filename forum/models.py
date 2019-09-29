@@ -29,15 +29,22 @@ class SubForum(models.Model):
 
 class SchoolClass(models.Model):
     name = models.CharField(max_length=50)
-    grade = models.IntegerField()
-    placement = models.CharField(max_length=15)
-    subject = models.CharField(max_length=15)
+    grade = models.IntegerField(blank=True, default=0)
+    placement = models.CharField(max_length=15, blank=True)
+    subject = models.CharField(max_length=15, blank=True)
 
     teacher = models.ForeignKey(CustomUser, on_delete=models.PROTECT, blank=True)
     students = models.ManyToManyField(CustomUser, related_name="class_students", blank=True)
 
     def __str__(self):
-        return f"{self.name} {self.grade} {self.placement}"
+        if self.placement.lower() == "ap":
+            return f"{self.placement} {self.name}"
+
+        return f"{self.name} {self.placement}"
+
+
+
+
 
 
 class Post(models.Model):

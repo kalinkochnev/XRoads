@@ -1,9 +1,11 @@
+from django.db.models import Count
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 from forum.models import SubForum, Post, Comment, SchoolClass
 from accounts.models import CustomUser
+from datetime import datetime, timedelta
 
 
 class SchoolClassTests(TestCase):
@@ -11,7 +13,8 @@ class SchoolClassTests(TestCase):
         self.teacher = CustomUser.objects.signup(email="teacher@email.com", alias="bestteacher", password="password")
         self.student1 = CustomUser.objects.signup(email="student@email.com", alias="student1", password="password")
         self.student2 = CustomUser.objects.signup(email="otherstudent@email.com", alias="student2", password="password")
-        self.SchoolClass = SchoolClass.objects.create(name='class 1', grade=11, placement="Honors",teacher=self.teacher, subject="math")
+        self.SchoolClass = SchoolClass.objects.create(name='class 1', grade=11, placement="Honors",
+                                                      teacher=self.teacher, subject="math")
         self.SchoolClass.students.add(self.student1, self.student2)
 
     def test_SchoolClass_creation(self):
@@ -27,7 +30,7 @@ class SchoolClassTests(TestCase):
         self.assertEqual(self.SchoolClass.students.count(), 2)
 
 
-class ForumModelTests(TestCase):
+class PostModelTests(TestCase):
     def setUp(self):
         User = get_user_model()
 
@@ -44,6 +47,15 @@ class ForumModelTests(TestCase):
             user=self.user,
             title='Test Title',
             text='Filler Test body',
+            created_at=datetime.today() - timedelta(days=9)
+        )
+
+        self.post2 = Post.objects.create(
+            school_class=self.post_class,
+            user=self.user,
+            title='Test Title',
+            text='Filler Test body',
+            created_at=datetime.today()
         )
 
         self.comment = Comment.objects.create(user=self.user, post=self.post, text='test body')

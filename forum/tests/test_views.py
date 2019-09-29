@@ -256,36 +256,36 @@ class TestCreatePostView(TestCase):
         self.school_class = SchoolClass.objects.create(name="class 1", grade=11, placement="AP", teacher=self.teacher, subject="math")
         self.user = CustomUser.objects.create_user(email='norm@user.com', alias='testuser', password='testpassword')
         self.client = Client()
-        self.create_post_url = reverse('forumsapp:home')
+        self.create_post_url = reverse('forumsapp:post/create')
 
     def test_GET(self):
         response = self.client.get(self.create_post_url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 405)
 
     def test_POST_create_post(self):
         data = {
-            'action': 'create-post',
             'title': 'Test Post',
             'text': 'Testing body',
-            'school_class_id': self.school_class.id,
+            'grade_input': 11,
+            'subject_input': 'math',
+            'schoolclass_field': self.school_class.id,
         }
 
         self.client.login(email="norm@user.com", password="testpassword")
         response = self.client.post(self.create_post_url, data=data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
 
     def test_POST_create_post_bad(self):
         data = {
-            'action': 'create-poop',
             'title': 'Test Post',
             'text': 'Testing body',
-            'school_class_id': '',
+            'schoolclass_field': '',
         }
 
         self.client.login(email="norm@user.com", password="testpassword")
         response = self.client.post(self.create_post_url, data=data, follow=True,
                                     HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 200)
 
 
 class TestTOSView(TestCase):

@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
+from django.db.models import Count
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
@@ -15,6 +16,7 @@ from django.views.generic.edit import FormMixin, BaseFormView
 
 from forum.forms import CreatePostForm, VotePostForm, GetSchoolTopics
 from forum.models import SubForum, Post, Comment, SchoolClass
+from datetime import datetime, timedelta
 
 
 def xroads_home(request):
@@ -129,33 +131,6 @@ class FormRouter:
         return None
 
 
-"""class AjaxResponseMixin(object):
-
-    Mixin to add AJAX support to a form.
-    Must be used with an object-based FormView (e.g. CreateView)
-
-
-    def form_invalid(self, form):
-        response = super(AjaxResponseMixin, self).form_invalid(form)
-        if self.request.is_ajax():
-            return JsonResponse(form.errors, status=400)
-        else:
-            return response
-
-    def form_valid(self, form):
-        # We make sure to call the parent's form_valid() method because
-        # it might do some processing (in the case of CreateView, it will
-        # call form.save() for example).
-        response = super(AjaxResponseMixin, self).form_valid(form)
-        if self.request.is_ajax():
-            data = {
-                'message': 'Successfully received',
-            }
-            return JsonResponse(data)
-        else:
-            return response"""
-
-
 class QuerySchoolClass(View):
     data = None
 
@@ -187,8 +162,8 @@ class QuerySchoolClass(View):
         return JsonResponse(output, safe=False)
 
 
-# TODO create form that
 class CreatePostView(View):
+    http_method_names = ['post']
     post_created = False
 
     def post(self, request):
@@ -223,22 +198,20 @@ class CreatePostView(View):
 # TODO add login required to cbv
 class HomeView(ListView):
     template_name = "forum/forum_home.html"
-    queryset = Post.objects.all()
+    queryset = Post.objects.order_by('-created_at')
     context_object_name = 'post_list'
-    handler = {
-        'create-post': CreatePostForm
-    }
 
-    def complete_action(self, *args, **kwargs):
-        Post.objects.create(
-            post_school_class=SchoolClass.objects.get(id=kwargs.pop('school_class_id')),
-            title=kwargs.pop('title'),
-            text=kwargs.pop('text'),
-            user=self.request.user,
-        )
 
-    def post(self, request, *args, **kwargs):
-        self.ajax_handler(request=self.request, *args, **kwargs)
+class PopularView(ListView):
+    template_name = "forum/forum_home.html"
+    one_week = datetime.today() - timedelta(days=7)
+    queryset = Post.objects.filter(created_at__gt=one_week).annotate(up_count=Count('upvotes')).order_by('-up_count')
+    context_object_name = 'post_list'
+
+
+class GeneralView(ListView):
+    template_name = "forum/forum_home.html"
+    queryset = Post.objects.filter(school_class__subject="general")
 
 
 class ListPosts(ListView):
@@ -294,52 +267,6 @@ class PostDetails(DetailView):
         context['comments_list'] = Comment.objects.filter(post=postid)
         return context
 
-
-"""
-def show_post(request):
-    if request.method == 'GET':
-        id = request.GET.get('id')
-        post = Post.objects.all().get(id=id)
-        comments = Comment.objects.all().filter(post=id)
-        return render(request, 'forum/post.html', {'post': post, 'comments': comments})
-    elif request.method == 'POST':
-        for key in request.POST:
-            print(key)
-            value = request.POST[key]
-            print(value)
-        if 'message' in request.POST:
-            message = request.POST.get('message')
-            post = request.POST.get('post')
-            new_comment = Comment(
-                post=Post.objects.get(id=post),
-                user=request.user,
-                body=message,
-                up_votes=0,
-                down_votes=0
-            )
-            if message != "":
-                new_comment.save()
-                return redirect('/post/?id=' + post)
-            else:
-                messages.warning(request, "The Comment cannot be Blank! Please try again.")
-                return redirect('/post/?id=' + post)
-        elif 'uv-comment' in request.POST:
-            commentid = request.POST.get('uv-comment')
-            comment = Comment.objects.filter(id=commentid)
-            uv = comment.get(id=commentid).up_votes
-            Comment.objects.filter(id=commentid).update(up_votes=(uv + 1))
-            post = request.POST.get('post')
-            return redirect('/post/?id=' + post)
-        elif 'dv-comment' in request.POST:
-            commentid = request.POST.get('dv-comment')
-            comment = Comment.objects.filter(id=commentid)
-            dv = comment.get(id=commentid).down_votes
-            Comment.objects.filter(id=commentid).update(down_votes=(dv + 1))
-            post = request.POST.get('post')
-            return redirect('/post/?id=' + post)
-    else:
-        return redirect('home')
-"""
 
 """
 class CreatePostView(AjaxResponseMixin, FormView):
