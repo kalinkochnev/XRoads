@@ -58,7 +58,7 @@ class CreatePostForm(forms.ModelForm):
 
     schoolclass_field = forms.IntegerField()
     subject_input = forms.CharField(max_length=20)
-    grade = forms.IntegerField()
+    grade_input = forms.IntegerField()
 
 
     def clean_grade(self):

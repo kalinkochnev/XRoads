@@ -11,14 +11,14 @@ class SchoolClassTests(TestCase):
         self.teacher = CustomUser.objects.signup(email="teacher@email.com", alias="bestteacher", password="password")
         self.student1 = CustomUser.objects.signup(email="student@email.com", alias="student1", password="password")
         self.student2 = CustomUser.objects.signup(email="otherstudent@email.com", alias="student2", password="password")
-        self.SchoolClass = SchoolClass.objects.create(name='class 1', grade=11, placement="Honors",teacher=self.teacher)
+        self.SchoolClass = SchoolClass.objects.create(name='class 1', grade=11, placement="Honors",teacher=self.teacher, subject="math")
         self.SchoolClass.students.add(self.student1, self.student2)
 
     def test_SchoolClass_creation(self):
         self.assertEqual(self.SchoolClass.name, 'class 1')
         self.assertEqual(self.SchoolClass.grade, 11)
         self.assertEqual(self.SchoolClass.placement, "Honors")
-        self.assertEqual(str(self.SchoolClass), "class 1 Honors")
+        self.assertEqual(str(self.SchoolClass), "class 1 11 Honors")
 
     def test_SchoolClass_teacher(self):
         self.assertEqual(SchoolClass.objects.get(teacher=self.teacher), self.SchoolClass)
@@ -36,7 +36,8 @@ class ForumModelTests(TestCase):
             name="Test Class",
             grade=11,
             placement="Honors",
-            teacher=self.user
+            teacher=self.user,
+            subject="music",
         )
         self.post = Post.objects.create(
             school_class=self.post_class,
@@ -47,8 +48,12 @@ class ForumModelTests(TestCase):
 
         self.comment = Comment.objects.create(user=self.user, post=self.post, text='test body')
 
-    def test_SubForum_creation(self):
+    def test_SchoolClass_creation(self):
         self.assertEqual(self.post_class.name, 'Test Class')
+        self.assertEqual(self.post_class.grade, 11)
+        self.assertEqual(self.post_class.placement, "Honors")
+        self.assertEqual(self.post_class.teacher, self.user)
+        self.assertEqual(self.post_class.subject, "music")
 
     def test_post_creation(self):
         self.assertEqual(self.post.school_class, self.post_class)

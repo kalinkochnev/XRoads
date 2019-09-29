@@ -29,7 +29,8 @@
     {% endfor %}
 
     <div class="create-post-block w-form">
-        <form action="{% url 'forumsapp:post/create' %}" id="email-form" name="email-form" data-name="Email Form" class="post-form">
+        <form action="post/create/" id="email-form" name="email-form" data-name="Post Form" class="post-form" method="POST">
+            {% csrf_token %}
             <div class="post-form-top">
                 <input type="text" class="post-title-field w-node-9c5609533870-c181d164 w-input"
                        autofocus="true" maxlength="256" name="title" data-name="title"
@@ -40,10 +41,10 @@
             </div>
             <div style="display:none" class="post-form-middle">
                 <input type="number" class="post-grade-field w-node-2dd53cb481db-c181d164 w-input" maxlength="256"
-                       name="grade-input"
+                       name="grade_input"
                        data-name="grade-input" placeholder="Grade"
                        id="grade-input" required="">
-                <select id="field" name="subject-input"
+                <select id="field" name="subject_input"
                         class="post-placement-field w-node-ace839d7e0cb-c181d164 w-select">
                     <option value="" disabled selected>Subject</option>
                     <option value="art">Art</option>
@@ -59,7 +60,7 @@
                     <option value="" disabled selected>-- Topics/Classes --</option>
                     <option value="general">General</option>
                     {% for class in class_list %}
-                        <option value="{{ class_name }}">{{ class_name }}</option>
+                        <option value="{{ class.id }}">{{ class_name }}</option>
                     {% endfor %}
                 </select>
             </div>

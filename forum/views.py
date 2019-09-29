@@ -172,30 +172,39 @@ class QuerySchoolClass(View):
         return True
 
     def validate_placement(self):
-        if self.data.get('placement') not in ['Regents', 'Honors', 'AP', 'None']:
+        if self.data.get('subject') not in ['art', 'english', 'language', 'history', 'math', 'music', 'science']:
             return False
         return True
 
     def schoolclass_json_response(self):
         grade = self.data.get('grade')
-        placement = self.data.get('placement')
-        school_class_list = SchoolClass.objects.filter(grade=grade).filter(placement=placement)
-        output = serializers.serialize('python', school_class_list, fields=('name'))
+        subject = self.data.get('subject')
+        school_class_list = SchoolClass.objects.filter(grade=grade).filter(subject=subject)
+        output = serializers.serialize('python', school_class_list, fields=('name, placement'))
         for school_class in output:
             school_class.pop('model')
 
         return JsonResponse(output, safe=False)
 
 
+# TODO create form that
 class CreatePostView(View):
-    http_method_names = ['post']
+    post_created = False
 
-    def post(self):
+    def post(self, request):
         form = CreatePostForm(self.request.POST)
 
         if form.is_valid():
             cd = form.cleaned_data
             self.create_post(data=cd)
+
+        if self.post_created:
+            messages.success(request, "Successfully posted!")
+        else:
+            messages.error(request, "There was an error while creating your post!")
+
+        return redirect('forumsapp:home')
+        # TODO add redirect to post page
 
     def create_post(self, data):
         title = data.get('title')
@@ -203,18 +212,15 @@ class CreatePostView(View):
         school_class = data.get('schoolclass_field')
 
         Post.objects.create(
-            school_class=school_class,
+            school_class_id=school_class,
             user=self.request.user,
             title=title,
             text=text,
         )
+        self.post_created = True
 
 
-
-
-
-
-# B4COMMIT add login required to cbv
+# TODO add login required to cbv
 class HomeView(ListView):
     template_name = "forum/forum_home.html"
     queryset = Post.objects.all()

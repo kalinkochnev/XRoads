@@ -1,21 +1,21 @@
 $(document).ready(function () {
 
     var curr_grade = "";
-    var curr_placement = "";
-    var title_select = $('[name=grade-input]');
-    var placement_select = $('[name=placement]');
+    var curr_subject = "";
+    var title_select = $('[name=grade_input]');
+    var subject_select = $('[name=subject_input]');
     var json_data;
 
     title_select.change(function () {
         curr_grade = $(this).val();
-        if (curr_placement !== "") {
+        if (curr_subject !== "") {
             query_classes()
         }
 
     });
 
-    placement_select.change(function () {
-        curr_placement = $("option:selected", this).text();
+    subject_select.change(function () {
+        curr_subject = $("option:selected", this).val();
         if (curr_grade !== "") {
             query_classes()
         }
@@ -24,10 +24,11 @@ $(document).ready(function () {
     function query_classes() {
         var get_data = {
             grade: curr_grade,
-            placement: curr_placement,
+            subject: curr_subject,
         };
 
         $.get(class_query_url, get_data, function (data) {
+            console.log(data);
             json_data = data;
             update_dropdown()
         });
@@ -49,11 +50,13 @@ $(document).ready(function () {
 
         for (var i = 0; i < length; i++) {
             var class_pk = json_data[i]["pk"];
-            var class_name = json_data[i]["fields"]["class_name"];
+            var name = json_data[i]["fields"]["name"];
+            var placement = json_data[i]["fields"]["placement"];
             class_select.append(
-                $('<option></option>').val(class_pk).html(class_name),
+                $('<option></option>').val(class_pk).html(name + " " + placement),
             )
         }
 
     }
+
 });

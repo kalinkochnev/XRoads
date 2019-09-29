@@ -128,15 +128,15 @@ class TestQuerySchoolClass(TestCase):
         self.teacher = CustomUser.objects.signup(email="teacher@email.com", alias="bestteacher", password="password")
         self.student1 = CustomUser.objects.signup(email="student@email.com", alias="student1", password="password")
         self.student2 = CustomUser.objects.signup(email="otherstudent@email.com", alias="student2", password="password")
-        self.class1 = SchoolClass.objects.create(name="class 1", grade=11, placement="Honors", teacher=self.teacher)
+        self.class1 = SchoolClass.objects.create(name="class 1", grade=11, placement="Honors", subject="art", teacher=self.teacher)
         self.class1.students.add(self.student1, self.student2)
-        self.class2 = SchoolClass.objects.create(name="class 2", grade=11, placement="Honors", teacher=self.teacher)
+        self.class2 = SchoolClass.objects.create(name="class 2", grade=11, placement="Honors", subject="art", teacher=self.teacher)
         self.class2.students.add(self.student1, self.student2)
 
     def test_GET(self):
         data = {
             'grade': 11,
-            'placement': 'Honors',
+            'subject': 'art',
         }
         response = self.client.get(self.url, data=data)
 
@@ -155,14 +155,15 @@ class TestHomeView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'forum/forum_home.html')
 
-#TODO make new tests for new layout
+
+# TODO make new tests for new layout
 class TestListPosts(TestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(email='test@user.com', alias='testuser',
                                                    password='test_password')
         self.teacher = CustomUser.objects.signup(email="teacher@email.com", alias="bestteacher", password="password")
         self.student1 = CustomUser.objects.signup(email="student@email.com", alias="student1", password="password")
-        self.class1 = SchoolClass.objects.create(name="class 1", grade=11, placement="Honors", teacher=self.teacher)
+        self.class1 = SchoolClass.objects.create(name="class 1", grade=11, placement="Honors", teacher=self.teacher, subject="history")
         self.class1.students.add(self.student1)
 
         self.post = Post.objects.create(
@@ -229,7 +230,7 @@ class TestPostDetail(TestCase):
                                                    password='test_password')
         self.teacher = CustomUser.objects.signup(email="teacher@email.com", alias="bestteacher", password="password")
         self.student1 = CustomUser.objects.signup(email="student@email.com", alias="student1", password="password")
-        self.class1 = SchoolClass.objects.create(name="class 1", grade=11, placement="Honors", teacher=self.teacher)
+        self.class1 = SchoolClass.objects.create(name="class 1", grade=11, placement="Honors", teacher=self.teacher, subject="language")
         self.class1.students.add(self.student1)
         self.post = Post.objects.create(
             school_class=self.class1,
@@ -252,7 +253,7 @@ class TestCreatePostView(TestCase):
     def setUp(self):
         self.teacher = CustomUser.objects.signup(email="teacher@email.com", alias="bestteacher",
                                                  password="password")
-        self.school_class = SchoolClass.objects.create(name="class 1", grade=11, placement="AP", teacher=self.teacher)
+        self.school_class = SchoolClass.objects.create(name="class 1", grade=11, placement="AP", teacher=self.teacher, subject="math")
         self.user = CustomUser.objects.create_user(email='norm@user.com', alias='testuser', password='testpassword')
         self.client = Client()
         self.create_post_url = reverse('forumsapp:home')
@@ -285,13 +286,6 @@ class TestCreatePostView(TestCase):
         response = self.client.post(self.create_post_url, data=data, follow=True,
                                     HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(response.status_code, 400)
-
-
-# TODO create tests for class query
-class TestSchoolClassQuery(TestCase):
-    def setUp(self):
-        class1 = SchoolClass.objects.create(class_name="class1", class_grade=11, class_placement='Honors')
-        class2 = SchoolClass.objects.create(class_name="class2", class_grade=10, class_placement='Honors')
 
 
 class TestTOSView(TestCase):
