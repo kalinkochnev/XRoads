@@ -128,12 +128,10 @@ class TestQuerySchoolClass(TestCase):
         self.teacher = CustomUser.objects.signup(email="teacher@email.com", alias="bestteacher", password="password")
         self.student1 = CustomUser.objects.signup(email="student@email.com", alias="student1", password="password")
         self.student2 = CustomUser.objects.signup(email="otherstudent@email.com", alias="student2", password="password")
-        self.class1 = SchoolClass.objects.create(class_name="class 1", class_grade=11, class_placement="Honors",
-                                                 class_teacher=self.teacher)
-        self.class1.class_students.add(self.student1, self.student2)
-        self.class2 = SchoolClass.objects.create(class_name="class 2", class_grade=11, class_placement="Honors",
-                                                 class_teacher=self.teacher)
-        self.class2.class_students.add(self.student1, self.student2)
+        self.class1 = SchoolClass.objects.create(name="class 1", grade=11, placement="Honors", teacher=self.teacher)
+        self.class1.students.add(self.student1, self.student2)
+        self.class2 = SchoolClass.objects.create(name="class 2", grade=11, placement="Honors", teacher=self.teacher)
+        self.class2.students.add(self.student1, self.student2)
 
     def test_GET(self):
         data = {
@@ -143,7 +141,7 @@ class TestQuerySchoolClass(TestCase):
         response = self.client.get(self.url, data=data)
 
         print(response.content)
-        correct_response = b"""[{"pk": 1, "fields": {"class_name": "class 1"}}, {"pk": 2, "fields": {"class_name": "class 2"}}]"""
+        correct_response = b"""[{"pk": 1, "fields": {"name": "class 1"}}, {"pk": 2, "fields": {"name": "class 2"}}]"""
         self.assertEqual(response.content, correct_response)
 
 
@@ -155,20 +153,23 @@ class TestHomeView(TestCase):
     def test_GET(self):
         response = self.client.get(self.home_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'forum/home.html')
+        self.assertTemplateUsed(response, 'forum/forum_home.html')
 
-
+#TODO make new tests for new layout
 class TestListPosts(TestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(email='test@user.com', alias='testuser',
                                                    password='test_password')
-        self.subforum = SubForum.objects.create(name='Test Forum', description='testing description')
+        self.teacher = CustomUser.objects.signup(email="teacher@email.com", alias="bestteacher", password="password")
+        self.student1 = CustomUser.objects.signup(email="student@email.com", alias="student1", password="password")
+        self.class1 = SchoolClass.objects.create(name="class 1", grade=11, placement="Honors", teacher=self.teacher)
+        self.class1.students.add(self.student1)
+
         self.post = Post.objects.create(
-            sub_forum=self.subforum,
+            school_class=self.class1,
             user=self.user,
             title='Test Title',
             text='Filler Test body',
-            attached_file=None,
         )
         self.client = Client()
         self.forum_url = reverse('forumsapp:forum', kwargs={'forum_name': self.subforum.url_name})
@@ -226,17 +227,19 @@ class TestPostDetail(TestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(email='test@user.com', alias='testuser',
                                                    password='test_password')
-        self.subforum = SubForum.objects.create(name='Test Forum', description='testing description')
+        self.teacher = CustomUser.objects.signup(email="teacher@email.com", alias="bestteacher", password="password")
+        self.student1 = CustomUser.objects.signup(email="student@email.com", alias="student1", password="password")
+        self.class1 = SchoolClass.objects.create(name="class 1", grade=11, placement="Honors", teacher=self.teacher)
+        self.class1.students.add(self.student1)
         self.post = Post.objects.create(
-            sub_forum=self.subforum,
+            school_class=self.class1,
             user=self.user,
             title='Test Title',
             text='Filler Test body',
-            file=None,
         )
         self.client = Client()
         self.post_detail_url = reverse('forumsapp:forum_post',
-                                       kwargs={'forum_name': self.subforum.url_name, 'post_id': self.post.id, })
+                                       kwargs={'forum_name': self.class1.url_name, 'post_id': self.post.id, })
         self.factory = RequestFactory()
 
     def test_GET(self):
@@ -249,8 +252,7 @@ class TestCreatePostView(TestCase):
     def setUp(self):
         self.teacher = CustomUser.objects.signup(email="teacher@email.com", alias="bestteacher",
                                                  password="password")
-        self.school_class = SchoolClass.objects.create(class_name="class 1", class_grade=11, class_placement="AP",
-                                                       class_teacher=self.teacher)
+        self.school_class = SchoolClass.objects.create(name="class 1", grade=11, placement="AP", teacher=self.teacher)
         self.user = CustomUser.objects.create_user(email='norm@user.com', alias='testuser', password='testpassword')
         self.client = Client()
         self.create_post_url = reverse('forumsapp:home')
@@ -294,7 +296,6 @@ class TestSchoolClassQuery(TestCase):
 
 class TestTOSView(TestCase):
     def setUp(self):
-        self.subforum = SubForum.objects.create(name='Test Forum', description='testing description')
         self.user = CustomUser.objects.create_user(email='norm@user.com', alias='testuser', password='testpassword')
         self.client = Client()
         self.tos_url = reverse('forumsapp:tos')
@@ -307,7 +308,6 @@ class TestTOSView(TestCase):
 
 class TestPrivacyView(TestCase):
     def setUp(self):
-        self.subforum = SubForum.objects.create(name='Test Forum', description='testing description')
         self.user = CustomUser.objects.create_user(email='norm@user.com', alias='testuser', password='testpassword')
         self.client = Client()
         self.pp_url = reverse('forumsapp:pp')

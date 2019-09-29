@@ -179,8 +179,8 @@ class QuerySchoolClass(View):
     def schoolclass_json_response(self):
         grade = self.data.get('grade')
         placement = self.data.get('placement')
-        school_class_list = SchoolClass.objects.filter(class_grade=grade).filter(class_placement=placement)
-        output = serializers.serialize('python', school_class_list, fields=('class_name'))
+        school_class_list = SchoolClass.objects.filter(grade=grade).filter(placement=placement)
+        output = serializers.serialize('python', school_class_list, fields=('name'))
         for school_class in output:
             school_class.pop('model')
 

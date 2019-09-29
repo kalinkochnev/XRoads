@@ -25,13 +25,12 @@ class TestVotingForm(TestCase):
 
     def setUp(self):
         self.user = CustomUser.objects.create_user(email='test@user.com', alias='testuser', password='test_password')
-        self.subforum = SubForum.objects.create(name='Test Forum', description='testing description')
+        self.school_class = SchoolClass.objects.create(name="test_class", grade=11, placement="Honors", teacher=self.user)
         self.post = Post.objects.create(
-            sub_forum=self.subforum,
+            school_class=self.school_class,
             user=self.user,
             title='Test Title',
             text='Filler Test body',
-            file=None,
         )
 
     def test_action_valid_clean(self):
@@ -74,8 +73,7 @@ class TestCreatePostForm(TestCase):
     def setUp(self):
         # TODO make signup for teachers
         self.teacher = CustomUser.objects.signup(email="teacher@email.com", alias="bestteacher", password="password")
-        self.school_class = SchoolClass.objects.create(class_name="class 1", class_grade=11, class_placement="AP",
-                                                       class_teacher=self.teacher)
+        self.school_class = SchoolClass.objects.create(name="class 1", grade=11, placement="AP",  teacher=self.teacher)
         self.user = CustomUser.objects.create_user(email='norm@user.com', alias='testuser', password='testpassword')
 
     def test_valid_fields(self):
