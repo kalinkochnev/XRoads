@@ -43,10 +43,6 @@ class SchoolClass(models.Model):
         return f"{self.name} {self.placement}"
 
 
-
-
-
-
 class Post(models.Model):
     school_class = models.ForeignKey(SchoolClass, on_delete=models.SET_NULL, null=True, related_name="post_schoolclass")
     user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)

@@ -55,6 +55,7 @@
                 <select id="field" name="subject_input"
                         class="post-placement-field w-node-ace839d7e0cb-c181d164 w-select">
                     <option value="" disabled selected>Subject</option>
+                    <option value="general">General</option>
                     <option value="art">Art</option>
                     <option value="english">English</option>
                     <option value="language">Foreign Language</option>
@@ -66,10 +67,6 @@
                 <select id="subject-field" name="schoolclass_field" data-name="subject-field" required=""
                         class="post-subject-field w-node-63ef9b7e4416-c181d164 w-select">
                     <option value="" disabled selected>-- Topics/Classes --</option>
-                    <option value="general">General</option>
-                    {% for class in class_list %}
-                        <option value="{{ class.id }}">{{ class_name }}</option>
-                    {% endfor %}
                 </select>
             </div>
             <div style="display:none" class="comment-form-bottom">

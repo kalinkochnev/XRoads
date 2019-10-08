@@ -60,10 +60,9 @@ class CreatePostForm(forms.ModelForm):
     subject_input = forms.CharField(max_length=20)
     grade_input = forms.IntegerField()
 
-
     def clean_grade(self):
         grade = self.cleaned_data['grade']
-        if grade not in [9, 10, 11, 12]:
+        if grade not in [0, 9, 10, 11, 12]:
             raise forms.ValidationError('Not a valid grade')
         else:
             return grade

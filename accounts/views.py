@@ -37,7 +37,7 @@ class LoginClass(FormView):
 
 
 class SignupClass(FormView):
-    template_name = 'accounts/signup.html'
+    template_name = 'accounts/templates/accounts/signup.html'
     form_class = SignupForm
     success_url = reverse_lazy('forumsapp:home')
 

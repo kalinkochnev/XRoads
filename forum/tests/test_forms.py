@@ -75,6 +75,7 @@ class TestCreatePostForm(TestCase):
         self.teacher = CustomUser.objects.signup(email="teacher@email.com", alias="bestteacher", password="password")
         self.school_class = SchoolClass.objects.create(name="class 1", grade=11, placement="AP",  teacher=self.teacher, subject="science")
         self.user = CustomUser.objects.create_user(email='norm@user.com', alias='testuser', password='testpassword')
+        self.general = SchoolClass.objects.create(name="general", grade=0, teacher=self.teacher, subject="general")
 
     def test_valid_fields(self):
         data = {
@@ -88,13 +89,24 @@ class TestCreatePostForm(TestCase):
         self.assertTrue(Form.is_valid())
 
     # TODO validate the file field
-    @skip("The File field has no validator created yet")
-    def test_invalid_file(self):
+    def test_invalid_fields(self):
         data = {
-            'action': 'create-post',
             'title': 'Test Title',
             'text': 'Test post text',
-            'school_class_id': self.school_class.id,
+            'schoolclass_field': self.school_class.id,
+            'grade_input': -1,
+            'subject_input': 'history',
         }
         Form = CreatePostForm(data)
         self.assertFalse(Form.is_valid())
+
+    def test_general_post(self):
+        data = {
+            'title': 'Test Title',
+            'text': 'Test post text',
+            'schoolclass_field': self.general.id,
+            'grade_input': 0,
+            'subject_input': 'general',
+        }
+        Form = CreatePostForm(data)
+        self.assertTrue(Form.is_valid())

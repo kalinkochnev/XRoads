@@ -1,79 +1,26 @@
-{% extends 'layout_minbar.html' %}
-
+{% extends 'blank-layout.html' %}
+{% load static %}
 {% block content %}
-    <style>
-        .asteriskField {
-            display: none;
-        }
-
-        html,
-        body {
-            height: 100%;
-        }
-
-        #top-field {
-            border-top-left-radius: 0.25rem;
-            border-top-right-radius: 0.25rem;
-        }
-
-        #bottom-field {
-            border-bottom-left-radius: 0.25rem;
-            border-bottom-right-radius: 0.25rem;
-        }
-
-        body {
-            display: -ms-flexbox;
-            display: flex;
-            -ms-flex-align: center;
-            align-items: center;
-            padding-top: 40px;
-            padding-bottom: 40px;
-            background-color: #f5f5f5;
-        }
-
-        .form-signin {
-            width: 100%;
-            max-width: 330px;
-            padding: 15px;
-            margin: auto;
-        }
-
-        div {
-            margin-bottom: -1px;
-            border-radius: 0;
-
-        }
-
-        .form-signin .form-control {
-            position: relative;
-            box-sizing: border-box;
-            height: auto;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 0;
-        }
-
-    </style>
-    <body class="text-center">
-    <form class="form-signin" method="post">
-        {% csrf_token %}
-        <h1 class="h3 mb-3 font-weight-normal">Log In</h1>
-        <div class="control-group">
-            <div class="controls">
-                <input type="email" name="email" class="form-control" placeholder="Email address" id="top-field"
-                       required>
-            </div>
-            <div class="controls">
-                <input type="password" name="password" maxlength="128" class="form-control" placeholder="Password"
-                       id="bottom-field" required>
-            </div>
-        </div>
-
-        <input type="submit" name="Submit" value="Login" class="btn-lg btn-primary btn-block"
-               id="submit-id-submit" style="margin-top: 20px;"/>
-    </form>
-
+    <body class="body-2">
+    <div class="div-block-4">
+        <a id="w-node-a70958d43727-58d43726" href="{% url 'forumsapp:home' %}" class="link-block w-inline-block">
+            <h1 class="faded-website-heading">xroads</h1>
+        </a>
+    </div>
+    <div class="user-form w-form">
+        <form action="{% url 'login' %}" id="email-form" name="email-form" data-name="Email Form" method="POST">
+            {% csrf_token %}
+            <input type="text" class="top-field w-input" maxlength="256" name="email" data-name="form-email"
+                   placeholder="Email Address" id="form-email" required="">
+            <input type="password" class="bottom-field w-input" maxlength="256" name="password"
+                   data-name="form-password" placeholder="Password" id="form-password" required="">
+            <input type="submit" name="Submit" value="login" class="signup-btn w-button"/>
+        </form>
+        <script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.4.1.min.220afd743d.js" type="text/javascript"
+                integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <script src="{% static 'javascript/webflow.js' %}" type="text/javascript"></script>
+    </div>
+    <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script>
+    <![endif] -->
     </body>
-{% endblock %}
-
-
+{% endblock content %}

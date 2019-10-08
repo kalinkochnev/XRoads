@@ -45,7 +45,6 @@ $(document).ready(function () {
 
         class_select.empty().append(
             $('<option></option>').val("").html("-- Topics/Classes --").attr('disabled', 'disabled').attr('selected', 'selected'),
-            $('<option></option>').val("general").html("General"),
         );
 
         for (var i = 0; i < length; i++) {

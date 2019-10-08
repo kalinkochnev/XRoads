@@ -142,12 +142,13 @@ class QuerySchoolClass(View):
         return JsonResponse({'failure': 'Invalid query'})
 
     def validate_grade(self):
-        if self.data.get('grade') not in ['9', '10', '11', '12']:
+        if self.data.get('grade') not in ['0', '9', '10', '11', '12']:
             return False
         return True
 
     def validate_placement(self):
-        if self.data.get('subject') not in ['art', 'english', 'language', 'history', 'math', 'music', 'science']:
+        if self.data.get('subject') not in ['general', 'art', 'english', 'language', 'history', 'math', 'music',
+                                            'science']:
             return False
         return True
 
