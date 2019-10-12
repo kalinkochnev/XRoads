@@ -13,20 +13,24 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 
-from forum.views import HomeView, ListPosts, PostDetails, QuerySchoolClass, CreatePostView, PopularView, GeneralView
+from forum.views import HomeView, PostDetails, QuerySchoolClass, CreatePostView, PopularView, GeneralView, \
+    FeedbackView, PostSearchView
 from . import views
 
+from django.conf.urls import url
+
 # for passing context into class views
-from forum.models import SubForum
 
 app_name = 'forumsapp'
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
-    path('<str:forum_name>/', ListPosts.as_view(), name='forum'),
+    # path('<str:forum_name>/', ListPosts.as_view(), name='forum'),
     path('popular', PopularView.as_view(), name="popular"),
     path('general', GeneralView.as_view(), name="general"),
+    path('feedback', FeedbackView.as_view(), name="feedback"),
+    path('search/', PostSearchView(), name="post-search"),
     path('<str:forum_name>/<int:post_id>/', PostDetails.as_view(), name='forum_post'),
     path('post/<int:post_id>/', PostDetails.as_view(), name='post'),
     path('post/create/', CreatePostView.as_view(), name="post/create"),

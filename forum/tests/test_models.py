@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-from forum.models import SubForum, Post, Comment, SchoolClass
+from forum.models import Post, Comment, SchoolClass
 from accounts.models import CustomUser
 from datetime import datetime, timedelta
 
@@ -21,7 +21,7 @@ class SchoolClassTests(TestCase):
         self.assertEqual(self.SchoolClass.name, 'class 1')
         self.assertEqual(self.SchoolClass.grade, 11)
         self.assertEqual(self.SchoolClass.placement, "Honors")
-        self.assertEqual(str(self.SchoolClass), "class 1 11 Honors")
+        self.assertEqual(str(self.SchoolClass), "class 1 Honors")
 
     def test_SchoolClass_teacher(self):
         self.assertEqual(SchoolClass.objects.get(teacher=self.teacher), self.SchoolClass)

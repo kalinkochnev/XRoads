@@ -144,6 +144,17 @@ class TestQuerySchoolClass(TestCase):
         correct_response = b"""[{"pk": 1, "fields": {"name": "class 1"}}, {"pk": 2, "fields": {"name": "class 2"}}]"""
         self.assertEqual(response.content, correct_response)
 
+    def test_query_general(self):
+        data = {
+            'grade': 0,
+            'subject': 'art',
+        }
+        response = self.client.get(self.url, data=data)
+
+        print(response.content)
+        correct_response = b"""[{"pk": 1, "fields": {"name": "class 1"}}, {"pk": 2, "fields": {"name": "class 2"}}]"""
+        self.assertEqual(response.content, correct_response)
+
 
 class TestHomeView(TestCase):
     def setUp(self):

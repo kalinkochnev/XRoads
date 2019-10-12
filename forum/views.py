@@ -13,10 +13,15 @@ from django.core.serializers.python import Serializer
 
 from django.views.generic.base import View
 from django.views.generic.edit import FormMixin, BaseFormView
+from haystack.views import SearchView
 
 from forum.forms import CreatePostForm, VotePostForm, GetSchoolTopics
 from forum.models import SubForum, Post, Comment, SchoolClass
 from datetime import datetime, timedelta
+
+
+def crap(request):
+    return render(request, 'Coding/Github/XRoads/XRoads/templates/search/search.html')
 
 
 def xroads_home(request):
@@ -147,7 +152,8 @@ class QuerySchoolClass(View):
         return True
 
     def validate_placement(self):
-        if self.data.get('subject') not in ['general', 'art', 'english', 'language', 'history', 'math', 'music',
+        if self.data.get('subject') not in ['feedback', 'general', 'art', 'english', 'language', 'history', 'math',
+                                            'music',
                                             'science']:
             return False
         return True
@@ -215,7 +221,19 @@ class GeneralView(ListView):
     queryset = Post.objects.filter(school_class__subject="general")
 
 
-class ListPosts(ListView):
+class FeedbackView(ListView):
+    template_name = "forum/forum_home.html"
+    queryset = Post.objects.filter(school_class__subject="feedback")
+
+
+class PostSearchView(SearchView):
+    template = "search-layout.html"
+
+    def __init(self):
+        super().__init__(self, load_all=True, form_class=None, searchqueryset=None, results_per_page=None)
+
+
+"""class ListPosts(ListView):
     template_name = 'forum/forum.html'
     model = Post
     handler_dict = {
@@ -230,7 +248,7 @@ class ListPosts(ListView):
 
     def get_queryset(self):
         forum_name = self.kwargs['forum_name']
-        query = Post.objects.filter(sub_forum__url_name=forum_name)
+        query = Post.objects.filter(school_class__url_name=forum_name)
         return query
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -253,7 +271,7 @@ class ListPosts(ListView):
             post.clearvote(user)
 
     def post(self, request, *args, **kwargs):
-        return self.ajax_handler(request=request, user=request.user, *args, **kwargs)
+        return self.ajax_handler(request=request, user=request.user, *args, **kwargs)"""
 
 
 class PostDetails(DetailView):

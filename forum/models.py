@@ -47,7 +47,7 @@ class Post(models.Model):
     school_class = models.ForeignKey(SchoolClass, on_delete=models.SET_NULL, null=True, related_name="post_schoolclass")
     user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=150)
-    text = models.TextField(max_length=20000)
+    text = models.TextField(max_length=10000)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

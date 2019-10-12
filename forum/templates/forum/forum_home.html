@@ -4,7 +4,7 @@
 {% block content %}
     <body class="body">
     <div class="feedback-div">
-        <a href="#" class="feedback-link w-inline-block">
+        <a href="{% url 'forumsapp:feedback' %}" class="feedback-link w-inline-block">
             <h5 class="feedback-link-text">Want to improve the site? Send us feedback!</h5>
         </a>
     </div>
@@ -25,6 +25,10 @@
             <div class="post-right-buttons"><a href="#" class="bookmark-class w-button"></a>
                 <a href="#" class="options-class w-button"></a>
             </div>
+        </div>
+    {% empty %}
+        <div class="feedback-link w-inline-block">
+            <h5 class="feedback-link-text">No results were found :(</h5>
         </div>
     {% endfor %}
 
@@ -56,6 +60,7 @@
                         class="post-placement-field w-node-ace839d7e0cb-c181d164 w-select">
                     <option value="" disabled selected>Subject</option>
                     <option value="general">General</option>
+                    <option value="feedback">Feedback</option>
                     <option value="art">Art</option>
                     <option value="english">English</option>
                     <option value="language">Foreign Language</option>
@@ -74,12 +79,6 @@
                           data-name="post-body" required="" class="comment-field w-input"></textarea>
             </div>
         </form>
-        <div class="w-form-done">
-            <div>Thank you! Your submission has been received!</div>
-        </div>
-        <div class="w-form-fail">
-            <div>Oops! Something went wrong while submitting the form.</div>
-        </div>
     </div>
 
 

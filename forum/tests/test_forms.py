@@ -25,7 +25,8 @@ class TestVotingForm(TestCase):
 
     def setUp(self):
         self.user = CustomUser.objects.create_user(email='test@user.com', alias='testuser', password='test_password')
-        self.school_class = SchoolClass.objects.create(name="test_class", grade=11, placement="Honors", teacher=self.user)
+        self.school_class = SchoolClass.objects.create(name="test_class", grade=11, placement="Honors",
+                                                       teacher=self.user)
         self.post = Post.objects.create(
             school_class=self.school_class,
             user=self.user,
@@ -73,9 +74,11 @@ class TestCreatePostForm(TestCase):
     def setUp(self):
         # TODO make signup for teachers
         self.teacher = CustomUser.objects.signup(email="teacher@email.com", alias="bestteacher", password="password")
-        self.school_class = SchoolClass.objects.create(name="class 1", grade=11, placement="AP",  teacher=self.teacher, subject="science")
+        self.school_class = SchoolClass.objects.create(name="class 1", grade=11, placement="AP", teacher=self.teacher,
+                                                       subject="science")
         self.user = CustomUser.objects.create_user(email='norm@user.com', alias='testuser', password='testpassword')
-        self.general = SchoolClass.objects.create(name="general", grade=0, teacher=self.teacher, subject="general")
+        self.general = SchoolClass.objects.create(name="General", grade=0, teacher=self.teacher, subject="general")
+        self.feedback = SchoolClass.objects.create(name="Feedback", grade=0, teacher=self.teacher, subject="feedback")
 
     def test_valid_fields(self):
         data = {
@@ -93,7 +96,7 @@ class TestCreatePostForm(TestCase):
         data = {
             'title': 'Test Title',
             'text': 'Test post text',
-            'schoolclass_field': self.school_class.id,
+            'schoolclass_field': self.school_class,
             'grade_input': -1,
             'subject_input': 'history',
         }
@@ -107,6 +110,17 @@ class TestCreatePostForm(TestCase):
             'schoolclass_field': self.general.id,
             'grade_input': 0,
             'subject_input': 'general',
+        }
+        Form = CreatePostForm(data)
+        self.assertTrue(Form.is_valid())
+
+    def test_feedback_post(self):
+        data = {
+            'title': 'Test Title',
+            'text': 'Test post text',
+            'schoolclass_field': self.feedback.id,
+            'grade_input': 0,
+            'subject_input': 'feedback',
         }
         Form = CreatePostForm(data)
         self.assertTrue(Form.is_valid())

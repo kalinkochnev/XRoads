@@ -40,10 +40,19 @@ INSTALLED_APPS = [
     'forum.apps.ForumConfig',
     'accounts.apps.AccountsConfig',
 
-    'crispy_forms',
+    'haystack',
 ]
 
-# crispy templates pack
+# haystack
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
+        'URL': 'http://127.0.0.1:8983/solr/xroads_search',
+        'ADMIN_URL': 'http://127.0.0.1:8983/solr/admin/cores'
+        # ...or for multicore...
+        # 'URL': 'http://127.0.0.1:8983/solr/mysite',
+    },
+}
 
 # Planning on adding google authentication in the future
 AUTHENTICATION_BACKENDS = (

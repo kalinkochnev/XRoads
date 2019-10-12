@@ -38,8 +38,8 @@
         <h1 class="website-heading site-name">xroads</h1>
     </a>
     {% if request.user.is_authenticated %}
-        <div id="w-node-5d22c289b878-c289b874" class="navbar-profile"><a
-                data-w-id="5ce20ecb-8502-1aee-dc86-5d22c289b879" href="#" class="profile-button w-button"></a>
+        <div id="w-node-5d22c289b878-c289b874" class="navbar-profile">
+            <a data-w-id="5ce20ecb-8502-1aee-dc86-5d22c289b879" href="#" class="profile-button w-button"> </a>
             <div class="user-menu-div">
                 <div class="username-div">
                     <div class="username-div-align">
@@ -60,10 +60,15 @@
             <a href="{% url 'signup' %}" class="signup-button w-button">SIGN UP</a>
         </div>
     {% endif %}
-    <form action="/search" id="w-node-5d22c289b87a-c289b874" class="nav-search w-clearfix w-form">
-        <div class="nav-search-input"><input type="search" class="search-input w-input" maxlength="256" name="query"
-                                             placeholder="Search…" id="search" required=""></div>
-        <div class="nav-search-submit w-clearfix"><input type="submit" value=" " class="search-submit w-button"></div>
+    <form action="{% url 'forumsapp:post-search' %}" id="w-node-5d22c289b87a-c289b874"
+          class="nav-search w-clearfix w-form" method="get">
+        <div class="nav-search-input">
+            <input type="search" class="search-input w-input" maxlength="256" name="query" placeholder="Search…"
+                   id="search" required="">
+        </div>
+        <div class="nav-search-submit w-clearfix">
+            <input type="submit" value=" " class="search-submit w-button">
+        </div>
     </form>
 </nav>
 <div data-delay="0" class="mobile-link-dropdown w-dropdown">

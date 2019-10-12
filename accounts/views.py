@@ -7,6 +7,7 @@ from django.views.generic import FormView, TemplateView
 
 from accounts import AccountExceptions
 from accounts.models import CustomUser
+from forum.models import SchoolClass
 from .forms import SignupForm
 from .forms import LoginForm
 from django.contrib import messages
@@ -18,7 +19,6 @@ from django.shortcuts import redirect
 def view_logout(request):
     logout(request)
     return redirect('forumsapp:home')
-
 
 class LoginClass(FormView):
     template_name = 'accounts/login.html'
@@ -37,7 +37,7 @@ class LoginClass(FormView):
 
 
 class SignupClass(FormView):
-    template_name = 'accounts/templates/accounts/signup.html'
+    template_name = 'accounts/signup.html'
     form_class = SignupForm
     success_url = reverse_lazy('forumsapp:home')
 
@@ -54,6 +54,11 @@ class SignupClass(FormView):
 
 class AccountView(TemplateView):
     template_name = "accounts/account.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['class_list'] = SchoolClass.objects.all()
+        return context
 
 
 @login_required

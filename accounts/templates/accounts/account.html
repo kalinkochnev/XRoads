@@ -15,31 +15,27 @@
             a photo</a></div>
         <div class="add-class-div">
             <div class="add-class-section-1">
-                <form action="/search" class="class-search w-clearfix w-form"><input type="search"
-                                                                                     class="search-input class-search w-input"
-                                                                                     maxlength="256" name="query"
-                                                                                     placeholder="Search…" id="search"
-                                                                                     required=""><input type="submit"
-                                                                                                        value=" "
-                                                                                                        class="search-submit class-submit w-button">
+                <form action="/search" class="class-search w-clearfix w-form">
+                    <input type="search" class="search-input class-search w-input" maxlength="256" name="query"
+                           placeholder="Search…" id="search" required="">
+                    <input type="submit" value=" " class="search-submit class-submit w-button">
                 </form>
                 <h3 class="add-class-header">Add Classes</h3>
             </div>
             <div class="add-class-section-2">
-                <div class="class-name-div">
-                    <h4 class="class-name-header">Class name 1</h4><a href="#" class="remove-class w-button"><strong
-                        class="minus-symbol">-</strong></a></div>
-                <div class="class-name-div">
-                    <h4 class="class-name-header">Class name 2</h4><a href="#" class="remove-class w-button"><strong
-                        class="minus-symbol">-</strong></a></div>
-                <div class="class-name-div">
-                    <h4 class="class-name-header">Class name 3</h4><a href="#" class="remove-class w-button"><strong
-                        class="minus-symbol">-</strong></a></div>
+                {% for class in class_list %}
+                    <div class="class-name-div">
+                        <h4 class="class-name-header">{{ class.name }}</h4>
+                        <a href="#" class="remove-class w-button">
+                            <strong class="minus-symbol">-</strong>
+                        </a>
+                    </div>
+                {% endfor %}
             </div>
         </div>
-        <div class="button-div"><a href="#" class="cancel-btn w-button">Cancel</a><a href="#"
-                                                                                     class="update-profile-btn w-button">Update
-            Profile</a></div>
+        <div class="button-div"><a href="#" class="cancel-btn w-button">Cancel</a>
+            <a href="#" class="update-profile-btn w-button">Update Profile</a>
+        </div>
     </div>
     <script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.4.1.min.220afd743d.js" type="text/javascript"
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
