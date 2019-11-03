@@ -42,3 +42,9 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 ```
+
+#Starting solr
+```
+cd solr/
+./bin/solr start
+```
