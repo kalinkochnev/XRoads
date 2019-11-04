@@ -20,10 +20,6 @@ from forum.models import SubForum, Post, Comment, SchoolClass
 from datetime import datetime, timedelta
 
 
-def crap(request):
-    return render(request, 'Coding/Github/XRoads/XRoads/templates/search/search.html')
-
-
 def xroads_home(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect(reverse('forumsapp:home'))
@@ -153,8 +149,7 @@ class QuerySchoolClass(View):
 
     def validate_placement(self):
         if self.data.get('subject') not in ['feedback', 'general', 'art', 'english', 'language', 'history', 'math',
-                                            'music',
-                                            'science']:
+                                            'music', 'science']:
             return False
         return True
 

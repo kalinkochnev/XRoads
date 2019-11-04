@@ -15,14 +15,17 @@
                 </div>
                 <a href="#" class="post-link w-inline-block">
                     <h3 class="post-title">{{ result.title }}</h3>
-                    <p class="post-body">{{ result.text }}</p>
+                    <p class="post-body">{{ result.body }}</p>
                 </a>
                 <div class="post-right-buttons">
                     <a href="#" class="bookmark-class w-button"></a>
                     <a href="#" class="options-class w-button"></a>
                 </div>
             </div>
+        {% empty %}
+            <h5 class="feedback-link-text">No results were found :(</h5>
         {% endfor %}
+
     {% endif %}
 
     <script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.4.1.min.220afd743d.js" type="text/javascript"

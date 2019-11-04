@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
+from haystack.views import SearchView
 
 from accounts import AccountExceptions
 from accounts.models import CustomUser
@@ -19,6 +20,7 @@ from django.shortcuts import redirect
 def view_logout(request):
     logout(request)
     return redirect('forumsapp:home')
+
 
 class LoginClass(FormView):
     template_name = 'accounts/login.html'

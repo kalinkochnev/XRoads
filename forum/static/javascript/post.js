@@ -1,10 +1,14 @@
 $(document).ready(function () {
 
-    var curr_grade = "";
-    var curr_subject = "";
     var title_select = $('[name=grade_input]');
+    var curr_grade = $(title_select).val();
     var subject_select = $('[name=subject_input]');
+    var curr_subject = $("option:selected", subject_select).val();
     var json_data;
+
+    if (curr_grade != null && curr_subject != null) {
+        query_classes();
+    }
 
     title_select.change(function () {
         curr_grade = $(this).val();
