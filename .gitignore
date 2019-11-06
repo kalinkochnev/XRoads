@@ -1,2 +1,4 @@
+/venv/*
+/solr/*
 XRoads/solr/*
 XRoads/venv/*
