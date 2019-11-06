@@ -1,4 +1,13 @@
 /venv/*
 /solr/*
+accounts/tests/__pycache__/*
 XRoads/solr/*
 XRoads/venv/*
+.idea/
+.vscode/
+XRoads/__pycache__/
+__pycache__/
+accounts/__pycache__/
+accounts/migrations/__pycache__/
+forum/__pycache__/
+forum/migrations/__pycache__/
