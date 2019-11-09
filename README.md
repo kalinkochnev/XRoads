@@ -20,4 +20,4 @@ They're all located within the scripts folder. Heres a general overview of them:
 ##### Solr
 - **_management/rebuild-index.sh_** Is useful for when you want to update the schema (after a change to the search index)
  or rebuilding the search indexes
- -**_management/_** _start.sh, stop.sh, restart.sh_ These apply to the solr server. It is pretty self explanatory
+- **_management/_** _start.sh, stop.sh, restart.sh_ These apply to the solr server. It is pretty self explanatory
