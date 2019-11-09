@@ -42,6 +42,10 @@ class SchoolClass(models.Model):
 
         return f"{self.name} {self.placement}"
 
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        self.subject = self.subject.lower()
+        super(SchoolClass, self).save(force_insert, force_update, *args, **kwargs)
+
 
 class Post(models.Model):
     school_class = models.ForeignKey(SchoolClass, on_delete=models.SET_NULL, null=True, related_name="post_schoolclass")
