@@ -23,7 +23,7 @@
                         <input type="text" placeholder="Search..." class="class-search w-clearfix w-form"
                                id="classInput">
                         {% for class in class_list %}
-                            <a href="#">{{ class.name }}</a>
+                            <a href="#" class="class-item" data-id="{{ class.id }}">{{ class.name }}</a>
                         {% endfor %}
                     </div>
                 </div>
@@ -32,13 +32,13 @@
                            placeholder="Search…" id="search" required="">
                     <input type="submit" value=" " class="search-submit class-submit w-button">
                 </form>{% endcomment %}
-                <h3 class="add-class-header">Add Classes</h3>
+                <h3 class="add-class-header">My Classes</h3>
             </div>
             <div class="add-class-section-2">
-                {% for class in class_list %}
-                    <div class="class-name-div">
-                        <h4 class="class-name-header">{{ class.name }}</h4>
-                        <a href="#" class="remove-class w-button">
+                {% for class in student_classes %}
+                    <div class="class-name-div" data-id="{{ class.id }}">
+                        <h4 class="class-name-header" >{{ class.name }}</h4>
+                        <a href="#" id="remove-btn" class="remove-class w-button">
                             <strong class="minus-symbol">-</strong>
                         </a>
                     </div>

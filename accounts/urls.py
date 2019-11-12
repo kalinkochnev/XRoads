@@ -15,14 +15,15 @@ Including another URLconf
 """
 from django.urls import path
 
-from accounts.views import LoginClass, SignupClass, AccountView
+from accounts.views import LoginView, SignupView, AccountView, ClassSettings
 from . import views
 
 urlpatterns = [
-    path('login/', LoginClass.as_view(), name='login'),
+    path('login/', LoginView.as_view(), name='login'),
     path('logout/', views.view_logout, name='logout'),
-    path('signup/', SignupClass.as_view(), name="signup"),
+    path('signup/', SignupView.as_view(), name="signup"),
     path('settings/', AccountView.as_view(), name='account'),
+    path('settings/change-classes', ClassSettings.as_view()),
     path('chgpass/', views.chgpass, name='chgpass'),
     path('chgusername/', views.chgusername, name='chgusername'),
     path('chgtag/', views.chgtag, name='chgtag'),

@@ -9,6 +9,9 @@ from django import forms
 
 
 # These next two are for the admin page
+from forum.models import SchoolClass
+
+
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
         model = get_user_model()
@@ -112,3 +115,27 @@ class LoginForm(forms.Form):
         User = get_user_model()
         cd = self.cleaned_data
         return User.objects.login(cd['email'], cd['password'])
+
+
+class ClassForm(forms.Form):
+    class_id = forms.IntegerField()
+    action = forms.CharField()
+
+    def clean_action(self):
+        cd = self.cleaned_data
+        action = cd.get('action')
+
+        if action not in ['add', 'remove']:
+            raise forms.ValidationError('The action was not specified')
+        else:
+            return action
+
+    def clean_class_id(self):
+        cd = self.cleaned_data
+        id = cd.get('class_id')
+
+        try:
+            SchoolClass.objects.get(id=id)
+            return id
+        except SchoolClass.DoesNotExist:
+            raise forms.ValidationError('The class does not exist')

@@ -164,6 +164,12 @@ class QuerySchoolClass(View):
         return JsonResponse(output, safe=False)
 
 
+class MyClasses(TemplateView):
+    template_name = "default-layout.html"
+
+    # TODO add my classes view
+
+
 class CreatePostView(View):
     http_method_names = ['post']
     post_created = False

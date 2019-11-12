@@ -1,4 +1,6 @@
 {{ object.title }}
 {{ object.user.alias }}
 {{ object.school_class.name }}
+{{ object.school_class.subject }}
+{{ object.text }}
 

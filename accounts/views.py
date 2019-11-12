@@ -1,19 +1,21 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponseRedirect, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import FormView, TemplateView
 from haystack.views import SearchView
 
 from accounts import AccountExceptions
 from accounts.models import CustomUser
 from forum.models import SchoolClass
-from .forms import SignupForm
+from .forms import SignupForm, ClassForm
 from .forms import LoginForm
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
 from django.shortcuts import redirect
+from forum.views import FormRouter
 
 
 @login_required  # TODO: Add Redirect
@@ -22,7 +24,7 @@ def view_logout(request):
     return redirect('forumsapp:home')
 
 
-class LoginClass(FormView):
+class LoginView(FormView):
     template_name = 'accounts/login.html'
     form_class = LoginForm
     success_url = reverse_lazy('forumsapp:home')
@@ -38,7 +40,7 @@ class LoginClass(FormView):
         return super().form_valid(form)
 
 
-class SignupClass(FormView):
+class SignupView(FormView):
     template_name = 'accounts/signup.html'
     form_class = SignupForm
     success_url = reverse_lazy('forumsapp:home')
@@ -54,13 +56,55 @@ class SignupClass(FormView):
         return super().form_valid(form)
 
 
+class ClassSettings(View):
+    http_method_names = ['post']
+
+    def post(self, request):
+        form = ClassForm(self.request.POST)
+        user = self.request.user
+
+        if form.is_valid():
+            cd = form.cleaned_data
+            id = cd.get('class_id')
+            if cd.get("action") == "add":
+                self.add_class(id, user)
+                return JsonResponse({'success': 'the class was added'})
+            else:
+                self.remove_class(id, user)
+                return JsonResponse({'success': 'the class was removed'})
+
+        return JsonResponse({'failure': 'an error occurred'})
+
+    def add_class(self, id, user):
+        school_class = SchoolClass.objects.get(id=id)
+        school_class.students.add(user)
+
+    def remove_class(self, id, user):
+        school_class = SchoolClass.objects.get(id=id)
+        school_class.students.remove(user)
+
+
 class AccountView(TemplateView):
     template_name = "accounts/account.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['student_classes'] = SchoolClass.objects.filter(students=self.request.user)
         context['class_list'] = SchoolClass.objects.all()
+
         return context
+
+
+"""class AddClasses(View):
+    http_method_names = ['post']
+    class_added = False
+
+    def post(self, request):
+        form = AddClassForm(self.request.POST)
+
+        if form.is_valid():
+
+    def add_class(self, data):"""
 
 
 @login_required

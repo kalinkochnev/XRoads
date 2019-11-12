@@ -16,7 +16,7 @@ Including another URLconf
 from django.urls import path, re_path, include
 
 from forum.views import HomeView, PostDetails, QuerySchoolClass, CreatePostView, PopularView, GeneralView, \
-    FeedbackView, PostSearchView
+    FeedbackView, PostSearchView, MyClasses
 from . import views
 
 from django.conf.urls import url
@@ -30,6 +30,7 @@ urlpatterns = [
     path('popular', PopularView.as_view(), name="popular"),
     path('general', GeneralView.as_view(), name="general"),
     path('feedback', FeedbackView.as_view(), name="feedback"),
+    path('my-classes', MyClasses.as_view(), name="myclasses")
     path('search/', PostSearchView(), name="post-search"),
     path('<str:forum_name>/<int:post_id>/', PostDetails.as_view(), name='forum_post'),
     path('post/<int:post_id>/', PostDetails.as_view(), name='post'),
