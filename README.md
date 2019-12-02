@@ -13,6 +13,7 @@ A webapp for students to share their ideas using Django. Features include a uniq
 
 ### You can create posts directly from the forum home, see example post in the image on how to do so
 ![forum home](https://user-images.githubusercontent.com/31194806/69973520-a10ed880-14f1-11ea-9d0d-bc657796766b.png)
+![Post Example](https://user-images.githubusercontent.com/31194806/69974050-85580200-14f2-11ea-9377-1a3a913fdd9e.png)
 
 ### There is post body, title and class search functionality which can just be done by using the search bar (created using solr)
 ![Search Example](https://user-images.githubusercontent.com/31194806/69973129-fac2d300-14f0-11ea-82e7-e766488c5507.png)
