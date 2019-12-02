@@ -39,6 +39,7 @@ INSTALLED_APPS = [
 
     'forum.apps.ForumConfig',
     'accounts.apps.AccountsConfig',
+    'assignments.apps.AssignmentsConfig',
 
     'haystack',
 ]

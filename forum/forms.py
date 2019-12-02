@@ -93,9 +93,9 @@ class CreatePostForm(forms.ModelForm):
         file = data.get('file')
         class_id = data.get('class_id')
 
-        for forum in SchoolClass.objects.all():
-            if str(forum) == class_id:
-                class_id = forum
+        for assignments in SchoolClass.objects.all():
+            if str(assignments) == class_id:
+                class_id = assignments
 
         new_post = Post(
             sub_forum=subforum,

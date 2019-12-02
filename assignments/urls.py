@@ -13,15 +13,17 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path, include
-from forum import views
-from django.conf import settings
-from django.conf.urls.static import static
 
+from assignments.views import AllQuizzesView
+from . import views
+
+from django.conf.urls import url
+
+# for passing context into class views
+
+app_name = 'forumsapp'
 urlpatterns = [
-    path('xroads_admin/', admin.site.urls),
-    path('', views.xroads_home),
-    path('assignments/', include('forum.urls')),
-    path('accounts/', include('accounts.urls')),
+    path('my-assignments/', AllQuizzesView.as_view(), name='quizhome'),
+    path('quiz/<int: quiz_id>', AllQuizzesView.as_view(), name='quiz'),
 ]

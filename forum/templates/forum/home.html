@@ -10,7 +10,7 @@
                 <div class="card-body">
                     <div class="float-left w-80">
                         <h5 class="card-title" id="post-title">
-                            <a href="{% url 'forumsapp:forum' forum_name=forum.url_name %}">{{ forum.name }}</a>
+                            <a href="{% url 'forumsapp:assignments' forum_name=forum.url_name %}">{{ forum.name }}</a>
                         </h5>
                         <h6 class="card-subtitle mb-2 text-muted" id="post-user">{{ forum.description }}</h6>
                     </div>

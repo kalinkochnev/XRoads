@@ -164,7 +164,7 @@ class TestHomeView(TestCase):
     def test_GET(self):
         response = self.client.get(self.home_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'forum/forum_home.html')
+        self.assertTemplateUsed(response, 'assignments/forum_home.html')
 
 
 # TODO make new tests for new layout
@@ -184,13 +184,13 @@ class TestListPosts(TestCase):
             text='Filler Test body',
         )
         self.client = Client()
-        self.forum_url = reverse('forumsapp:forum', kwargs={'forum_name': self.subforum.url_name})
+        self.forum_url = reverse('forumsapp:assignments', kwargs={'forum_name': self.subforum.url_name})
         self.factory = RequestFactory()
 
     def test_GET(self):
         response = self.client.get(self.forum_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'forum/forum.html')
+        self.assertTemplateUsed(response, 'assignments/assignments.html')
 
     def test_POST_upvote(self):
         data = {
@@ -257,7 +257,7 @@ class TestPostDetail(TestCase):
     def test_GET(self):
         response = self.client.get(self.post_detail_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'forum/post.html')
+        self.assertTemplateUsed(response, 'assignments/post.html')
 
 
 class TestCreatePostView(TestCase):
@@ -308,7 +308,7 @@ class TestTOSView(TestCase):
     def test_GET(self):
         response = self.client.get(self.tos_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'forum/tos.html')
+        self.assertTemplateUsed(response, 'assignments/tos.html')
 
 
 class TestPrivacyView(TestCase):
@@ -320,4 +320,4 @@ class TestPrivacyView(TestCase):
     def test_GET(self):
         response = self.client.get(self.pp_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'forum/pp.html')
+        self.assertTemplateUsed(response, 'assignments/pp.html')
