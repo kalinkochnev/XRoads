@@ -1,6 +1,19 @@
 # XRoads
 A webapp for students to share their ideas using Django. Features include a unique user tag system similar to discord, custom user authentication, posting, searching and page navigation. Development of this project has been discontinued but many of the features like commenting and voting are completed in the backend but not in the front end. Lots of this code would be useful for anyone undertaking a forum system using Django.
 
+### This would be the first page that an unauthenticated user would see if they went to the url
+![landing page](https://user-images.githubusercontent.com/31194806/69973126-fa2a3c80-14f0-11ea-9d34-6168b0beffdf.png)
+
+### The login and logout pages using custom user models
+![login](https://user-images.githubusercontent.com/31194806/69973127-fa2a3c80-14f0-11ea-96d3-5693c18f7c1b.png)
+![signup](https://user-images.githubusercontent.com/31194806/69973130-fac2d300-14f0-11ea-8812-897c4848ac10.png)
+
+### You can create posts directly from the forum home, see example post in the image on how to do so
+![account settings](https://user-images.githubusercontent.com/31194806/69973123-fa2a3c80-14f0-11ea-987b-c7524a588ff0.png)
+
+### There is post body, title and class search functionality which can just be done by using the search bar (created using solr)
+![Search Example](https://user-images.githubusercontent.com/31194806/69973129-fac2d300-14f0-11ea-82e7-e766488c5507.png)
+
 ---
 
 ### First time setup
