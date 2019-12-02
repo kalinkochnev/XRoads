@@ -8,15 +8,18 @@ A webapp for students to share their ideas using Django. Features include a uniq
 ![login](https://user-images.githubusercontent.com/31194806/69973127-fa2a3c80-14f0-11ea-96d3-5693c18f7c1b.png)
 ![signup](https://user-images.githubusercontent.com/31194806/69973130-fac2d300-14f0-11ea-8812-897c4848ac10.png)
 
-### You can create posts directly from the forum home, see example post in the image on how to do so
+### There is also a user settings page (not fully functional)
 ![account settings](https://user-images.githubusercontent.com/31194806/69973123-fa2a3c80-14f0-11ea-987b-c7524a588ff0.png)
+
+### You can create posts directly from the forum home, see example post in the image on how to do so
+![forum home](https://user-images.githubusercontent.com/31194806/69973520-a10ed880-14f1-11ea-9d0d-bc657796766b.png)
 
 ### There is post body, title and class search functionality which can just be done by using the search bar (created using solr)
 ![Search Example](https://user-images.githubusercontent.com/31194806/69973129-fac2d300-14f0-11ea-82e7-e766488c5507.png)
 
 ---
 
-### First time setup
+### First time dev setup
 1. Create virtual environment and install pip packages in requirements.txt
 2. When in the main directory (~/XRoads) run the following scripts:
 ```terminal
