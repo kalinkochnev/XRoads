@@ -22,6 +22,6 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('xroads_admin/', admin.site.urls),
     path('', views.xroads_home),
-    path('assignments/', include('forum.urls')),
+    path('home/', include('forum.urls')),
     path('accounts/', include('accounts.urls')),
 ]

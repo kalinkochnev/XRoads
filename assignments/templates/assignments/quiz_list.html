@@ -1,9 +1,0 @@
-{% extends 'XRoads/templates/default-layout.html' %}]
-{% for quiz in quiz_list %}
-    <a href="{% url 'quiz' quiz_id=quiz.id %}">
-        <div>
-            <h2>{{ quiz.name }}</h2>
-            <h2>{{ quiz.description }}</h2>
-        </div>
-    </a>
-{% endfor %}
