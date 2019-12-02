@@ -1,5 +1,5 @@
 # XRoads
-A forum for students to collaborate with on another!
+A webapp for students to share their ideas using Django. Features include a unique user tag system similar to discord, custom user authentication, posting, searching and page navigation. Development of this project has been discontinued but many of the features like commenting and voting are completed in the backend but not in the front end. Lots of this code would be useful for anyone undertaking a forum system using Django.
 
 ---
 
