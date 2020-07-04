@@ -1,5 +1,8 @@
 @import "variables";
 
+
+
+
 .xroadsLogo {
   font-family: "Raleway", sans-serif;
   color: white;
@@ -27,14 +30,13 @@
 .navbar-simple {
   @extend .flex-container;
 
-  $navbarHeight: 70px;
-
   /*Sticks navbar at the top*/
   position: fixed;
   max-height: navbarHeight;
   width: 100%;
   top: 0px;
   right: 0px;
+  overflow: hidden;
 
   /*Styling of background and text*/
   background-color: $redDefault;
@@ -66,4 +68,8 @@
       background-color: $redHover;
     }
   }
+}
+
+.body {
+  margin-top: $navbarHeight;
 }

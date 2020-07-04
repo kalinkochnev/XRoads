@@ -14,7 +14,10 @@ class ClubPage extends React.Component {
     return (
       <div>
         <Navbar>xroads</Navbar>
-        <h1>Testing 123</h1>
+        <div class="body">
+          <h1>Testing 123</h1>
+          <SearchBar></SearchBar>
+        </div>
       </div>
     );
   }
@@ -43,14 +46,14 @@ class Navbar extends React.Component {
 class SearchBar extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      value: null,
-    };
   }
 
   render() {
     return (
-      <div></div>
+      <form>
+        <input type="text"></input>
+        <input type="submit"></input>
+      </form>
     );
   }
 }
