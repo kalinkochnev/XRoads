@@ -1,5 +1,69 @@
-@import 'variables';
+@import "variables";
 
-#navbar {
-    
+.xroadsLogo {
+  font-family: "Raleway", sans-serif;
+  color: white;
+  font-weight: 800;
+  font-size: 20px;
+
+  h1 {
+    margin: 10px 20px 10px 20px;
+  }
+}
+
+.flex-container {
+  display: flex;
+}
+
+.basic_button {
+  background-color: transparent;
+  color: black;
+  font-size: 16px;
+  outline: none;
+  border: none;
+  height: 20px;
+}
+
+.navbar-simple {
+  @extend .flex-container;
+
+  $navbarHeight: 70px;
+
+  /*Sticks navbar at the top*/
+  position: fixed;
+  max-height: navbarHeight;
+  width: 100%;
+  top: 0px;
+  right: 0px;
+
+  /*Styling of background and text*/
+  background-color: $redDefault;
+  color: white;
+
+  /*Center items vertically in a row with elements at start, end and center*/
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+
+  .navbar-buttons {
+    button {
+      @extend .basic_button;
+      $font-size: 20px;
+      
+      /*Sets padding of button to take up entire height of navbar*/
+      padding: ($navbarHeight - $font-size)/2 20px ($navbarHeight - $font-size)/2
+        20px;
+      height: 100%;
+
+      /*Styles text*/
+      font-size: $font-size;
+      font-weight: 400;
+      color: white;
+    }
+
+    button:hover {
+      background-color: $redHover;
+    }
+  }
 }

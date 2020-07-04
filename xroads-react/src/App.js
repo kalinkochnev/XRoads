@@ -12,7 +12,10 @@ class ClubPage extends React.Component {
 
   render() {
     return (
-      <h1>Testing 123</h1>
+      <div>
+        <Navbar>xroads</Navbar>
+        <h1>Testing 123</h1>
+      </div>
     );
   }
 }
@@ -27,7 +30,12 @@ class Navbar extends React.Component {
 
   render() {
     return (
-      <div></div>
+      <div class="navbar-simple">
+        <div class="xroadsLogo"><h1>xroads</h1></div>
+        <div class="navbar-buttons">
+          <button>logout</button>
+        </div>
+      </div>
     );
   }
 }
