@@ -1,31 +1,12 @@
 @import "variables";
+@import "commonComponents";
 
 
 
 
-.xroadsLogo {
-  font-family: "Raleway", sans-serif;
-  color: white;
-  font-weight: 800;
-  font-size: 20px;
 
-  h1 {
-    margin: 10px 20px 10px 20px;
-  }
-}
 
-.flex-container {
-  display: flex;
-}
 
-.basic_button {
-  background-color: transparent;
-  color: black;
-  font-size: 16px;
-  outline: none;
-  border: none;
-  height: 20px;
-}
 
 .navbar-simple {
   @extend .flex-container;
@@ -70,6 +51,3 @@
   }
 }
 
-.body {
-  margin-top: $navbarHeight;
-}

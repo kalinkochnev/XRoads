@@ -1,0 +1,53 @@
+@import "variables";
+
+.flex-container {
+  display: flex;
+}
+
+.basic_button {
+  background-color: transparent;
+  color: black;
+  font-size: 16px;
+  outline: none;
+  border: none;
+  height: 20px;
+}
+
+@mixin center-icon($iconUrl) {
+  background-image: url($iconUrl);
+  background-color: transparent;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+}
+
+@mixin card($borderRadius, $borderSize) {
+  border-radius: $borderRadius;
+  background-color: #fff;
+  border: $borderSize solid $greyOutline;
+}
+
+.xroadsLogo {
+  font-family: "Rubik", sans-serif;
+  color: white;
+  font-weight: 900;
+  font-size: 20px;
+
+  h1 {
+    margin: 10px 20px 10px 20px;
+  }
+}
+
+.body {
+  margin-top: $navbarHeight;
+  margin: $navbarHeight $siteMargins 0 $siteMargins;
+  padding: 0px;
+}
+
+@media (max-width: 991px) {
+}
+
+@media (max-width: 767px) {
+}
+
+@media (max-width: 480px) {
+}

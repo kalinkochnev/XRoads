@@ -1,0 +1,52 @@
+@import "variables";
+@import "commonComponents";
+
+.default-searchbar {
+  /*Setting up the flexbox*/
+  @extend .flex-container;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+
+  /*Sets form properties*/
+  @include card(40px, 4px);
+  height: 30px;
+  width: 75%;
+  margin: 150px 0px 0px 0px;
+  padding: 10px 20px 10px 20px;
+
+  #search-box {
+    margin: 0px;
+    width: 100%;
+    border-style: none;
+    background-color: transparent;
+
+    font-size: 30px;
+    color: #5c5c5c;
+  }
+
+  #search-box:focus {
+    outline: none;
+  }
+
+  #search-submit {
+    @extend .basic_button;
+    /*Creates a centered icon*/
+    @include center-icon("../icons/search-icon.svg");
+
+    height: 40px;
+    width: 40px;
+    padding-left: 10px;
+  }
+
+  #search-submit:hover {
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 991px) {
+  .default-searchbar {
+    margin: 100px auto 0px auto;
+    width: 100% - 2 * $siteMargins;
+  }
+}

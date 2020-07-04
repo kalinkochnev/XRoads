@@ -1,6 +1,7 @@
 import React from 'react';
 import './styles/_App.scss';
 import './styles/_navBars.scss';
+import './styles/_searchBar.scss';
 
 class ClubPage extends React.Component {
   constructor(props) {
@@ -15,7 +16,6 @@ class ClubPage extends React.Component {
       <div>
         <Navbar>xroads</Navbar>
         <div class="body">
-          <h1>Testing 123</h1>
           <SearchBar></SearchBar>
         </div>
       </div>
@@ -50,10 +50,13 @@ class SearchBar extends React.Component {
 
   render() {
     return (
-      <form>
-        <input type="text"></input>
-        <input type="submit"></input>
-      </form>
+      <div>
+        <form class="default-searchbar">
+          <input type="text" id="search-box" placeholder="Search for clubs..."></input>
+          <input id="search-submit" type="submit" value=""></input>
+        </form>
+      </div>
+
     );
   }
 }
