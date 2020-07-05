@@ -1,0 +1,35 @@
+@import "variables";
+@import "commonComponents";
+
+.accountLayout {
+  @extend .flex-container;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  height: 100vh;
+  width: 100%;
+  background-color: red;
+}
+
+.accountForm {
+  @include card(10px, 5px);
+  width: 200px;
+  @extend .flex-container;
+  flex-direction: column;
+  justify-content: center;
+
+  input {
+    height: 40px;
+
+    margin: 0px 20px 0px 20px;
+    border-style: none;
+    background-color: transparent;
+  }
+}
+
+.last-field {
+}
+
+.middle-field {
+}

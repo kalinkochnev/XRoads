@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navbar } from './ClubPage'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-
+import './styles/_accountForm.scss';
 class NotFound extends React.Component {
   render() {
     return (
@@ -17,7 +17,7 @@ class Accounts extends React.Component {
     return (
       <div>
         <Navbar>xroads</Navbar>
-        <div class="body">
+        <div id="body">
 
           <Switch>
             <Route path={`${path}/login`} component={LoginPage}/>
@@ -34,8 +34,15 @@ class LoginPage extends React.Component {
 
   render() {
     return (
-      <div>
-        <h1>Testing Login Page sdfasdf</h1>
+      <div class="accountLayout">
+        <form class="accountForm">
+          <input type="email" name="email-address" placeholder="Email Address"/>
+          <input type="tel" name="phone-number" pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}" placeholder="Phone number"/>
+          <input type="text" name="first-name" placeholder="First name"/>
+          <input type="text" name="last-name" placeholder="Last name"/>
+          <input type="password" name="password" placeholder="Password"/>
+          <input type="submit" value="Submit"/>
+        </form>
       </div>
     );
   }
@@ -44,7 +51,7 @@ class SignupPage extends React.Component {
 
   render() {
     return (
-      <div>
+      <div class="center-in-pg">
         <h1>Testing Signup page</h1>
       </div>
     );

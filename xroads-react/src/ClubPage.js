@@ -1,5 +1,4 @@
 import React from 'react';
-import './styles/_App.scss';
 import './styles/_navBars.scss';
 import './styles/_searchBar.scss';
 
