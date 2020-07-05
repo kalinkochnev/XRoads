@@ -6,9 +6,6 @@ import './styles/_searchBar.scss';
 class ClubPage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      value: null,
-    };
   }
 
   render() {
@@ -26,9 +23,6 @@ class ClubPage extends React.Component {
 class Navbar extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      value: null,
-    };
   }
 
   render() {
@@ -64,9 +58,6 @@ class SearchBar extends React.Component {
 class ClubCard extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      value: null,
-    };
   }
 
   render() {
@@ -79,9 +70,6 @@ class ClubCard extends React.Component {
 class ClubInfoPreview extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      value: null,
-    };
   }
 
   render() {
