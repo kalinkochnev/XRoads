@@ -1,0 +1,20 @@
+.card{
+    height: 300px;
+    border-radius: 15px;
+    margin:20px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.10), 0 2px 2px rgba(0,0,0,0.20);
+    width: calc(100% - 40px);
+    background-image: url("https://unsplash.it/800/600?image=59");
+    background-size: cover;
+}
+
+.card:hover{
+    box-shadow: 0 10px 20px rgba(0,0,0,0.10), 0 2px 2px rgba(0,0,0,0.20);
+}
+
+.card-container{
+    margin:-20px;
+    margin-top: 20px;
+    display:grid;
+    grid-template-columns: repeat(auto-fill,minmax(400px, 1fr));
+}
