@@ -1,3 +1,5 @@
+@import "variables";
+
 .card{
     height: 300px;
     border-radius: 15px;
@@ -7,6 +9,7 @@
     background-image: url("https://unsplash.it/800/600?image=59");
     background-size: cover;
     position: relative;
+    overflow: hidden;
 }
 
 .card:hover{
@@ -24,15 +27,41 @@
     background-color:white;
     position: absolute;
     bottom:0px;
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
-    width: calc(100% - 20px);
+    width: calc(100% - 40px);
     height:70px;
     padding-left:20px;
+    padding-right:20px;
+    transition:0.4s;
+    overflow: hidden;
+}
+
+.info:hover{
+    height: 100%;
 }
 
 .info h1{
     margin-top: 18px;
     font-size:30px;
     font-family: Rubik;
+    display: inline-block;
+    margin-bottom:0px;
+}
+
+.bubble {
+    background-color: $redDefault;
+    border-radius: 30px;
+    float:left;
+    direction: rtl;
+    min-width:1.1em;
+    height:1.1em;
+    padding:5px;
+    text-align: center;
+    color:white;
+    font-family: Rubik;
+    margin-right: 5px;
+    margin-top:20px;
+}
+
+.bubble-container{
+    float:right;
 }
