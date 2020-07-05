@@ -2,13 +2,28 @@ import React from 'react';
 import { Navbar } from './ClubPage'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
+class NotFound extends React.Component {
+  render() {
+    return (
+      <h1>this page was not found</h1>
+    );
+  }
+}
+
 class Accounts extends React.Component {
   render() {
+    const {path} = this.props.match;
+
     return (
       <div>
         <Navbar>xroads</Navbar>
         <div class="body">
-          <h1>Testing 123</h1>
+
+          <Switch>
+            <Route path={`${path}/login`} component={LoginPage}/>
+            <Route path={`${path}/signup`} component={SignupPage}/>                  
+            <Route component={NotFound}/>
+          </Switch>
         </div>
       </div>
     );
@@ -47,4 +62,4 @@ class LogoutPage extends React.Component {
   }
 }
 
-export { Accounts, LoginPage, SignupPage };
+export { Accounts, LoginPage, SignupPage, NotFound };
