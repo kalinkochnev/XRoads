@@ -6,6 +6,7 @@
     width: calc(100% - 40px);
     background-image: url("https://unsplash.it/800/600?image=59");
     background-size: cover;
+    position: relative;
 }
 
 .card:hover{
@@ -17,4 +18,21 @@
     margin-top: 20px;
     display:grid;
     grid-template-columns: repeat(auto-fill,minmax(400px, 1fr));
+}
+
+.info{
+    background-color:white;
+    position: absolute;
+    bottom:0px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    width: calc(100% - 20px);
+    height:70px;
+    padding-left:20px;
+}
+
+.info h1{
+    margin-top: 18px;
+    font-size:30px;
+    font-family: Rubik;
 }

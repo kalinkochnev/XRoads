@@ -4,6 +4,15 @@ import './styles/_navBars.scss';
 import './styles/_searchBar.scss';
 import './styles/_clubCard.scss';
 
+var clubs = [
+  ["Robotics Club", "https://unsplash.it/800/600?image=58"],
+  ["Drama Club", "https://unsplash.it/800/600?image=61"],
+  ["Model UN", "https://unsplash.it/800/600?image=63"],
+  ["Model UN", "https://unsplash.it/800/600?image=69"],
+  ["Model UN", "https://unsplash.it/800/600?image=61"],
+  ["Model UN", "https://unsplash.it/800/600?image=66"],
+];
+
 class ClubPage extends React.Component {
   constructor(props) {
     super(props);
@@ -19,11 +28,7 @@ class ClubPage extends React.Component {
         <div class="body">
           <SearchBar></SearchBar>
           <div class="card-container">
-            <ClubCard></ClubCard>
-            <ClubCard></ClubCard>
-            <ClubCard></ClubCard>
-            <ClubCard></ClubCard>
-            <ClubCard></ClubCard>
+            {clubs.map(club => <ClubCard key={club} title={club[0]} imageURL={club[1]} />)} 
           </div>
         </div>
       </div>
@@ -79,7 +84,11 @@ class ClubCard extends React.Component {
 
   render() {
     return (
-      <div class="card"></div>
+      <div class="card" style={{ backgroundImage:`url(${this.props.imageURL})` }}>
+        <div class="info">
+          <h1>{this.props.title}</h1>
+        </div>
+      </div>
     );
   }
 }
