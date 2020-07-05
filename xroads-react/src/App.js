@@ -1,13 +1,14 @@
 import React from 'react';
-import { BrowserRouter as Router, BrowserRouter, Route } from "react-router-dom";
-import ClubPage from './ClubPage';
-import LoginPage from './Login';
+import { BrowserRouter as Router, BrowserRouter, Route, Switch } from "react-router-dom";
+import {ClubPage} from './ClubPage';
+import {Accounts, LoginPage, SignupPage} from './Account';
 
 export default function App() {
     return (
-        <BrowserRouter>
+        <Switch>
             <Route exact path="/" component={ClubPage} />
-            <Route exact path="/testing123" component={LoginPage}/>
-        </BrowserRouter>
+            <Route exact path="/accounts" component={Accounts}/>
+            
+        </Switch>
     );
 }

@@ -80,4 +80,4 @@ class ClubInfoPreview extends React.Component {
 }
 
 
-export default ClubPage;
+export {ClubPage, Navbar};
