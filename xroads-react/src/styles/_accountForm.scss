@@ -15,43 +15,55 @@
 
 .accountForm {
   @include card(10px, 5px);
-  @extend .flex-container;
-  flex-direction: column;
-  justify-content: center;
+  @extend .flex-center-col;
 
-  width: 350px;
-  height: auto;
-  padding: 30px;
+  padding: 40px;
+
+  .fields {
+    @extend .flex-center-col;
+    
+    input {
+      box-sizing: border-box;
+      padding: 25px 15px 25px 15px;
+
+      border-color: $greyOutline;
+      border-width: 3px;
+      border-style: solid solid none;
+
+      background-color: transparent;
+
+      font-family: Raleway, sans-serif;
+      font-size: 16px;
+    }
+  }
 
   input {
+    min-width: 250px;
+    width: 275px;
     height: 50px;
-    margin-bottom: 0px;
-    border-style: solid solid none;
-
-
-    font-family: Raleway, sans-serif;
-
-    margin: 0px 20px 0px 20px;
-    background-color: transparent;
   }
 
   input:focus {
-    outline: auto $redDefault;
+    outline: none;
   }
 }
 
 .first-field {
-    border-radius: $authFormBorderRadius $authFormBorderRadius 0px 0px;
+  border-radius: $authFormBorderRadius $authFormBorderRadius 0px 0px;
 }
 
 .last-field {
-    border-radius: 0px 0px $authFormBorderRadius $authFormBorderRadius;
-    margin: 30px 30px 30px 30px;
+  border-style: solid solid solid solid !important;
+  border-radius: 0px 0px $authFormBorderRadius $authFormBorderRadius;
+  margin-bottom: 30px;
 }
 
 .middle-field {
 }
 
-.accountSubmit {
-    border-style: solid;
+#account-submit {
+  background-color: $redDefault;
+  border-style: none;
+  border-radius: 5px;
 }
+

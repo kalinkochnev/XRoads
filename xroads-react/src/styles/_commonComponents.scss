@@ -4,6 +4,12 @@
   display: flex;
 }
 
+.flex-center-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .basic_button {
   background-color: transparent;
   color: black;

@@ -36,12 +36,15 @@ class LoginPage extends React.Component {
     return (
       <div class="accountLayout">
         <form class="accountForm">
-          <input class="first-field" type="email" name="email-address" placeholder="Email Address"/>
-          <input type="tel" name="phone-number" pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}" placeholder="Phone number"/>
-          <input type="text" name="first-name" placeholder="First name"/>
-          <input type="text" name="last-name" placeholder="Last name"/>
-          <input class="last-field" type="password" name="password" placeholder="Password"/>
-          <input class="accountSubmit" type="submit" value="Submit"/>
+          <div class="fields">
+            <input class="first-field" type="email" name="email-address" placeholder="Email Address"/>
+            <input type="tel" name="phone-number" pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}" placeholder="Phone number"/>
+            <input type="text" name="first-name" placeholder="First name"/>
+            <input type="text" name="last-name" placeholder="Last name"/>
+            <input class="last-field" type="password" name="password" placeholder="Password"/>
+          </div>
+          
+          <input id="account-submit" type="submit" value="Submit"/>
         </form>
       </div>
     );
