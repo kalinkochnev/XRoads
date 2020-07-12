@@ -1,36 +1,38 @@
 @import "variables";
 @import "commonComponents";
 
+$authFormBorderRadius: 8px;
+$authFormPadding: 40px;
+$paddingVertInput: 25px;
+$paddingHorizInput: 15px;
+
 
 
 .accountLayout {
-  @extend .flex-container;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+  @extend .flex-center-col;
 
+  /*Puts in center of screen vertically*/
+  justify-content: center;
   height: 100vh;
   width: 100%;
 }
 
 .accountForm {
-  @include card(10px, 5px);
+  @include card(15px, 5px);
   @extend .flex-center-col;
 
-  padding: 40px;
+  padding: $authFormPadding;
 
   .fields {
     @extend .flex-center-col;
-    
-    input {
-      box-sizing: border-box;
-      padding: 25px 15px 25px 15px;
 
+    input {
+      padding: $paddingVertInput $paddingHorizInput $paddingVertInput $paddingHorizInput;
+
+      /*Styles main input fields, not including submit*/
       border-color: $greyOutline;
       border-width: 3px;
       border-style: solid solid none;
-
-      background-color: transparent;
 
       font-family: Raleway, sans-serif;
       font-size: 16px;
@@ -38,6 +40,9 @@
   }
 
   input {
+    /*Styling for all input fields*/
+    box-sizing: border-box;
+
     min-width: 250px;
     width: 275px;
     height: 50px;
@@ -53,12 +58,10 @@
 }
 
 .last-field {
-  border-style: solid solid solid solid !important;
+  /*Sets the border styling of the last field. For whatever reason it only works with !important*/
+  border-style: solid !important;
   border-radius: 0px 0px $authFormBorderRadius $authFormBorderRadius;
   margin-bottom: 30px;
-}
-
-.middle-field {
 }
 
 #account-submit {
@@ -66,9 +69,9 @@
   border-style: none;
   border-radius: 5px;
 
+  /*Changes font of submit button*/
   color: whitesmoke;
   font-family: "Arial", sans-serif;
   font-weight: 700;
   font-size: 20px;
 }
-
