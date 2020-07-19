@@ -1,0 +1,11 @@
+asgiref==3.2.10
+coverage==5.2
+dj-rest-auth==1.1.0
+Django==3.0.8
+djangorestframework==3.11.0
+Pillow==6.2.1
+postgres==2.2.2
+psycopg2==2.8.3
+psycopg2-binary==2.8.3
+pytz==2020.1
+sqlparse==0.3.1
