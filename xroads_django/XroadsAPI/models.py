@@ -144,8 +144,17 @@ class Club(models.Model):
     def remove_faq_question(self, position):
         self.faq.get(position=position).delete()
 
-    # inserts slide into that position
-    def add_slide(self, template_type, **kwargs):
-        max_pos = self.slides.size()
+    def add_slide(self, template_type, **kwargs) -> Slide:
+        max_pos = self.slides.count()
         new_slide = SlideTemplates.new_slide(template_type, position=max_pos+1, **kwargs)
         self.slides.add(new_slide)
+        return new_slide
+
+    def remove_slide(self, position):
+        self.slides.get(position=position).delete()
+
+    def join(self, profile: Profile):
+        self.members.add(profile)
+
+    def leave(self, profile: Profile):
+        self.members.get(profile).delete()

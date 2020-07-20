@@ -114,6 +114,25 @@ class TestTemplate(TestCase):
         with self.assertRaises(SlideParamError) as e:
             SlideTemplates.new_slide(self.temp_id, position=1)
 
+    @classmethod
+    def create_test_slide(cls):
+        # Sets the class variable equal to this template to avoid conflicts with real code
+        template_args = ['video_url', 'text', 'img']
+        SlideTemplates.templates = [
+            SlideTemplates.Template(temp_id=1, name="test", required=template_args)
+        ]
+        
+        # This creates a temporary image file to use for testing!!! The decorator overrides the django settings        
+        temp_file = tempfile.NamedTemporaryFile()
+        test_image = get_temp_img(temp_file)
+
+        # Parameters used for template
+        slide_text = "this is a test"
+        video_url = 'youtube.com/testing-video'
+        args = [video_url, slide_text, test_image.name]
+
+        return SlideTemplates.templates[0], dict(zip(template_args, args))
+
 
 class TestCreateClub(TestCase):
     def setUp(self):
@@ -127,15 +146,18 @@ class TestCreateClub(TestCase):
         temp_file = tempfile.NamedTemporaryFile()
         self.test_image = get_temp_img(temp_file)
 
-        self.club:Club = Club.objects.create(name=self.name, description=self.description, main_img=self.test_image.name, hours=self.commitment, is_visible=self.is_visible)
+        self.club: Club = Club.objects.create(name=self.name, description=self.description,
+                                              main_img=self.test_image.name, hours=self.commitment, is_visible=self.is_visible)
 
     def test_add_meet_day(self):
         day_obj1 = self.club.add_meet_day(MeetDay.Day.MONDAY)
         day_obj2 = self.club.add_meet_day(MeetDay.Day.TUESDAY)
 
         self.assertEqual(self.club.meeting_days.count(), 2)
-        self.assertEqual(self.club.meeting_days.get(day=MeetDay.Day.MONDAY), day_obj1)
-        self.assertEqual(self.club.meeting_days.get(day=MeetDay.Day.TUESDAY), day_obj2)
+        self.assertEqual(self.club.meeting_days.get(
+            day=MeetDay.Day.MONDAY), day_obj1)
+        self.assertEqual(self.club.meeting_days.get(
+            day=MeetDay.Day.TUESDAY), day_obj2)
 
         # Test that if you add same day it doesn't duplicate
         day_obj = self.club.add_meet_day(MeetDay.Day.MONDAY)
@@ -143,7 +165,7 @@ class TestCreateClub(TestCase):
 
     def test_remove_meet_day(self):
         day_obj = self.club.add_meet_day(MeetDay.Day.MONDAY)
-        
+
         self.club.remove_meet_day(MeetDay.Day.MONDAY)
         self.assertEqual(self.club.meeting_days.count(), 0)
 
@@ -162,3 +184,19 @@ class TestCreateClub(TestCase):
         self.club.remove_faq_question(1)
 
         self.assertEqual(self.club.faq.count(), 1)
+
+    def test_add_slide(self):
+        template, params = TestTemplate.create_test_slide()
+        slide1 = self.club.add_slide(template.temp_id, **params)
+        slide2 = self.club.add_slide(template.temp_id, **params)
+
+        self.assertEqual(self.club.slides.count(), 2)
+        self.assertEqual(slide1.position, 1)
+        self.assertEqual(slide2.position, 2)
+
+    def test_remove_slide(self):
+        template, params = TestTemplate.create_test_slide()
+        slide1 = self.club.add_slide(template.temp_id, **params)
+        
+        self.club.remove_slide(1)
+        self.assertEqual(self.club.slides.count(), 0)
