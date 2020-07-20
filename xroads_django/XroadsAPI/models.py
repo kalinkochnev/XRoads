@@ -98,33 +98,35 @@ class Faq(models.Model):
 
 class MeetDay(models.Model):
     class Day(models.TextChoices):
-        MONDAY = 'MONDAY',
-        TUESDAY = 'TUESDAY',
-        WEDNESDAY = 'WEDNESDAY',
-        THURSDAY = 'THURSDAY',
-        FRIDAY = 'FRIDAY',
-        SATURDAY = 'SATURDAY',
-        SUNDAY = 'SUNDAY',
-        CUSTOM = 'CUSTOM',
+        MONDAY = 'MONDAY'
+        TUESDAY = 'TUESDAY'
+        WEDNESDAY = 'WEDNESDAY'
+        THURSDAY = 'THURSDAY'
+        FRIDAY = 'FRIDAY'
+        SATURDAY = 'SATURDAY'
+        SUNDAY = 'SUNDAY'
+        CUSTOM = 'CUSTOM'
 
-    day = models.CharField(max_length=15, choices=Day.choices)
+    day = models.CharField(max_length=15, choices=Day.choices, default=Day.CUSTOM)
 
 
 class Club(models.Model):
     name = models.CharField(max_length=30)
     description = models.TextField()
     main_img = models.ImageField()
+    hours = models.CharField(max_length=10)
+    is_visible = models.BooleanField(default=False)
 
-    meeting_days = models.ManyToManyField(MeetDay)
-    commitment = models.CharField(max_length=10)
-    faq = models.ManyToManyField(Faq)
+    meeting_days = models.ManyToManyField(MeetDay, blank=True)
+    faq = models.ManyToManyField(Faq, blank=True)
+    members = models.ManyToManyField(Profile, blank=True)
+    slides = models.ManyToManyField(Slide, blank=True)
 
-    members = models.ManyToManyField(Profile)
-    slides = models.ManyToManyField(Slide)
-    is_visible = models.BooleanField()
-
-    def add_meet_day(self, day: MeetDay.Day):
+    def add_meet_day(self, day: MeetDay.Day) -> MeetDay:
         day, created = MeetDay.objects.get_or_create(day=day)
+        if created:
+            self.meeting_days.add(day)
+        return day
 
     def remove_meet_day(self, day: MeetDay.Day):
         day = self.meeting_days.get(day=day).delete()
@@ -136,3 +138,8 @@ class Club(models.Model):
     def remove_faq_question(self, question_id):
         self.faq.remove(id=question_id)
 
+    # inserts slide into that position
+    def add_slide(self, template_type, **kwargs):
+        max_pos = len(self.slides.all())
+        new_slide = SlideTemplates.new_slide(template_type, position=max_pos+1, **kwargs)
+        self.slides.add(new_slide)

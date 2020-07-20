@@ -5,18 +5,21 @@ from django.test import TestCase
 from django.test import override_settings
 from parameterized import parameterized
 
-from XroadsAPI.models import Profile, SlideTemplates
+from XroadsAPI.models import Profile, SlideTemplates, Club, MeetDay, Faq
 from XroadsAPI.exceptions import *
 
 # Tests needing a temporary image file
 import tempfile
 from PIL import Image
+
+
 def get_temp_img(temp_file):
     size = (200, 200)
     color = (255, 0, 0, 0)
     image = Image.new("RGB", size, color)
     image.save(temp_file, 'jpeg')
     return temp_file
+
 
 class TestProfileModel(TestCase):
     def setUp(self):
@@ -67,7 +70,8 @@ class TestTemplate(TestCase):
         self.template_args = ['video_url', 'text', 'img']
 
         SlideTemplates.templates = [
-            SlideTemplates.Template(temp_id=self.temp_id, name="test", required=self.template_args)
+            SlideTemplates.Template(
+                temp_id=self.temp_id, name="test", required=self.template_args)
         ]
 
         self.template = SlideTemplates.templates[0]
@@ -98,13 +102,14 @@ class TestTemplate(TestCase):
         args = [video_url, slide_text, test_image.name]
 
         template_kwargs = dict(zip(self.template_args, args))
-        slide = SlideTemplates.new_slide(self.temp_id, position=1, **template_kwargs)
+        slide = SlideTemplates.new_slide(
+            self.temp_id, position=1, **template_kwargs)
 
         self.assertIsNotNone(slide.img)
         self.assertEqual(slide.img, test_image)
         self.assertEqual(slide.text, slide_text)
         self.assertEqual(slide.video_url, video_url)
-    
+
     def test_create_invalid_slide(self):
         with self.assertRaises(SlideParamError) as e:
             SlideTemplates.new_slide(self.temp_id, position=1)
@@ -114,8 +119,31 @@ class TestCreateClub(TestCase):
     def setUp(self):
         self.profile = Profile.create_profile(
             email="a@gmail.com", password="password", first="kalin", last="kochnev", phone="518-888-1548")
-        self
+        self.name = "Test Club"
+        self.description = "This is a club description"
+        self.commitment = "7hrs/week"
+        self.is_visible = False
 
+        temp_file = tempfile.NamedTemporaryFile()
+        self.test_image = get_temp_img(temp_file)
 
-if __name__ == '__main__':
-    unittest.main()
+        self.club:Club = Club.objects.create(name=self.name, description=self.description, main_img=self.test_image.name, hours=self.commitment, is_visible=self.is_visible)
+
+    def test_add_meet_day(self):
+        day_obj1 = self.club.add_meet_day(MeetDay.Day.MONDAY)
+        day_obj2 = self.club.add_meet_day(MeetDay.Day.TUESDAY)
+
+        self.assertEqual(self.club.meeting_days.count(), 2)
+        self.assertEqual(self.club.meeting_days.get(day=MeetDay.Day.MONDAY), day_obj1)
+        self.assertEqual(self.club.meeting_days.get(day=MeetDay.Day.TUESDAY), day_obj2)
+
+        # Test that if you add same day it doesn't duplicate
+        day_obj = self.club.add_meet_day(MeetDay.Day.MONDAY)
+        self.assertEqual(self.club.meeting_days.count(), 2)
+
+    def test_remove_meet_day(self):
+        day_obj = self.club.add_meet_day(MeetDay.Day.MONDAY)
+        
+        self.club.remove_meet_day(MeetDay.Day.MONDAY)
+        self.assertEqual(self.club.meeting_days.count(), 0)
+
