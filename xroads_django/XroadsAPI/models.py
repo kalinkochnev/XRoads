@@ -8,6 +8,8 @@ import re
 from XroadsAPI.exceptions import *
 
 # Create your models here.
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone = models.CharField(max_length=10, null=True, blank=True)
@@ -55,7 +57,11 @@ class SlideTemplates:
 
         def __init__(self, temp_id: int, name, required):
             self.temp_id = temp_id
+            
+            # makes sure that position is always included
             self.required_args = required
+            self.required_args.append('position')
+
             self.name = name
 
         def args_match(self, args):
@@ -64,9 +70,9 @@ class SlideTemplates:
     templates = [
         Template(temp_id=1, name="img/text",  required=['img', 'text']),
         Template(temp_id=2, name="img_only", required=['img']),
-        Template(temp_id=3, name="video_only", required=['video']),
+        Template(temp_id=3, name="video_only", required=['video_url']),
     ]
-    
+
     @classmethod
     def get(cls, temp_id: int):
         for temp in cls.templates:
@@ -74,6 +80,15 @@ class SlideTemplates:
                 return temp
         raise InvalidSlideTemplate(
             'The specified template type does not exist')
+
+    @classmethod
+    def new_slide(cls, temp_id, **kwargs:dict) -> Slide:
+        template = SlideTemplates.get(temp_id)
+
+        if template.args_match(kwargs.keys()):
+            return Slide.objects.create(template_type=temp_id, **kwargs)
+        raise SlideParamError(
+            f'Args given do not match. Expected args: {template.required_args} Given: {kwargs} ')
 
 
 class Faq(models.Model):
@@ -93,7 +108,6 @@ class MeetDay(models.Model):
         CUSTOM = 'CUSTOM',
 
     day = models.CharField(max_length=15, choices=Day.choices)
-
 
 
 class Club(models.Model):
@@ -122,10 +136,3 @@ class Club(models.Model):
     def remove_faq_question(self, question_id):
         self.faq.remove(id=question_id)
 
-    def add_slide(self, position, template, **kwargs):
-        template = SlideTemplates.get(template)
-        if template.args_match(kwargs.keys()):
-            slide = Slide.objects.create(kwargs)
-            self.slides.add(slide)
-        raise SlideParamError(
-            'The provided args do not match the template chosen')
