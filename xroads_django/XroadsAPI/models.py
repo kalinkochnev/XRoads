@@ -92,6 +92,10 @@ class SlideTemplates:
 
 
 class Faq(models.Model):
+    class Meta:
+        ordering = ['position']
+
+    position = models.IntegerField()
     question = models.TextField()
     answer = models.TextField()
 
@@ -129,17 +133,19 @@ class Club(models.Model):
         return day
 
     def remove_meet_day(self, day: MeetDay.Day):
-        day = self.meeting_days.get(day=day).delete()
+        self.meeting_days.get(day=day).delete()
 
-    def add_faq_question(self, question, answer):
-        new_faq = Faq.objects.create(question=question, answer=answer)
+    def add_faq_question(self, question, answer) -> Faq:
+        num_questions = self.faq.count()
+        new_faq = Faq.objects.create(question=question, answer=answer, position=num_questions+1)
         self.faq.add(new_faq)
+        return new_faq
 
-    def remove_faq_question(self, question_id):
-        self.faq.remove(id=question_id)
+    def remove_faq_question(self, position):
+        self.faq.get(position=position).delete()
 
     # inserts slide into that position
     def add_slide(self, template_type, **kwargs):
-        max_pos = len(self.slides.all())
+        max_pos = self.slides.size()
         new_slide = SlideTemplates.new_slide(template_type, position=max_pos+1, **kwargs)
         self.slides.add(new_slide)

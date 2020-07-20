@@ -147,3 +147,18 @@ class TestCreateClub(TestCase):
         self.club.remove_meet_day(MeetDay.Day.MONDAY)
         self.assertEqual(self.club.meeting_days.count(), 0)
 
+    def test_add_faq_question(self):
+        faq1 = self.club.add_faq_question("my question", "my answer")
+        faq2 = self.club.add_faq_question("my question", "my answer")
+
+        self.assertEqual(self.club.faq.count(), 2)
+        self.assertEqual(faq1.position, 1)
+        self.assertEqual(faq2.position, 2)
+
+    def test_remove_faq_question(self):
+        faq1 = self.club.add_faq_question("my question", "my answer")
+        faq2 = self.club.add_faq_question("my question", "my answer")
+
+        self.club.remove_faq_question(1)
+
+        self.assertEqual(self.club.faq.count(), 1)
