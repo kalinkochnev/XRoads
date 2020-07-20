@@ -33,13 +33,19 @@ class Profile(models.Model):
         phone = None if phone == '' else cls.parse_phone(phone)
         return Profile.objects.create(user=user, phone=phone, is_anon=is_anon)
 
-"""
+
 class Slide(models.Model):
+    class Meta:
+        ordering = ['position']
+
     position = models.IntegerField()
-    video_url = models.URLField(blank=True)
-    img = models.ImageField(blank=True)
-    text = models.TextField(max_length=500, blank=True)
     template_type = models.IntegerField()
+
+    video_url = models.URLField(blank=True, null=True)
+    img = models.ImageField(blank=True, null=True)
+    text = models.TextField(blank=True, null=True)
+
+
 
 class FAQ(models.Model):
     question = models.TextField()
@@ -47,11 +53,59 @@ class FAQ(models.Model):
 
 
 class Club(models.Model):
-    members = models.ManyToManyField(to=Profile)
     name = models.CharField(max_length=30)
-    slides = models.ManyToManyField(Slide)
+    description = models.TextField()
+    main_img = models.ImageField()
 
-    class MeetDays(models.TextChoices):
+    meeting_days = models.ManyToManyField(MeetDay)
+    commitment = models.CharField(max_length=10)
+    faq = models.ManyToManyField(FAQ)
+
+    members = models.ManyToManyField(Profile)
+    slides = models.ManyToManyField(Slide)
+    is_visible = models.BooleanField()
+
+    def add_meet_day(self, day:MeetDay.Day):
+        day, created = MeetDay.objects.get_or_create(day=day)
+        
+    def remove_meet_day(self, day:MeetDay.Day):
+        day = self.meeting_days.filter(day=day).delete()
+    
+    def add_faq_question(self, question, answer):
+        new_faq = FAQ.objects.create(question=question, answer=answer)
+        self.faq.add(new_faq)
+    
+    def remove_faq_question(self, question_id):
+        self.faq.remove(id=question_id)
+
+    # TODO not working method!!!!!!
+    def add_slide(self, position, template_type, **kwargs):
+        valid_keys = set('video_url', 'img', 'text')
+
+        chosen_props = set(kwargs.keys()).intersection(valid_keys)
+        if chosen_props == 0:
+            raise 
+    
+"""class Template:
+    possible_args = ['img', 'text', 'video_url']
+    
+    def __init__(self, template_name, required_args):
+        self.template_name = template_name
+        self.required_args = required_args
+
+templates = [
+    Template('img/text', ['img', 'text']),
+    Template('img-only', ['img']),
+    Template('video', ['video'])
+]"""
+
+        
+
+
+class MeetDay(models.Model):
+    day = models.CharField(max_length=15, choices=Day.choices)
+
+    class Day(models.TextChoices):
         MONDAY = 'MONDAY',
         TUESDAY = 'TUESDAY',
         WEDNESDAY = 'WEDNESDAY',
@@ -61,11 +115,6 @@ class Club(models.Model):
         SUNDAY = 'SUNDAY',
         CUSTOM = 'CUSTOM',
 
-    meeting_days = models.CharField(max_length=15, choices=MeetDays.choices, default=MeetDays.CUSTOM)
-    commitment = models.CharField(max_length=10)
-    faq = models.ManyToManyField(FAQ)
-    is_visible = models.BooleanField()
 
-    main_img = models.ImageField()
 
-"""
+
