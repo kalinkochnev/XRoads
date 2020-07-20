@@ -5,6 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 import re
 
+from XroadsAPI.exceptions import *
 
 # Create your models here.
 class Profile(models.Model):
@@ -21,13 +22,15 @@ class Profile(models.Model):
         parsed = re.sub('[^0-9]', '', input_str)
 
         if len(parsed) != 10:
-            raise FieldError('The phone number provided must have len of 10 and include the area code')
+            raise FieldError(
+                'The phone number provided must have len of 10 and include the area code')
 
         return parsed
 
     @classmethod
     def create_profile(cls, email, password, first, last, phone='', is_anon=False):
-        user = User.objects.create(email=email, first_name=first, last_name=last)
+        user = User.objects.create(
+            email=email, first_name=first, last_name=last)
         user.set_password(password)
 
         phone = None if phone == '' else cls.parse_phone(phone)
@@ -46,65 +49,39 @@ class Slide(models.Model):
     text = models.TextField(blank=True, null=True)
 
 
+class SlideTemplates:
+    class Template:
+        possible_args = ['img', 'text', 'video_url']
 
-class FAQ(models.Model):
+        def __init__(self, temp_id: int, name, required):
+            self.temp_id = temp_id
+            self.required_args = required
+            self.name = name
+
+        def args_match(self, args):
+            return set(args) == set(self.required_args)
+
+    templates = [
+        Template(temp_id=1, name="img/text",  required=['img', 'text']),
+        Template(temp_id=2, name="img_only", required=['img']),
+        Template(temp_id=3, name="video_only", required=['video']),
+    ]
+    
+    @classmethod
+    def get(cls, temp_id: int):
+        for temp in cls.templates:
+            if temp.temp_id == temp_id:
+                return temp
+        raise InvalidSlideTemplate(
+            'The specified template type does not exist')
+
+
+class Faq(models.Model):
     question = models.TextField()
     answer = models.TextField()
 
 
-class Club(models.Model):
-    name = models.CharField(max_length=30)
-    description = models.TextField()
-    main_img = models.ImageField()
-
-    meeting_days = models.ManyToManyField(MeetDay)
-    commitment = models.CharField(max_length=10)
-    faq = models.ManyToManyField(FAQ)
-
-    members = models.ManyToManyField(Profile)
-    slides = models.ManyToManyField(Slide)
-    is_visible = models.BooleanField()
-
-    def add_meet_day(self, day:MeetDay.Day):
-        day, created = MeetDay.objects.get_or_create(day=day)
-        
-    def remove_meet_day(self, day:MeetDay.Day):
-        day = self.meeting_days.filter(day=day).delete()
-    
-    def add_faq_question(self, question, answer):
-        new_faq = FAQ.objects.create(question=question, answer=answer)
-        self.faq.add(new_faq)
-    
-    def remove_faq_question(self, question_id):
-        self.faq.remove(id=question_id)
-
-    # TODO not working method!!!!!!
-    def add_slide(self, position, template_type, **kwargs):
-        valid_keys = set('video_url', 'img', 'text')
-
-        chosen_props = set(kwargs.keys()).intersection(valid_keys)
-        if chosen_props == 0:
-            raise 
-    
-"""class Template:
-    possible_args = ['img', 'text', 'video_url']
-    
-    def __init__(self, template_name, required_args):
-        self.template_name = template_name
-        self.required_args = required_args
-
-templates = [
-    Template('img/text', ['img', 'text']),
-    Template('img-only', ['img']),
-    Template('video', ['video'])
-]"""
-
-        
-
-
 class MeetDay(models.Model):
-    day = models.CharField(max_length=15, choices=Day.choices)
-
     class Day(models.TextChoices):
         MONDAY = 'MONDAY',
         TUESDAY = 'TUESDAY',
@@ -115,6 +92,40 @@ class MeetDay(models.Model):
         SUNDAY = 'SUNDAY',
         CUSTOM = 'CUSTOM',
 
+    day = models.CharField(max_length=15, choices=Day.choices)
 
 
 
+class Club(models.Model):
+    name = models.CharField(max_length=30)
+    description = models.TextField()
+    main_img = models.ImageField()
+
+    meeting_days = models.ManyToManyField(MeetDay)
+    commitment = models.CharField(max_length=10)
+    faq = models.ManyToManyField(Faq)
+
+    members = models.ManyToManyField(Profile)
+    slides = models.ManyToManyField(Slide)
+    is_visible = models.BooleanField()
+
+    def add_meet_day(self, day: MeetDay.Day):
+        day, created = MeetDay.objects.get_or_create(day=day)
+
+    def remove_meet_day(self, day: MeetDay.Day):
+        day = self.meeting_days.get(day=day).delete()
+
+    def add_faq_question(self, question, answer):
+        new_faq = Faq.objects.create(question=question, answer=answer)
+        self.faq.add(new_faq)
+
+    def remove_faq_question(self, question_id):
+        self.faq.remove(id=question_id)
+
+    def add_slide(self, position, template, **kwargs):
+        template = SlideTemplates.get(template)
+        if template.args_match(kwargs.keys()):
+            slide = Slide.objects.create(kwargs)
+            self.slides.add(slide)
+        raise SlideParamError(
+            'The provided args do not match the template chosen')

@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import FieldError
 from django.test import TestCase
 from parameterized import parameterized
-from XroadsAPI.models import Profile
+from XroadsAPI.models import Profile, SlideTemplates
 
 
 class TestProfileModel(TestCase):
@@ -48,5 +48,21 @@ class TestProfileModel(TestCase):
         self.assertEqual(prof.is_anon, self.is_anon)
 
 
+class TestTemplate(TestCase):
+    def test_match_args_valid(self):
+        template = SlideTemplates.Template(temp_id=9999, name="test", required=['video', 'text'])
+        test_args = ['text', 'video']
+        self.assertTrue(template.args_match(test_args))
+
+    def test_match_args_invalid(self):
+        template = SlideTemplates.Template(temp_id=9999, name="test", required=['video', 'text', 'img'])
+        test_args = ['text']
+        self.assertFalse(template.args_match(test_args))
+
+
+class TestCreateClub(TestCase):
+    def setUp(self):
+        self.profile = Profile.create_profile(email="a@gmail.com", password="password", first="kalin", last="kochnev", phone="518-888-1548")
+        self 
 if __name__ == '__main__':
     unittest.main()
