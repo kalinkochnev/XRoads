@@ -14,6 +14,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone = models.CharField(max_length=10, null=True, blank=True)
     is_anon = models.BooleanField()
+    school = models.ManyToManyField(School)
 
     @property
     def phone_num(self):
@@ -38,7 +39,20 @@ class Profile(models.Model):
         phone = None if phone == '' else cls.parse_phone(phone)
         return Profile.objects.create(user=user, phone=phone, is_anon=is_anon)
 
+class School(models.Model):
+    name = models.CharField(max_length=40)
+    img = models.ImageField()
+    clubs = models.ManyToManyField(Club)
 
+    def make_save(self, save):
+        if save:
+            self.save()
+
+
+    def add_club(self, club: Club, save=True):
+        self.clubs.add(club)
+        self.make_save(save)
+    
 class Slide(models.Model):
     class Meta:
         ordering = ['position']
@@ -126,35 +140,51 @@ class Club(models.Model):
     members = models.ManyToManyField(Profile, blank=True)
     slides = models.ManyToManyField(Slide, blank=True)
 
-    def add_meet_day(self, day: MeetDay.Day) -> MeetDay:
+    def make_save(self, save):
+        if save:
+            self.save
+
+    def add_meet_day(self, day: MeetDay.Day, save=True) -> MeetDay:
         day, created = MeetDay.objects.get_or_create(day=day)
         if created:
             self.meeting_days.add(day)
+            self.make_save(save)
         return day
 
-    def remove_meet_day(self, day: MeetDay.Day):
+    def remove_meet_day(self, day: MeetDay.Da, save=True):
         self.meeting_days.remove(self.meeting_days.get(day=day))
+        self.make_save(save)
 
-    def add_faq_question(self, question, answer) -> Faq:
+    def add_faq_question(self, question, answer, save=True) -> Faq:
         num_questions = self.faq.count()
         new_faq = Faq.objects.create(question=question, answer=answer, position=num_questions+1)
         self.faq.add(new_faq)
+        self.make_save(save)
         return new_faq
 
-    def remove_faq_question(self, position):
+    def remove_faq_question(self, position, save=True):
         self.faq.remove(self.faq.get(position=position))
+        self.make_save(save)
 
-    def add_slide(self, template_type, **kwargs) -> Slide:
+    def add_slide(self, template_type, save=True, **kwargs) -> Slide:
         max_pos = self.slides.count()
         new_slide = SlideTemplates.new_slide(template_type, position=max_pos+1, **kwargs)
         self.slides.add(new_slide)
+        self.make_save(save)
         return new_slide
 
-    def remove_slide(self, position):
+    def remove_slide(self, position, save=True):
         self.slides.remove(self.slides.get(position=position))
+        self.make_save(save)
 
-    def join(self, profile: Profile):
+    def join(self, profile: Profile, save=True):
         self.members.add(profile)
+        self.make_save(save)
 
-    def leave(self, profile: Profile):
+    def leave(self, profile: Profile, save=True):
         self.members.remove(profile)
+        self.make_save(save)
+
+    def toggle_hide(self, save=True):
+        self.is_visible = not self.is_visible
+        self.make_save(save)
