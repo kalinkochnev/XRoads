@@ -133,7 +133,7 @@ class Club(models.Model):
         return day
 
     def remove_meet_day(self, day: MeetDay.Day):
-        self.meeting_days.get(day=day).delete()
+        self.meeting_days.remove(self.meeting_days.get(day=day))
 
     def add_faq_question(self, question, answer) -> Faq:
         num_questions = self.faq.count()
@@ -142,7 +142,7 @@ class Club(models.Model):
         return new_faq
 
     def remove_faq_question(self, position):
-        self.faq.get(position=position).delete()
+        self.faq.remove(self.faq.get(position=position))
 
     def add_slide(self, template_type, **kwargs) -> Slide:
         max_pos = self.slides.count()
@@ -151,10 +151,10 @@ class Club(models.Model):
         return new_slide
 
     def remove_slide(self, position):
-        self.slides.get(position=position).delete()
+        self.slides.remove(self.slides.get(position=position))
 
     def join(self, profile: Profile):
         self.members.add(profile)
 
     def leave(self, profile: Profile):
-        self.members.get(profile).delete()
+        self.members.remove(profile)

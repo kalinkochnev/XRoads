@@ -200,3 +200,13 @@ class TestCreateClub(TestCase):
         
         self.club.remove_slide(1)
         self.assertEqual(self.club.slides.count(), 0)
+
+    def test_join(self):
+        self.club.join(self.profile)
+        self.assertEqual(self.club.members.count(), 1)
+
+    def test_leave(self):
+        self.club.join(self.profile)
+        self.club.leave(self.profile)
+
+        self.assertEqual(self.club.members.count(), 0)
