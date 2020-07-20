@@ -8,13 +8,14 @@ import re
 from XroadsAPI.exceptions import *
 
 # Create your models here.
-
-
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone = models.CharField(max_length=10, null=True, blank=True)
     is_anon = models.BooleanField()
-    school = models.ManyToManyField(School)
+
+    def make_save(self, save):
+        if save:
+            self.save()
 
     @property
     def phone_num(self):
@@ -39,20 +40,15 @@ class Profile(models.Model):
         phone = None if phone == '' else cls.parse_phone(phone)
         return Profile.objects.create(user=user, phone=phone, is_anon=is_anon)
 
-class School(models.Model):
-    name = models.CharField(max_length=40)
-    img = models.ImageField()
-    clubs = models.ManyToManyField(Club)
-
-    def make_save(self, save):
-        if save:
-            self.save()
-
-
-    def add_club(self, club: Club, save=True):
-        self.clubs.add(club)
+    def join_school(self, school, save=True):
+        school.students.add(self)
+        school.save()
         self.make_save(save)
-    
+
+    @property
+    def school(self):
+        return School.objects.get(students__in=[self])
+
 class Slide(models.Model):
     class Meta:
         ordering = ['position']
@@ -151,7 +147,7 @@ class Club(models.Model):
             self.make_save(save)
         return day
 
-    def remove_meet_day(self, day: MeetDay.Da, save=True):
+    def remove_meet_day(self, day: MeetDay.Day, save=True):
         self.meeting_days.remove(self.meeting_days.get(day=day))
         self.make_save(save)
 
@@ -188,3 +184,19 @@ class Club(models.Model):
     def toggle_hide(self, save=True):
         self.is_visible = not self.is_visible
         self.make_save(save)
+
+class School(models.Model):
+    name = models.CharField(max_length=40)
+    img = models.ImageField()
+    clubs = models.ManyToManyField(Club)
+    students = models.ManyToManyField(Profile)
+
+    def make_save(self, save):
+        if save:
+            self.save()
+
+
+    def add_club(self, club: Club, save=True):
+        self.clubs.add(club)
+        self.make_save(save)
+    

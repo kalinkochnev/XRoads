@@ -5,13 +5,14 @@ from django.test import TestCase
 from django.test import override_settings
 from parameterized import parameterized
 
-from XroadsAPI.models import Profile, SlideTemplates, Club, MeetDay, Faq
+from XroadsAPI.models import *
 from XroadsAPI.exceptions import *
 
 # Tests needing a temporary image file
 import tempfile
 from PIL import Image
 
+# TODO test that that the objects are saved after calling their methods
 
 def get_temp_img(temp_file):
     size = (200, 200)
@@ -63,6 +64,19 @@ class TestProfileModel(TestCase):
         self.assertEqual(prof.phone_num, self.phone_number_int)
         self.assertEqual(prof.is_anon, self.is_anon)
 
+    def test_join_school(self):
+        school = School.objects.create(name="Some School")
+        prof: Profile = Profile.create_profile(email=self.email, password=self.password, first=self.first_name,
+                                               last=self.last_name, phone=self.phone_number_str, is_anon=self.is_anon)
+        prof.join_school(school)
+        self.assertEqual(school.students.count(), 1)
+
+    def test_school_property(self):
+        school = School.objects.create(name="Some School")
+        prof: Profile = Profile.create_profile(email=self.email, password=self.password, first=self.first_name,
+                                               last=self.last_name, phone=self.phone_number_str, is_anon=self.is_anon)
+        prof.join_school(school)
+        self.assertEqual(school, prof.school)
 
 class TestTemplate(TestCase):
     def setUp(self):
@@ -134,10 +148,9 @@ class TestTemplate(TestCase):
         return SlideTemplates.templates[0], dict(zip(template_args, args))
 
 
-class TestCreateClub(TestCase):
+class TestClub(TestCase):
     def setUp(self):
-        self.profile = Profile.create_profile(
-            email="a@gmail.com", password="password", first="kalin", last="kochnev", phone="518-888-1548")
+        self.profile = Profile.create_profile(email="a@gmail.com", password="password", first="kalin", last="kochnev", phone="518-888-1548")
         self.name = "Test Club"
         self.description = "This is a club description"
         self.commitment = "7hrs/week"
@@ -148,6 +161,19 @@ class TestCreateClub(TestCase):
 
         self.club: Club = Club.objects.create(name=self.name, description=self.description,
                                               main_img=self.test_image.name, hours=self.commitment, is_visible=self.is_visible)
+
+    @classmethod
+    def create_test_club(cls):
+        name = "Test Club"
+        description = "This is a club description"
+        commitment = "7hrs/week"
+        is_visible = False
+
+        temp_file = tempfile.NamedTemporaryFile()
+        test_image = get_temp_img(temp_file)
+
+        return Club.objects.create(name=name, description=description, main_img=test_image.name, hours=commitment, is_visible=is_visible)
+
 
     def test_add_meet_day(self):
         day_obj1 = self.club.add_meet_day(MeetDay.Day.MONDAY)
@@ -210,3 +236,11 @@ class TestCreateClub(TestCase):
         self.club.leave(self.profile)
 
         self.assertEqual(self.club.members.count(), 0)
+
+class TestSchool(TestCase):
+    def test_add_club(self):
+        club = TestClub.create_test_club()
+        school = School.objects.create(name="Some School")
+        school.add_club(club)
+
+        self.assertEqual(school.clubs.count(), 1)
