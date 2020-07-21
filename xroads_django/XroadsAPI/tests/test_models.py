@@ -1,9 +1,10 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import FieldError
-
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.test import override_settings
 from parameterized import parameterized
+from django.contrib.auth import get_user_model, authenticate
 
 from XroadsAPI.models import *
 from XroadsAPI.exceptions import *
@@ -13,6 +14,81 @@ import tempfile
 from PIL import Image
 
 # TODO test that that the objects are saved after calling their methods
+class TestCustomUserModel(TestCase):
+    # gets run before every method call of the test
+    def setUp(self):
+        self.User = get_user_model()
+        self.user = self.User.objects.create_user(email='norm@user.com', password='testpassword')
+
+    def test_norm_user_creation(self):
+        self.assertEqual(self.user.email, 'norm@user.com')
+        # TODO Test when the user has the same username and tag that the tag becomes different
+
+        self.assertTrue(self.user.is_active)
+        self.assertFalse(self.user.is_staff)
+        self.assertFalse(self.user.is_superuser)
+
+        # test username attribute does not exist because it shouldn't
+        try:
+            self.assertIsNone(self.user.username)
+        except AttributeError:
+            pass
+
+        # test when certain parameters are missing it raises the errors
+        with self.assertRaises(TypeError):
+            self.User.objects.create_user()
+        with self.assertRaises(TypeError):
+            self.User.objects.create_user(username='testuser', password='testpassword')
+        with self.assertRaises(ValueError):
+            self.User.objects.create_user(email='norm@user.com', username='testuser', password='')
+        with self.assertRaises(ValueError):
+            self.User.objects.create_user(email='', username='', password='')
+
+    def test_create_superuser(self):
+        admin_user = self.User.objects.create_superuser(email='super@user.com', password='foo')
+        self.assertEqual(admin_user.email, 'super@user.com')
+        self.assertTrue(admin_user.is_active)
+        self.assertTrue(admin_user.is_staff)
+        self.assertTrue(admin_user.is_superuser)
+
+        # test username attribute does not exist
+        try:
+            self.assertIsNone(admin_user.username)
+        except AttributeError:
+            pass
+
+        # tests that if is_superuser=False that it raises an error
+        with self.assertRaises(ValueError):
+            self.User.objects.create_superuser(
+                email='super@user.com', password='foo', is_superuser=False
+            )
+
+    def test_authentication(self):
+        # check that auth returns a user object that is the expected one
+        user_email = 'email@user.com'
+        user_password = 'testpassword'
+        user1 = self.User.objects.create_user(email=user_email, password=user_password)
+        returned_user = authenticate(email=user_email, password=user_password)
+        self.assertEqual(user1, returned_user)
+
+        # check that None is returned if password is incorrect
+        user_email = 'email@user.com'
+        user_wrong_password = 'yikes'
+        user2 = self.User.objects.create_user(email='email2@user.com', password='testpassword')
+        returned_user = authenticate(email=user_email, password=user_wrong_password)
+        self.assertIsNone(returned_user)
+
+    def test_signup(self):
+        # should return a user object since it doesn't exist
+        user_email = 'new@email.com'
+        user_pass = 'somepass'
+        new_user = self.User.objects.signup(user_email, user_pass)
+        self.assertEqual(new_user.email, user_email)
+        self.assertTrue(new_user.check_password(user_pass))
+
+        # should return none since user with that email already exists
+        other_user = self.User.objects.signup(user_email, 'password')
+        self.assertIsNone(other_user)
 
 
 def get_temp_img(temp_file):
@@ -84,7 +160,7 @@ class TestProfileModel(TestCase):
         self.assertEqual(user_obj.last_name, self.last_name)
         self.assertEqual(user_obj.email, self.email)
 
-        # test second object is created normally
+        # test second object is created normally (Added due to bug where you can't only use email and password for User model creation)
         prof2 = Profile.create_profile(email="something@gmail.com", password="a", first="b", last="c")
 
 
