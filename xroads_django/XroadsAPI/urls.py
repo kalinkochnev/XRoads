@@ -19,4 +19,6 @@ from XroadsAPI import views
 
 urlpatterns = [
     path('csrf/', views.csrf),
+    path('user/<int:pk>', views.GetProfile.as_view()),
+    path('user/<str:email>', views.GetProfile.as_view()),
 ]
