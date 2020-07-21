@@ -100,16 +100,6 @@ class SlideTemplates:
         raise SlideParamError(
             f'Args given do not match. Expected args: {template.required_args} Given: {kwargs} ')
 
-
-class Faq(models.Model):
-    class Meta:
-        ordering = ['position']
-
-    position = models.IntegerField()
-    question = models.TextField()
-    answer = models.TextField()
-
-
 class MeetDay(models.Model):
     class Day(models.TextChoices):
         MONDAY = 'MONDAY'
@@ -132,7 +122,6 @@ class Club(models.Model):
     is_visible = models.BooleanField(default=False)
 
     meeting_days = models.ManyToManyField(MeetDay, blank=True)
-    faq = models.ManyToManyField(Faq, blank=True)
     members = models.ManyToManyField(Profile, blank=True)
     slides = models.ManyToManyField(Slide, blank=True)
 
@@ -149,17 +138,6 @@ class Club(models.Model):
 
     def remove_meet_day(self, day: MeetDay.Day, save=True):
         self.meeting_days.remove(self.meeting_days.get(day=day))
-        self.make_save(save)
-
-    def add_faq_question(self, question, answer, save=True) -> Faq:
-        num_questions = self.faq.count()
-        new_faq = Faq.objects.create(question=question, answer=answer, position=num_questions+1)
-        self.faq.add(new_faq)
-        self.make_save(save)
-        return new_faq
-
-    def remove_faq_question(self, position, save=True):
-        self.faq.remove(self.faq.get(position=position))
         self.make_save(save)
 
     def add_slide(self, template_type, save=True, **kwargs) -> Slide:
