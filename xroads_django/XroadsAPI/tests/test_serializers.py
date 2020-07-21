@@ -1,6 +1,6 @@
 from django.test import TestCase
-from XroadsAPI.models import Profile
-from XroadsAPI.serializers import ProfileSerializer, AnonProfileSerializer
+from XroadsAPI.models import *
+from XroadsAPI.serializers import *
 from XroadsAPI.tests.test_models import TestProfileModel
 class TestProfileSerializer(TestCase):
     def test_serialization(self):
@@ -61,3 +61,11 @@ class TestAnonProfileSerializer(TestCase):
 
         assert AnonProfileSerializer(prof1).data == expected
         
+class TestMeetingDaySerializer(TestCase):
+    def test_choices(self):
+        day1 = MeetDay.objects.create(day=MeetDay.Day.MONDAY)
+        assert MeetingDaysSerializer(day1).data == {'day': "MONDAY"}
+
+        day2 = MeetDay.objects.create(day=MeetDay.Day.CUSTOM)
+        assert MeetingDaysSerializer(day2).data == {'day': "CUSTOM"}
+

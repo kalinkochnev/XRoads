@@ -11,6 +11,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class MeetingDaysSerializer(serializers.ModelSerializer):
     class Meta:
+        model = MeetDay
         fields = ['day']
 
 class AnonProfileSerializer(ProfileSerializer):
