@@ -14,6 +14,7 @@ from PIL import Image
 
 # TODO test that that the objects are saved after calling their methods
 
+
 def get_temp_img(temp_file):
     size = (200, 200)
     color = (255, 0, 0, 0)
@@ -23,6 +24,31 @@ def get_temp_img(temp_file):
 
 
 class TestProfileModel(TestCase):
+    @classmethod
+    def create_test_prof(cls, num, **kwargs) -> Profile:
+        from random import randint
+
+        def gen_random_phone():
+            chunk1 = randint(100, 999)
+            chunk2 = randint(100, 999)
+            chunk3 = randint(1000, 9999)
+            return f'({chunk1}) {chunk2}-{chunk3}'
+        params = {
+            'email': f'test{num}@email.com',
+            'password': 'password',
+            'first': f'testfirst{num}',
+            'last': f'testlast{num}',
+            'phone': gen_random_phone(),
+            'is_anon': False,
+        }
+
+        # overrides params if specified in kwargs
+        for key, arg in kwargs.items():
+            if key in params.keys():
+                params[key] = arg
+
+        return Profile.create_profile(email=params['email'], password=params['password'], first=params['first'], last=params['last'], phone=params['phone'], is_anon=params['is_anon'])
+
     def setUp(self):
         self.email = "kalin.kochnev@gmail.com"
         self.password = "2323hj23hk2h"
@@ -58,11 +84,30 @@ class TestProfileModel(TestCase):
         self.assertEqual(user_obj.last_name, self.last_name)
         self.assertEqual(user_obj.email, self.email)
 
+        # test second object is created normally
+        prof2 = Profile.create_profile(email="something@gmail.com", password="a", first="b", last="c")
+
+
     def test_creation_all_params(self):
         prof: Profile = Profile.create_profile(email=self.email, password=self.password, first=self.first_name,
                                                last=self.last_name, phone=self.phone_number_str, is_anon=self.is_anon)
         self.assertEqual(prof.phone_num, self.phone_number_int)
         self.assertEqual(prof.is_anon, self.is_anon)
+
+    def test_create_test_prof(self):
+        # Test that valid attributes are set
+        prof_num = 1
+        prof = self.create_test_prof(prof_num)
+        self.assertEqual(prof.user.email, f'test{prof_num}@email.com')
+        self.assertEqual(len(prof.phone), 10)
+        self.assertEqual(prof.user.first_name, f'testfirst{prof_num}')
+        self.assertEqual(prof.user.last_name, f'testlast{prof_num}')
+
+        # Test that you can override params
+        prof_num = 2
+        test_email = 'hello@gmail.com'
+        prof2 = self.create_test_prof(prof_num, email=test_email)
+        self.assertEqual(prof2.user.email, test_email)
 
     def test_join_school(self):
         school = School.objects.create(name="Some School")
@@ -77,6 +122,7 @@ class TestProfileModel(TestCase):
                                                last=self.last_name, phone=self.phone_number_str, is_anon=self.is_anon)
         prof.join_school(school)
         self.assertEqual(school, prof.school)
+
 
 class TestTemplate(TestCase):
     def setUp(self):
@@ -133,10 +179,11 @@ class TestTemplate(TestCase):
         # Sets the class variable equal to this template to avoid conflicts with real code
         template_args = ['video_url', 'text', 'img']
         SlideTemplates.templates = [
-            SlideTemplates.Template(temp_id=1, name="test", required=template_args)
+            SlideTemplates.Template(
+                temp_id=1, name="test", required=template_args)
         ]
-        
-        # This creates a temporary image file to use for testing!!! The decorator overrides the django settings        
+
+        # This creates a temporary image file to use for testing!!! The decorator overrides the django settings
         temp_file = tempfile.NamedTemporaryFile()
         test_image = get_temp_img(temp_file)
 
@@ -150,7 +197,8 @@ class TestTemplate(TestCase):
 
 class TestClub(TestCase):
     def setUp(self):
-        self.profile = Profile.create_profile(email="a@gmail.com", password="password", first="kalin", last="kochnev", phone="518-888-1548")
+        self.profile = Profile.create_profile(
+            email="a@gmail.com", password="password", first="kalin", last="kochnev", phone="518-888-1548")
         self.name = "Test Club"
         self.description = "This is a club description"
         self.commitment = "7hrs/week"
@@ -173,7 +221,6 @@ class TestClub(TestCase):
         test_image = get_temp_img(temp_file)
 
         return Club.objects.create(name=name, description=description, main_img=test_image.name, hours=commitment, is_visible=is_visible)
-
 
     def test_add_meet_day(self):
         day_obj1 = self.club.add_meet_day(MeetDay.Day.MONDAY)
@@ -207,7 +254,7 @@ class TestClub(TestCase):
     def test_remove_slide(self):
         template, params = TestTemplate.create_test_slide()
         slide1 = self.club.add_slide(template.temp_id, **params)
-        
+
         self.club.remove_slide(1)
         self.assertEqual(self.club.slides.count(), 0)
 
@@ -220,6 +267,7 @@ class TestClub(TestCase):
         self.club.leave(self.profile)
 
         self.assertEqual(self.club.members.count(), 0)
+
 
 class TestSchool(TestCase):
     def test_add_club(self):

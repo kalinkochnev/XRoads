@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Rest app
-    'XroadsAPI',
+    'XroadsAPI.apps.XroadsapiConfig',
 
     #REST library
     'rest_framework',
@@ -131,3 +131,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# User substitution
+# https://docs.djangoproject.com/en/1.11/topics/auth/customizing/#auth-custom-user
+AUTH_USER_MODEL = 'XroadsAPI.User'
