@@ -10,7 +10,9 @@ import re
 
 from XroadsAPI.exceptions import *
 from XroadsAPI.manager import CustomUserManager
-class User(AbstractUser):
+
+
+class Profile(AbstractUser):
     """User model that uses email instead of username."""
     email = models.EmailField(_('email address'), unique=True)
     username = None
@@ -22,11 +24,9 @@ class User(AbstractUser):
     # Brings in the CustomUserManager we made so we can use all its methods
     objects = CustomUserManager()
 
-# Create your models here.
-class Profile(models.Model):
-    user: User = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # Everything past this point is not related to the custom user model
     phone = models.CharField(max_length=10, null=True, blank=True)
-    is_anon = models.BooleanField()
+    is_anon = models.BooleanField(default=False)
 
     def make_save(self, save):
         if save:
@@ -48,12 +48,9 @@ class Profile(models.Model):
 
     @classmethod
     def create_profile(cls, email, password, first, last, phone='', is_anon=False):
-        user = User.objects.create(
-            email=email, first_name=first, last_name=last)
-        user.set_password(password)
-
         phone = None if phone == '' else cls.parse_phone(phone)
-        return Profile.objects.create(user=user, phone=phone, is_anon=is_anon)
+
+        return cls.objects.create_user(email=email, first_name=first, last_name=last, password=password, phone=phone, is_anon=is_anon)
 
     def join_school(self, school, save=True):
         school.students.add(self)
@@ -63,6 +60,7 @@ class Profile(models.Model):
     @property
     def school(self):
         return School.objects.get(students__in=[self])
+
 
 class Slide(models.Model):
     class Meta:
@@ -82,7 +80,7 @@ class SlideTemplates:
 
         def __init__(self, temp_id: int, name, required):
             self.temp_id = temp_id
-            
+
             # makes sure that position is always included
             self.required_args = required
             self.required_args.append('position')
@@ -107,13 +105,14 @@ class SlideTemplates:
             'The specified template type does not exist')
 
     @classmethod
-    def new_slide(cls, temp_id, **kwargs:dict) -> Slide:
+    def new_slide(cls, temp_id, **kwargs: dict) -> Slide:
         template = SlideTemplates.get(temp_id)
 
         if template.args_match(kwargs.keys()):
             return Slide.objects.create(template_type=temp_id, **kwargs)
         raise SlideParamError(
             f'Args given do not match. Expected args: {template.required_args} Given: {kwargs} ')
+
 
 class MeetDay(models.Model):
     class Day(models.TextChoices):
@@ -126,7 +125,8 @@ class MeetDay(models.Model):
         SUNDAY = 'SUNDAY'
         CUSTOM = 'CUSTOM'
 
-    day = models.CharField(max_length=15, choices=Day.choices, default=Day.CUSTOM)
+    day = models.CharField(
+        max_length=15, choices=Day.choices, default=Day.CUSTOM)
 
 
 class Club(models.Model):
@@ -157,7 +157,8 @@ class Club(models.Model):
 
     def add_slide(self, template_type, save=True, **kwargs) -> Slide:
         max_pos = self.slides.count()
-        new_slide = SlideTemplates.new_slide(template_type, position=max_pos+1, **kwargs)
+        new_slide = SlideTemplates.new_slide(
+            template_type, position=max_pos+1, **kwargs)
         self.slides.add(new_slide)
         self.make_save(save)
         return new_slide
@@ -178,6 +179,7 @@ class Club(models.Model):
         self.is_visible = not self.is_visible
         self.make_save(save)
 
+
 class School(models.Model):
     name = models.CharField(max_length=40)
     img = models.ImageField()
@@ -188,8 +190,6 @@ class School(models.Model):
         if save:
             self.save()
 
-
     def add_club(self, club: Club, save=True):
         self.clubs.add(club)
         self.make_save(save)
-    

@@ -155,10 +155,9 @@ class TestProfileModel(TestCase):
         self.assertIsNone(prof.phone_num)
         self.assertFalse(prof.is_anon)
 
-        user_obj = prof.user
-        self.assertEqual(user_obj.first_name, self.first_name)
-        self.assertEqual(user_obj.last_name, self.last_name)
-        self.assertEqual(user_obj.email, self.email)
+        self.assertEqual(prof.first_name, self.first_name)
+        self.assertEqual(prof.last_name, self.last_name)
+        self.assertEqual(prof.email, self.email)
 
         # test second object is created normally (Added due to bug where you can't only use email and password for User model creation)
         prof2 = Profile.create_profile(email="something@gmail.com", password="a", first="b", last="c")
@@ -174,16 +173,16 @@ class TestProfileModel(TestCase):
         # Test that valid attributes are set
         prof_num = 1
         prof = self.create_test_prof(prof_num)
-        self.assertEqual(prof.user.email, f'test{prof_num}@email.com')
+        self.assertEqual(prof.email, f'test{prof_num}@email.com')
         self.assertEqual(len(prof.phone), 10)
-        self.assertEqual(prof.user.first_name, f'testfirst{prof_num}')
-        self.assertEqual(prof.user.last_name, f'testlast{prof_num}')
+        self.assertEqual(prof.first_name, f'testfirst{prof_num}')
+        self.assertEqual(prof.last_name, f'testlast{prof_num}')
 
         # Test that you can override params
         prof_num = 2
         test_email = 'hello@gmail.com'
         prof2 = self.create_test_prof(prof_num, email=test_email)
-        self.assertEqual(prof2.user.email, test_email)
+        self.assertEqual(prof2.email, test_email)
 
     def test_join_school(self):
         school = School.objects.create(name="Some School")
