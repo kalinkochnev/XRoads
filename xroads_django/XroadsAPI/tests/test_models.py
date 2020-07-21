@@ -286,6 +286,7 @@ class TestClub(TestCase):
                                               main_img=self.test_image.name, hours=self.commitment, is_visible=self.is_visible)
 
     @classmethod
+    @override_settings(MEDIA_ROOT=tempfile.gettempdir())
     def create_test_club(cls):
         name = "Test Club"
         description = "This is a club description"

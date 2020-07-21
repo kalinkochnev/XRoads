@@ -1,7 +1,11 @@
 from django.test import TestCase
 from XroadsAPI.models import *
 from XroadsAPI.serializers import *
-from XroadsAPI.tests.test_models import TestProfileModel
+from XroadsAPI.tests.test_models import get_temp_img, TestProfileModel
+from django.test import override_settings
+import pytest
+
+import tempfile
 class TestProfileSerializer(TestCase):
     def test_serialization(self):
         user_obj:Profile = Profile.objects.create_user(email="a@email.com", password="password", first_name="a", last_name="b", phone="1234567899", is_anon=True)
@@ -69,3 +73,34 @@ class TestMeetingDaySerializer(TestCase):
         day2 = MeetDay.objects.create(day=MeetDay.Day.CUSTOM)
         assert MeetingDaysSerializer(day2).data == {'day': "CUSTOM"}
 
+class TestSlideSerialization(TestCase):
+
+    @override_settings(MEDIA_ROOT=tempfile.gettempdir())
+    def test_slide_serialization(self):
+        # Creates temp test iamge
+        temp_file = tempfile.NamedTemporaryFile()
+        test_image = get_temp_img(temp_file)
+
+        video_url= "youtube.com/do-stuff"
+        position= 1
+        img= test_image.name
+
+        # Set class variable to prevent conflicts
+        temp_id = 1
+        template_args = ['img', 'video_url']
+        template = SlideTemplates.Template(temp_id=temp_id, name="test", required=template_args)
+        SlideTemplates.templates = [template]
+
+        # Chooses from test values based on template_args
+        slide = SlideTemplates.new_slide(temp_id, position=position, img=img, video_url=video_url)
+
+        expected = {
+            'id': slide.id,
+            'template_type': temp_id,
+            'position': position,
+            'video_url': video_url,
+            'img': slide.img.url
+        }
+
+
+        assert SlideSerializer(slide, fields=('id', 'template_type', *template_args)).data == expected
