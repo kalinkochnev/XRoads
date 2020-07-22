@@ -15,7 +15,7 @@ class TestProfileSerializer(TestCase):
             'first_name': user_obj.first_name,
             'last_name': user_obj.last_name,
             'is_anon': user_obj.is_anon,
-            'phone_num': user_obj.phone_num,
+            'phone': user_obj.phone,
         }
 
         assert expected == ProfileSerializer(user_obj).data
@@ -32,6 +32,27 @@ class TestProfileSerializer(TestCase):
         }
 
         assert expected == ProfileSerializer(user_obj).data
+
+    def test_from_dict(self):
+        user_obj:Profile = Profile(email="a@email.com", password="password", first_name="a", last_name="b", phone="1234567899", is_anon=True)
+        data = {
+            'email': user_obj.email,
+            'first_name': user_obj.first_name,
+            'last_name': user_obj.last_name,
+            'is_anon': user_obj.is_anon,
+            'phone': user_obj.phone,
+        }
+
+        serializer = ProfileSerializer(data=data)
+        serializer.is_valid()
+        result: Profile = serializer.save()
+
+        assert result.email ==user_obj.email
+        assert result.first_name == user_obj.first_name
+        assert result.last_name == user_obj.last_name
+        assert result.is_anon == user_obj.is_anon
+        assert result.phone == user_obj.phone
+        assert result.phone_num == user_obj.phone_num
 
 class TestAnonProfileSerializer(TestCase):
     def generate_test_profiles(self, num):
@@ -99,8 +120,9 @@ class TestSlideSerialization(TestCase):
             'template_type': temp_id,
             'position': position,
             'video_url': video_url,
-            'img': slide.img.url
+            'img': slide.img.url,
+            'text': None
         }
 
 
-        assert SlideSerializer(slide, fields=('id', 'template_type', *template_args)).data == expected
+        assert SlideSerializer(slide).data == expected

@@ -27,7 +27,7 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon', 'phone_num']
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon', 'phone']
         allow_null = True
 
 class MeetingDaysSerializer(serializers.ModelSerializer):
@@ -35,7 +35,7 @@ class MeetingDaysSerializer(serializers.ModelSerializer):
         model = MeetDay
         fields = ['day']
 
-class AnonProfileSerializer(ProfileSerializer):
+class AnonProfileSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Profile
         fields = ['id', 'email', 'first_name', 'last_name', 'is_anon', 'phone_num']
@@ -61,9 +61,9 @@ class BasicClubInfoSerial(serializers.ModelSerializer):
         model = Club
         fields = ['id', 'description', 'main_img', 'is_visible', 'meeting_days']
 
-class ClubAllInfoSerializer(serializers.ModelSerializer):
+class ClubDetailSerializer(serializers.ModelSerializer):
     meeting_days = MeetingDaysSerializer(many=True)
-    members = AnonProfileSerializer(many=True)
+    members = AnonProfileSerializer(many=True, fields=('first_name', 'last_name'))
     slides = SlideSerializer(many=True)
 
     class Meta:

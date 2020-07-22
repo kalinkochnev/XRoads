@@ -36,6 +36,11 @@ class Profile(AbstractUser):
     def phone_num(self):
         return None if self.phone is None else int(self.phone)
 
+    @phone_num.setter
+    def phone_num(self, val:int):
+        self.phone = str(val)
+        self.make_save(save=True)
+
     @staticmethod
     def parse_phone(input_str):
         parsed = re.sub('[^0-9]', '', input_str)
