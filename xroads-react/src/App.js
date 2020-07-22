@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, BrowserRouter, Route, Switch } from "react-router-dom";
-import {ClubPage} from './ClubPage';
+import ClubPage from './ClubPage';
 import {Accounts, LoginPage, SignupPage, NotFound} from './Account';
 
 export default function App() {
