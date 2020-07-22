@@ -1,0 +1,71 @@
+@import "variables";
+
+.card{
+    height: 300px;
+    border-radius: 17px;
+    margin:20px;
+    width: calc(100% - 40px);
+    background-image: url("https://www.teknozeka.com/wp-content/uploads/2020/03/wp-header-logo-28.png");
+    background-size: cover;
+    position: relative;
+    background-clip: content-box;
+}
+
+.card-container{
+    margin:-20px;
+    margin-top: 20px;
+    display:grid;
+    grid-template-columns: repeat(auto-fill,minmax(400px, 1fr));
+}
+
+.info{
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    background-color:white;
+    position: absolute;
+    bottom:0px;
+    width: 100%;
+    height:70px;
+    padding-left:20px;
+    padding-right:20px;
+    transition:0.4s;
+    overflow: hidden;
+    border: solid rgb(185, 190, 199) 1px;
+    border-top: none;
+    border-radius: 0px 0px 15px 15px;
+}
+
+.info:hover{
+    height: 100%;
+    border: solid rgb(185, 190, 199) 1px;
+    border-radius: 15px 15px 15px 15px;
+}
+
+.info h1{
+    margin-top: 18px;
+    font-size:30px;
+    font-family: Rubik;
+    display: inline-block;
+    margin-bottom:0px;
+}
+
+.bubble {
+    background-color: $redDefault;
+    border-radius: 30px;
+    float:left;
+    direction: rtl;
+    min-width:1.1em;
+    height:1.1em;
+    padding:5px;
+    text-align: center;
+    color:white;
+    font-family: Rubik;
+    margin-right: 5px;
+    margin-top:20px;
+    font-weight:900;
+}
+
+.bubble-container{
+    float:right;
+}
