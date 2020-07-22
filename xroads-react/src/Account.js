@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navbar } from './ClubPage'
+import { Navbar } from './ClubBrowser'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './styles/_accountForm.scss';
 class NotFound extends React.Component {

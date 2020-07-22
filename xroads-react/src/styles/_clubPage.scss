@@ -1,0 +1,40 @@
+@import "variables";
+@import "commonComponents";
+
+.clubDetails {
+    padding: 40px 20px;
+    max-width:1000px;
+    margin:auto;
+}
+
+.slideshow {
+    left:0;
+    height:600px;
+    background-color: gray;
+    width:100%;
+    padding: 0;
+    margin: 0;
+    overflow-y: hidden;
+}
+
+.clubHeading {
+    border-left: solid 13px $redDefault;
+    padding:10px 20px 1px 20px;
+}
+
+.clubHeading t {
+    font-family: Rubik;
+    font-size: 60px;
+    line-height: .8;
+}
+
+.clubHeading h1 {
+    font-family: Raleway;
+    font-size: 20px;
+    line-height: .9;
+    margin-top:20px;
+}
+
+.details {
+    padding:30px 0;
+}

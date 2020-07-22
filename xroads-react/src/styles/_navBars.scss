@@ -6,7 +6,7 @@
   @extend .flex-container;
 
   /*Sticks navbar at the top*/
-  position: fixed;
+  position: absolute;
   max-height: $navbarHeight;
   width: 100%;
   top: 0px;
