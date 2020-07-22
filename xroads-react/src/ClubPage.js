@@ -1,4 +1,5 @@
 import React from 'react';
+<<<<<<< HEAD
 import './styles/_App.scss';
 import './styles/_navBars.scss';
 import './styles/_searchBar.scss';
@@ -12,13 +13,20 @@ var clubs = [
   ["Model UN", "https://unsplash.it/800/600?image=666", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.", ["TU"]],
   ["Model UN", "https://unsplash.it/800/600?image=420", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.", ["M","W","S"]],
 ];
+=======
+import './styles/_navBars.scss';
+import './styles/_searchBar.scss';
+>>>>>>> f6f95ef9bba80acb8598ad9a7fa9f50f3184b444
 
 class ClubPage extends React.Component {
   constructor(props) {
     super(props);
+<<<<<<< HEAD
     this.state = {
       value: null,
     };
+=======
+>>>>>>> f6f95ef9bba80acb8598ad9a7fa9f50f3184b444
   }
 
   render() {
@@ -27,9 +35,12 @@ class ClubPage extends React.Component {
         <Navbar>xroads</Navbar>
         <div class="body">
           <SearchBar></SearchBar>
+<<<<<<< HEAD
           <div class="card-container">
             {clubs.map(club => <ClubCard key={club} title={club[0]} imageURL={club[1]} description={club[2]} meetTimes={club[3]}/>)} 
           </div>
+=======
+>>>>>>> f6f95ef9bba80acb8598ad9a7fa9f50f3184b444
         </div>
       </div>
     );
@@ -39,9 +50,12 @@ class ClubPage extends React.Component {
 class Navbar extends React.Component {
   constructor(props) {
     super(props);
+<<<<<<< HEAD
     this.state = {
       value: null,
     };
+=======
+>>>>>>> f6f95ef9bba80acb8598ad9a7fa9f50f3184b444
   }
 
   render() {
@@ -77,13 +91,17 @@ class SearchBar extends React.Component {
 class ClubCard extends React.Component {
   constructor(props) {
     super(props);
+<<<<<<< HEAD
     this.state = {
       value: null,
     };
+=======
+>>>>>>> f6f95ef9bba80acb8598ad9a7fa9f50f3184b444
   }
 
   render() {
     return (
+<<<<<<< HEAD
       <div class="card" style={{ backgroundImage:`url(${this.props.imageURL})` }}>
         <div class="info">
           <h1>{this.props.title}</h1>
@@ -93,6 +111,9 @@ class ClubCard extends React.Component {
           <p>{this.props.description}</p>
         </div>
       </div>
+=======
+      <div></div>
+>>>>>>> f6f95ef9bba80acb8598ad9a7fa9f50f3184b444
     );
   }
 }
@@ -100,9 +121,12 @@ class ClubCard extends React.Component {
 class ClubInfoPreview extends React.Component {
   constructor(props) {
     super(props);
+<<<<<<< HEAD
     this.state = {
       value: null,
     };
+=======
+>>>>>>> f6f95ef9bba80acb8598ad9a7fa9f50f3184b444
   }
 
   render() {
@@ -113,4 +137,8 @@ class ClubInfoPreview extends React.Component {
 }
 
 
+<<<<<<< HEAD
 export default ClubPage;
+=======
+export {ClubPage, Navbar};
+>>>>>>> f6f95ef9bba80acb8598ad9a7fa9f50f3184b444

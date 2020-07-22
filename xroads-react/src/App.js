@@ -1,95 +1,14 @@
 import React from 'react';
-import './styles/_App.scss';
-import './styles/_navBars.scss';
-import './styles/_searchBar.scss';
+import { BrowserRouter as Router, BrowserRouter, Route, Switch } from "react-router-dom";
+import {ClubPage} from './ClubPage';
+import {Accounts, LoginPage, SignupPage, NotFound} from './Account';
 
-class ClubPage extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: null,
-    };
-  }
-
-  render() {
+export default function App() {
     return (
-      <div>
-        <Navbar>xroads</Navbar>
-        <div class="body">
-          <SearchBar></SearchBar>
-        </div>
-      </div>
+        <Switch>
+            <Route exact path="/" component={ClubPage} />
+            <Route path="/accounts" component={Accounts}/>
+            <Route component={NotFound}/>
+        </Switch>
     );
-  }
 }
-
-class Navbar extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: null,
-    };
-  }
-
-  render() {
-    return (
-      <div class="navbar-simple">
-        <div class="xroadsLogo"><h1>xroads</h1></div>
-        <div class="navbar-buttons">
-          <button>logout</button>
-        </div>
-      </div>
-    );
-  }
-}
-
-class SearchBar extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return (
-      <div>
-        <form class="default-searchbar">
-          <input type="text" id="search-box" placeholder="Search for clubs..."></input>
-          <input id="search-submit" type="submit" value=""></input>
-        </form>
-      </div>
-
-    );
-  }
-}
-
-class ClubCard extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: null,
-    };
-  }
-
-  render() {
-    return (
-      <div></div>
-    );
-  }
-}
-
-class ClubInfoPreview extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: null,
-    };
-  }
-
-  render() {
-    return (
-      <div></div>
-    );
-  }
-}
-
-
-export default ClubPage;

@@ -2,22 +2,17 @@
 @import "commonComponents";
 
 
-
-
-
-
-
-
 .navbar-simple {
   @extend .flex-container;
 
   /*Sticks navbar at the top*/
   position: fixed;
-  max-height: navbarHeight;
+  max-height: $navbarHeight;
   width: 100%;
   top: 0px;
   right: 0px;
   overflow: hidden;
+  margin-bottom: $navbarHeight;
 
   /*Styling of background and text*/
   background-color: $redDefault;
