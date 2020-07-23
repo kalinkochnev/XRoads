@@ -53,6 +53,7 @@ class SlideSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Slide
         fields = '__all__'
+        allow_null = True
 
 class BasicClubInfoSerial(serializers.ModelSerializer):
     meeting_days = MeetingDaysSerializer(many=True)
@@ -65,10 +66,10 @@ class ClubDetailSerializer(serializers.ModelSerializer):
     meeting_days = MeetingDaysSerializer(many=True)
     members = AnonProfileSerializer(many=True, fields=('first_name', 'last_name'))
     slides = SlideSerializer(many=True)
-
     class Meta:
         model = Club
         fields = '__all__'
+
 
 class BasicInfoSchoolSerial(serializers.ModelSerializer):
     class Meta:

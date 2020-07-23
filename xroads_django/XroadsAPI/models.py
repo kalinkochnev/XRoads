@@ -66,6 +66,9 @@ class Profile(AbstractUser):
     def school(self):
         return School.objects.get(students__in=[self])
 
+    def make_editor(self, club):
+        assert club.school == self.school, "You can't make somebody the editor of a club they aren't in"
+        
 
 class Slide(models.Model):
     class Meta:
@@ -183,6 +186,11 @@ class Club(models.Model):
     def toggle_hide(self, save=True):
         self.is_visible = not self.is_visible
         self.make_save(save)
+
+    # TODO add test for this
+    @property
+    def school(self):
+        return School.objects.get(clubs=[self])
 
 
 class School(models.Model):

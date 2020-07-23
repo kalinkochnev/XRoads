@@ -4,6 +4,7 @@ from XroadsAPI.serializers import *
 from XroadsAPI.tests.test_models import get_temp_img, TestProfileModel
 from django.test import override_settings
 import pytest
+from collections import OrderedDict
 
 import tempfile
 class TestProfileSerializer(TestCase):
@@ -28,20 +29,20 @@ class TestProfileSerializer(TestCase):
             'first_name': user_obj.first_name,
             'last_name': user_obj.last_name,
             'is_anon': user_obj.is_anon,
-            'phone_num': None
+            'phone': None
         }
 
         assert expected == ProfileSerializer(user_obj).data
 
     def test_from_dict(self):
         user_obj:Profile = Profile(email="a@email.com", password="password", first_name="a", last_name="b", phone="1234567899", is_anon=True)
-        data = {
+        data = OrderedDict({
             'email': user_obj.email,
             'first_name': user_obj.first_name,
             'last_name': user_obj.last_name,
             'is_anon': user_obj.is_anon,
             'phone': user_obj.phone,
-        }
+        })
 
         serializer = ProfileSerializer(data=data)
         serializer.is_valid()
@@ -126,3 +127,26 @@ class TestSlideSerialization(TestCase):
 
 
         assert SlideSerializer(slide).data == expected
+
+class TestClubSerialization(TestCase):
+    @override_settings(MEDIA_ROOT=tempfile.gettempdir())
+    def test_creation(self):
+        # Creates temp test iamge
+        temp_file = tempfile.NamedTemporaryFile()
+        test_image = get_temp_img(temp_file)
+
+        club:Club = Club.objects.create(name="a", description="b", main_img=test_image.name, hours="7hrs/week", is_visible=True)
+        data = OrderedDict({
+            'name': club.name,
+            'description': club.description,
+            'main_img': club.main_img.url,
+            'hours': club.hours,
+            'is_visible': club.is_visible,
+            'meeting_days': [],
+            'members': [],
+            'slides': [],
+        })
+
+        serializer = ClubDetailSerializer(data=data)
+        serializer.is_valid()
+        print(serializer.validated_data)
