@@ -208,3 +208,7 @@ class School(models.Model):
     def add_club(self, club: Club, save=True):
         self.clubs.add(club)
         self.make_save(save)
+
+
+class District(models.Model):
+    schools = models.ManyToManyField(School)
