@@ -11,8 +11,10 @@ import re
 from XroadsAPI.exceptions import *
 from XroadsAPI.manager import CustomUserManager
 
+from guardian.mixins import GuardianUserMixin
 
-class Profile(AbstractUser):
+
+class Profile(AbstractUser, GuardianUserMixin):
     """User model that uses email instead of username."""
     email = models.EmailField(_('email address'), unique=True)
     username = None
