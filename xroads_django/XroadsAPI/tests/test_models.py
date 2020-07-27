@@ -287,7 +287,7 @@ class TestClub(TestCase):
 
     @classmethod
     @override_settings(MEDIA_ROOT=tempfile.gettempdir())
-    def create_test_club(cls):
+    def create_test_club(cls, id=-1):
         name = "Test Club"
         description = "This is a club description"
         commitment = "7hrs/week"
@@ -296,7 +296,10 @@ class TestClub(TestCase):
         temp_file = tempfile.NamedTemporaryFile()
         test_image = get_temp_img(temp_file)
 
-        return Club.objects.create(name=name, description=description, main_img=test_image.name, hours=commitment, is_visible=is_visible)
+        if id == -1:
+            return Club.objects.create(name=name, description=description, main_img=test_image.name, hours=commitment, is_visible=is_visible)
+        else:
+            return Club.objects.create(id=id,name=name, description=description, main_img=test_image.name, hours=commitment, is_visible=is_visible)
 
     def test_add_meet_day(self):
         day_obj1 = self.club.add_meet_day(MeetDay.Day.MONDAY)
