@@ -212,3 +212,4 @@ class School(models.Model):
 
 class District(models.Model):
     schools = models.ManyToManyField(School)
+    name = models.CharField(max_length=40)
