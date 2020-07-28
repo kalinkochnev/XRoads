@@ -1,56 +1,72 @@
 import pytest
 from XroadsAPI.models import *
-from XroadsAPI.tests.test_models import TestClub, TestProfileModel
 from django.test import TestCase
-from XroadsAPI.permissions import Hierarchy, Role
+from XroadsAPI.permissions import Role
+from XroadsAPI.permisson_constants import Hierarchy
+import XroadsAPI.permisson_constants as PermConst
+
 
 class TestRole(TestCase):
-    def test_get_role(self):
-        Role.all_roles = [
-            Hierarchy(District, name='District Admin'),
-            Hierarchy(District, School, name='School Admin'),
-            Hierarchy(District, School, Club, name='School Club'),
-        ]
 
-        assert Role().get_role('District Admin') == Role.all_roles[0]
+    @classmethod
+    def setUpClass(cls):
+        PermConst.ROLES = [
+            Hierarchy(District, name=PermConst.DISTRICT_ADMIN),
+            Hierarchy(District, School, name=PermConst.SCHOOL_ADMIN),
+            Hierarchy(District, School, Club, name=PermConst.CLUB_EDITOR),
+        ]
+        return super().setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        return super().tearDownClass()
+
+    def test_get_role(self):
+        assert Role.get_role(PermConst.DISTRICT_ADMIN) == PermConst.ROLES[0]
+
+    def test_role_matcher(self):
+        district1 = District.objects.create(name="d1")
+        role = Role.create(district1)
+        assert role.role == PermConst.DISTRICT_ADMIN
 
     def test_create_role_1_layer(self):
-        level_namesict1 = District.objects.create(name="d1")
-        role = Role.create(district1)
+        district1 = District.objects.create(id=1, name="d1")
+        role = Role.create(district1, role=PermConst.DISTRICT_ADMIN)
         assert role.str == 'District-1/'
 
     def test_create_role_2_layers(self):
-        district1 = District.objects.create(name="d1")
-        school1 = School.objects.create(name="s1")
+        district1 = District.objects.create(id=1, name="d1")
+        school1 = School.objects.create(id=1, name="s1")
 
-        role = Role.create(district1, school1)
+        role = Role.create(district1, school1, role=PermConst.SCHOOL_ADMIN)
         assert role.str == 'District-1/School-1/'
 
-    def test_create_role_3_layers(self):
-        district1 = District.objects.create(name="d1")
-        school1 = School.objects.create(name="s1")
-        club1 = TestClub.create_test_club()
+    def test_create_role_3_layers(self, create_club):
+        district1 = District.objects.create(id=1, name="d1")
+        school1 = School.objects.create(id=1, name="s1")
+        club1 = create_club(1)
 
-        role = Role.create(district1, school1, club1)
+        role = Role.create(district1, school1, club1,
+                           role=PermConst.CLUB_EDITOR)
         assert role.str == 'District-1/School-1/Club-1/'
 
     def test_add_perm(self):
         district1 = District.objects.create(name="d1")
 
-        role = Role.create(district1, school1)
+        role = Role.create(district1, role=PermConst.DISTRICT_ADMIN)
         role.add_perms('update-district', 'create-school')
 
-        assert 'update-district' in role
-        assert 'create-school' in role
+        assert 'update-district' in role.permissions
+        assert 'create-school' in role.permissions
 
     def test_match_perms_1_layer_multi_param_str(self):
-        district1 = District.objects.create(name="d1")
+        district1 = District.objects.create(id=1, name="d1")
 
         role = Role.create(district1, school1)
         role.add_perms('update-district', 'create-school')
 
         input_str = 'District-1/perm=[create-district]'
-        assert role.has_perms(input_str) == True 
+        assert role.has_perms(input_str) == True
 
         input_str = 'District-1/perm=[create-district, update-district]'
         assert role.has_perms(input_str) == True
@@ -58,10 +74,10 @@ class TestRole(TestCase):
         input_str = 'District-1/perm=[create-district, update-district, some-other-perm]'
         assert role.has_perms(input_str) == False
 
-    def test_match_perms_3_layer_str(self):
+    def test_match_perms_3_layer_str(self, create_club):
         district1 = District.objects.create(id=1, name="d1")
         school2 = School.objects.create(id=2, name='s2')
-        club52 = TestClub.create_test_club(id=52)
+        club52 = create_club(id=52)
 
         role = Role.create(district1)
         role.add_perms('update-district', 'create-school')
@@ -84,10 +100,10 @@ class TestRole(TestCase):
 
         assert role.has_perms(input_str) == True
 
-    def test_not_match(self):
+    def test_not_match(self, create_club):
         district1 = District.objects.create(name="d1")
         school1 = School.objects.create(name="s1")
-        club1 = TestClub.create_test_club()
+        club1 = create_club(id=1)
 
         role = Role.create(district1, school1, club1)
         role.add_perms('edit-club')
@@ -95,11 +111,11 @@ class TestRole(TestCase):
         input_str = 'District-2/School-4/Club-1/perms=[edit-clubs]'
         assert role.has_perms(input_str) == False
 
-    def test_give_profile_role(self):
+    def test_give_profile_role(self, create_club):
         prof = TestProfileModel.create_test_prof(1)
         district1 = District.objects.create(name="d1")
         school1 = School.objects.create(name="s1")
-        club1 = TestClub.create_test_club()
+        club1 = create_club()
 
         role = Role.create(district1, school1, club1)
         role.add_perms('edit-club')
@@ -123,17 +139,18 @@ class TestHierarchy(TestCase):
 
     def test_create_perm_str(self):
         heirarchy = Hierarchy(District, School, name="School Admin")
-        perm_str = heirarchy.perm_str(District=1, School=2, permissions=['create-blah', 'testing123'])
+        perm_str = heirarchy.perm_str(District=1, School=2, permissions=[
+                                      'create-blah', 'testing123'])
         assert perm_str == 'District-1/School-2/perms=[create-blah, testing123]'
 
-    @pytest.mark.skip(msg="not done")
     def test_role_from_str(self):
+        district1 = District.objects.create(id=1, name="d1")
+        school2 = School.objects.create(id=2, name="s1")
+        role_expected = Role.create(
+            district1, school2, role=PermConst.SCHOOL_ADMIN)
+        role_expected.add_perms('create-blah', 'testing123')
+
         perm_str = 'District-1/School-2/perms=[create-blah, testing123]'
         role_test = Role.from_str(perm_str)
 
-
-        district1 = District.objects.create(id=1, name="d1")
-        school1 = School.objects.create(id=2, name="s1")
-        role_expected = Role.create(district1, school1, club1)
-        role.add_perms('create-blah', 'testing123')
-        
+        assert role_expected.str == role_test.str

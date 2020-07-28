@@ -39,7 +39,7 @@ class Profile(AbstractUser, GuardianUserMixin):
         return None if self.phone is None else int(self.phone)
 
     @phone_num.setter
-    def phone_num(self, val:int):
+    def phone_num(self, val: int):
         self.phone = str(val)
         self.make_save(save=True)
 
@@ -70,7 +70,7 @@ class Profile(AbstractUser, GuardianUserMixin):
 
     def make_editor(self, club):
         assert club.school == self.school, "You can't make somebody the editor of a club they aren't in"
-        
+
 
 class Slide(models.Model):
     class Meta:
