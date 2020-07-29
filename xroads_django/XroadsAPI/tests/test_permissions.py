@@ -127,7 +127,46 @@ class TestRole:
                 for r_b in role_b:
                     assert r_a._check_comparable(r_b)
         
+    def test_comparison_operators(self, create_club):
+        district1 = District.objects.create(id=1, name="d1")
+        school1 = School.objects.create(name="s1")
+        club1 = create_club(id=1)
 
+        role1 = Role.create(district1)
+        role1.add_perms('update-district', 'create-school')
+        role2 = Role.create(district1, school1)
+        role2.add_perms('update-school', 'create-club')
+        role3 = Role.create(district1, school1, club1)
+        role3.add_perms('edit-club')
+
+        # Test when exactly equal
+        assert role1 == role1
+
+        # Test when role is higher level than other
+        assert role1 > role2
+        assert role1 > role3
+        assert role2 > role3
+
+        # Test when role is less than other
+        assert role3 < role2
+        assert role3 < role1
+        assert role2 < role1
+
+        temp_role = Role.create(district1)
+        temp_role.add_perms('only-one-perm')
+
+        # Test when same level as other role but more perms
+        assert role1 > temp_role
+
+        # Test when same level as other role but fewer perms
+        assert temp_role < role1
+
+        # Test <= and >= 
+        assert role1 >= role2
+        assert role1 >= role1
+
+        assert role2 <= role1
+        assert role2 <= role2
 
 
 
