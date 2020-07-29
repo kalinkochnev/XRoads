@@ -6,6 +6,7 @@ from XroadsAPI import permisson_constants as PermConst
 from XroadsAPI.permisson_constants import Hierarchy
 from django.contrib.contenttypes.models import ContentType
 
+
 class Role:
     def __init__(self, model_instances=[], **kwargs):
         self.model_instances = model_instances
@@ -13,6 +14,7 @@ class Role:
 
         role = kwargs.get('role', self._match_role(model_instances))
         self.role_hierarchy = self.get_hierarchy(role)
+        self.check_role_valid()
 
     @classmethod
     def create(cls, *model_instances, **kwargs: dict):
@@ -93,9 +95,11 @@ class Role:
 
     def has_perms(self, role_str):
         new_role = Role.from_str(role_str)
-        desired_params = set(new_role.permissions)
-        poss_params = set(self.permissions)
-        return poss_params.intersection(desired_params) == desired_params
+
+        try:
+            return self >= new_role
+        except RoleNotComparable:
+            return False
 
     def __eq__(self, other_inst: Role):
         return self._comparison(other_inst) == 0
@@ -129,11 +133,47 @@ class Role:
             return self._compare_levels(other_inst)
 
     def _check_comparable(self, other_inst: Role):
-        smaller_len = self if len(self.model_instances) < len(other_inst.model_instances) else other_inst
+        smaller_len = self if len(self.model_instances) < len(
+            other_inst.model_instances) else other_inst
         for i in range(len(smaller_len.model_instances)):
             if other_inst.model_instances[i] != self.model_instances[i]:
-                raise RoleNotComparable('You tried to compare roles with different hierarchys')
-        
+                raise RoleNotComparable(
+                    'You tried to compare roles with different hierarchys')
+
+    def check_role_valid(self):
+        """
+        This checks that starting from the top of the model instances, the instances below belong directly to the one above
+            Ex: District-1/School-3/Club-5/
+            Club-5 must be in School-3 and School-3 must be in District-1
+            Distict
+        This can query the db quite a few times
+        """
+
+
+        def is_model_contained(inner_m, outer_m):
+            # In District-1/School-3/  School-3 is the inner model, District-1 is the outer model
+            m2m_query = f'{outer_m.__class__.__name__.lower()}__in'
+            m2m_value = [outer_m]
+            
+            args = {
+                'id': inner_m.id,
+                m2m_query: m2m_value,
+            }
+
+            try:
+                inner_m.__class__.objects.get(**args)
+                return True
+            except inner_m.DoesNotExist:
+                return False
+            
+        for i in range(len(self.model_instances)-1):
+            outer_m = self.model_instances[i]
+            inner_m = self.model_instances[i+1]
+            if not is_model_contained(inner_m, outer_m):
+                raise InvalidRoleCreated(f'Model instance: {inner_m} is not a part of model instance: {outer_m}')
+
+
+
     def _compare_levels(self, other_inst: Role):
         if len(self.model_instances) < len(other_inst.model_instances):
             return 1

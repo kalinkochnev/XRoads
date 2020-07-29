@@ -14,6 +14,7 @@ from XroadsAPI.manager import CustomUserManager
 from guardian.mixins import GuardianUserMixin
 
 
+
 class Profile(AbstractUser, GuardianUserMixin):
     """User model that uses email instead of username."""
     email = models.EmailField(_('email address'), unique=True)
@@ -194,7 +195,7 @@ class Club(models.Model):
     def school(self):
         return School.objects.get(clubs=[self])
 
-
+# TODO make clubs many to one
 class School(models.Model):
     name = models.CharField(max_length=40)
     img = models.ImageField()
@@ -208,7 +209,6 @@ class School(models.Model):
     def add_club(self, club: Club, save=True):
         self.clubs.add(club)
         self.make_save(save)
-
 
 class District(models.Model):
     schools = models.ManyToManyField(School)

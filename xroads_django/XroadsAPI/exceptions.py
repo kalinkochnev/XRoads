@@ -6,3 +6,6 @@ class InvalidSlideTemplate(Exception):
 
 class RoleNotComparable(Exception):
     pass
+
+class InvalidRoleCreated(Exception):
+    pass
