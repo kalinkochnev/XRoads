@@ -77,7 +77,6 @@ class TestRole:
         role1.add_perms('update-district', 'create-school')
         role2 = Role.create(district1, school1)
         role2.add_perms('update-school', 'create-club')
-
         role3 = Role.create(district1, school1, club1)
         role3.add_perms('edit-club')
 
@@ -104,7 +103,30 @@ class TestRole:
         # Test when same level as other role but fewer perms
         assert temp_role._comparison(role1) == -1
 
+    def test_uncomparable_exception(self, create_club):
+        district1 = District.objects.create(name="d1")
+        school1 = School.objects.create(name="s1")
+        club1 = create_club(id=1)
 
+        district2 = District.objects.create(name="d2")
+        school2 = School.objects.create(name="s2")
+        club2 = create_club(id=2)
+
+        role1 = Role.create(district1)
+        role2 = Role.create(district1, school1)
+        role3 = Role.create(district1, school1, club1)
+        role_a = [role1, role2, role3]
+
+        role4 = Role.create(district2)
+        role5 = Role.create(district2, school2)
+        role6 = Role.create(district2, school2, club2)
+        role_b = [role4, role5, role6]
+
+        with pytest.raises(RoleNotComparable):
+            for r_a in role_a:
+                for r_b in role_b:
+                    assert r_a._check_comparable(r_b)
+        
 
 
 
