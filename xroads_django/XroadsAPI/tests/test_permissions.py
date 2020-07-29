@@ -1,25 +1,20 @@
 import pytest
 from XroadsAPI.models import *
-from django.test import TestCase
 from XroadsAPI.permissions import Role
 from XroadsAPI.permisson_constants import Hierarchy
 import XroadsAPI.permisson_constants as PermConst
 
 
-class TestRole(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        PermConst.ROLES = [
-            Hierarchy(District, name=PermConst.DISTRICT_ADMIN),
-            Hierarchy(District, School, name=PermConst.SCHOOL_ADMIN),
-            Hierarchy(District, School, Club, name=PermConst.CLUB_EDITOR),
-        ]
-        return super().setUpClass()
+@pytest.fixture
+def perm_const_roles():
+    PermConst.ROLES = [
+        Hierarchy(District, name=PermConst.DISTRICT_ADMIN),
+        Hierarchy(District, School, name=PermConst.SCHOOL_ADMIN),
+        Hierarchy(District, School, Club, name=PermConst.CLUB_EDITOR),
+    ]
 
-    @classmethod
-    def tearDownClass(cls):
-        return super().tearDownClass()
-
+@pytest.mark.usefixtures("perm_const_roles", "db")
+class TestRole:
     def test_get_role(self):
         assert Role.get_role(PermConst.DISTRICT_ADMIN) == PermConst.ROLES[0]
 
@@ -46,7 +41,7 @@ class TestRole(TestCase):
         club1 = create_club(1)
 
         role = Role.create(district1, school1, club1,
-                           role=PermConst.CLUB_EDITOR)
+                            role=PermConst.CLUB_EDITOR)
         assert role.str == 'District-1/School-1/Club-1/'
 
     def test_add_perm(self):
@@ -126,9 +121,8 @@ class TestRole(TestCase):
         role2.add_perms('testing-123')
         assert role2.has_perms(user=prof) == False
 
-
-class TestHierarchy(TestCase):
-
+@pytest.mark.usefixtures("db`")
+class TestHierarchy:
     def test_create_hierarchy(self):
         heirarchy = Hierarchy(District, School, Club, name="Club Editor")
 
@@ -139,7 +133,7 @@ class TestHierarchy(TestCase):
     def test_create_perm_str(self):
         heirarchy = Hierarchy(District, School, name="School Admin")
         perm_str = heirarchy.perm_str(District=1, School=2, permissions=[
-                                      'create-blah', 'testing123'])
+                                        'create-blah', 'testing123'])
         assert perm_str == 'District-1/School-2/perms=[create-blah, testing123]'
 
     def test_role_from_str(self):
