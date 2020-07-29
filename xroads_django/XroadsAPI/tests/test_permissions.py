@@ -7,7 +7,6 @@ import XroadsAPI.permisson_constants as PermConst
 
 
 class TestRole(TestCase):
-
     @classmethod
     def setUpClass(cls):
         PermConst.ROLES = [

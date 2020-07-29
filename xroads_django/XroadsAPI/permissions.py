@@ -74,6 +74,8 @@ class Role:
                 model_instances.append(parse_model_inst(chunk))
 
         role = cls.create(*model_instances)
+        role.add_perms(*permissions)
+        return role
 
     def add_perms(self, *permissions):
         self.permissions.extend(permissions)
@@ -89,3 +91,6 @@ class Role:
 
     def has_perms(self, input_str, user=None):
         pass
+
+    def __eq__(self, other_inst):
+        return self.str == other_inst.str
