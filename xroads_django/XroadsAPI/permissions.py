@@ -12,7 +12,7 @@ class Role:
         self.permissions = kwargs.get('permissions', [])
 
         role = kwargs.get('role', self._match_role(model_instances))
-        self.role_hierarchy = self.get_role(role)
+        self.role_hierarchy = self.get_hierarchy(role)
 
     @classmethod
     def create(cls, *model_instances, **kwargs: dict):
@@ -26,7 +26,7 @@ class Role:
         return self.role_hierarchy.perm_str(**model_info, include_perms=False)
 
     @classmethod
-    def get_role(cls, name) -> PermConst.Hierarchy:
+    def get_hierarchy(cls, name) -> PermConst.Hierarchy:
         results = cls._filter(
             PermConst.ROLES, lambda x: x.name == name, count=1)
         if len(results) == 0:
@@ -97,5 +97,51 @@ class Role:
         poss_params = set(self.permissions)
         return poss_params.intersection(desired_params) == desired_params
 
-    def __eq__(self, other_inst):
-        return self.str == other_inst.str
+    def __eq__(self, other_inst: Role):
+        return self._comparison(other_inst) == 0
+
+    def __lt__(self, other_inst: Role):
+        return self._comparison(other_inst) == -1
+
+    def __le__(self, other_inst: Role):
+        comparison = self._comparison(other_inst)
+        return comparison == -1 or comparison == 0
+
+    def __gt__(self, other_inst: Role):
+        return self._comparison(other_inst) == 1
+
+    def __ge__(self, other_inst: Role):
+        comparison = self._comparison(other_inst)
+        return comparison == 1 or comparison == 0
+
+    @property
+    def highest_level(self):
+        return self.model_instances[-1]
+
+    def _comparison(self, other_inst):
+        # Raised RoleNotComparable if you try to compare incompatible roles
+        self._check_comparable(other_inst)
+
+        # Returns 1 if first is greater, -1 if second is greater, 0 if equal
+        if self.model_instances == other_inst.model_instances:
+            return self._compare_perms(other_inst)
+        else:
+            return self._compare_levels(other_inst)
+
+    def _check_comparable(self, other_inst: Role):
+        smaller_len = self if len(self.model_instances) < len(other_inst.model_instances) else other_inst
+        for i in range(len(smaller_len.model_instances)):
+            if other_inst.model_instances[i] != self.model_instances[i]:
+                raise RoleNotComparable('You tried to compare roles with different hierarchys')
+        
+    def _compare_levels(self, other_inst: Role):
+        if len(self.model_instances) < len(other_inst.model_instances):
+            return 1
+        return -1
+
+    def _compare_perms(self, other_inst: Role):
+        if self.permissions == other_inst.permissions:
+            return 0
+        elif len(self.permissions) > len(other_inst.permissions):
+            return 1
+        return -1

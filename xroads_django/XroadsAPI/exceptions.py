@@ -3,3 +3,6 @@ class SlideParamError(Exception):
 
 class InvalidSlideTemplate(Exception):
     pass
+
+class RoleNotComparable(Exception):
+    pass

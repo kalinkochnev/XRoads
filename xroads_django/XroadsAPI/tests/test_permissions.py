@@ -16,12 +16,12 @@ def perm_const_roles():
 @pytest.mark.usefixtures("perm_const_roles", "db")
 class TestRole:
     def test_get_role(self):
-        assert Role.get_role(PermConst.DISTRICT_ADMIN) == PermConst.ROLES[0]
+        assert Role.get_hierarchy(PermConst.DISTRICT_ADMIN) == PermConst.ROLES[0]
 
     def test_role_matcher(self):
         district1 = District.objects.create(name="d1")
         role = Role.create(district1)
-        assert role.role == PermConst.DISTRICT_ADMIN
+        assert role.role_hierarchy.name == PermConst.DISTRICT_ADMIN
 
     def test_create_role_1_layer(self):
         district1 = District.objects.create(id=1, name="d1")
@@ -67,6 +67,47 @@ class TestRole:
 
         input_str = 'District-1/perms=[create-school, update-district, some-other-perm]'
         assert role.has_perms(input_str) == False
+
+    def test_comparison_method(self, create_club):
+        district1 = District.objects.create(id=1, name="d1")
+        school1 = School.objects.create(name="s1")
+        club1 = create_club(id=1)
+
+        role1 = Role.create(district1)
+        role1.add_perms('update-district', 'create-school')
+        role2 = Role.create(district1, school1)
+        role2.add_perms('update-school', 'create-club')
+
+        role3 = Role.create(district1, school1, club1)
+        role3.add_perms('edit-club')
+
+        # Test when exactly equal
+        assert role1._comparison(role1) == 0
+
+        # Test when role is higher level than other
+        assert role1._comparison(role2) == 1
+        assert role1._comparison(role3) == 1
+        assert role2._comparison(role3) == 1
+
+        # Test when role is less than other
+        assert role3._comparison(role2) == -1
+        assert role3._comparison(role1) == -1
+        assert role2._comparison(role1) == -1
+
+
+        temp_role = Role.create(district1)
+        temp_role.add_perms('only-one-perm')
+
+        # Test when same level as other role but more perms
+        assert role1._comparison(temp_role) == 1
+
+        # Test when same level as other role but fewer perms
+        assert temp_role._comparison(role1) == -1
+
+
+
+
+
 
     def test_match_perms_3_layer_str(self, create_club):
         district1 = District.objects.create(id=1, name="d1")

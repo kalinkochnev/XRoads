@@ -11,7 +11,7 @@ class Hierarchy:
         self.levels: List[models.Model] = models
 
     @property
-    def level_names(self):
+    def level_names(self) -> List[models.Model]:
         return [level.__name__ for level in self.levels]
 
     def perm_str(self, permissions=[], include_perms=True, **kwargs):
