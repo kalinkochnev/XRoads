@@ -56,16 +56,16 @@ class TestRole:
     def test_match_perms_1_layer_multi_param_str(self):
         district1 = District.objects.create(id=1, name="d1")
 
-        role = Role.create(district1, school1)
+        role = Role.create(district1)
         role.add_perms('update-district', 'create-school')
 
-        input_str = 'District-1/perm=[create-district]'
+        input_str = 'District-1/perms=[update-district]'
         assert role.has_perms(input_str) == True
 
-        input_str = 'District-1/perm=[create-district, update-district]'
+        input_str = 'District-1/perms=[create-school, update-district]'
         assert role.has_perms(input_str) == True
 
-        input_str = 'District-1/perm=[create-district, update-district, some-other-perm]'
+        input_str = 'District-1/perms=[create-school, update-district, some-other-perm]'
         assert role.has_perms(input_str) == False
 
     def test_match_perms_3_layer_str(self, create_club):
@@ -77,18 +77,17 @@ class TestRole:
         role.add_perms('update-district', 'create-school')
 
         # Check that School-2 is a part of District-1, and Club-52 is a part of School-2
-        input_str = 'District-1/School-2/Club-52/perm=[update-club]'
+        input_str = 'District-1/School-2/Club-52/perms=[update-club]'
         assert role.has_perms(input_str) == True
 
         # Check that School-5 is not a part of District-1
-        input_str = 'District-1/School-5/Club-52/perm=[update-club]'
+        input_str = 'District-1/School-5/Club-52/perms=[update-club]'
         assert role.has_perm(input_str) == False
 
     def test_match_higher_level(self):
         district1 = District.objects.create(name="d1")
 
-        role = Role.create(district1, school1)
-        role.add_perms('create-club', 'update-school')
+        role = Role.create(district1)
 
         input_str = 'District-1/School-1/perm=[create-club, update-school]'
 
@@ -105,8 +104,8 @@ class TestRole:
         input_str = 'District-2/School-4/Club-1/perms=[edit-clubs]'
         assert role.has_perms(input_str) == False
 
-    def test_give_profile_role(self, create_club):
-        prof = TestProfileModel.create_test_prof(1)
+    def test_give_profile_role(self, create_club, create_test_prof):
+        prof = create_test_prof(1)
         district1 = District.objects.create(name="d1")
         school1 = School.objects.create(name="s1")
         club1 = create_club()
@@ -121,7 +120,7 @@ class TestRole:
         role2.add_perms('testing-123')
         assert role2.has_perms(user=prof) == False
 
-@pytest.mark.usefixtures("db`")
+@pytest.mark.usefixtures("db")
 class TestHierarchy:
     def test_create_hierarchy(self):
         heirarchy = Hierarchy(District, School, Club, name="Club Editor")
@@ -139,11 +138,13 @@ class TestHierarchy:
     def test_role_from_str(self):
         district1 = District.objects.create(id=1, name="d1")
         school2 = School.objects.create(id=2, name="s1")
-        role_expected = Role.create(
-            district1, school2, role=PermConst.SCHOOL_ADMIN)
+
+        role_expected = Role.create(district1, school2)
         role_expected.add_perms('create-blah', 'testing123')
 
         perm_str = 'District-1/School-2/perms=[create-blah, testing123]'
         role_test = Role.from_str(perm_str)
 
         assert role_expected.str == role_test.str
+
+        # Testing weird bug where 

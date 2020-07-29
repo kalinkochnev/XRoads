@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from XroadsAPI.models import *
 
 
@@ -43,10 +45,15 @@ class Hierarchy:
     def __str__(self):
         return self.name
 
+    @property
+    def highest_level(self):
+        return self.levels[-1]
 
 DISTRICT_ADMIN = 'District Admin'
 SCHOOL_ADMIN = 'School Admin'
 CLUB_EDITOR = 'Club Editor'
+ROLE_HIERARCHY = Hierarchy(District, School, Club, name=CLUB_EDITOR)
+
 
 ROLES = [
     Hierarchy(District, name=DISTRICT_ADMIN),

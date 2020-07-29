@@ -1,14 +1,15 @@
+from __future__ import annotations
+
 from typing import List
 from XroadsAPI.models import *
 from XroadsAPI import permisson_constants as PermConst
 from XroadsAPI.permisson_constants import Hierarchy
 from django.contrib.contenttypes.models import ContentType
 
-
 class Role:
-    def __init__(self, model_instances=[], permissions=[], **kwargs):
+    def __init__(self, model_instances=[], **kwargs):
         self.model_instances = model_instances
-        self.permissions = permissions
+        self.permissions = kwargs.get('permissions', [])
 
         role = kwargs.get('role', self._match_role(model_instances))
         self.role_hierarchy = self.get_role(role)
@@ -19,6 +20,7 @@ class Role:
 
     @property
     def str(self):
+        # * TODO make sure to create regex that tests proper format of string
         model_ids = [m.id for m in self.model_instances]
         model_info = dict(zip(self.role_hierarchy.level_names, model_ids))
         return self.role_hierarchy.perm_str(**model_info, include_perms=False)
@@ -46,7 +48,7 @@ class Role:
         return objs
 
     @classmethod
-    def from_str(cls, perm_ident: str):
+    def from_str(cls, perm_ident: str) -> Role:
         def parse_perms(chunk):
             permissions_str = chunk.split('=')[1]
             removed_brackets = permissions_str.replace(
@@ -89,8 +91,11 @@ class Role:
     def matches(self, input_str):
         pass
 
-    def has_perms(self, input_str, user=None):
-        pass
+    def has_perms(self, role_str):
+        new_role = Role.from_str(role_str)
+        desired_params = set(new_role.permissions)
+        poss_params = set(self.permissions)
+        return poss_params.intersection(desired_params) == desired_params
 
     def __eq__(self, other_inst):
         return self.str == other_inst.str
