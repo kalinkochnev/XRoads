@@ -13,7 +13,8 @@ from XroadsAPI.manager import CustomUserManager
 
 from guardian.mixins import GuardianUserMixin
 
-
+class HierarchyPerms(models.Model):
+    perm_name = models.CharField(max_length=200)
 
 class Profile(AbstractUser, GuardianUserMixin):
     """User model that uses email instead of username."""
@@ -30,6 +31,8 @@ class Profile(AbstractUser, GuardianUserMixin):
     # Everything past this point is not related to the custom user model
     phone = models.CharField(max_length=10, null=True, blank=True)
     is_anon = models.BooleanField(default=False)
+
+    hierachy_perms = models.ManyToManyField(HierarchyPerms)
 
     def make_save(self, save):
         if save:
@@ -72,6 +75,9 @@ class Profile(AbstractUser, GuardianUserMixin):
     def make_editor(self, club):
         assert club.school == self.school, "You can't make somebody the editor of a club they aren't in"
 
+    def add_perm(self, perm):
+        self.hierachy_perms.add(perm)
+        self.make_save(save=True)
 
 class Slide(models.Model):
     class Meta:

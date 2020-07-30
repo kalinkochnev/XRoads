@@ -75,13 +75,13 @@ class TestRole:
         role.add_perms('update-district', 'create-school')
 
         input_str = 'District-1/perms=[update-district]'
-        assert role.has_perms(input_str) == True
+        assert role.has_perms(role_str=input_str) == True
 
         input_str = 'District-1/perms=[create-school, update-district]'
-        assert role.has_perms(input_str) == True
+        assert role.has_perms(role_str=input_str) == True
 
         input_str = 'District-1/perms=[create-school, update-district, some-other-perm]'
-        assert role.has_perms(input_str) == False
+        assert role.has_perms(role_str=input_str) == False
 
     def test_comparison_method(self, create_club, role_model_instances):
         district1, school1, club1 = role_model_instances
@@ -189,7 +189,7 @@ class TestRole:
 
         # Check that School-2 is a part of District-1, and Club-52 is a part of School-2
         input_str = 'District-1/School-1/Club-1/perms=[update-club]'
-        assert role.has_perms(input_str) == True
+        assert role.has_perms(role_str=input_str) == True
 
 
         school5 = School.objects.create(id=5, name="s2")
@@ -200,7 +200,7 @@ class TestRole:
         # Check that School-5 is not a part of District-1 and Club-1 not part of School-5, raises exception
         input_str = 'District-1/School-5/Club-52/perms=[update-club]'
         with pytest.raises(InvalidRoleCreated):
-            assert role.has_perms(input_str)
+            assert role.has_perms(role_str=input_str)
 
     def test_match_higher_level(self, role_model_instances):
         district1, school1, club1 = role_model_instances
@@ -209,7 +209,7 @@ class TestRole:
 
         input_str = 'District-1/School-1/perms=[create-club, update-school]'
 
-        assert role.has_perms(input_str) == True
+        assert role.has_perms(role_str=input_str) == True
 
     def test_not_match(self, create_club, role_model_instances):
         district1, school1, club1 = role_model_instances
@@ -225,7 +225,7 @@ class TestRole:
         role.add_perms('edit-club')
 
         input_str = 'District-2/School-4/Club-10/perms=[edit-clubs]'
-        assert role.has_perms(input_str) == False
+        assert role.has_perms(role_str=input_str) == False
 
     def test_give_profile_role(self, create_club, create_test_prof, role_model_instances):
         prof = create_test_prof(1)

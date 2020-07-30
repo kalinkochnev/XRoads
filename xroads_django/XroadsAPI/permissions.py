@@ -27,6 +27,14 @@ class Role:
         model_info = dict(zip(self.role_hierarchy.level_names, model_ids))
         return self.role_hierarchy.perm_str(**model_info, include_perms=False)
 
+    @property
+    def full_str(self):
+        # * TODO make sure to create regex that tests proper format of string
+        model_ids = [m.id for m in self.model_instances]
+        model_info = dict(zip(self.role_hierarchy.level_names, model_ids))
+        return self.role_hierarchy.perm_str(**model_info, permissions=self.permissions, include_perms=True)
+
+
     @classmethod
     def get_hierarchy(cls, name) -> PermConst.Hierarchy:
         results = cls._filter(
@@ -90,16 +98,37 @@ class Role:
         assert role_name is not None, 'Role matcher could not find role with that hierarchy of models'
         return role_name
 
-    def matches(self, input_str):
-        pass
+    def has_perms(self, **kwargs):
+        def require_kwargs():
+            kwarg_keys = list(kwargs.keys())
+            arg_error_msg = 'Proper kwargs not provided. Must either be  user  or  role_str'
+            assert len(kwargs) == 1, arg_error_msg
+            assert 'user' in kwarg_keys or 'role_str' in kwarg_keys, arg_error_msg
+            return kwarg_keys[0]
+        kwarg_key = require_kwargs()
 
-    def has_perms(self, role_str):
+        if kwarg_key == 'user': 
+            return self._has_perms_user(user=kwargs['user'])
+        return self._has_perms_str(role_str=kwargs['role_str'])
+
+    def _has_perms_user(self, user: Profile):
+        perms = user.hierachy_perms.all()
+        for perm in perms:
+            if perm.perm_name == self.full_str:
+                return True
+        return False
+
+    def _has_perms_str(self, role_str):
         new_role = Role.from_str(role_str)
 
         try:
             return self >= new_role
         except RoleNotComparable:
             return False
+
+    def give_role(self, user: Profile):
+        perm, created = HierarchyPerms.objects.get_or_create(perm_name=self.full_str)
+        user.add_perm(perm)
 
     def __eq__(self, other_inst: Role):
         return self._comparison(other_inst) == 0
@@ -149,12 +178,11 @@ class Role:
         This can query the db quite a few times
         """
 
-
         def is_model_contained(inner_m, outer_m):
             # In District-1/School-3/  School-3 is the inner model, District-1 is the outer model
             m2m_query = f'{outer_m.__class__.__name__.lower()}__in'
             m2m_value = [outer_m]
-            
+
             args = {
                 'id': inner_m.id,
                 m2m_query: m2m_value,
@@ -165,14 +193,13 @@ class Role:
                 return True
             except inner_m.DoesNotExist:
                 return False
-            
+
         for i in range(len(self.model_instances)-1):
             outer_m = self.model_instances[i]
             inner_m = self.model_instances[i+1]
             if not is_model_contained(inner_m, outer_m):
-                raise InvalidRoleCreated(f'Model instance: {inner_m} is not a part of model instance: {outer_m}')
-
-
+                raise InvalidRoleCreated(
+                    f'Model instance: {inner_m} is not a part of model instance: {outer_m}')
 
     def _compare_levels(self, other_inst: Role):
         if len(self.model_instances) < len(other_inst.model_instances):
