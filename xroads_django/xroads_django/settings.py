@@ -46,9 +46,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'dj_rest_auth',
 
-    # Object level permission
-    'guardian',
-
 ]
 
 MIDDLEWARE = [
@@ -139,9 +136,3 @@ STATIC_URL = '/static/'
 # User substitution
 # https://docs.djangoproject.com/en/1.11/topics/auth/customizing/#auth-custom-user
 AUTH_USER_MODEL = 'XroadsAPI.Profile'
-
-AUTHENTICATION_BACKENDS = {
-    'django.contrib.auth.backends.ModelBackend', # this is default
-    'guardian.backends.ObjectPermissionBackend',
-}
-GUARDIAN_MONKEY_PATCH = False

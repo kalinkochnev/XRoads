@@ -11,12 +11,11 @@ import re
 from XroadsAPI.exceptions import *
 from XroadsAPI.manager import CustomUserManager
 
-from guardian.mixins import GuardianUserMixin
 
 class HierarchyPerms(models.Model):
     perm_name = models.CharField(max_length=200)
 
-class Profile(AbstractUser, GuardianUserMixin):
+class Profile(AbstractUser):
     """User model that uses email instead of username."""
     email = models.EmailField(_('email address'), unique=True)
     username = None

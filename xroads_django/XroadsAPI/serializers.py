@@ -1,6 +1,4 @@
 from XroadsAPI.models import *
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
 from rest_framework import serializers
 
 
@@ -70,10 +68,33 @@ class ClubDetailSerializer(serializers.ModelSerializer):
         model = Club
         fields = '__all__'
 
-
 class BasicInfoSchoolSerial(serializers.ModelSerializer):
     class Meta:
         model = School
         fields = ['name', 'img']
 
 
+# ADMIN SERIALIZERS ---------------------
+class ClubEditorSerializer(serializers.ModelSerializer):
+    meeting_days = MeetingDaysSerializer(many=True)
+    members = ProfileSerializer(many=True)
+    slides = SlideSerializer(many=True)
+    class Meta:
+        model = Club
+        fields = '__all__'
+
+class SchoolAdminSerializer(serializers.ModelSerializer):
+    clubs = BasicClubInfoSerial(many=True)
+    students = ProfileSerializer(many=True)
+
+    class Meta:
+        model = School
+        fields = '__all__'
+
+
+class DistrictAdminSerializer(serializers.ModelSerializer):
+    schools = BasicInfoSchoolSerial(many=True)
+    class Meta:
+        model = District
+        fields = '__all__'
+    

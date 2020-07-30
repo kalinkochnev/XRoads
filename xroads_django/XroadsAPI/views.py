@@ -8,15 +8,24 @@ from XroadsAPI.serializers import *
 def csrf(request):
     return render(request, template_name='home.html')
 
-class GetProfile(generics.RetrieveAPIView):
-    model = Profile
-    serializer_class = ProfileSerializer
+
+class GetClub(generics.RetrieveAPIView):
+    model = Club
+    serializer_class = ClubDetailSerializer
 
     def get_object(self):
-        if 'pk' in self.kwargs.keys():
-            return get_object_or_404(Profile, id=self.kwargs['pk'])
-        elif 'email' in self.kwargs.keys():
-            return get_object_or_404(Profile, user__email=self.kwargs['email'])
-    
+        return get_object_or_404(Club, id=self.kwargs['club'])
+
+class GetSchoolList(generics.ListAPIView):
+    model = School
+    serializer_class = BasicInfoSchoolSerial
+    queryset = School.objects.all()
+
+class GetClubOverview(generics.ListAPIView):
+    model = Club
+    serializer_class = BasicClubInfoSerial
+
+    def get_queryset(self):
+        return get_object_or_404(Club, school__in=self.kwargs['school'])
 
 
