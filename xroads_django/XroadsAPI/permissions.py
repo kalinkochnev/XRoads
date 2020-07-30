@@ -180,7 +180,7 @@ class Role:
         return -1
 
     def _compare_perms(self, other_inst: Role):
-        if self.permissions == other_inst.permissions:
+        if set(self.permissions) == set(other_inst.permissions):
             return 0
         elif len(self.permissions) > len(other_inst.permissions):
             return 1

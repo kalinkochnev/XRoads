@@ -213,3 +213,6 @@ class School(models.Model):
 class District(models.Model):
     schools = models.ManyToManyField(School)
     name = models.CharField(max_length=40)
+
+    def add_school(self, school):
+        self.schools.add(school)
