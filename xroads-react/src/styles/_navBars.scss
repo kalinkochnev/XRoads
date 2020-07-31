@@ -6,14 +6,11 @@
   @extend .flex-container;
 
   /*Sticks navbar at the top*/
-  position: absolute;
   max-height: $navbarHeight;
   width: 100%;
   top: 0px;
   right: 0px;
   overflow: hidden;
-  margin-bottom: $navbarHeight;
-
   /*Styling of background and text*/
   background-color: $redDefault;
   color: white;

@@ -10,3 +10,15 @@ $cardRoundSmall: 10px;
 $navbarHeight: 70px;
 $siteMargins: 7%;
 
+$maxPageWidth:1000px;
+
+:export {
+    redDefault: $redDefault;
+    redHover: $redHover;
+    greyOutline: $greyOutline;
+    cardRoundBig: $cardRoundBig;
+    cardRoundSmall: $cardRoundSmall;
+    navbarHeight: $navbarHeight;
+    siteMargins: $siteMargins;
+    maxPageWidth: $maxPageWidth;
+  }

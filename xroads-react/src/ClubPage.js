@@ -2,6 +2,10 @@ import React from 'react';
 import './styles/_navBars.scss';
 import './styles/_clubPage.scss';
 import { Navbar } from './ClubBrowser';
+import variables from './styles/_variables.scss';
+
+import Carousel, { slidesToShowPlugin } from '@brainhubeu/react-carousel';
+import '@brainhubeu/react-carousel/lib/style.css';
 
 class ClubPage extends React.Component {
     constructor(props) {
@@ -15,8 +19,8 @@ class ClubPage extends React.Component {
         return (
         <div>
             <Navbar>xroads</Navbar>
-                <Slideshow></Slideshow>
-                <ClubInfo></ClubInfo>
+            <Slideshow></Slideshow>
+            <ClubInfo></ClubInfo>
         </div>
         );
     }
@@ -57,12 +61,87 @@ class Slideshow extends React.Component {
         this.state = {
         value: null,
         };
+
+        
+
+    }
+    
+    render() {
+        var numSlides = (window.innerWidth)/variables.maxPageWidth.replace('px','');
+        if(window.innerWidth < variables.maxPageWidth.replace('px','')){
+            numSlides = 1;
+        }
+        return (
+            <div class="slideshow">
+                <Carousel
+                plugins={[
+                    'centered',
+                    'infinite',
+                    'arrows',
+                    'fastSwipe',
+                    {
+                        resolve: slidesToShowPlugin,
+                        options: {
+                            numberOfSlides: numSlides,
+                        },
+                    },
+                ]}   
+                >
+                    <TextSlide text="hellop"></TextSlide>
+                    <ImageSlide source="https://brainhubeu.github.io/react-carousel/static/mona-7a1ceae9bdb8c43272eb101c091c5408.jpg"></ImageSlide>
+                    <TextSlide text="hellop3"></TextSlide>
+                </Carousel>
+            </div>
+        );
+    }
+}
+
+class TextSlide extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+        value: null,
+        };
     }
 
     render() {
         return (
-        <div class="slideshow">
-            
+        <div class="text-slide">
+            <t>{this.props.text}</t>
+        </div>
+        );
+    }
+}
+
+class ImageSlide extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+        value: null,
+        };
+    }
+
+    render() {
+        return (
+        <div class="image-slide">
+            <img src={this.props.source}></img>
+        </div>
+        );
+    }
+}
+
+class VideoSlide extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+        value: null,
+        };
+    }
+
+    render() {
+        return (
+        <div class="slide">
+            Lol you thought
         </div>
         );
     }

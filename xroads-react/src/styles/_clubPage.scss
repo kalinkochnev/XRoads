@@ -3,19 +3,10 @@
 
 .clubDetails {
     padding: 40px 20px;
-    max-width:1000px;
+    max-width:$maxPageWidth;
     margin:auto;
 }
 
-.slideshow {
-    left:0;
-    height:600px;
-    background-color: gray;
-    width:100%;
-    padding: 0;
-    margin: 0;
-    overflow-y: hidden;
-}
 
 .clubHeading {
     border-left: solid 13px $redDefault;
@@ -37,4 +28,48 @@
 
 .details {
     padding:30px 0;
+}
+
+.slideshow {
+    max-height:600px;
+    height:60vw;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+.text-slide{
+    margin: auto;
+    font-family: Rubik;
+    font-size: 40px;
+    text-align: center;
+    background-color: red;
+    max-height:600px;
+    height:60vw;
+    width: $maxPageWidth;
+}
+
+.image-slide{
+    max-height:600px;
+    height:60vw;
+    width: $maxPageWidth;
+}
+
+.image-slide img{
+    width: 100%;
+}
+
+.BrainhubCarousel__arrows{
+    position: absolute !important;
+    background-color: $redDefault !important;
+    border-radius: 5px;
+    padding-top:50px !important;
+    z-index:10;
+}
+
+.BrainhubCarousel__arrowRight{
+    right:30px;
+}
+.BrainhubCarousel__arrowLeft{
+    left:30px;
 }
