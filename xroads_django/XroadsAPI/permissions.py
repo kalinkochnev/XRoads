@@ -5,6 +5,7 @@ from XroadsAPI.models import *
 from XroadsAPI import permisson_constants as PermConst
 from XroadsAPI.permisson_constants import Hierarchy
 from django.contrib.contenttypes.models import ContentType
+from rest_framework import permissions
 
 
 class Role:
@@ -33,7 +34,6 @@ class Role:
         model_ids = [m.id for m in self.model_instances]
         model_info = dict(zip(self.role_hierarchy.level_names, model_ids))
         return self.role_hierarchy.perm_str(**model_info, permissions=self.permissions, include_perms=True)
-
 
     @classmethod
     def get_hierarchy(cls, name) -> PermConst.Hierarchy:
@@ -114,6 +114,8 @@ class Role:
     def _has_perms_user(self, user: Profile):
         perms = user.hierachy_perms.all()
         for perm in perms:
+            # ! TODO make sure to check that you are comparing the permissions!!!
+            user_role = Role.from_str(perm)
             if perm.perm_name == self.full_str:
                 return True
         return False
@@ -152,12 +154,14 @@ class Role:
         return self.model_instances[-1]
 
     def _comparison(self, other_inst):
+        # THIS DOES NOT COMPARE PERMISSIONS
+
         # Raised RoleNotComparable if you try to compare incompatible roles
         self._check_comparable(other_inst)
 
         # Returns 1 if first is greater, -1 if second is greater, 0 if equal
         if self.model_instances == other_inst.model_instances:
-            return self._compare_perms(other_inst)
+            return 0
         else:
             return self._compare_levels(other_inst)
 
@@ -206,9 +210,16 @@ class Role:
             return 1
         return -1
 
-    def _compare_perms(self, other_inst: Role):
-        if set(self.permissions) == set(other_inst.permissions):
-            return 0
-        elif len(self.permissions) > len(other_inst.permissions):
-            return 1
-        return -1
+
+class HierPerms:
+    def __init__(self, min, perms):
+        self.min = min
+        self.perms = perms
+
+class TestPerm(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        blah = view.hier_perms
+        print('blah')
+        print('blah')
+        print('blah')
+        print('blah')

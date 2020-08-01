@@ -15,30 +15,40 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from XroadsAPI import views
+from XroadsAPI import views, admin_views
+from rest_framework import routers
+
+router = routers.SimpleRouter()
+router.register(r'school', admin_views.SchoolViewSet, basename='admin/')
+urlpatterns = router.urls
+
 
 admin_urls = [
     # TODO everything in this chunk has not had its views created
     # TODO everything below this point has not had it's permissions setup
-    path('admin/user/<str:email>/', views.GetProfile.as_view(), name='admin-get-profile'),
-    path('admin/club/<int:club>/add-editor/<int:user_pk>/', views.AddEditor.as_view(), name='admin-add-editor'),
-    path('admin/club/<int:club>/remove-editor/<int:user_pk>/', views.RemoveEditor.as_view(), name='admin-add-editor'),
-    path('admin/school/create-club/<int:first_editor>/', views.CreateClub.as_view(), name='admin-create-club'),
-    path('admin/school/<int:school>/remove-admin/<int:user_pk>/', views.RemoveSchoolAdmin.as_view(), name="admin-remove-school-admin"),
-    path('admin/school/<int:school>/add-admin/<int:user_pk>/', views.AddSchoolAdmin.as_view(), name="admin-add-school-admin"),
-    path('admin/district/<int:district>/create-school/', views.CreateSchool.as_view(), name='admin-create-school'),
 
-    path('admin/user/', views.ProfileAdmin.as_view(), name='admin-user-detail'),
-    path('admin/club/<int:club>/', views.ClubEditor.as_view(), name='admin-club-detail'),
-    path('admin/school/<int:school>/', views.SchoolAdmin.as_view(), name='admin-school-detail'),
-    path('admin/district/<int:district>/', views.DistrictAdmin.as_view(), name='admin-district-detail'),
+    path('admin/school/<int:school>/create-club/', views.CreateClub.as_view(), name='admin-create-club'),
 ]
+"""path('admin/user/<str:email>/', views.GetProfile.as_view(), name='admin-get-profile'),
+path('admin/club/<int:club>/add-editor/<int:user_pk>/', views.AddEditor.as_view(), name='admin-add-editor'),
+path('admin/club/<int:club>/remove-editor/<int:user_pk>/', views.RemoveEditor.as_view(), name='admin-add-editor'),
+path('admin/school/<int:school>/remove-admin/<int:user_pk>/', views.RemoveSchoolAdmin.as_view(), name="admin-remove-school-admin"),
+path('admin/school/<int:school>/add-admin/<int:user_pk>/', views.AddSchoolAdmin.as_view(), name="admin-add-school-admin"),
+path('admin/district/<int:district>/add-school/', views.CreateSchool.as_view(), name='admin-create-school'),
+path('admin/district/<int:district>/hide-school/', views.CreateSchool.as_view(), name='admin-create-school'),
+
+path('admin/user/', views.ProfileAdmin.as_view(), name='admin-user-detail'),
+path('admin/club/<int:club>/', views.ClubEditor.as_view(), name='admin-club-detail'),
+path('admin/school/<int:school>/', views.SchoolAdmin.as_view(), name='admin-school-detail'),
+path('admin/district/<int:district>/', views.DistrictAdmin.as_view(), name='admin-district-detail'),
+"""
 
 urlpatterns = [
     path('csrf/', views.csrf),
     path('club/<int:club>/', views.GetClub.as_view(), name='get-club-detail'),
     path('school/list/', views.GetSchoolList.as_view(), name='get-schools-list'),
     path('school/<int:school>/club-overview/', views.GetClubOverview.as_view(), name='get-club-overview'),
-] + admin_urls
+]
+urlpatterns += urlpatterns
 
 
