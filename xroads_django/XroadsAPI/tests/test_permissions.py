@@ -6,6 +6,25 @@ import XroadsAPI.permisson_constants as PermConst
 from XroadsAPI.exceptions import *
 
 @pytest.fixture
+def perm_const_override():
+    PermConst.DISTRICT_ADMIN = 'District Admin'
+    PermConst.SCHOOL_ADMIN = 'School Admin'
+    PermConst.CLUB_EDITOR = 'Club Editor'
+    PermConst.ROLE_HIERARCHY = Hierarchy(District, School, Club, name=PermConst.CLUB_EDITOR)
+
+    PermConst.ROLES = [
+        Hierarchy(District, name=PermConst.DISTRICT_ADMIN, poss_perms=['__all__', 'create-school', 'modify-district']),
+        Hierarchy(District, School, name=PermConst.SCHOOL_ADMIN, poss_perms=['__all__', 'create-club', 'modify-school', 'hide-school']),
+        Hierarchy(District, School, Club, name=PermConst.CLUB_EDITOR, poss_perms=['__all__', 'modify-club', 'add-editor']),
+    ]
+
+class TestPermissionClass:
+    def test_add_permissions_possible(self, perm_const_override):
+        pass
+
+
+
+@pytest.fixture
 def perm_const_roles():
     PermConst.ROLES = [
         Hierarchy(District, name=PermConst.DISTRICT_ADMIN),
@@ -28,18 +47,35 @@ def role_model_instances(create_club):
 
 @pytest.mark.usefixtures("perm_const_roles", "db")
 class TestRole:
-    def test_get_role(self):
-        assert Role.get_hierarchy(
-            PermConst.DISTRICT_ADMIN) == PermConst.ROLES[0]
 
     def test_role_matcher(self, role_model_instances):
         district1, school1, club1 = role_model_instances
         role = Role.create(district1)
         assert role.role_hierarchy.name == PermConst.DISTRICT_ADMIN
 
+    def test_str_matches(self, role_model_instances):
+        district1, school1, club1 = role_model_instances
+
+        role = Role.create(district1, school1, club1)
+        perms = role.hierarchy.poss_perms
+        role.permissions.add('some_str', ')
+
+        expected = '' 
+
+    def test_role_from_str(self, role_model_instances):
+        district1, school1, club1 = role_model_instances
+
+        role_expected = Role.create(district1, school1)
+        role_expected.permissions.add('create-blah', 'testing123')
+
+        perm_str = 'District-1/School-1/perms=[create-blah, testing123]'
+        role_test = Role.from_str(perm_str)
+
+        assert str(role_expected) == str(role_test)
+
+    # TODO make a test that checks that the role is valid
     def test_check_role_valid(self):
         pass
-    # TODO
 
     def test_create_role_1_layer(self, role_model_instances):
         district1, school1, club1 = role_model_instances
@@ -242,6 +278,7 @@ class TestRole:
         assert role2.has_perms(user=prof) == False
 
 
+
 @pytest.mark.usefixtures("db")
 class TestHierarchy:
     def test_create_hierarchy(self):
@@ -251,19 +288,8 @@ class TestHierarchy:
         assert heirarchy.level_names[1] == 'School'
         assert heirarchy.level_names[2] == 'Club'
 
-    def test_create_perm_str(self):
-        heirarchy = Hierarchy(District, School, name="School Admin")
-        perm_str = heirarchy.perm_str(District=1, School=2, permissions=[
-            'create-blah', 'testing123'])
-        assert perm_str == 'District-1/School-2/perms=[create-blah, testing123]'
-
-    def test_role_from_str(self, role_model_instances):
-        district1, school1, club1 = role_model_instances
-
-        role_expected = Role.create(district1, school1)
-        role_expected.add_perms('create-blah', 'testing123')
-
-        perm_str = 'District-1/School-1/perms=[create-blah, testing123]'
-        role_test = Role.from_str(perm_str)
-
-        assert role_expected.str == role_test.str
+    def test_get_hier(self):
+        PermConst.ROLES = [
+            Hierarchy(District, name=PermConst.DISTRICT_ADMIN)
+        ]
+        assert Hierarchy.get_hierarchy(PermConst.DISTRICT_ADMIN) == PermConst.ROLES[0]

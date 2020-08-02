@@ -2,41 +2,30 @@ from __future__ import annotations
 
 from XroadsAPI.models import *
 
-
 class Hierarchy:
-    def __init__(self, *models, **kwargs):
+    def __init__(self, *models, poss_perms=[], **kwargs):
         assert 'name' in kwargs, 'Attribute name must be included in keyword args'
 
         self.name = kwargs['name']
         self.levels: List[models.Model] = models
+        self.poss_perms: List[str] = poss_perms
 
     @property
     def level_names(self) -> List[models.Model]:
         return [level.__name__ for level in self.levels]
 
-    def perm_str(self, permissions=[], include_perms=True, **kwargs):
-        assert self.level_names == list(
-            kwargs.keys()), 'Invalid model names were supplied'
+    @classmethod
+    def get_hierarchy(cls, name) -> PermConst.Hierarchy:
+        results = list(filter(lambda x: x.name == name, ROLES))
+        assert len(results) == 1, 'There are multiple hierarchies with the same name!'
 
-        perm_str = ""
-        for name in self.level_names:
-            model_id = kwargs[name]
-            perm_str += self._add_key_val(name, model_id) + '/'
-
-        if include_perms:
-            permissions_no_quotes = ', '.join(map(str, permissions))
-            return f'{perm_str}perms=[{permissions_no_quotes}]'
-        else:
-            return perm_str
-
-    def _get_key_val(self, string):
-        string.split('-')
-
-    def _add_key_val(self, key, val):
-        return f"{key}-{val}"
+        if len(results) == 0:
+            return None
+        return results[0]
 
     @classmethod
     def match_hierarchy(cls, model_names, hier_list):
+        """Returns the name of hierarchy object that matches that pattern of models"""
         for h in hier_list:
             if model_names == h.level_names:
                 return h.name
@@ -56,7 +45,7 @@ ROLE_HIERARCHY = Hierarchy(District, School, Club, name=CLUB_EDITOR)
 
 
 ROLES = [
-    Hierarchy(District, name=DISTRICT_ADMIN),
-    Hierarchy(District, School, name=SCHOOL_ADMIN),
-    Hierarchy(District, School, Club, name=CLUB_EDITOR),
+    Hierarchy(District, name=DISTRICT_ADMIN, poss_perms=['__all__', 'create-school', 'modify-district']),
+    Hierarchy(District, School, name=SCHOOL_ADMIN, poss_perms=['__all__', 'create-club', 'modify-school', 'hide-school']),
+    Hierarchy(District, School, Club, name=CLUB_EDITOR, poss_perms=['__all__', 'modify-club', 'add-editor']),
 ]

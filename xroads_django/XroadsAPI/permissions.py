@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Set
 from XroadsAPI.models import *
 from XroadsAPI import permisson_constants as PermConst
 from XroadsAPI.permisson_constants import Hierarchy
@@ -8,54 +8,57 @@ from django.contrib.contenttypes.models import ContentType
 from rest_framework import permissions
 
 
+class Permissions:
+    def __init__(self, perm_strs: List[str], hierarchy):
+        self.permissions: Set[str] = set(perm_strs)
+        self.hierarchy: Hierarchy = hierarchy
+
+    def user_has_perms(self, user):
+        pass
+
+    def has_perms(self, perms: List[str]):
+        pass
+
+    def add(self, *perms):
+        self.hierarchy.
+        self.permissions.update(set(perms))
+
+    def __str__(self):
+        perm_str = ', '.join(map(str, self.permissions))
+        return f'perms=[{permissions_no_quotes}]'
+
+
 class Role:
     def __init__(self, model_instances=[], **kwargs):
         self.model_instances = model_instances
-        self.permissions = kwargs.get('permissions', [])
 
         role = kwargs.get('role', self._match_role(model_instances))
-        self.role_hierarchy = self.get_hierarchy(role)
+        self.hierarchy = Hierarchy.get_hierarchy(role)
+
+        perms = kwargs.get('permissions', [])
+        self.permissions = Permissions(perms, self.hierarchy.name)
+
         self.check_role_valid()
 
     @classmethod
     def create(cls, *model_instances, **kwargs: dict):
         return Role(model_instances=model_instances, **kwargs)
 
-    @property
-    def str(self):
+    def __str__(self):
+        def key_val_format(key, val):
+            return f'{key}-{val}/'
+
         # * TODO make sure to create regex that tests proper format of string
         model_ids = [m.id for m in self.model_instances]
-        model_info = dict(zip(self.role_hierarchy.level_names, model_ids))
-        return self.role_hierarchy.perm_str(**model_info, include_perms=False)
+        model_info = dict(zip(self.hierarchy.level_names, model_ids))
 
-    @property
-    def full_str(self):
-        # * TODO make sure to create regex that tests proper format of string
-        model_ids = [m.id for m in self.model_instances]
-        model_info = dict(zip(self.role_hierarchy.level_names, model_ids))
-        return self.role_hierarchy.perm_str(**model_info, permissions=self.permissions, include_perms=True)
+        perm_str = ""
+        for model_name, model_id in model_info:
+            perm_str += add_key_val(model_name, model_id)
 
-    @classmethod
-    def get_hierarchy(cls, name) -> PermConst.Hierarchy:
-        results = cls._filter(
-            PermConst.ROLES, lambda x: x.name == name, count=1)
-        if len(results) == 0:
-            return None
-        return results[0]
+        perm_str += str(self.permissions)
 
-    @classmethod
-    def _filter(cls, obj_list, filter, count=-1):
-        # If count is -1 filter all, else filter count
-        objs = []
-        matched = 0
-        for item in obj_list:
-            if filter(item):
-                objs.append(item)
-                matched += 1
-
-            if matched == count:
-                break
-        return objs
+        return perm_str
 
     @classmethod
     def from_str(cls, perm_ident: str) -> Role:
@@ -86,11 +89,8 @@ class Role:
                 model_instances.append(parse_model_inst(chunk))
 
         role = cls.create(*model_instances)
-        role.add_perms(*permissions)
+        role.permissions.add(*permissions)
         return role
-
-    def add_perms(self, *permissions):
-        self.permissions.extend(permissions)
 
     def _match_role(self, model_instances):
         inst_names = [inst.__class__.__name__ for inst in model_instances]
@@ -107,7 +107,7 @@ class Role:
             return kwarg_keys[0]
         kwarg_key = require_kwargs()
 
-        if kwarg_key == 'user': 
+        if kwarg_key == 'user':
             return self._has_perms_user(user=kwargs['user'])
         return self._has_perms_str(role_str=kwargs['role_str'])
 
@@ -129,8 +129,17 @@ class Role:
             return False
 
     def give_role(self, user: Profile):
-        perm, created = HierarchyPerms.objects.get_or_create(perm_name=self.full_str)
+        perm, created = HierarchyPerms.objects.get_or_create(
+            perm_name=self.full_str)
         user.add_perm(perm)
+
+    def is_allowed(self):
+        pass
+
+    @classmethod
+    def from_start_model(cls, model):
+        pass
+
 
     def __eq__(self, other_inst: Role):
         return self._comparison(other_inst) == 0
@@ -148,10 +157,6 @@ class Role:
     def __ge__(self, other_inst: Role):
         comparison = self._comparison(other_inst)
         return comparison == 1 or comparison == 0
-
-    @property
-    def highest_level(self):
-        return self.model_instances[-1]
 
     def _comparison(self, other_inst):
         # THIS DOES NOT COMPARE PERMISSIONS
@@ -209,17 +214,3 @@ class Role:
         if len(self.model_instances) < len(other_inst.model_instances):
             return 1
         return -1
-
-
-class HierPerms:
-    def __init__(self, min, perms):
-        self.min = min
-        self.perms = perms
-
-class TestPerm(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        blah = view.hier_perms
-        print('blah')
-        print('blah')
-        print('blah')
-        print('blah')
