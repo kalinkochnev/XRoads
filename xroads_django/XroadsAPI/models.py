@@ -31,7 +31,7 @@ class Profile(AbstractUser):
     phone = models.CharField(max_length=10, null=True, blank=True)
     is_anon = models.BooleanField(default=False)
 
-    hierachy_perms = models.ManyToManyField(HierarchyPerms)
+    hierarchy_perms = models.ManyToManyField(HierarchyPerms)
 
     def make_save(self, save):
         if save:
@@ -75,7 +75,7 @@ class Profile(AbstractUser):
         assert club.school == self.school, "You can't make somebody the editor of a club they aren't in"
 
     def add_perm(self, perm):
-        self.hierachy_perms.add(perm)
+        self.hierarchy_perms.add(perm)
         self.make_save(save=True)
 
 class Slide(models.Model):

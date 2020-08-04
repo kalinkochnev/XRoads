@@ -13,19 +13,42 @@ class Permissions:
         self.permissions: Set[str] = set(perm_strs)
         self.hierarchy: Hierarchy = hierarchy
 
-    def user_has_perms(self, user):
-        pass
+    @property
+    def has_all_perms(self):
+        return self.permissions == {'__all__'}
+
+    def allow_all_perms(self):
+        self.permissions = set(['__all__'])
+
 
     def has_perms(self, perms: List[str]):
-        pass
+        perms = set(perms)
+        assert perms.issubset(set(self.hierarchy.poss_perms)), 'A permission provided is not possible with this hierarchy'
+        
+        if perms == set():
+            return False
+        return perms.issubset(self.permissions)
 
     def add(self, *perms):
-        self.hierarchy.
+        if self.has_all_perms:
+            return
+
+        if '__all__' in perms:
+            self.allow_all_perms()
+            return
+
+        poss_perms = self.hierarchy.poss_perms
+        perms = set(perms)
+
+
+        assert perms.issubset(poss_perms) or perms == {}, f'The provided permissions are not legal for this hierarchy: {self.hierarchy.name}'
+
         self.permissions.update(set(perms))
+
 
     def __str__(self):
         perm_str = ', '.join(map(str, self.permissions))
-        return f'perms=[{permissions_no_quotes}]'
+        return f'perms=[{perm_str}]'
 
 
 class Role:
@@ -36,7 +59,7 @@ class Role:
         self.hierarchy = Hierarchy.get_hierarchy(role)
 
         perms = kwargs.get('permissions', [])
-        self.permissions = Permissions(perms, self.hierarchy.name)
+        self.permissions = Permissions(perms, self.hierarchy)
 
         self.check_role_valid()
 
@@ -53,8 +76,8 @@ class Role:
         model_info = dict(zip(self.hierarchy.level_names, model_ids))
 
         perm_str = ""
-        for model_name, model_id in model_info:
-            perm_str += add_key_val(model_name, model_id)
+        for model_name, model_id in model_info.items():
+            perm_str += key_val_format(model_name, model_id)
 
         perm_str += str(self.permissions)
 
@@ -66,7 +89,11 @@ class Role:
             permissions_str = chunk.split('=')[1]
             removed_brackets = permissions_str.replace(
                 '[', '').replace(']', '')
-            return removed_brackets.split(', ')
+            split_result = removed_brackets.split(', ')
+            if split_result == ['']:
+                return []
+            else:
+                return split_result
 
         def parse_model_inst(chunk):
             # [0] is the model name, [1] is the model id
@@ -98,43 +125,40 @@ class Role:
         assert role_name is not None, 'Role matcher could not find role with that hierarchy of models'
         return role_name
 
-    def has_perms(self, **kwargs):
-        def require_kwargs():
-            kwarg_keys = list(kwargs.keys())
-            arg_error_msg = 'Proper kwargs not provided. Must either be  user  or  role_str'
-            assert len(kwargs) == 1, arg_error_msg
-            assert 'user' in kwarg_keys or 'role_str' in kwarg_keys, arg_error_msg
-            return kwarg_keys[0]
-        kwarg_key = require_kwargs()
+    def is_allowed(self, **kwargs):
+        """Returns whether the given user or role instance has permissions for the current role instance"""
+        assert len(kwargs) == 1, 'You can only have one key value param'
+        
+        keys = kwargs.keys()
+        if 'user' in keys:
+            return self._is_allowed_user(kwargs['user'])
+        elif 'role' in keys:
+            return self._is_allowed_role(kwargs['role'])
+        else:
+            return False
 
-        if kwarg_key == 'user':
-            return self._has_perms_user(user=kwargs['user'])
-        return self._has_perms_str(role_str=kwargs['role_str'])
-
-    def _has_perms_user(self, user: Profile):
-        perms = user.hierachy_perms.all()
-        for perm in perms:
-            # ! TODO make sure to check that you are comparing the permissions!!!
-            user_role = Role.from_str(perm)
-            if perm.perm_name == self.full_str:
+    def _is_allowed_user(self, user: Profile):
+        for role_str in user.hierachy_perms.all():
+            role = Role.from_str(role_str)
+            if self._is_allowed_role(role):
                 return True
         return False
 
-    def _has_perms_str(self, role_str):
-        new_role = Role.from_str(role_str)
-
+    def _is_allowed_role(self, role):
         try:
-            return self >= new_role
+            if role > self:
+                return True
+            elif role == self:
+                return self.permissions.has_perms(list(role.permissions.permissions))
+            else:
+                return False
         except RoleNotComparable:
             return False
 
     def give_role(self, user: Profile):
         perm, created = HierarchyPerms.objects.get_or_create(
-            perm_name=self.full_str)
+            perm_name=str(self))
         user.add_perm(perm)
-
-    def is_allowed(self):
-        pass
 
     @classmethod
     def from_start_model(cls, model):

@@ -12,7 +12,7 @@ class SchoolViewSet(viewsets.GenericViewSet):
     def get_object(self):
         return get_object_or_404(School, id=self.kwargs['school'])
 
-    @action(detail=True, methods=['get'], hier_perm=HierPerms(min=PermConst.SCHOOL_ADMIN, perms=['create-club']))
+    #@action(detail=True, methods=['get'], hier_perm=HierPerms(min=PermConst.SCHOOL_ADMIN, perms=['create-club']))
     def create_club(self):
         self
         return Response(data=OrderedDict({'hello'}))

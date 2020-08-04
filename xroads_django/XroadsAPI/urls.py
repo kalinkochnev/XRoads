@@ -27,7 +27,7 @@ admin_urls = [
     # TODO everything in this chunk has not had its views created
     # TODO everything below this point has not had it's permissions setup
 
-    path('admin/school/<int:school>/create-club/', views.CreateClub.as_view(), name='admin-create-club'),
+    #path('admin/school/<int:school>/create-club/', views.CreateClub.as_view(), name='admin-create-club'),
 ]
 """path('admin/user/<str:email>/', views.GetProfile.as_view(), name='admin-get-profile'),
 path('admin/club/<int:club>/add-editor/<int:user_pk>/', views.AddEditor.as_view(), name='admin-add-editor'),
