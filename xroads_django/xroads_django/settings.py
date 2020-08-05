@@ -161,7 +161,7 @@ STATIC_URL = '/static/'
 
 # User substitution
 # https://docs.djangoproject.com/en/1.11/topics/auth/customizing/#auth-custom-user
-AUTH_USER_MODEL = 'XroadsAPI.Profile'
+AUTH_USER_MODEL = 'XroadsAuth.Profile'
 
 # Email for development only!!!
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

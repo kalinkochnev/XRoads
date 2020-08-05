@@ -1,6 +1,5 @@
-from XroadsAPI.models import School
 import pytest
-
+from XroadsAPI.models import School
 
 def test_join_school(create_test_prof):
     school = School.objects.create(name="Some School")
