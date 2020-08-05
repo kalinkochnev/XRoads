@@ -5,20 +5,66 @@
     <meta charset="utf-8" />
 
     <title>Xroads</title>
-
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@400&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        #wrapper {
-            text-align: center;
-        }
-        #text {
-            display: inline-block;
-        }
+      * {
+        padding: 0;
+        margin: 0;
+      }
 
+      .parent {
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+
+      }
+
+      #red-bar {
+        min-height: 20px;
+        width: 100%;
+        margin: 0px;
+
+        background-color: #c32032;
+      }
+
+      #text {
+        font-size: 50px;
+        display: inline-block;
+        font-family: "Raleway", sans-serif;
+      }
+
+      #text-2 {
+        font-size: 30px;
+        display: inline-block;
+        font-family: "Raleway", sans-serif;
+        text-align: center;
+      }
+
+      #text-div {
+
+      }
     </style>
   </head>
   <body>
-      <div id='wrapper'>
-        <h1 id="text">You have successfully signed up for xroads! Please <a href="https://xroads.dev/accounts/login/">click here</a> to go back to the main site!</h1>
-      </div>
+    <div id="red-bar"></div>
+    <div class="parent">
+        <h1 id="text">
+          You have successfully signed up for Xroads!
+        </h1>
+        <p id="text-2">
+          Please <a href="https://xroads.dev/accounts/login/">click here</a> to
+          go back to the main site!
+        </p>
+        
+    </div>
   </body>
 </html>
