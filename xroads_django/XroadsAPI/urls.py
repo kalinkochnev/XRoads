@@ -18,10 +18,6 @@ from django.urls import path, include
 from XroadsAPI import views, admin_views
 from rest_framework import routers
 
-router = routers.SimpleRouter()
-router.register(r'school', admin_views.SchoolViewSet, basename='admin/')
-urlpatterns = router.urls
-
 
 admin_urls = [
     # TODO everything in this chunk has not had its views created
@@ -49,6 +45,8 @@ urlpatterns = [
     path('school/list/', views.GetSchoolList.as_view(), name='get-schools-list'),
     path('school/<int:school>/club-overview/', views.GetClubOverview.as_view(), name='get-club-overview'),
 ]
-urlpatterns += urlpatterns
 
 
+router = routers.DefaultRouter()
+router.register(r'school', admin_views.SchoolViewSet, basename='school')
+urlpatterns += router.urls

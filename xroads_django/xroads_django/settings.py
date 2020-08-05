@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from django.urls import reverse_lazy
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -40,12 +41,37 @@ INSTALLED_APPS = [
 
     # Rest app
     'XroadsAPI.apps.XroadsapiConfig',
+    'XroadsAuth.apps.XroadsauthConfig',
 
     #REST library
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
 
+    # Registration for dj-rest-auth
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'dj_rest_auth.registration',
+
+]
+
+# Needed for dj-rest-auth
+SITE_ID = 1
+
+# Need for custom user model allauth
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 MIDDLEWARE = [
@@ -136,3 +162,14 @@ STATIC_URL = '/static/'
 # User substitution
 # https://docs.djangoproject.com/en/1.11/topics/auth/customizing/#auth-custom-user
 AUTH_USER_MODEL = 'XroadsAPI.Profile'
+
+# Email for development only!!!
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+ACCOUNT_EMAIL_VERIFICATION = True
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = False
+LOGIN_URL = reverse_lazy("account_registration_success")
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = LOGIN_URL
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS=7
