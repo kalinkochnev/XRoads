@@ -21,14 +21,12 @@ class Permissions:
     def allow_all_perms(self):
         self.permissions = set(['__all__'])
 
-    def has_perms(self, perms: List[str]):
-        perms = set(perms)
-        assert perms.issubset(set(self.hierarchy.poss_perms)
-                              ), 'A permission provided is not possible with this hierarchy'
+    def is_allowed(self, given_perms):
+        given_perms = set(given_perms)
+        assert given_perms.issubset(set(self.hierarchy.poss_perms)), 'The provided permissions are not possible for this hierarchy'
 
-        if perms == set():
-            return False
-        return perms.issubset(self.permissions)
+        intersection = given_perms.intersection(self.permissions)
+        return self.permissions == intersection
 
     def add(self, *perms):
         if self.has_all_perms:
@@ -175,7 +173,7 @@ class Role:
             if role > self:
                 return True
             elif role == self:
-                return self.permissions.has_perms(list(role.permissions.permissions))
+                return self.permissions.is_allowed(list(role.permissions.permissions))
             else:
                 return False
         except RoleNotComparable:

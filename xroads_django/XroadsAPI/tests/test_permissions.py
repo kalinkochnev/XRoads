@@ -111,17 +111,23 @@ class TestPermissionClass:
 
     def test_has_perms(self, perm_test_class):
         perm = perm_test_class
-        assert perm.has_perms(['create-school']) is False
+        assert perm.is_allowed(['create-school']) is True
 
         perm.add('create-school', 'modify-district')
-        assert perm.has_perms(['create-school']) is True
-        assert perm.has_perms(['create-school', 'modify-district']) is True
+        assert perm.is_allowed(['create-school']) is False
+        assert perm.is_allowed(['create-school', 'modify-district']) is True
 
         # If permissions not possible for the given hierarchy
         with pytest.raises(AssertionError):
-            assert perm.has_perms(['some-perm'])
+            assert perm.is_allowed(['some-perm'])
 
+    def test_has_perms_more(self, perm_test_class):
+        perm = perm_test_class
 
+        # Test list of perms is more than perms of permission class
+        perm.add('create-school')
+        assert perm.is_allowed(['create-school', 'modify-district']) is True
+   
 @pytest.mark.usefixtures("perm_const_override", "db")
 class TestRole:
 
@@ -190,7 +196,7 @@ class TestRole:
         role.permissions.add('modify-district', 'create-school')
 
         input_str = 'District-1/perms=[modify-district]'
-        assert role.is_allowed(role=Role.from_str(input_str)) is True
+        assert role.is_allowed(role=Role.from_str(input_str)) is False
 
         input_str = 'District-1/perms=[create-school, modify-district]'
         assert role.is_allowed(role=Role.from_str(input_str)) is True
@@ -376,8 +382,8 @@ def role_test_data():
 
     return min_hier, min_perms
 
-
-class RestPermUseExamples:
+@pytest.mark.usefixtures("perm_const_override", "db")
+class TestRestPermUseExamples:
     def test_low_access_level(self, perm_const_override, create_test_prof, role_model_instances, role_test_data):
         min_hier, min_perms = role_test_data
         district1, school1, club1 = role_model_instances
@@ -406,6 +412,7 @@ class RestPermUseExamples:
         school_admin = create_test_prof(num=1)
         valid_role = Role.create(district1, school1)
         valid_role.permissions.add('modify-school', 'hide-school')
+        valid_role.give_role(school_admin)
 
         assert min_role.is_allowed(user=school_admin) is True
 
@@ -434,8 +441,8 @@ class RestPermUseExamples:
 
         # Case 4 -- Same level access but on a different school instance
         school_admin = create_test_prof(num=1)
-        district2 = District.objects.create(name='a')
-        school2 = School.objects.create(name='b')
+        district2 = District.objects.create(id=3, name='a')
+        school2 = School.objects.create(id=2, name='b')
         district2.add_school(school2)
 
         invalid_role = Role.create(district2, school2)
@@ -470,7 +477,7 @@ class RestPermUseExamples:
         # Case 6 -- Higher level access different district
         district_admin = create_test_prof(num=1)
 
-        district2 = District.objects.create(name='a')
+        district2 = District.objects.create(id=2, name='a')
         invalid_role = Role.create(district2)
         invalid_role.give_role(district_admin)
 
