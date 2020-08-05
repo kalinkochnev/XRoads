@@ -162,12 +162,10 @@ class Role:
             return self._is_allowed_user(kwargs['user'])
         elif 'role' in keys:
             return self._is_allowed_role(kwargs['role'])
-        else:
-            return False
 
     def _is_allowed_user(self, user: Profile):
-        for role_str in user.hierachy_perms.all():
-            role = Role.from_str(role_str)
+        for hier_perm in user.hierarchy_perms.all():
+            role = Role.from_str(hier_perm.perm_name)
             if self._is_allowed_role(role):
                 return True
         return False

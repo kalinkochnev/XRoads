@@ -6,6 +6,23 @@ import XroadsAPI.permisson_constants as PermConst
 from XroadsAPI.exceptions import *
 
 
+@pytest.mark.usefixtures("db")
+class TestHierarchy:
+    def test_create_hierarchy(self):
+        heirarchy = Hierarchy(District, School, Club, name="Club Editor")
+
+        assert heirarchy.level_names[0] == 'District'
+        assert heirarchy.level_names[1] == 'School'
+        assert heirarchy.level_names[2] == 'Club'
+
+    def test_get_hier(self):
+        PermConst.ROLES = [
+            Hierarchy(District, name=PermConst.DISTRICT_ADMIN)
+        ]
+        assert Hierarchy.get_hierarchy(
+            PermConst.DISTRICT_ADMIN) == PermConst.ROLES[0]
+
+
 @pytest.fixture
 def role_model_instances(create_club):
     district1 = District.objects.create(id=1, name="d1")
@@ -17,22 +34,29 @@ def role_model_instances(create_club):
 
     return (district1, school1, club1)
 
+
 @pytest.fixture
 def perm_const_override():
     PermConst.DISTRICT_ADMIN = 'District Admin'
     PermConst.SCHOOL_ADMIN = 'School Admin'
     PermConst.CLUB_EDITOR = 'Club Editor'
-    PermConst.ROLE_HIERARCHY = Hierarchy(District, School, Club, name=PermConst.CLUB_EDITOR)
+    PermConst.ROLE_HIERARCHY = Hierarchy(
+        District, School, Club, name=PermConst.CLUB_EDITOR)
 
     PermConst.ROLES = [
-        Hierarchy(District, name=PermConst.DISTRICT_ADMIN, poss_perms=['__all__', 'create-school', 'modify-district']),
-        Hierarchy(District, School, name=PermConst.SCHOOL_ADMIN, poss_perms=['__all__', 'create-club', 'modify-school', 'hide-school']),
-        Hierarchy(District, School, Club, name=PermConst.CLUB_EDITOR, poss_perms=['__all__', 'modify-club', 'add-editor']),
+        Hierarchy(District, name=PermConst.DISTRICT_ADMIN, poss_perms=[
+                  '__all__', 'create-school', 'modify-district']),
+        Hierarchy(District, School, name=PermConst.SCHOOL_ADMIN, poss_perms=[
+                  '__all__', 'create-club', 'modify-school', 'hide-school']),
+        Hierarchy(District, School, Club, name=PermConst.CLUB_EDITOR,
+                  poss_perms=['__all__', 'modify-club', 'add-editor']),
     ]
+
 
 @pytest.fixture
 def perm_test_class(perm_const_override):
     return Permissions([], hierarchy=PermConst.ROLES[0])
+
 
 class TestPermissionClass:
     def test_add_perms_possible(self, perm_test_class):
@@ -47,15 +71,16 @@ class TestPermissionClass:
         perm = perm_test_class
 
         with pytest.raises(AssertionError):
-            assert perm.add('create-school', 'modify-district', 'perm-not-listed-in-hierarchy')
+            assert perm.add('create-school', 'modify-district',
+                            'perm-not-listed-in-hierarchy')
 
     def test_has_all_perms(self, perm_test_class):
         perm = perm_test_class
-        
+
         assert perm.has_all_perms is False
 
         perm.allow_all_perms()
-        
+
         assert perm.has_all_perms is True
         assert perm.permissions == {'__all__'}
 
@@ -64,9 +89,9 @@ class TestPermissionClass:
         perm.add('__all__')
         assert perm.has_all_perms is True
 
-
     def test_add_perms_already_all(self, perm_const_override):
-        test_hier = Hierarchy(District, School, Club, name="test_hier", poss_perms=['some_str', 'other_str'])
+        test_hier = Hierarchy(District, School, Club, name="test_hier", poss_perms=[
+                              'some_str', 'other_str'])
         perm = Permissions([], hierarchy=test_hier)
 
         perm.allow_all_perms()
@@ -75,7 +100,8 @@ class TestPermissionClass:
         assert perm.permissions == {'__all__'}
 
     def test_to_str(self, perm_const_override):
-        test_hier = Hierarchy(District, School, Club, name="test_hier", poss_perms=['some_str', 'other_str'])
+        test_hier = Hierarchy(District, School, Club, name="test_hier", poss_perms=[
+                              'some_str', 'other_str'])
         perm = Permissions([], hierarchy=test_hier)
 
         # Putting in a list instead of a set because this test would always fail otherwise. Sets do not preserve order so the str will constantly change
@@ -96,7 +122,6 @@ class TestPermissionClass:
             assert perm.has_perms(['some-perm'])
 
 
-
 @pytest.mark.usefixtures("perm_const_override", "db")
 class TestRole:
 
@@ -108,7 +133,8 @@ class TestRole:
     def test_str_matches(self, role_model_instances, perm_const_override):
         district1, school1, club1 = role_model_instances
 
-        test_hier = Hierarchy(District, School, Club, name="test_hier", poss_perms=['some_str', 'other_str'])
+        test_hier = Hierarchy(District, School, Club, name="test_hier", poss_perms=[
+                              'some_str', 'other_str'])
         role = Role.create(district1, school1, club1)
         role.hierarchy = test_hier
         role.permissions.hierarchy = test_hier
@@ -123,7 +149,7 @@ class TestRole:
 
         # The possible perms for School Admins are 'create-club', 'modify-school', 'hide-school'
         role_expected = Role.create(district1, school1)
-        
+
         role_expected.permissions.add('modify-school', 'hide-school')
 
         perm_str = 'District-1/School-1/perms=[modify-school, hide-school]'
@@ -157,12 +183,12 @@ class TestRole:
                            role=PermConst.CLUB_EDITOR)
         assert str(role) == 'District-1/School-1/Club-1/perms=[]'
 
-    def test_match_perms_1_layer_multi_param_str(self, role_model_instances):
+    def test_is_allowed_perms_1_layer_multi_param_str(self, role_model_instances):
         district1, school1, club1 = role_model_instances
-        
+
         role = Role.create(district1)
         role.permissions.add('modify-district', 'create-school')
-        
+
         input_str = 'District-1/perms=[modify-district]'
         assert role.is_allowed(role=Role.from_str(input_str)) is True
 
@@ -259,7 +285,7 @@ class TestRole:
         assert role2 <= role1
         assert role2 <= role2
 
-    def test_match_perms_3_layer_str(self, create_club, role_model_instances):
+    def test_is_allowed_perms_3_layer_str(self, create_club, role_model_instances):
         district1, school1, club1 = role_model_instances
 
         role = Role.create(district1)
@@ -279,7 +305,7 @@ class TestRole:
         with pytest.raises(InvalidRoleCreated):
             assert role.is_allowed(role=Role.from_str(input_str))
 
-    def test_match_higher_level(self, role_model_instances):
+    def test_allowed_higher_level(self, role_model_instances):
         district1, school1, club1 = role_model_instances
 
         role = Role.create(district1)
@@ -288,7 +314,7 @@ class TestRole:
 
         assert Role.from_str(input_str).is_allowed(role=role) == True
 
-    def test_not_match(self, create_club, role_model_instances):
+    def test_not_allowed(self, create_club, role_model_instances):
         district1, school1, club1 = role_model_instances
 
         district2 = District.objects.create(id=2, name='d2')
@@ -315,7 +341,8 @@ class TestRole:
         assert str(role) in [p.perm_name for p in prof.hierarchy_perms.all()]
 
         role2 = Role.create(district1, school1, club1)
-        assert str(role2) not in [p.perm_name for p in prof.hierarchy_perms.all()]
+        assert str(role2) not in [
+            p.perm_name for p in prof.hierarchy_perms.all()]
 
     def test_from_start_model(self, role_model_instances):
         district1, school1, club1 = role_model_instances
@@ -329,18 +356,122 @@ class TestRole:
         club_admin_role = Role.from_start_model(club1)
         assert str(club_admin_role) == 'District-1/School-1/Club-1/perms=[]'
 
-@pytest.mark.usefixtures("db")
-class TestHierarchy:
-    def test_create_hierarchy(self):
-        heirarchy = Hierarchy(District, School, Club, name="Club Editor")
+    def test_is_allowed_user(self, role_model_instances, create_test_prof):
+        prof = create_test_prof(num=1)
+        district1, school1, club1 = role_model_instances
 
-        assert heirarchy.level_names[0] == 'District'
-        assert heirarchy.level_names[1] == 'School'
-        assert heirarchy.level_names[2] == 'Club'
+        role = Role.create(district1, school1, club1)
+        role.permissions.add('modify-club')
 
-    def test_get_hier(self):
-        PermConst.ROLES = [
-            Hierarchy(District, name=PermConst.DISTRICT_ADMIN)
-        ]
-        assert Hierarchy.get_hierarchy(
-            PermConst.DISTRICT_ADMIN) == PermConst.ROLES[0]
+        assert role.is_allowed(user=prof) is False
+
+        role.give_role(prof)
+        assert role.is_allowed(user=prof) is True
+
+
+@pytest.fixture
+def role_test_data():
+    min_hier = Hierarchy.get_hierarchy(PermConst.SCHOOL_ADMIN)
+    min_perms = ['modify-school']
+
+    return min_hier, min_perms
+
+
+class RestPermUseExamples:
+    def test_low_access_level(self, perm_const_override, create_test_prof, role_model_instances, role_test_data):
+        min_hier, min_perms = role_test_data
+        district1, school1, club1 = role_model_instances
+        start_model = school1
+
+        min_role = Role.from_start_model(start_model)
+        min_role.permissions.add(*min_perms)
+
+        # Case 1 -- Lower access user tries to access higher permission level resource
+        club_editor = create_test_prof(num=1)
+        invalid_role = Role.create(district1, school1, club1)
+        invalid_role.permissions.add('modify-club')
+        invalid_role.give_role(club_editor)
+
+        assert min_role.is_allowed(user=club_editor) is False
+
+    def test_same_access_level(self, perm_const_override, create_test_prof, role_model_instances, role_test_data):
+        min_role, min_perms = role_test_data
+        district1, school1, club1 = role_model_instances
+        start_model = school1
+
+        min_role = Role.from_start_model(start_model)
+        min_role.permissions.add(*min_perms)
+
+        # Case 2 -- Same level access with correct permission tries to access resource
+        school_admin = create_test_prof(num=1)
+        valid_role = Role.create(district1, school1)
+        valid_role.permissions.add('modify-school', 'hide-school')
+
+        assert min_role.is_allowed(user=school_admin) is True
+
+    def test_same_access_level_diff_perms(self, perm_const_override, create_test_prof, role_model_instances, role_test_data):
+        min_role, min_perms = role_test_data
+        district1, school1, club1 = role_model_instances
+        start_model = school1
+
+        min_role = Role.from_start_model(start_model)
+        min_role.permissions.add(*min_perms)
+
+        # Case 3 -- Same level access but does not have right permission
+        school_admin = create_test_prof(num=1)
+        invalid_role = Role.create(district1, school1)
+        invalid_role.permissions.add('hide-school')
+
+        assert min_role.is_allowed(user=school_admin) is False
+
+    def test_same_access_level_diff_inst(self, perm_const_override, create_test_prof, role_model_instances, role_test_data):
+        min_role, min_perms = role_test_data
+        district1, school1, club1 = role_model_instances
+        start_model = school1
+
+        min_role = Role.from_start_model(start_model)
+        min_role.permissions.add(*min_perms)
+
+        # Case 4 -- Same level access but on a different school instance
+        school_admin = create_test_prof(num=1)
+        district2 = District.objects.create(name='a')
+        school2 = School.objects.create(name='b')
+        district2.add_school(school2)
+
+        invalid_role = Role.create(district2, school2)
+        invalid_role.permissions.add('modify-school')
+        invalid_role.give_role(school_admin)
+
+        assert min_role.is_allowed(user=school_admin) is False
+
+    def test_higher_access_level(self, perm_const_override, create_test_prof, role_model_instances, role_test_data):
+        min_role, min_perms = role_test_data
+        district1, school1, club1 = role_model_instances
+        start_model = school1
+
+        min_role = Role.from_start_model(start_model)
+        min_role.permissions.add(*min_perms)
+
+        # Case 5 -- Higher level access same school
+        district_admin = create_test_prof(num=1)
+        valid_role = Role.create(district1)
+        valid_role.give_role(district_admin)
+
+        assert min_role.is_allowed(user=district_admin) is True
+
+    def test_higher_access_level_diff_inst(self, perm_const_override, create_test_prof, role_model_instances, role_test_data):
+        min_role, min_perms = role_test_data
+        district1, school1, club1 = role_model_instances
+        start_model = school1
+
+        min_role = Role.from_start_model(start_model)
+        min_role.permissions.add(*min_perms)
+
+        # Case 6 -- Higher level access different district
+        district_admin = create_test_prof(num=1)
+
+        district2 = District.objects.create(name='a')
+        invalid_role = Role.create(district2)
+        invalid_role.give_role(district_admin)
+
+        assert min_role.is_allowed(user=district_admin) is False
