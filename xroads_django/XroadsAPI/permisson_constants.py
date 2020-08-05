@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from XroadsAPI.models import *
 
+
 class Hierarchy:
     def __init__(self, *models, poss_perms=[], **kwargs):
         assert 'name' in kwargs, 'Attribute name must be included in keyword args'
@@ -37,6 +38,8 @@ class Hierarchy:
     @property
     def highest_level(self):
         return self.levels[-1]
+
+    
 
 DISTRICT_ADMIN = 'District Admin'
 SCHOOL_ADMIN = 'School Admin'

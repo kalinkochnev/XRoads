@@ -317,6 +317,17 @@ class TestRole:
         role2 = Role.create(district1, school1, club1)
         assert str(role2) not in [p.perm_name for p in prof.hierarchy_perms.all()]
 
+    def test_from_start_model(self, role_model_instances):
+        district1, school1, club1 = role_model_instances
+
+        district_admin_role = Role.from_start_model(district1)
+        assert str(district_admin_role) == 'District-1/perms=[]'
+
+        school_admin_role = Role.from_start_model(school1)
+        assert str(school_admin_role) == 'District-1/School-1/perms=[]'
+
+        club_admin_role = Role.from_start_model(club1)
+        assert str(club_admin_role) == 'District-1/School-1/Club-1/perms=[]'
 
 @pytest.mark.usefixtures("db")
 class TestHierarchy:

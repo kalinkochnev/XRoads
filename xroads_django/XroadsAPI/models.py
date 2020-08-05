@@ -198,7 +198,7 @@ class Club(models.Model):
     # TODO add test for this
     @property
     def school(self):
-        return School.objects.get(clubs=[self])
+        return School.objects.get(clubs__in=[self])
 
 # TODO make clubs many to one
 class School(models.Model):
@@ -214,6 +214,10 @@ class School(models.Model):
     def add_club(self, club: Club, save=True):
         self.clubs.add(club)
         self.make_save(save)
+
+    @property
+    def district(self):
+        return District.objects.get(schools__in=[self])
 
 class District(models.Model):
     schools = models.ManyToManyField(School)

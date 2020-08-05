@@ -6,6 +6,7 @@ from XroadsAPI import permisson_constants as PermConst
 from XroadsAPI.permisson_constants import Hierarchy
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import permissions
+from XroadsAPI.utils import get_parent_model
 
 
 class Permissions:
@@ -20,11 +21,11 @@ class Permissions:
     def allow_all_perms(self):
         self.permissions = set(['__all__'])
 
-
     def has_perms(self, perms: List[str]):
         perms = set(perms)
-        assert perms.issubset(set(self.hierarchy.poss_perms)), 'A permission provided is not possible with this hierarchy'
-        
+        assert perms.issubset(set(self.hierarchy.poss_perms)
+                              ), 'A permission provided is not possible with this hierarchy'
+
         if perms == set():
             return False
         return perms.issubset(self.permissions)
@@ -40,11 +41,10 @@ class Permissions:
         poss_perms = self.hierarchy.poss_perms
         perms = set(perms)
 
-
-        assert perms.issubset(poss_perms) or perms == {}, f'The provided permissions are not legal for this hierarchy: {self.hierarchy.name}'
+        assert perms.issubset(poss_perms) or perms == {
+        }, f'The provided permissions are not legal for this hierarchy: {self.hierarchy.name}'
 
         self.permissions.update(set(perms))
-
 
     def __str__(self):
         perm_str = ', '.join(map(str, self.permissions))
@@ -67,21 +67,33 @@ class Role:
     def create(cls, *model_instances, **kwargs: dict):
         return Role(model_instances=model_instances, **kwargs)
 
-    def __str__(self):
-        def key_val_format(key, val):
-            return f'{key}-{val}/'
+    # IMPORTANT!!! If you are using the from_start_model method, the model needs
+    # to have a property that is the same name as the parent class that is all
+    # lowercase in order for the relationship to work.
+    # Ex: District/School/Club
+    #   The school instance has to have a property called: district and the club instance has to have
+    #   a property called: school
+    @classmethod
+    def from_start_model(cls, model_inst):
+        """Matches a hierarchy based on the given model and then creates the role based on that hierarchy"""
 
-        # * TODO make sure to create regex that tests proper format of string
-        model_ids = [m.id for m in self.model_instances]
-        model_info = dict(zip(self.hierarchy.level_names, model_ids))
+        # Match hierarchy
+        def filter_func(x): return x.highest_level == model_inst.__class__
+        hier = list(filter(filter_func, PermConst.ROLES))[0]
 
-        perm_str = ""
-        for model_name, model_id in model_info.items():
-            perm_str += key_val_format(model_name, model_id)
+        # Get instances based on child. model_instances is backwards
+        model_instances = [model_inst]
+        for i in range(len(hier.levels)-1, 0, -1):
+            parent_model = hier.levels[i-1]
+            # It indexes at pos 0 because it inserts the model inst at the start of the inst array once found
+            child_inst = model_instances[0]
 
-        perm_str += str(self.permissions)
+            # Retrieve the parent model based on parent attribute field name
+            parent_inst = getattr(child_inst, parent_model.__name__.lower())
 
-        return perm_str
+            model_instances.insert(0, parent_inst)
+
+        return Role.create(*model_instances)
 
     @classmethod
     def from_str(cls, perm_ident: str) -> Role:
@@ -119,6 +131,22 @@ class Role:
         role.permissions.add(*permissions)
         return role
 
+    def __str__(self):
+        def key_val_format(key, val):
+            return f'{key}-{val}/'
+
+        # * TODO make sure to create regex that tests proper format of string
+        model_ids = [m.id for m in self.model_instances]
+        model_info = dict(zip(self.hierarchy.level_names, model_ids))
+
+        perm_str = ""
+        for model_name, model_id in model_info.items():
+            perm_str += key_val_format(model_name, model_id)
+
+        perm_str += str(self.permissions)
+
+        return perm_str
+
     def _match_role(self, model_instances):
         inst_names = [inst.__class__.__name__ for inst in model_instances]
         role_name = Hierarchy.match_hierarchy(inst_names, PermConst.ROLES)
@@ -128,7 +156,7 @@ class Role:
     def is_allowed(self, **kwargs):
         """Returns whether the given user or role instance has permissions for the current role instance"""
         assert len(kwargs) == 1, 'You can only have one key value param'
-        
+
         keys = kwargs.keys()
         if 'user' in keys:
             return self._is_allowed_user(kwargs['user'])
@@ -159,11 +187,6 @@ class Role:
         perm, created = HierarchyPerms.objects.get_or_create(
             perm_name=str(self))
         user.add_perm(perm)
-
-    @classmethod
-    def from_start_model(cls, model):
-        pass
-
 
     def __eq__(self, other_inst: Role):
         return self._comparison(other_inst) == 0
@@ -211,18 +234,9 @@ class Role:
         This can query the db quite a few times
         """
 
-        def is_model_contained(inner_m, outer_m):
-            # In District-1/School-3/  School-3 is the inner model, District-1 is the outer model
-            m2m_query = f'{outer_m.__class__.__name__.lower()}__in'
-            m2m_value = [outer_m]
-
-            args = {
-                'id': inner_m.id,
-                m2m_query: m2m_value,
-            }
-
+        def is_model_contained(child, parent):
             try:
-                inner_m.__class__.objects.get(**args)
+                get_parent_model(child, parent)
                 return True
             except inner_m.DoesNotExist:
                 return False
