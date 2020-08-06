@@ -12,8 +12,10 @@ from XroadsAPI.utils import get_parent_model
 
 class Permissions:
     def __init__(self, perm_strs: List[str], hierarchy):
-        self.permissions: Set[str] = set(perm_strs)
+        self.permissions: Set[str] = set()
         self.hierarchy: Hierarchy = hierarchy
+
+        self.add(*perm_strs)
 
     @property
     def has_all_perms(self):
@@ -54,7 +56,7 @@ class Role:
     def __init__(self, model_instances=[], **kwargs):
         self.model_instances = model_instances
 
-        role = kwargs.get('role', self._match_role(model_instances))
+        role = kwargs.get('role', self._role_matcher(model_instances))
         self.hierarchy = Hierarchy.get_hierarchy(role)
 
         perms = kwargs.get('permissions', [])
@@ -130,23 +132,24 @@ class Role:
         role.permissions.add(*permissions)
         return role
 
-    def __str__(self):
-        def key_val_format(key, val):
-            return f'{key}-{val}/'
+    def go_up_levels(self, times, perms=[]):
+        level_index = PermConst.ROLES.index(self.hierarchy)
+        assert level_index-times > -1, 'You cannot increase the level by this amount since you will surpass the highest level'
 
-        # * TODO make sure to create regex that tests proper format of string
-        model_ids = [m.id for m in self.model_instances]
-        model_info = dict(zip(self.hierarchy.level_names, model_ids))
+        model_instances = self.model_instances[:len(self.model_instances)-times]
 
-        perm_str = ""
-        for model_name, model_id in model_info.items():
-            perm_str += key_val_format(model_name, model_id)
+        new_role = Role(model_instances=model_instances, permissions=perms)
+        self.model_instances = new_role.model_instances
+        self.hierarchy = new_role.hierarchy
+        self.permissions = new_role.permissions
 
-        perm_str += str(self.permissions)
+        del new_role
 
-        return perm_str
 
-    def _match_role(self, model_instances):
+    def reset_perms(self, perms=[]):
+        self.permissions = Permissions(perms, self.hierarchy)
+
+    def _role_matcher(self, model_instances):
         inst_names = [inst.__class__.__name__ for inst in model_instances]
         role_name = Hierarchy.match_hierarchy(inst_names, PermConst.ROLES)
         assert role_name is not None, 'Role matcher could not find role with that hierarchy of models'
@@ -201,6 +204,22 @@ class Role:
     def __ge__(self, other_inst: Role):
         comparison = self._comparison(other_inst)
         return comparison == 1 or comparison == 0
+    
+    def __str__(self):
+        def key_val_format(key, val):
+            return f'{key}-{val}/'
+
+        # * TODO make sure to create regex that tests proper format of string
+        model_ids = [m.id for m in self.model_instances]
+        model_info = dict(zip(self.hierarchy.level_names, model_ids))
+
+        perm_str = ""
+        for model_name, model_id in model_info.items():
+            perm_str += key_val_format(model_name, model_id)
+
+        perm_str += str(self.permissions)
+
+        return perm_str
 
     def _comparison(self, other_inst):
         # THIS DOES NOT COMPARE PERMISSIONS

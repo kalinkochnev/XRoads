@@ -115,7 +115,7 @@ class TestPermissionClass:
         # Test list of perms is more than perms of permission class
         perm.add('create-school')
         assert perm.is_allowed(['create-school', 'modify-district']) is True
-   
+    
 @pytest.mark.usefixtures("perm_const_override", "db")
 class TestRole:
 
@@ -361,6 +361,49 @@ class TestRole:
 
         role.give_role(prof)
         assert role.is_allowed(user=prof) is True
+
+    def test_reset_perms(self, role_model_instances, create_test_prof):
+        district1, school1, club1 = role_model_instances
+
+        role = Role.create(district1, school1, club1)
+        role.permissions.add('modify-club')
+        assert role.permissions.permissions == {'modify-club'}
+
+        role.reset_perms()
+        assert role.permissions.permissions == set()
+        assert role.hierarchy == role.permissions.hierarchy
+
+        role.reset_perms(['modify-club', 'add-editor'])
+        assert role.permissions.permissions == {'modify-club', 'add-editor'}
+
+        with pytest.raises(AssertionError):
+            assert role.reset_perms(['modify-club', 'blah-blah'])
+
+    def test_move_up_levels(self, role_model_instances, create_test_prof):
+        district1, school1, club1 = role_model_instances
+
+        role = Role.create(district1, school1, club1)
+        role.go_up_levels(times=1, perms=['modify-school'])
+
+        assert Role.create(district1, school1) == role
+        assert role.permissions.permissions == {'modify-school'}
+
+        role = Role.create(district1, school1, club1)
+        role.go_up_levels(times=2, perms=['create-school', 'modify-district'])
+
+        assert Role.create(district1) == role
+        assert role.permissions.permissions == {'create-school', 'modify-district'}
+
+        # Goes outside of possible roles
+        with pytest.raises(AssertionError):
+            role = Role.create(district1, school1, club1)
+            assert role.go_up_levels(times=3)
+        
+        # Permissions not valid for new role
+        with pytest.raises(AssertionError):
+            role = Role.create(district1, school1, club1)
+            assert role.go_up_levels(times=2, perms=['perms not in permissions'])
+             
 
 
 @pytest.fixture
