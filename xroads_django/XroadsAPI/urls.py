@@ -39,6 +39,10 @@ path('admin/school/<int:school>/', views.SchoolAdmin.as_view(), name='admin-scho
 path('admin/district/<int:district>/', views.DistrictAdmin.as_view(), name='admin-district-detail'),
 """
 
+
+"""
+path('club/join/<int:club>/, views.JoinClub.as_view())
+"""
 urlpatterns = [
     path('csrf/', views.csrf),
     path('club/<int:club>/', views.GetClub.as_view(), name='get-club-detail'),

@@ -3,8 +3,11 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from XroadsAuth.manager import CustomUserManager 
 import re
+from allauth.account.models import EmailAddress
 from django.core.exceptions import FieldError
 import XroadsAPI.models as api_models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 # Create your models here
 
 class HierarchyPerms(models.Model):
@@ -71,4 +74,7 @@ class Profile(AbstractUser):
 
     def add_perm(self, perm):
         self.hierarchy_perms.add(perm)
-        self.make_save(save=True)
+        self.make_save(save=True) 
+
+    def verify(self):
+        email = EmailAddress.objects.get_for_user(self, self.email)

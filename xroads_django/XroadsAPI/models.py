@@ -9,7 +9,6 @@ from XroadsAuth.manager import CustomUserManager
 from XroadsAuth.models import Profile
 
 
-
 class Slide(models.Model):
     class Meta:
         ordering = ['position']
@@ -133,6 +132,8 @@ class Club(models.Model):
         return School.objects.get(clubs__in=[self])
 
 # TODO make clubs many to one
+
+
 class School(models.Model):
     name = models.CharField(max_length=40)
     img = models.ImageField()
@@ -150,6 +151,7 @@ class School(models.Model):
     @property
     def district(self):
         return District.objects.get(schools__in=[self])
+
 
 class District(models.Model):
     schools = models.ManyToManyField(School)
