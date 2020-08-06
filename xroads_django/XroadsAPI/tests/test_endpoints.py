@@ -37,14 +37,15 @@ class AdminGeneralViews:
         assert response.status_code == 401
 
     def test_at_least_school_admin(self):
-        other_prof = create_test_prof(id=2)
-        other_prof.join_school(school)
 
         d1 = District.objects.create(name='d')
         s1 = School.objects.create(name='s')
         d1.add_school(s1)
         c1 = create_club(id=1)
         s1.add_club(c1)
+
+        other_prof = create_test_prof(id=2)
+        other_prof.join_school(school)
 
         district_admin = create_test_prof(id=3)
         d1_admin_role = Role.create(d1)
@@ -75,6 +76,7 @@ class AdminGeneralViews:
 
         response3: Response = c1_client.post(path, format='json')
         assert response3.status_code == 401
+        assert response3.data['error'] == 'Request user does not have high enough elevated privileges'
 
 
     @pytest.mark.parametrize('permissions, expected', [
@@ -101,6 +103,54 @@ class AdminGeneralViews:
         response: Response = client.post(path, format='json')
 
         assert response.status_code == expected
+        if expected == 401:
+            assert response.data['error'] == 'Request user does not have correct permissions for this object'
+
+
+    def test_get_user_district_admin_no_perms(self):
+        d1 = District.objects.create(name='d')
+        s1 = School.objects.create(name='s')
+        d1.add_school(s1)
+        c1 = create_club(id=1)
+        s1.add_club(c1)
+
+        other_prof = create_test_prof(id=2)
+        other_prof.join_school(s1)
+
+
+        district_admin = create_test_prof(id=3)
+        d1_admin_role = Role.create(d1)
+        d1_admin_role.give_role(district_admin)
+        d1_client = APIClient()
+        d1_client.force_authenticate(user=district_admin)
+
+        path = reverse('admin-get-profile', kwargs={'email': other_prof.email})
+        response: Response = client.post(path, format='json')
+
+        assert response.status_code == 200
+
+    def test_get_user_diff_school(self):
+        d1 = District.objects.create(name='d')
+        s1 = School.objects.create(name='s')
+        # School not being added to the district  d1.add_school(s1)
+
+        c1 = create_club(id=1)
+        s1.add_club(c1)
+
+        other_prof = create_test_prof(id=2)
+        other_prof.join_school(s1)
+
+        district_admin = create_test_prof(id=3)
+        d1_admin_role = Role.create(d1)
+        d1_admin_role.give_role(district_admin)
+        d1_client = APIClient()
+        d1_client.force_authenticate(user=district_admin)
+
+        path = reverse('admin-get-profile', kwargs={'email': other_prof.email})
+        response: Response = client.post(path, format='json')
+
+        assert response.status_code == 401
+        assert response.data['error'] == 'Request user does not have access to this object'
 
 
     def test_get_self_info(self):
