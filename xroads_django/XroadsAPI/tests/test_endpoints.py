@@ -1,14 +1,17 @@
-from rest_framework.test import APIClient
 import pytest
+from rest_framework.test import APIClient
 from XroadsAuth.models import Profile
 from django.urls import reverse
 from rest_framework.response import Response
 from XroadsAPI.permissions import Role, Permissions, Hierarchy
+
 # ALL views will have their authentication forced. The system used is subject to
 # being changed so it will not be included here for now
+
+
 @pytest.fixture
 def setup_client_no_auth(create_test_prof):
-    profile = create_test_prof(id=1)
+    profile = create_test_prof(num=1)
     client = APIClient()
     client.force_authenticate(user=profile)
 
@@ -23,51 +26,45 @@ def setup_client_auth(setup_client_no_auth):
     return profile, client
 
 
-class AdminGeneralViews:
-    def test_get_user(self, setup_client_no_auth, create_test_prof):
-        request_prof, client = setup_client
-        client: APIClient = client
-        other_prof = create_test_prof(id=2)
+@pytest.fixture
+def create_client_roles(create_test_prof):
+    def create(prof_id, role_objs, is_auth=True, perms=['__all__']):
+        prof = create_test_prof(num=prof_id)
+        role = Role.create(*role_objs)
+        role.permissions.add(*perms)
+        role.give_role(prof)
 
-        path = reverse('admin-get-profile', kwargs={'email': other_prof.email})
+        client = APIClient()
+        if is_auth:
+            client.force_authenticate(user=prof)
+        return prof, role, client
+    return create
 
-        # Test error when logged out
-        client.logout()
+
+class TestAdminGeneralViews:
+    def test_get_user_no_login(self):
+        client = APIClient()
+        path = reverse('admin-get-profile', kwargs={'email': 'fake@email.com'})
+
+        # Test error when not logged in
         response: Response = client.post(path, format='json')
         assert response.status_code == 401
 
-    def test_at_least_school_admin(self):
+    def test_at_least_school_admin(self, role_model_instances, create_client_roles, create_test_prof):
+        d1, s1, c1 = role_model_instances
 
-        d1 = District.objects.create(name='d')
-        s1 = School.objects.create(name='s')
-        d1.add_school(s1)
-        c1 = create_club(id=1)
-        s1.add_club(c1)
+        other_prof = create_test_prof(num=1)
+        other_prof.join_school(s1)
 
-        other_prof = create_test_prof(id=2)
-        other_prof.join_school(school)
-
-        district_admin = create_test_prof(id=3)
-        d1_admin_role = Role.create(d1)
-        d1_admin_role.give_role(district_admin)
-        d1_client = APIClient()
-        d1_client.force_authenticate(user=district_admin)
-
-        school_admin = create_test_prof(id=4)
-        s1_admin_role = Role.create(d1, s1)
-        s1_admin_role.give_role(school_admin)
-        s1_client = APIClient()
-        s1_client.force_authenticate(user=school_admin)
-
-        club_editor = create_test_prof(id=5)
-        c1_admin_role = Role.create(d1, s1, c1)
-        c1_admin_role.give_role(school_admin)
-        c1_client = APIClient()
-        c1_client.force_authenticate(user=club_editor)
+        district_admin, d1_admin_role, d1_client = create_client_roles(2, [d1])
+        school_admin, s1_admin_role, s1_client = create_client_roles(3, [
+                                                                     d1, s1])
+        club_editor, c1_admin_role, c1_client = create_client_roles(4, [
+                                                                    d1, s1, c1])
 
         # Test request user must be at least a school admin to get detailed info
         path = reverse('admin-get-profile', kwargs={'email': other_prof.email})
-        
+
         response1: Response = d1_client.post(path, format='json')
         assert response1.status_code == 200
 
@@ -78,83 +75,66 @@ class AdminGeneralViews:
         assert response3.status_code == 401
         assert response3.data['error'] == 'Request user does not have high enough elevated privileges'
 
-
     @pytest.mark.parametrize('permissions, expected', [
         [['__all__'], 200],
         [['modify-school'], 200],
         [['create-club'], 200],
         [['create-club', 'modify-school'], 200],
-        [['hide-school', 401]],
-        [['blah blah blah', 401]],
+        [['hide-school'], 401],
+        # [['blah blah blah'], 401], add test that checks for a random string (doesn't work cause of assert statement in Role)
 
     ])
-    def test_get_user_school_admin_perm_test(self, permissions, expected, setup_client_auth, create_test_prof):
-        request_prof, client = setup_client
+    def test_get_user_school_admin_perm_test(self, permissions, expected, role_model_instances, create_client_roles, create_test_prof):
+        d1, s1, c1 = role_model_instances
 
-        other_prof = create_test_prof(id=2)
-        school = School.objects.create(name='s')
-        other_prof.join_school(school)
+        other_prof = create_test_prof(num=1)
+        other_prof.join_school(s1)
 
-        role = Role.from_start_model(school)    
-        role.permissions.add(*permissions)
-        role.give_role(request_prof)
+        school_admin, s1_admin_role, s1_client = create_client_roles(
+            2, [d1, s1], perms=permissions)
 
         path = reverse('admin-get-profile', kwargs={'email': other_prof.email})
-        response: Response = client.post(path, format='json')
+        response: Response = s1_client.post(path, format='json')
 
         assert response.status_code == expected
         if expected == 401:
             assert response.data['error'] == 'Request user does not have correct permissions for this object'
 
+    def test_get_user_district_admin_no_perms(self, role_model_instances, create_client_roles, create_test_prof):
+        d1, s1, c1 = role_model_instances
 
-    def test_get_user_district_admin_no_perms(self):
-        d1 = District.objects.create(name='d')
-        s1 = School.objects.create(name='s')
-        d1.add_school(s1)
-        c1 = create_club(id=1)
-        s1.add_club(c1)
-
-        other_prof = create_test_prof(id=2)
+        other_prof = create_test_prof(num=1)
         other_prof.join_school(s1)
 
-
-        district_admin = create_test_prof(id=3)
-        d1_admin_role = Role.create(d1)
-        d1_admin_role.give_role(district_admin)
-        d1_client = APIClient()
-        d1_client.force_authenticate(user=district_admin)
+        school_admin, s1_admin_role, s1_client = create_client_roles(2, [d1])
 
         path = reverse('admin-get-profile', kwargs={'email': other_prof.email})
-        response: Response = client.post(path, format='json')
+        response: Response = s1_client.post(path, format='json')
 
         assert response.status_code == 200
 
-    def test_get_user_diff_school(self):
-        d1 = District.objects.create(name='d')
-        s1 = School.objects.create(name='s')
-        # School not being added to the district  d1.add_school(s1)
+    def test_get_user_not_in_school_not_allowed(self, role_model_instances, create_test_prof):
+        d1, s1, c1 = role_model_instances
 
-        c1 = create_club(id=1)
-        s1.add_club(c1)
+        other_prof = create_test_prof(num=1)
 
-        other_prof = create_test_prof(id=2)
-        other_prof.join_school(s1)
-
-        district_admin = create_test_prof(id=3)
-        d1_admin_role = Role.create(d1)
-        d1_admin_role.give_role(district_admin)
-        d1_client = APIClient()
-        d1_client.force_authenticate(user=district_admin)
+        district_admin, d1_admin_role, d1_client = create_client_roles(2, [d1])
 
         path = reverse('admin-get-profile', kwargs={'email': other_prof.email})
-        response: Response = client.post(path, format='json')
+        response: Response = d1_client.post(path, format='json')
 
         assert response.status_code == 401
         assert response.data['error'] == 'Request user does not have access to this object'
 
+    def test_user_doesnt_exist(self, role_model_instances):
+        d1, s1, c1 = role_model_instances
+        district_admin, d1_admin_role, d1_client = create_client_roles(1, [d1])
 
-    def test_get_self_info(self):
-        pass
+        path = reverse('admin-get-profile', kwargs={'email': other_prof.email})
+        response: Response = d1_client.post(path, format='json')
+
+        assert response.status_code == 404
+        assert response.data['error'] == 'User with provided email not found'
 
 
 class ClubEditorViews:
@@ -170,8 +150,6 @@ class ClubEditorViews:
 
     def test_create_club_not_allowed(self):
         pass
-
-
 
 
 class SchoolAdminViews:

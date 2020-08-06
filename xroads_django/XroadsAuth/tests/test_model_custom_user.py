@@ -35,9 +35,6 @@ def test_norm_user_creation(db, setup_user):
         assert User.objects.create_user(email='', username='', password='')
 
 
-def test_email_address_added_dj_all_auth(db):
-    
-
 def test_create_superuser(db):
     User = get_user_model()
     admin_user = User.objects.create_superuser(

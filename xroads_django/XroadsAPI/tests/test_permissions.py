@@ -24,18 +24,6 @@ class TestHierarchy:
 
 
 @pytest.fixture
-def role_model_instances(create_club):
-    district1 = District.objects.create(id=1, name="d1")
-    school1 = School.objects.create(id=1, name="s1")
-    club1 = create_club(id=1)
-
-    district1.add_school(school1)
-    school1.add_club(club1)
-
-    return (district1, school1, club1)
-
-
-@pytest.fixture
 def perm_const_override():
     PermConst.DISTRICT_ADMIN = 'District Admin'
     PermConst.SCHOOL_ADMIN = 'School Admin'
