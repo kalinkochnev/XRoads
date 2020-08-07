@@ -16,8 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from XroadsAPI import views, admin_views
-from rest_framework import routers
+from rest_framework_nested import routers
 
+router = routers.SimpleRouter()
+router.register(r'user', admin_views.UserViewset, basename="user")
+urlpatterns = router.urls
 
 admin_urls = [
     # TODO everything in this chunk has not had its views created
@@ -43,14 +46,12 @@ path('admin/district/<int:district>/', views.DistrictAdmin.as_view(), name='admi
 """
 path('club/join/<int:club>/, views.JoinClub.as_view())
 """
-urlpatterns = [
-    path('csrf/', views.csrf),
-    path('club/<int:club>/', views.GetClub.as_view(), name='get-club-detail'),
-    path('school/list/', views.GetSchoolList.as_view(), name='get-schools-list'),
-    path('school/<int:school>/club-overview/', views.GetClubOverview.as_view(), name='get-club-overview'),
-]
+# urlpatterns = [
+# #     path('csrf/', views.csrf),
+#     path('club/<int:club>/', views.GetClub.as_view(), name='get-club-detail'),
+# #     path('school/list/', views.GetSchoolList.as_view(), name='get-schools-list'),
+# #     path('school/<int:school>/club-overview/', views.GetClubOverview.as_view(), name='get-club-overview'),
+# #     path('', include(router.urls)),
+# ]
 
-
-router = routers.DefaultRouter()
-router.register(r'school', admin_views.SchoolViewSet, basename='school')
-urlpatterns += router.urls
+# urlpatterns += router.urls

@@ -43,10 +43,11 @@ INSTALLED_APPS = [
     'XroadsAPI.apps.XroadsapiConfig',
     'XroadsAuth.apps.XroadsauthConfig',
 
-    #REST library
+    # REST library
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
+    'rest_framework_nested',
 
     # Registration for dj-rest-auth
     'django.contrib.sites',
@@ -113,9 +114,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'xroadsdb',
         'USER': 'djangouser',
-        'PASSWORD' : 'PTUvEj9Bh9P2',
-        'HOST' : 'localhost',
-        'PORT' : '5432'
+        'PASSWORD': 'PTUvEj9Bh9P2',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }
 
@@ -172,4 +173,4 @@ ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = False
 LOGIN_URL = reverse_lazy("account_registration_success")
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = LOGIN_URL
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS=7
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 7
