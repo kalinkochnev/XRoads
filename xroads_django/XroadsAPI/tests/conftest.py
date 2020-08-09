@@ -88,9 +88,9 @@ def create_test_slide(db, temp_img):
 
 @pytest.fixture
 def role_model_instances(create_club):
-    district1 = District.objects.create(id=1, name="d1")
-    school1 = School.objects.create(id=1, name="s1")
-    club1 = create_club(id=1)
+    district1 = District.objects.create( name="d1")
+    school1 = School.objects.create( name="s1")
+    club1 = create_club()
 
     district1.add_school(school1)
     school1.add_club(club1)

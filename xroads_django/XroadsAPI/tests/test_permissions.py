@@ -139,19 +139,18 @@ class TestRole:
         expected = 'District-1/School-1/Club-1/perms=[some_str, other_str]'
 
     def test_role_from_str(self, role_model_instances):
-        district1, school1, club1 = role_model_instances
+        d1, s1, c1 = role_model_instances
 
         # The possible perms for School Admins are 'create-club', 'modify-school', 'hide-school'
-        role_expected = Role.create(district1, school1)
+        role_expected = Role.create(d1, s1)
 
         role_expected.permissions.add('modify-school', 'hide-school')
 
-        perm_str = 'District-1/School-1/perms=[modify-school, hide-school]'
+        perm_str = f'District-{d1.id}/School-{s1.id}/perms=[modify-school, hide-school]'
         role_test = Role.from_str(perm_str)
 
         assert str(role_expected) == str(role_test)
-
-        perm_str = 'District-1/School-1/perms=[]'
+        perm_str = f'District-{d1.id}/School-{s1.id}/perms=[]'
         role_test = Role.from_str(perm_str)
         assert role_test.permissions.permissions == set()
 
@@ -160,36 +159,35 @@ class TestRole:
         pass
 
     def test_create_role_1_layer(self, role_model_instances):
-        district1, school1, club1 = role_model_instances
-        role = Role.create(district1, role=PermConst.DISTRICT_ADMIN)
-        assert str(role) == 'District-1/perms=[]'
+        d1, s1, c1 = role_model_instances
+        role = Role.create(d1, role=PermConst.DISTRICT_ADMIN)
+        assert str(role) == f'District-{d1.id}/perms=[]'
 
     def test_create_role_2_layers(self, role_model_instances):
-        district1, school1, club1 = role_model_instances
+        d1, s1, c1 = role_model_instances
 
-        role = Role.create(district1, school1, role=PermConst.SCHOOL_ADMIN)
-        assert str(role) == 'District-1/School-1/perms=[]'
+        role = Role.create(d1, s1, role=PermConst.SCHOOL_ADMIN)
+        assert str(role) == f'District-{d1.id}/School-{s1.id}/perms=[]'
 
     def test_create_role_3_layers(self, create_club, role_model_instances):
-        district1, school1, club1 = role_model_instances
+        d1, s1, c1 = role_model_instances
 
-        role = Role.create(district1, school1, club1,
-                           role=PermConst.CLUB_EDITOR)
-        assert str(role) == 'District-1/School-1/Club-1/perms=[]'
+        role = Role.create(d1, s1, c1, role=PermConst.CLUB_EDITOR)
+        assert str(role) == f'District-{d1.id}/School-{s1.id}/Club-{c1.id}/perms=[]'
 
     def test_is_allowed_perms_1_layer_multi_param_str(self, role_model_instances):
-        district1, school1, club1 = role_model_instances
+        d1, s1, c1 = role_model_instances
 
-        role = Role.create(district1)
+        role = Role.create(d1)
         role.permissions.add('modify-district', 'create-school')
 
-        input_str = 'District-1/perms=[modify-district]'
+        input_str = f'District-{d1.id}/perms=[modify-district]'
         assert role.is_allowed(role=Role.from_str(input_str)) is False
 
-        input_str = 'District-1/perms=[create-school, modify-district]'
+        input_str = f'District-{d1.id}/perms=[create-school, modify-district]'
         assert role.is_allowed(role=Role.from_str(input_str)) is True
 
-        input_str = 'District-1/perms=[]'
+        input_str = f'District-{d1.id}/perms=[]'
         assert role.is_allowed(role=Role.from_str(input_str)) is False
 
     def test_comparison_method(self, create_club, role_model_instances):
@@ -280,13 +278,13 @@ class TestRole:
         assert role2 <= role2
 
     def test_is_allowed_perms_3_layer_str(self, create_club, role_model_instances):
-        district1, school1, club1 = role_model_instances
+        d1, s1, c1 = role_model_instances
 
-        role = Role.create(district1)
+        role = Role.create(d1)
         role.permissions.add('modify-district', 'create-school')
 
         # Check that School-2 is a part of District-1, and Club-52 is a part of School-2
-        input_str = 'District-1/School-1/Club-1/perms=[modify-club]'
+        input_str = f'District-{d1.id}/School-{s1.id}/Club-{c1.id}/perms=[modify-club]'
         assert Role.from_str(input_str).is_allowed(role=role) == True
 
         school5 = School.objects.create(id=5, name="s2")
@@ -295,21 +293,20 @@ class TestRole:
         school5.add_club(club52)
 
         # Check that School-5 is not a part of District-1 and Club-1 not part of School-5, raises exception
-        input_str = 'District-1/School-5/Club-52/perms=[update-club]'
+        input_str = f'District-{d1.id}/School-{school5.id}/Club-{club52.id}/perms=[update-club]'
         with pytest.raises(InvalidRoleCreated):
             assert role.is_allowed(role=Role.from_str(input_str))
 
     def test_allowed_higher_level(self, role_model_instances):
-        district1, school1, club1 = role_model_instances
+        d1, s1, c1 = role_model_instances
 
-        role = Role.create(district1)
-
-        input_str = 'District-1/School-1/perms=[create-club, modify-school]'
+        role = Role.create(d1)
+        input_str = f'District-{d1.id}/School-{s1.id}/perms=[create-club, modify-school]'
 
         assert Role.from_str(input_str).is_allowed(role=role) == True
 
     def test_not_allowed(self, create_club, role_model_instances):
-        district1, school1, club1 = role_model_instances
+        d1, s1, c1 = role_model_instances
 
         district2 = District.objects.create(id=2, name='d2')
         school4 = School.objects.create(id=4, name="s1")
@@ -318,10 +315,10 @@ class TestRole:
         district2.add_school(school4)
         school4.add_club(club10)
 
-        role = Role.create(district1, school1, club1)
+        role = Role.create(d1, s1, c1)
         role.permissions.add('modify-club')
 
-        input_str = 'District-2/School-4/Club-10/perms=[add-editor]'
+        input_str = f'District-{district2.id}/School-{school4.id}/Club-{club10.id}/perms=[add-editor]'
         assert role.is_allowed(role=Role.from_str(input_str)) == False
 
     def test_give_profile_role(self, create_club, create_test_prof, role_model_instances):
@@ -339,16 +336,16 @@ class TestRole:
             p.perm_name for p in prof.hierarchy_perms.all()]
 
     def test_from_start_model(self, role_model_instances):
-        district1, school1, club1 = role_model_instances
+        d1, s1, c1 = role_model_instances
 
-        district_admin_role = Role.from_start_model(district1)
-        assert str(district_admin_role) == 'District-1/perms=[]'
+        district_admin_role = Role.from_start_model(d1)
+        assert str(district_admin_role) == f'District-{d1.id}/perms=[]'
 
-        school_admin_role = Role.from_start_model(school1)
-        assert str(school_admin_role) == 'District-1/School-1/perms=[]'
+        school_admin_role = Role.from_start_model(s1)
+        assert str(school_admin_role) == f'District-{d1.id}/School-{s1.id}/perms=[]'
 
-        club_admin_role = Role.from_start_model(club1)
-        assert str(club_admin_role) == 'District-1/School-1/Club-1/perms=[]'
+        club_admin_role = Role.from_start_model(c1)
+        assert str(club_admin_role) == f'District-{d1.id}/School-{s1.id}/Club-{c1.id}/perms=[]'
 
     def test_is_allowed_user(self, role_model_instances, create_test_prof):
         prof = create_test_prof(num=1)
