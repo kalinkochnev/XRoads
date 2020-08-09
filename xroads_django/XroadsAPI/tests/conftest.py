@@ -1,6 +1,7 @@
 import pytest
 from django.test import override_settings
 from XroadsAPI.models import *
+import XroadsAPI.permisson_constants as PermConst
 import tempfile
 from PIL import Image
 
@@ -88,11 +89,27 @@ def create_test_slide(db, temp_img):
 
 @pytest.fixture
 def role_model_instances(create_club):
-    district1 = District.objects.create( name="d1")
-    school1 = School.objects.create( name="s1")
-    club1 = create_club()
+    def create():
+        district1 = District.objects.create(name="d1")
+        school1 = School.objects.create(name="s1")
+        club1 = create_club()
 
-    district1.add_school(school1)
-    school1.add_club(club1)
+        district1.add_school(school1)
+        school1.add_club(club1)
 
-    return (district1, school1, club1)
+        return (district1, school1, club1)
+    return create
+
+@pytest.fixture
+def perm_const_override():
+    PermConst.DISTRICT_ADMIN = 'District Admin'
+    PermConst.SCHOOL_ADMIN = 'School Admin'
+    PermConst.CLUB_EDITOR = 'Club Editor'
+    PermConst.ROLE_HIERARCHY = PermConst.Hierarchy(District, School, Club, name=PermConst.CLUB_EDITOR)
+
+    # Roles go from highest level to lowest level in ROLES list 
+    PermConst.ROLES = [
+        PermConst.Hierarchy(District, name=PermConst.DISTRICT_ADMIN, poss_perms=['__all__', 'create-school', 'modify-district']),
+        PermConst.Hierarchy(District, School, name=PermConst.SCHOOL_ADMIN, poss_perms=['__all__', 'create-club', 'modify-school', 'hide-club', 'view-user-detail', 'hide-school']),
+        PermConst.Hierarchy(District, School, Club, name=PermConst.CLUB_EDITOR, poss_perms=['__all__', 'modify-club', 'add-editor']),
+    ]

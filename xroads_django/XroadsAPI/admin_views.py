@@ -10,23 +10,25 @@ from XroadsAPI.permissions import *
 from XroadsAPI.serializers import *
 from rest_framework.permissions import IsAuthenticated
 
-class UserViewset(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
+class UserViewset(viewsets.GenericViewSet):
     permission_classes = [IsAuthenticated]
     lookup_field = 'pk'
+    hier_perms = ['__any__']
 
     def get_object(self):
-        return get_object_or_404(Profile, pk=self.kwargs[self.lookup_field])
+        self.check_permissions(self.request)
 
-    def get_serializer(self, *args, **kwargs):
-        user: Profile = self.request.user
+        obj = get_object_or_404(Profile, pk=self.kwargs[self.lookup_field])
+        self.check_object_permissions(self.request, obj)
+        return obj
 
-        requested_user = self.get_object()
-        min_admin_role = Role.from_start_model(requested_user.school)
-
-        if min_admin_role.is_allowed(user=user):
-            return ProfileSerializer()
-        else:
-            return AnonProfileSerializer()
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated, MinSchoolAdminForUser], hier_perms=['view-user-detail'],
+        url_name='admin-detail', url_path='admin-detail')
+    def admin_detail(self, request, *args, **kwargs):
+        self.serializer_class = ProfileSerializer
+        obj = self.get_object()
+        serializer = self.serializer_class(obj)
+        return Response(serializer.data)
 
 
 class SchoolViewSet(viewsets.GenericViewSet):

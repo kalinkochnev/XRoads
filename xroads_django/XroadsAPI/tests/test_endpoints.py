@@ -44,7 +44,7 @@ def create_client_roles(create_test_prof):
 def path_other_user(create_test_prof):
     other_prof = create_test_prof(num=1)
     # DANGER WARNING!!!! PERIODS SCREWED UP THE REGEX FOR THE URL MATCHER
-    path = reverse('user-detail', kwargs={'pk': other_prof.pk})
+    path = reverse('user-admin-detail', kwargs={'pk': other_prof.pk})
     return other_prof, path
 
 
@@ -57,7 +57,7 @@ class TestAdminGeneralViews:
         assert response.status_code == 403
 
     def test_at_least_school_admin(self, role_model_instances, create_client_roles, path_other_user):
-        d1, s1, c1 = role_model_instances
+        d1, s1, c1 = role_model_instances()
 
         other_prof, path = path_other_user
         other_prof.join_school(s1)
@@ -77,19 +77,18 @@ class TestAdminGeneralViews:
         assert response2.status_code == 200
 
         response3: Response = c1_client.get(path, format='json')
-        assert response3.status_code == 401
+        assert response3.status_code == 403
 
     @pytest.mark.parametrize('permissions, expected', [
         [['__all__'], 200],
-        [['modify-school'], 200],
-        [['create-club'], 200],
-        [['create-club', 'modify-school'], 200],
-        [['hide-school'], 401],
+        [['view-user-detail'], 200],
+        [['create-club'], 403],
+        [['create-club', 'modify-school'], 403],
         # [['blah blah blah'], 401], add test that checks for a random string (doesn't work cause of assert statement in Role)
 
     ])
     def test_get_user_school_admin_perm_test(self, permissions, expected, role_model_instances, create_client_roles, path_other_user):
-        d1, s1, c1 = role_model_instances
+        d1, s1, c1 = role_model_instances()
 
         other_prof, path = path_other_user
         other_prof.join_school(s1)
@@ -101,33 +100,36 @@ class TestAdminGeneralViews:
         assert response.status_code == expected
 
     def test_get_user_district_admin_no_perms(self, role_model_instances, create_client_roles, path_other_user):
-        d1, s1, c1 = role_model_instances
+        d1, s1, c1 = role_model_instances()
 
         other_prof, path = path_other_user
         other_prof.join_school(s1)
-
-        school_admin, s1_admin_role, s1_client = create_client_roles(2, [d1])
-
-        response: Response = s1_client.get(path, format='json')
-
-        assert response.status_code == 200
-
-    def test_get_user_not_in_school_not_allowed(self, role_model_instances, path_other_user, create_client_roles):
-        d1, s1, c1 = role_model_instances
-
-        other_prof, path = path_other_user
 
         district_admin, d1_admin_role, d1_client = create_client_roles(2, [d1])
 
         response: Response = d1_client.get(path, format='json')
 
-        assert response.status_code == 401
+        assert response.status_code == 200
+
+    def test_get_user_not_in_school_not_allowed(self, role_model_instances, path_other_user, create_client_roles):
+        d1, s1, c1 = role_model_instances()
+        d2, s2, c2 = role_model_instances()
+
+        other_prof, path = path_other_user
+        other_prof.join_school(s2)
+
+        district_admin, d1_admin_role, d1_client = create_client_roles(2, [d1])
+        school_admin, s1_admin_role, s1_client = create_client_roles(3, [d1, s1])
+
+        response: Response = d1_client.get(path, format='json')
+
+        assert response.status_code == 403
 
     def test_user_doesnt_exist(self, role_model_instances, path_other_user, create_client_roles):
-        d1, s1, c1 = role_model_instances
+        d1, s1, c1 = role_model_instances()
         district_admin, d1_admin_role, d1_client = create_client_roles(2, [d1])
 
-        path = reverse('user-detail', args={'lookup': 'kalin.kochnev@gmail.com'})
+        path = reverse('user-admin-detail', args={'lookup': 'kalin.kochnev@gmail.com'})
         response: Response = d1_client.get(path, format='json')
 
         assert response.status_code == 404

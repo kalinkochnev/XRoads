@@ -26,7 +26,10 @@ class Permissions:
 
     def is_allowed(self, given_perms):
         given_perms = set(given_perms)
-        assert given_perms.issubset(set(self.hierarchy.poss_perms)), 'The provided permissions are not possible for this hierarchy'
+        if given_perms == {'__all__'}:
+            return True
+
+        assert given_perms.issubset(set(self.hierarchy.poss_perms)), f'The {given_perms} not possible for this hierarchy: {self.hierarchy}'
 
         intersection = given_perms.intersection(self.permissions)
         return self.permissions == intersection
@@ -43,7 +46,7 @@ class Permissions:
         perms = set(perms)
 
         assert perms.issubset(poss_perms) or perms == {
-        }, f'The provided permissions are not legal for this hierarchy: {self.hierarchy.name}'
+        }, f'The {perms} not legal for this hierarchy: {self.hierarchy.name}'
 
         self.permissions.update(set(perms))
 
@@ -268,3 +271,32 @@ class Role:
         if len(self.model_instances) < len(other_inst.model_instances):
             return 1
         return -1
+
+
+class BaseMinRole(permissions.BasePermission):
+
+    def get_start_user_attr(self, request, obj):
+        return obj
+
+    def has_object_permission(self, request, view, obj):
+        # Get the required perms
+        permissions = view.hier_perms
+        min_admin_role = Role.from_start_model(self.get_start_user_attr(request, obj))
+
+        if permissions != '__any__':
+            min_admin_role.permissions.add(*permissions)
+        
+        user = request.user
+        return min_admin_role.is_allowed(user=user)
+
+
+class MinClubRole(BaseMinRole):
+    pass
+class MinSchoolRole(BaseMinRole):
+    pass
+class MinDistrictRole(BaseMinRole):
+    pass
+
+class MinSchoolAdminForUser(BaseMinRole):
+    def get_start_user_attr(self, request, obj):
+        return obj.school
