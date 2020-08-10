@@ -1,6 +1,8 @@
 import pytest
 from rest_framework.test import APIClient
-from XroadsAuth.models import Profile
+from XroadsAuth.models import *
+from XroadsAPI.models import *
+import XroadsAPI.permisson_constants as PermConst
 from django.urls import reverse
 from rest_framework.response import Response
 from XroadsAPI.permissions import Role, Permissions, Hierarchy
@@ -78,52 +80,6 @@ class TestAdminGeneralViews:
 
         response3: Response = c1_client.get(path, format='json')
         assert response3.status_code == 403
-
-    @pytest.mark.parametrize('permissions, expected', [
-        [['__all__'], 200],
-        [['view-user-detail'], 200],
-        [['create-club'], 403],
-        [['create-club', 'modify-school'], 403],
-        # [['blah blah blah'], 401], add test that checks for a random string (doesn't work cause of assert statement in Role)
-
-    ])
-    def test_get_user_school_admin_perm_test(self, permissions, expected, role_model_instances, create_client_roles, path_other_user):
-        d1, s1, c1 = role_model_instances()
-
-        other_prof, path = path_other_user
-        other_prof.join_school(s1)
-
-        school_admin, s1_admin_role, s1_client = create_client_roles(2, [d1, s1], perms=permissions)
-
-        response: Response = s1_client.get(path, format='json')
-
-        assert response.status_code == expected
-
-    def test_get_user_district_admin_no_perms(self, role_model_instances, create_client_roles, path_other_user):
-        d1, s1, c1 = role_model_instances()
-
-        other_prof, path = path_other_user
-        other_prof.join_school(s1)
-
-        district_admin, d1_admin_role, d1_client = create_client_roles(2, [d1])
-
-        response: Response = d1_client.get(path, format='json')
-
-        assert response.status_code == 200
-
-    def test_get_user_not_in_school_not_allowed(self, role_model_instances, path_other_user, create_client_roles):
-        d1, s1, c1 = role_model_instances()
-        d2, s2, c2 = role_model_instances()
-
-        other_prof, path = path_other_user
-        other_prof.join_school(s2)
-
-        district_admin, d1_admin_role, d1_client = create_client_roles(2, [d1])
-        school_admin, s1_admin_role, s1_client = create_client_roles(3, [d1, s1])
-
-        response: Response = d1_client.get(path, format='json')
-
-        assert response.status_code == 403
 
     def test_user_doesnt_exist(self, role_model_instances, path_other_user, create_client_roles):
         d1, s1, c1 = role_model_instances()
