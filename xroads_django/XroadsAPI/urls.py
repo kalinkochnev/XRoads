@@ -19,7 +19,42 @@ from XroadsAPI import views, admin_views
 from rest_framework_nested import routers
 
 router = routers.SimpleRouter()
-router.register(r'user', admin_views.UserViewset, basename="user")
+
+router.register('admin', admin_views.AdminViewset, basename="admin")
+
+# ----- ADMIN ROUTES
+# admin/user/
+admin_user_router = routers.NestedSimpleRouter(router, 'admin', lookup='user')
+admin_user_router.register('user', admin_views.UserViewset, basename="user")
+"""
+# admin/district/
+admin_district_router = routers.NestedSimpleRouter(router, 'admin', lookup='district')
+admin_district_router.register('district', admin_views.DistrictViewset, basename="district")
+
+# admin/district/school/
+admin_school_router = routers.NestedSimpleRouter(router, 'district', lookup='district')
+admin_school_router.register('school', admin_views.SchoolViewset, basename="school")
+
+# admin/district/school/club/
+admin_club_router = routers.NestedSimpleRouter(school_router, 'school', lookup="school")
+admin_club_router.register('club', admin_views.ClubViewset, lookup='club')
+"""
+# ----- NORMAL ROUTES
+# user/
+router.register('user', UserViewset, basename="user")
+"""
+# district/
+router.register('district', DistrictViewset, basename="district")
+
+# district/school/
+school_router = routers.NestedSimpleRouter(router, 'district', lookup='district')
+school_router.register('school', SchoolViewset, basename="school")
+
+# district/school/club/admin_views.
+club_router = routers.NestedSimpleRouter(school_router, 'school', lookup="school")
+club_router.register('club', ClubViewset, lookup='club')
+"""
+
 urlpatterns = router.urls
 
 admin_urls = [
