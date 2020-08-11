@@ -13,3 +13,8 @@ class UserViewset(viewsets.GenericViewSet, generics.RetrieveAPIView):
     serializer_class = AnonProfileSerializer
     lookup_field = 'pk'
     queryset = Profile
+
+class DistrictViewset(viewsets.ReadOnlyModelViewSet):
+    queryset = District.objects.all()
+    serializer_class = DistrictSerializer
+

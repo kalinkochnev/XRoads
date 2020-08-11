@@ -73,6 +73,11 @@ class BasicInfoSchoolSerial(serializers.ModelSerializer):
         model = School
         fields = ['name', 'img']
 
+class DistrictSerializer(serializers.ModelSerializer):
+    schools = BasicInfoSchoolSerial(many=True)
+    class Meta:
+        model = District
+        fields = '__all__'
 
 # ADMIN SERIALIZERS ---------------------
 class ClubEditorSerializer(serializers.ModelSerializer):
@@ -92,9 +97,4 @@ class SchoolAdminSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class DistrictAdminSerializer(serializers.ModelSerializer):
-    schools = BasicInfoSchoolSerial(many=True)
-    class Meta:
-        model = District
-        fields = '__all__'
     

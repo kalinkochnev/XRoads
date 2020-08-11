@@ -21,31 +21,35 @@ from rest_framework_nested import routers
 app_name = "api"
 
 router = routers.SimpleRouter()
+# ----- Normal Routes
+# user/
 router.register('user', views.UserViewset, basename="user")
+
+# district/
+router.register('district', admin_views.DistrictViewset, basename="district")
 
 
 # ----- ADMIN ROUTES
-# admin/user/<pk>/
+# admin/user/
 router.register(r'admin/user', admin_views.UserViewset, basename="admin-user")
 
-"""
+
 # admin/district/
-admin_district_router = routers.NestedSimpleRouter(router, 'admin', lookup='district')
-admin_district_router.register('district', admin_views.DistrictViewset, basename="district")
+router.register('admin/district', admin_views.DistrictViewset,
+                basename="admin-district")
 
 # admin/district/school/
-admin_school_router = routers.NestedSimpleRouter(router, 'district', lookup='district')
+admin_school_router = routers.NestedDefaultRouter(router, "admin/district", lookup=r"admin_school")
 admin_school_router.register('school', admin_views.SchoolViewset, basename="school")
+
+"""
+
 
 # admin/district/school/club/
 admin_club_router = routers.NestedSimpleRouter(school_router, 'school', lookup="school")
 admin_club_router.register('club', admin_views.ClubViewset, lookup='club')
-"""
-# ----- NORMAL ROUTES
-# user/
-"""
-# district/
-router.register('district', DistrictViewset, basename="district")
+
+
 
 # district/school/
 school_router = routers.NestedSimpleRouter(router, 'district', lookup='district')
@@ -57,6 +61,7 @@ club_router.register('club', ClubViewset, lookup='club')
 """
 urlpatterns = [
     re_path("^", include(router.urls)),
+    re_path('^', include(admin_school_router.urls)),
 ]
 
 admin_urls = [

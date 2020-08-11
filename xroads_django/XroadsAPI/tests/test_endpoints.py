@@ -42,8 +42,8 @@ def create_client_roles(create_test_prof):
         return prof, role, client
     return create
 
-class TestUserDetail:
-    class TestAdmin:
+class TestAdmin:
+    class TestUserDetail:
         @pytest.fixture
         def path_other_user(self, create_test_prof):
             other_prof = create_test_prof(num=1)
@@ -92,8 +92,8 @@ class TestUserDetail:
 
             assert response.status_code == 404
 
-
-    class TestNoAuth:
+class TestNoAuth:
+    class TestUserDetail:
         @pytest.fixture
         def path_other_user(self, create_test_prof):
             other_prof = create_test_prof(num=1)
@@ -109,6 +109,8 @@ class TestUserDetail:
             response: Response = client.get(path, format='json')
             assert response.status_code == 200
             assert response.data == AnonProfileSerializer(other_prof).data
+
+
 
 
 class ClubEditorViews:
