@@ -48,7 +48,7 @@ class TestUserDetail:
         def path_other_user(self, create_test_prof):
             other_prof = create_test_prof(num=1)
             # DANGER WARNING!!!! PERIODS SCREWED UP THE REGEX FOR THE URL MATCHER
-            path = reverse('user-admin-detail', kwargs={'pk': other_prof.pk})
+            path = reverse('api:admin-user-detail', kwargs={'pk': other_prof.pk})
             return other_prof, path
 
         def test_get_user_no_login(self, path_other_user):
@@ -87,7 +87,7 @@ class TestUserDetail:
             d1, s1, c1 = role_model_instances()
             district_admin, d1_admin_role, d1_client = create_client_roles(2, [d1])
 
-            path = reverse('user-admin-detail', args={'lookup': 'kalin.kochnev@gmail.com'})
+            path = reverse('api:admin-user-detail', args={'lookup': 'kalin.kochnev@gmail.com'})
             response: Response = d1_client.get(path, format='json')
 
             assert response.status_code == 404
@@ -98,7 +98,7 @@ class TestUserDetail:
         def path_other_user(self, create_test_prof):
             other_prof = create_test_prof(num=1)
             # DANGER WARNING!!!! PERIODS SCREWED UP THE REGEX FOR THE URL MATCHER
-            path = reverse('user-basic-detail', kwargs={'pk': other_prof.pk})
+            path = reverse('api:user-detail', kwargs={'pk': other_prof.pk})
             return other_prof, path
 
         def test_get_user_no_login(self, path_other_user):

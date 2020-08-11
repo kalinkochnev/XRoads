@@ -13,19 +13,16 @@ from rest_framework.permissions import IsAuthenticated
 class AdminViewset(viewsets.GenericViewSet):
     pass
 
-class UserViewset(viewsets.GenericViewSet):
+class UserViewset(viewsets.GenericViewSet, generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated, MinSchoolAdminForUser]
     serializer_class = ProfileSerializer
     lookup_field = 'pk'
-    hier_perms = ['__any__']
+    hier_perms = ['view-user-detail']
+    queryset = Profile
 
-    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated, MinSchoolAdminForUser], hier_perms=['view-user-detail'],
-        url_name='admin-detail', url_path='admin-detail')
-    def admin_detail(self, request, *args, **kwargs):
-        self.check_permissions(self.request)
-        obj = self.get_object()
-        serializer = self.serializer_class(obj)
-        return Response(serializer.data)
+    def retrieve(self, request, *args, **kwargs):
+        self.check_permissions(request)
+        return super().retrieve(request, *args, **kwargs)
 
 
 

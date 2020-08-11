@@ -377,6 +377,16 @@ class TestRole:
             role = Role.create(district1, school1, club1)
             assert role.go_up_levels(times=2, perms=['perms not in permissions'])
              
+    def test_no_permissions_given(self, role_model_instances, create_test_prof):
+        prof = create_test_prof(num=1)
+        district1, school1, club1 = role_model_instances()
+
+        role = Role.create(district1, school1, club1)
+
+        assert role.is_allowed(user=prof) is False
+
+        role.give_role(prof)
+        assert role.is_allowed(user=prof) is True
 
 
 @pytest.fixture

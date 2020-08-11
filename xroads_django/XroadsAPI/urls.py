@@ -14,18 +14,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from XroadsAPI import views, admin_views
 from rest_framework_nested import routers
 
-router = routers.SimpleRouter()
+app_name = "api"
 
-router.register('admin', admin_views.AdminViewset, basename="admin")
+router = routers.SimpleRouter()
+router.register('user', views.UserViewset, basename="user")
+
 
 # ----- ADMIN ROUTES
-# admin/user/
-admin_user_router = routers.NestedSimpleRouter(router, 'admin', lookup='user')
-admin_user_router.register('user', admin_views.UserViewset, basename="user")
+# admin/user/<pk>/
+router.register(r'admin/user', admin_views.UserViewset, basename="admin-user")
+
 """
 # admin/district/
 admin_district_router = routers.NestedSimpleRouter(router, 'admin', lookup='district')
@@ -41,7 +43,6 @@ admin_club_router.register('club', admin_views.ClubViewset, lookup='club')
 """
 # ----- NORMAL ROUTES
 # user/
-router.register('user', UserViewset, basename="user")
 """
 # district/
 router.register('district', DistrictViewset, basename="district")
@@ -54,8 +55,9 @@ school_router.register('school', SchoolViewset, basename="school")
 club_router = routers.NestedSimpleRouter(school_router, 'school', lookup="school")
 club_router.register('club', ClubViewset, lookup='club')
 """
-
-urlpatterns = router.urls
+urlpatterns = [
+    re_path("^", include(router.urls)),
+]
 
 admin_urls = [
     # TODO everything in this chunk has not had its views created
