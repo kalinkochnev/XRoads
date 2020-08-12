@@ -26,7 +26,15 @@ router = routers.SimpleRouter(trailing_slash=True)
 router.register('user', views.UserViewset, basename="user")
 
 # district/
-router.register('district', admin_views.DistrictViewset, basename="district")
+router.register('district', views.DistrictViewset, basename="district")
+
+# district/school/
+school_router = routers.NestedDefaultRouter(router, "district", lookup=r"district")
+school_router.register('school', views.SchoolViewset, basename="school")
+
+# admin/district/school/club/
+club_router = routers.NestedDefaultRouter(school_router, 'school', lookup=r"school")
+club_router.register('club', views.ClubViewset, basename='club')
 
 
 # ----- ADMIN ROUTES
@@ -51,6 +59,9 @@ admin_club_router.register('club', admin_views.ClubViewset, basename='club')
 urlpatterns = [
     path('csrf/', views.csrf),
     re_path("", include(router.urls)),
+    re_path("", include(school_router.urls)),
+    re_path("", include(club_router.urls)),
+    
     re_path("", include(admin_school_router.urls)),
     re_path("", include(admin_club_router.urls)),
 ]

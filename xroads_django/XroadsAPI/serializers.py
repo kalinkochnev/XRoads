@@ -77,7 +77,7 @@ class ClubDetailSerializer(serializers.ModelSerializer):
 class BasicInfoSchoolSerial(serializers.ModelSerializer):
     class Meta:
         model = School
-        fields = ['name', 'img']
+        fields = ['id', 'name', 'img']
 
 class DistrictSerializer(serializers.ModelSerializer):
     schools = BasicInfoSchoolSerial(many=True)
