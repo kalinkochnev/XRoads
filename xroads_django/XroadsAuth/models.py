@@ -18,6 +18,9 @@ class Profile(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     username = None
 
+    # Refactor Manually 
+    school = models.ForeignKey('School', on_delete=models.SET_NULL, null=True) # UNTESTED 
+
     # used for making sure the admin login and signup page works correctly
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

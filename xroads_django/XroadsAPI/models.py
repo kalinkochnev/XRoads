@@ -13,6 +13,9 @@ class Slide(models.Model):
     class Meta:
         ordering = ['position']
 
+    # Refactor Manually is referencing the club class which is defined later
+    club = models.ForeignKey('Club', on_delete=models.CASCADE)
+
     position = models.IntegerField()
     template_type = models.IntegerField()
 
@@ -52,7 +55,7 @@ class SlideTemplates:
             'The specified template type does not exist')
 
     @classmethod
-    def new_slide(cls, temp_id, **kwargs: dict) -> Slide:
+    def ne`w_slide(cls, temp_id, club, **kwargs: dict) -> Slide:
         template = SlideTemplates.get(temp_id)
 
         if template.args_match(kwargs.keys()):
@@ -83,9 +86,10 @@ class Club(models.Model):
     hours = models.CharField(max_length=10)
     is_visible = models.BooleanField(default=False)
 
+    school = models.ForeignKey('School', on_delete=models.CASCADE) # UNTESTED
+
     meeting_days = models.ManyToManyField(MeetDay, blank=True)
     members = models.ManyToManyField(Profile, blank=True)
-    slides = models.ManyToManyField(Slide, blank=True)
 
     def make_save(self, save):
         if save:
@@ -102,6 +106,7 @@ class Club(models.Model):
         self.meeting_days.remove(self.meeting_days.get(day=day))
         self.make_save(save)
 
+    # Prob Broken
     def add_slide(self, template_type, save=True, **kwargs) -> Slide:
         max_pos = self.slides.count()
         new_slide = SlideTemplates.new_slide(
@@ -110,6 +115,7 @@ class Club(models.Model):
         self.make_save(save)
         return new_slide
 
+    # Prob Broken
     def remove_slide(self, position, save=True):
         self.slides.remove(self.slides.get(position=position))
         self.make_save(save)
@@ -126,19 +132,18 @@ class Club(models.Model):
         self.is_visible = not self.is_visible
         self.make_save(save)
 
-    # TODO add test for this
+    # UNTESTED
     @property
-    def school(self):
-        return School.objects.get(clubs__in=[self])
-
-# TODO make clubs many to one
+    def slides(self):
+        return Slide.objects.filter(club=self)
 
 
 class School(models.Model):
     name = models.CharField(max_length=40)
     img = models.ImageField()
     clubs = models.ManyToManyField(Club)
-    students = models.ManyToManyField(Profile)
+    # Refactor Manually
+    district = models.ForeignKey('District', on_delete=models.SET_NULL, null=True) # UNTESTED
 
     def make_save(self, save):
         if save:
@@ -148,14 +153,26 @@ class School(models.Model):
         self.clubs.add(club)
         self.make_save(save)
 
+    # UNTESTED
     @property
-    def district(self):
-        return District.objects.get(schools__in=[self])
+    def students(self):
+        return Profile.objects.filter(school=self)
+
+    # UNTESTED
+    @property
+    def clubs(self):
+        return Club.objects.filter(school=self)
 
 
 class District(models.Model):
-    schools = models.ManyToManyField(School)
     name = models.CharField(max_length=40)
 
+    # Prob Broken
     def add_school(self, school):
         self.schools.add(school)
+
+
+    # UNTESTED
+    @property
+    def schools(self):
+        return School.objects.filter(district=self)

@@ -45,7 +45,9 @@ DISTRICT_ADMIN = 'District Admin'
 SCHOOL_ADMIN = 'School Admin'
 CLUB_EDITOR = 'Club Editor'
 ROLE_HIERARCHY = Hierarchy(District, School, Club, name=CLUB_EDITOR)
-
+# TODO create permission constants so then the strings can be changed
+# TODO create permission thing that updates the old strings with the renamed strings
+# TODO create permission thing that finds permission objects with the same string instead of creating a new permission 
 # Roles go from highest level to lowest level in ROLES list 
 ROLES = [
     Hierarchy(District, name=DISTRICT_ADMIN, poss_perms=['__all__', 'create-school', 'modify-district', 'add-admin', 'remove-admin']),

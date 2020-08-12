@@ -11,8 +11,8 @@ def csrf(request):
 
 class UserViewset(viewsets.GenericViewSet, generics.RetrieveAPIView):
     serializer_class = AnonProfileSerializer
-    lookup_field = 'pk'
     queryset = Profile
+
 # TODO change querysets
 class DistrictViewset(viewsets.ReadOnlyModelViewSet):
     queryset = District.objects.all()
@@ -22,17 +22,25 @@ class SchoolViewset(viewsets.ReadOnlyModelViewSet):
     queryset = School.objects.all()
     serializer_class = BasicInfoSchoolSerial
 
-    @action(detail=True, methods=['post'], )
+    # TODO make permission that checks the request user belongs to the object
+    @action(detail=True, methods=['post'])
     def join_school(self, request):
+        pass
+
+    @action(detail=True, methods=['post'])
+    def leave_school(self, request):
         pass
 
 
 class ClubViewset(viewsets.ReadOnlyModelViewSet):
-    def get_serializer_class(self):
-        if self.action == 'retrieve':
-            return ClubDetailSerializer
-        elif self.action == 'list':
-            return BasicClubInfoSerial
-    # TODO 
-    def get_queryset(self):
-        school = self.kwargs['']
+    queryset = Club.objects.all()
+    # TODO change the serializer depending on what request it is
+    serializer_class = ClubDetailSerializer
+
+    @action(detail=True, methods=['post'])
+    def join_club(self, request):
+        pass
+
+    @action(detail=True, methods=['post'])
+    def leave_club(self, request):
+        pass
