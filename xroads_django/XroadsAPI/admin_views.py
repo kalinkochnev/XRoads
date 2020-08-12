@@ -12,8 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from XroadsAPI.forms import *
 from XroadsAPI import mixins
 
-class AdminViewset(viewsets.GenericViewSet):
-    pass
+# TODO make sure that you set read_only=True on nested fields so then .update() works
 
 class UserViewset(viewsets.GenericViewSet, generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated, MinSchoolAdminForUser]

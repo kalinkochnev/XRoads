@@ -56,6 +56,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'dj_rest_auth.registration',
 
+    # documentation for api
+    'drf_yasg',
+
 ]
 
 # Needed for dj-rest-auth

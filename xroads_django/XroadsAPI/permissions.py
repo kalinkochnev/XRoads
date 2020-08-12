@@ -279,6 +279,7 @@ class BaseMinRole(permissions.BasePermission):
         return obj
 
     def has_object_permission(self, request, view, obj):
+
         # Get the required perms
         permissions = view.hier_perms
         min_admin_role = Role.from_start_model(self.get_start_user_attr(request, obj))
@@ -287,7 +288,7 @@ class BaseMinRole(permissions.BasePermission):
             min_admin_role.permissions.add(*permissions)
         
         user = request.user
-        return min_admin_role.is_allowed(user=user)
+        return min_admin_role.is_allowed(user=user) or user.is_superuser
 
 
 class MinClubEditor(BaseMinRole):
