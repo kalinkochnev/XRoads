@@ -1,3 +1,5 @@
+
+
 def get_parent_model(child, parent):
     """If a model instance has a many to many or many to one relationship 
     it will go up to the parent and return the model instance
@@ -12,4 +14,3 @@ def get_parent_model(child, parent):
     }
 
     return child.__class__.objects.get(**args)
-

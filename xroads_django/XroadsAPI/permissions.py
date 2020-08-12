@@ -290,7 +290,7 @@ class BaseMinRole(permissions.BasePermission):
         return min_admin_role.is_allowed(user=user)
 
 
-class MinClubRole(BaseMinRole):
+class MinClubEditor(BaseMinRole):
     pass
 class MinSchoolRole(BaseMinRole):
     pass

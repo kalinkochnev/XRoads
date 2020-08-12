@@ -48,7 +48,7 @@ ROLE_HIERARCHY = Hierarchy(District, School, Club, name=CLUB_EDITOR)
 
 # Roles go from highest level to lowest level in ROLES list 
 ROLES = [
-    Hierarchy(District, name=DISTRICT_ADMIN, poss_perms=['__all__', 'create-school', 'modify-district']),
-    Hierarchy(District, School, name=SCHOOL_ADMIN, poss_perms=['__all__', 'create-club', 'modify-school', 'hide-club', 'view-user-detail', 'hide-school']),
-    Hierarchy(District, School, Club, name=CLUB_EDITOR, poss_perms=['__all__', 'modify-club', 'add-editor']),
+    Hierarchy(District, name=DISTRICT_ADMIN, poss_perms=['__all__', 'create-school', 'modify-district', 'add-admin', 'remove-admin']),
+    Hierarchy(District, School, name=SCHOOL_ADMIN, poss_perms=['__all__', 'create-club', 'modify-school', 'hide-club', 'view-user-detail', 'hide-school',]),
+    Hierarchy(District, School, Club, name=CLUB_EDITOR, poss_perms=['__all__', 'modify-club', 'add-admin']),
 ]

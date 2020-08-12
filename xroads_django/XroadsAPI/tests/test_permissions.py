@@ -294,7 +294,7 @@ class TestRole:
         role = Role.create(d1, s1, c1)
         role.permissions.add('modify-club')
 
-        input_str = f'District-{d2.id}/School-{s2.id}/Club-{c2.id}/perms=[add-editor]'
+        input_str = f'District-{d2.id}/School-{s2.id}/Club-{c2.id}/perms=[add-admin]'
         assert role.is_allowed(role=Role.from_str(input_str)) == False
 
     def test_give_profile_role(self, create_club, create_test_prof, role_model_instances):
@@ -346,8 +346,8 @@ class TestRole:
         assert role.permissions.permissions == set()
         assert role.hierarchy == role.permissions.hierarchy
 
-        role.reset_perms(['modify-club', 'add-editor'])
-        assert role.permissions.permissions == {'modify-club', 'add-editor'}
+        role.reset_perms(['modify-club', 'add-admin'])
+        assert role.permissions.permissions == {'modify-club', 'add-admin'}
 
         with pytest.raises(AssertionError):
             assert role.reset_perms(['modify-club', 'blah-blah'])

@@ -2,6 +2,12 @@ from XroadsAPI.models import *
 from rest_framework import serializers
 
 
+class PermissionSerializer(serializers.BaseSerializer):
+    permission = serializers.CharField()
+
+class EmailSerializer(serializers.BaseSerializer):
+    email = serializers.EmailField()
+
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """
     A ModelSerializer that takes an additional `fields` argument that

@@ -20,7 +20,7 @@ from rest_framework_nested import routers
 
 app_name = "api"
 
-router = routers.SimpleRouter()
+router = routers.SimpleRouter(trailing_slash=True)
 # ----- Normal Routes
 # user/
 router.register('user', views.UserViewset, basename="user")
@@ -39,61 +39,18 @@ router.register('admin/district', admin_views.DistrictViewset,
                 basename="admin-district")
 
 # admin/district/school/
-admin_school_router = routers.NestedDefaultRouter(router, "admin/district", lookup=r"admin_school")
+admin_school_router = routers.NestedDefaultRouter(router, "admin/district", lookup=r"district")
 admin_school_router.register('school', admin_views.SchoolViewset, basename="school")
 
-"""
-
-
 # admin/district/school/club/
-admin_club_router = routers.NestedSimpleRouter(school_router, 'school', lookup="school")
-admin_club_router.register('club', admin_views.ClubViewset, lookup='club')
+admin_club_router = routers.NestedDefaultRouter(admin_school_router, 'school', lookup=r"school")
+admin_club_router.register('club', admin_views.ClubViewset, basename='club')
 
 
 
-# district/school/
-school_router = routers.NestedSimpleRouter(router, 'district', lookup='district')
-school_router.register('school', SchoolViewset, basename="school")
-
-# district/school/club/admin_views.
-club_router = routers.NestedSimpleRouter(school_router, 'school', lookup="school")
-club_router.register('club', ClubViewset, lookup='club')
-"""
 urlpatterns = [
-    re_path("^", include(router.urls)),
-    re_path('^', include(admin_school_router.urls)),
+    path('csrf/', views.csrf),
+    re_path("", include(router.urls)),
+    re_path("", include(admin_school_router.urls)),
+    re_path("", include(admin_club_router.urls)),
 ]
-
-admin_urls = [
-    # TODO everything in this chunk has not had its views created
-    # TODO everything below this point has not had it's permissions setup
-
-    #path('admin/school/<int:school>/create-club/', views.CreateClub.as_view(), name='admin-create-club'),
-]
-"""path('admin/user/<str:email>/', views.GetProfile.as_view(), name='admin-get-profile'),
-path('admin/club/<int:club>/add-editor/<int:user_pk>/', views.AddEditor.as_view(), name='admin-add-editor'),
-path('admin/club/<int:club>/remove-editor/<int:user_pk>/', views.RemoveEditor.as_view(), name='admin-add-editor'),
-path('admin/school/<int:school>/remove-admin/<int:user_pk>/', views.RemoveSchoolAdmin.as_view(), name="admin-remove-school-admin"),
-path('admin/school/<int:school>/add-admin/<int:user_pk>/', views.AddSchoolAdmin.as_view(), name="admin-add-school-admin"),
-path('admin/district/<int:district>/add-school/', views.CreateSchool.as_view(), name='admin-create-school'),
-path('admin/district/<int:district>/hide-school/', views.CreateSchool.as_view(), name='admin-create-school'),
-
-path('admin/user/', views.ProfileAdmin.as_view(), name='admin-user-detail'),
-path('admin/club/<int:club>/', views.ClubEditor.as_view(), name='admin-club-detail'),
-path('admin/school/<int:school>/', views.SchoolAdmin.as_view(), name='admin-school-detail'),
-path('admin/district/<int:district>/', views.DistrictAdmin.as_view(), name='admin-district-detail'),
-"""
-
-
-"""
-path('club/join/<int:club>/, views.JoinClub.as_view())
-"""
-# urlpatterns = [
-# #     path('csrf/', views.csrf),
-#     path('club/<int:club>/', views.GetClub.as_view(), name='get-club-detail'),
-# #     path('school/list/', views.GetSchoolList.as_view(), name='get-schools-list'),
-# #     path('school/<int:school>/club-overview/', views.GetClubOverview.as_view(), name='get-club-overview'),
-# #     path('', include(router.urls)),
-# ]
-
-# urlpatterns += router.urls
