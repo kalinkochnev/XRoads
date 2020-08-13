@@ -55,11 +55,11 @@ class SlideTemplates:
             'The specified template type does not exist')
 
     @classmethod
-    def ne`w_slide(cls, temp_id, club, **kwargs: dict) -> Slide:
+    def new_slide(cls, temp_id, club, **kwargs: dict) -> Slide:
         template = SlideTemplates.get(temp_id)
 
         if template.args_match(kwargs.keys()):
-            return Slide.objects.create(template_type=temp_id, **kwargs)
+            return Slide.objects.create(club=club, template_type=temp_id, **kwargs)
         raise SlideParamError(
             f'Args given do not match. Expected args: {template.required_args} Given: {kwargs} ')
 
@@ -86,14 +86,14 @@ class Club(models.Model):
     hours = models.CharField(max_length=10)
     is_visible = models.BooleanField(default=False)
 
-    school = models.ForeignKey('School', on_delete=models.CASCADE) # UNTESTED
+    school = models.ForeignKey('School', on_delete=models.CASCADE, null=True) # UNTESTED
 
     meeting_days = models.ManyToManyField(MeetDay, blank=True)
     members = models.ManyToManyField(Profile, blank=True)
 
     def make_save(self, save):
         if save:
-            self.save
+            self.save()
 
     def add_meet_day(self, day: MeetDay.Day, save=True) -> MeetDay:
         day, created = MeetDay.objects.get_or_create(day=day)
@@ -106,18 +106,15 @@ class Club(models.Model):
         self.meeting_days.remove(self.meeting_days.get(day=day))
         self.make_save(save)
 
-    # Prob Broken
     def add_slide(self, template_type, save=True, **kwargs) -> Slide:
         max_pos = self.slides.count()
-        new_slide = SlideTemplates.new_slide(
-            template_type, position=max_pos+1, **kwargs)
-        self.slides.add(new_slide)
+        new_slide = SlideTemplates.new_slide(template_type, club=self, position=max_pos+1, **kwargs)
         self.make_save(save)
         return new_slide
 
     # Prob Broken
     def remove_slide(self, position, save=True):
-        self.slides.remove(self.slides.get(position=position))
+        self.slides.filter(position=position).delete()
         self.make_save(save)
 
     def join(self, profile: Profile, save=True):
@@ -141,7 +138,6 @@ class Club(models.Model):
 class School(models.Model):
     name = models.CharField(max_length=40)
     img = models.ImageField()
-    clubs = models.ManyToManyField(Club)
     # Refactor Manually
     district = models.ForeignKey('District', on_delete=models.SET_NULL, null=True) # UNTESTED
 
@@ -150,8 +146,8 @@ class School(models.Model):
             self.save()
 
     def add_club(self, club: Club, save=True):
-        self.clubs.add(club)
-        self.make_save(save)
+        club.school = self
+        club.make_save(save)
 
     # UNTESTED
     @property
@@ -168,8 +164,9 @@ class District(models.Model):
     name = models.CharField(max_length=40)
 
     # Prob Broken
-    def add_school(self, school):
-        self.schools.add(school)
+    def add_school(self, school: School):
+        school.district = self
+        school.make_save(True)
 
 
     # UNTESTED

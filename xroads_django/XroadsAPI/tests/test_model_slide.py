@@ -37,7 +37,7 @@ def test_get_template(template_setup):
     assert SlideTemplates.get(temp_id) == template_setup
 
 
-def test_template_create_slide(db, temp_img, template_setup):
+def test_template_create_slide(db, temp_img, template_setup, create_club):
     # This creates a temporary image file to use 
     #  testing!!! The decorator overrides the django settings
     temp_file = tempfile.NamedTemporaryFile()
@@ -48,8 +48,8 @@ def test_template_create_slide(db, temp_img, template_setup):
     args = [video_url, slide_text, test_image.name]
 
     template_kwargs = dict(zip(template_setup.required_args, args))
-    slide = SlideTemplates.new_slide(
-        template_setup.temp_id, position=1, **template_kwargs)
+    club = create_club()
+    slide = SlideTemplates.new_slide(template_setup.temp_id, club=club, position=1, **template_kwargs)
 
     assert slide.img is not None
     assert slide.img == test_image
@@ -57,6 +57,7 @@ def test_template_create_slide(db, temp_img, template_setup):
     assert slide.video_url == video_url
 
 
-def test_create_invalid_slide(template_setup):
+def test_create_invalid_slide(template_setup, create_club):
+    club = create_club()
     with pytest.raises(SlideParamError) as e:
-        assert SlideTemplates.new_slide(template_setup.temp_id, position=1)
+        assert SlideTemplates.new_slide(template_setup.temp_id, club=club, position=1)

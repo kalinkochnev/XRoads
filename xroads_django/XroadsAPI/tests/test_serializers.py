@@ -101,7 +101,7 @@ def test_meeting_day_choices_serializer(db):
     assert MeetingDaysSerializer(day2).data == {'day': "CUSTOM"}
 
 
-def test_slide_serialization(db, temp_img):
+def test_slide_serialization(db, temp_img, create_club):
     # Creates temp test iamge
     temp_file = tempfile.NamedTemporaryFile()
     test_image = temp_img(temp_file)
@@ -116,10 +116,11 @@ def test_slide_serialization(db, temp_img):
     template = SlideTemplates.Template(
         temp_id=temp_id, name="test", required=template_args)
     SlideTemplates.templates = [template]
+    club = create_club()
 
     # Chooses from test values based on template_args
     slide = SlideTemplates.new_slide(
-        temp_id, position=position, img=img, video_url=video_url)
+        temp_id, club=club, position=position, img=img, video_url=video_url)
 
     expected = {
         'id': slide.id,
@@ -127,7 +128,8 @@ def test_slide_serialization(db, temp_img):
         'position': position,
         'video_url': video_url,
         'img': slide.img.url,
-        'text': None
+        'text': None,
+        'club': club.id,
     }
 
     assert SlideSerializer(slide).data == expected

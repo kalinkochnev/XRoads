@@ -19,7 +19,7 @@ class Profile(AbstractUser):
     username = None
 
     # Refactor Manually 
-    school = models.ForeignKey('School', on_delete=models.SET_NULL, null=True) # UNTESTED 
+    school = models.ForeignKey('XroadsAPI.School', on_delete=models.SET_NULL, null=True) # UNTESTED 
 
     # used for making sure the admin login and signup page works correctly
     USERNAME_FIELD = 'email'
@@ -64,13 +64,8 @@ class Profile(AbstractUser):
         return cls.objects.create_user(email=email, first_name=first, last_name=last, password=password, phone=phone, is_anon=is_anon)
 
     def join_school(self, school, save=True):
-        school.students.add(self)
-        school.save()
+        self.school = school
         self.make_save(save)
-
-    @property
-    def school(self):
-        return api_models.School.objects.get(students__in=[self])
 
     def make_editor(self, club):
         assert club.school == self.school, "You can't make somebody the editor of a club they aren't in"
