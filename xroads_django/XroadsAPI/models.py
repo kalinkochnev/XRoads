@@ -13,7 +13,6 @@ class Slide(models.Model):
     class Meta:
         ordering = ['position']
 
-    # Refactor Manually is referencing the club class which is defined later
     club = models.ForeignKey('Club', on_delete=models.CASCADE)
 
     position = models.IntegerField()
@@ -86,7 +85,7 @@ class Club(models.Model):
     hours = models.CharField(max_length=10)
     is_visible = models.BooleanField(default=False)
 
-    school = models.ForeignKey('School', on_delete=models.CASCADE, null=True) # UNTESTED
+    school = models.ForeignKey('School', on_delete=models.CASCADE, null=True)
 
     meeting_days = models.ManyToManyField(MeetDay, blank=True)
     members = models.ManyToManyField(Profile, blank=True)
@@ -108,11 +107,11 @@ class Club(models.Model):
 
     def add_slide(self, template_type, save=True, **kwargs) -> Slide:
         max_pos = self.slides.count()
-        new_slide = SlideTemplates.new_slide(template_type, club=self, position=max_pos+1, **kwargs)
+        new_slide = SlideTemplates.new_slide(
+            template_type, club=self, position=max_pos+1, **kwargs)
         self.make_save(save)
         return new_slide
 
-    # Prob Broken
     def remove_slide(self, position, save=True):
         self.slides.filter(position=position).delete()
         self.make_save(save)
@@ -129,7 +128,6 @@ class Club(models.Model):
         self.is_visible = not self.is_visible
         self.make_save(save)
 
-    # UNTESTED
     @property
     def slides(self):
         return Slide.objects.filter(club=self)
@@ -138,8 +136,8 @@ class Club(models.Model):
 class School(models.Model):
     name = models.CharField(max_length=40)
     img = models.ImageField()
-    # Refactor Manually
-    district = models.ForeignKey('District', on_delete=models.SET_NULL, null=True) # UNTESTED
+    district = models.ForeignKey(
+        'District', on_delete=models.SET_NULL, null=True)
 
     def make_save(self, save):
         if save:
@@ -149,12 +147,10 @@ class School(models.Model):
         club.school = self
         club.make_save(save)
 
-    # UNTESTED
     @property
     def students(self):
         return Profile.objects.filter(school=self)
 
-    # UNTESTED
     @property
     def clubs(self):
         return Club.objects.filter(school=self)
@@ -163,13 +159,10 @@ class School(models.Model):
 class District(models.Model):
     name = models.CharField(max_length=40)
 
-    # Prob Broken
     def add_school(self, school: School):
         school.district = self
         school.make_save(True)
 
-
-    # UNTESTED
     @property
     def schools(self):
         return School.objects.filter(district=self)

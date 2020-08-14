@@ -18,8 +18,7 @@ class Profile(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     username = None
 
-    # Refactor Manually 
-    school = models.ForeignKey('XroadsAPI.School', on_delete=models.SET_NULL, null=True) # UNTESTED 
+    school = models.ForeignKey('XroadsAPI.School', on_delete=models.SET_NULL, null=True)
 
     # used for making sure the admin login and signup page works correctly
     USERNAME_FIELD = 'email'

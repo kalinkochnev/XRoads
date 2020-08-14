@@ -63,11 +63,3 @@ class CustomUserManager(BaseUserManager):
         except User.DoesNotExist:
             user = self.create_user(email=email, password=password)
             return user
-
-    def _setup_email_address(self, user, verified=False, signup=False):
-        email = EmailAddress(user=user, email=user.email, verified=verified, primary=True)
-        email.save()
-        if not verified:
-            email.send_confirmation(signup=signup)
-
-        return email
