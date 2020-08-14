@@ -4,8 +4,10 @@ import './styles/_clubPage.scss';
 import { Navbar } from './ClubBrowser';
 import variables from './styles/_variables.scss';
 
-import Carousel, { slidesToShowPlugin } from '@brainhubeu/react-carousel';
+import Carousel, { slidesToShowPlugin, fastSwipe } from '@brainhubeu/react-carousel';
 import '@brainhubeu/react-carousel/lib/style.css';
+
+var scaleAmount
 
 class ClubPage extends React.Component {
     constructor(props) {
@@ -61,18 +63,24 @@ class Slideshow extends React.Component {
         this.state = {
         value: null,
         };
-
-        
-
     }
     
     render() {
         var numSlides = (window.innerWidth)/variables.maxPageWidth.replace('px','');
+        scaleAmount = (window.innerWidth)/variables.maxPageWidth.replace('px','');
+        var slideshowHeight = variables.maxPageWidth.replace('px','')/variables.slideAspectRatio*scaleAmount;
+
         if(window.innerWidth < variables.maxPageWidth.replace('px','')){
             numSlides = 1;
         }
+        else {
+            scaleAmount = 1;
+        }
+
+
+        
         return (
-            <div class="slideshow">
+            <div class="slideshow" style={{height: slideshowHeight}}>
                 <Carousel
                 plugins={[
                     'centered',
@@ -82,14 +90,16 @@ class Slideshow extends React.Component {
                     {
                         resolve: slidesToShowPlugin,
                         options: {
-                            numberOfSlides: numSlides,
-                        },
-                    },
+                            numberOfSlides: numSlides
+                        }
+                    }
                 ]}   
                 >
-                    <TextSlide text="hellop"></TextSlide>
-                    <ImageSlide source="https://brainhubeu.github.io/react-carousel/static/mona-7a1ceae9bdb8c43272eb101c091c5408.jpg"></ImageSlide>
-                    <TextSlide text="hellop3"></TextSlide>
+                    <TextSlide title="a slide with a body" subtitle="and a subtitle" body="I'm not a witch. Oh! Come and see the violence inherent in the system! Help, help, I'm being repressed! We shall say 'Ni' again to you, if you do not appease us. No, no, no! Yes, yes. A bit. But she's got a wart. You don't vote for kings. Be quiet! Camelot! Shut up! Will you shut up?! I am your king. Why? We found them. No, no, no! Yes, yes. A bit. But she's got a wart. You don't frighten us, English pig-dogs! Go and boil your bottoms, sons of a silly person!" color="lightblue"></TextSlide>
+                    <ImageSlide source="https://brainhubeu.github.io/react-carousel/static/mona-7a1ceae9bdb8c43272eb101c091c5408.jpg" caption="an image with a caption"></ImageSlide>
+                    <TextSlide title="a slide with no body"></TextSlide>
+                    <VideoSlide source="https://vimeo.com/212103091"></VideoSlide>
+                    <VideoSlide source="https://www.youtube.com/watch?v=zCLOJ9j1k2Y"></VideoSlide>
                 </Carousel>
             </div>
         );
@@ -106,8 +116,14 @@ class TextSlide extends React.Component {
 
     render() {
         return (
-        <div class="text-slide">
-            <t>{this.props.text}</t>
+        <div class="slide text-slide" style={{backgroundColor: this.props.color }}>
+            <div class="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
+                <div class="text-area">
+                    <h1>{this.props.title}</h1>
+                    <h2>{this.props.subtitle}</h2>
+                    <p>{this.props.body}</p>
+                </div>
+            </div>
         </div>
         );
     }
@@ -123,8 +139,11 @@ class ImageSlide extends React.Component {
 
     render() {
         return (
-        <div class="image-slide">
-            <img src={this.props.source}></img>
+        <div class="slide image-slide" style={{transform: "scale("+scaleAmount+")"}}>
+            <div class="slide-content">
+                <img src={this.props.source}></img>
+                <p>{this.props.caption}</p>
+            </div>
         </div>
         );
     }
@@ -139,9 +158,30 @@ class VideoSlide extends React.Component {
     }
 
     render() {
+
+        if(this.props.source.includes("youtu")){
+            function getID(url){
+                var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+                var match = url.match(regExp);
+                return (match&&match[7].length==11)? match[7] : false;
+            }
+            var embedSource="https://www.youtube-nocookie.com/embed/" + getID(this.props.source)
+        }
+
+        else if(this.props.source.includes("vimeo")){
+            function getID(url){
+                var regExp = /(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)(?:[a-zA-Z0-9_\-]+)?/i
+                var match = url.match(regExp);
+                return(match[1]);
+            }
+            var embedSource="https://player.vimeo.com/video/" + getID(this.props.source);
+        }
+
         return (
-        <div class="slide">
-            Lol you thought
+        <div class="slide video-slide" style={{transform: "scale("+scaleAmount+")"}}>
+            <div class="slide-content">
+                <iframe width="1000" height="600" src={embedSource} frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
         </div>
         );
     }

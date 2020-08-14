@@ -12,6 +12,8 @@ $siteMargins: 7%;
 
 $maxPageWidth:1000px;
 
+$slideAspectRatio: 10/6;
+
 :export {
     redDefault: $redDefault;
     redHover: $redHover;
@@ -21,4 +23,5 @@ $maxPageWidth:1000px;
     navbarHeight: $navbarHeight;
     siteMargins: $siteMargins;
     maxPageWidth: $maxPageWidth;
+    slideAspectRatio: $slideAspectRatio;
   }

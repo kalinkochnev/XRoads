@@ -28,38 +28,102 @@
 
 .details {
     padding:30px 0;
+    font-family: "Raleway";
+    font-size:20px;
 }
 
 .slideshow {
-    max-height:600px;
-    height:60vw;
+    max-height: $maxPageWidth/$slideAspectRatio;
     padding: 0;
     margin: 0;
     overflow: hidden;
 }
 
-.text-slide{
-    margin: auto;
-    font-family: Rubik;
-    font-size: 40px;
+.slide {
+    width:100%;
+    max-width: $maxPageWidth;
+    height:$maxPageWidth/$slideAspectRatio;
+}
+
+.slide-content {
+    width:$maxPageWidth;
+    height:$maxPageWidth/$slideAspectRatio;
+    transform-origin: top left;
+    position: relative;
+}
+
+
+.text-slide .slide-content {
+    display: flex;
+}
+
+.text-slide .text-area {
+    margin:auto;
+    padding:50px;
     text-align: center;
-    background-color: red;
-    max-height:600px;
-    height:60vw;
-    width: $maxPageWidth;
 }
 
-.image-slide{
-    max-height:600px;
-    height:60vw;
-    width: $maxPageWidth;
+.text-slide {
+    background-color: #eee;
 }
 
-.image-slide img{
+.text-slide h1 {
+    font-family: Rubik;
+    font-size: 60px;
+    margin-top:0;
+    margin-bottom:0;
+}
+
+.text-slide h2 {
+    font-family: Rubik;
+    font-size: 30px;
+    margin-top:0;
+    margin-bottom:0;
+}
+
+.text-slide p {
+    font-family: Raleway;
+    font-size: 30px;
+    text-align:left;
+    line-height: 1.3;
+}
+
+.text-slide .body {
+    text-align:right;
+    font-family: Raleway;
+    font-size: 40px;
+}
+
+
+
+
+
+
+.image-slide {
+}
+
+.image-slide p {
+    margin:0;
+    position: absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    padding:20px;
+    background-color:#000111aa;
+    font-family: Raleway;
+    font-size: 20px;
+    color:white;
+}
+
+.image-slide c:empty {
+    display:none;
+}
+
+.image-slide img {
     width: 100%;
 }
 
-.BrainhubCarousel__arrows{
+.BrainhubCarousel__arrows {
     position: absolute !important;
     background-color: $redDefault !important;
     border-radius: 5px;
@@ -67,9 +131,15 @@
     z-index:10;
 }
 
-.BrainhubCarousel__arrowRight{
+.BrainhubCarousel__arrowRight {
     right:30px;
 }
-.BrainhubCarousel__arrowLeft{
+.BrainhubCarousel__arrowLeft {
     left:30px;
+}
+
+@media only screen and (max-width: 600px) {
+    .BrainhubCarousel__arrows {
+        display:none;
+    }
 }
