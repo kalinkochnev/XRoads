@@ -3,7 +3,6 @@ from XroadsAPI.models import *
 from rest_framework import serializers
 from XroadsAPI.permissions import Hierarchy, Permissions
 from rest_framework.fields import empty
-from XroadsAPI.serializers import PermissionSerializer
 
 class UserEmailForm(serializers.Serializer):
     emails = serializers.ListField(child=serializers.EmailField())
@@ -32,13 +31,15 @@ class AdminRoleForm(UserEmailForm):
         self.hier_role = hier_role
         super(UserEmailForm, self).__init__(data=data, **kwargs)
 
-    def validate_permissions(self, values):
+
+    def validate_permissions(self, value):
         hier = Hierarchy.get_hierarchy(self.hier_role)
-        perm_class = Permissions([], hier)
-        if not perm_class.is_allowed(values):
+        try:
+            perm_class = Permissions(value, hier)
+            return value
+        except AssertionError:
             raise serializers.ValidationError(detail=f'Invalid permissions were attempted to be assign for {self.hier_role} role')
 
-        return values
 
 class CreateClubForm(UserEmailForm, serializers.ModelSerializer):
     class Meta:

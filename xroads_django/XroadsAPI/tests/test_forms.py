@@ -1,6 +1,6 @@
 import pytest
 from rest_framework import serializers
-from XroadsAPI.forms import UserEmailForm
+from XroadsAPI.forms import *
 import XroadsAPI.permisson_constants as PermConst
 
 class TestUserEmailForm:
@@ -27,4 +27,23 @@ class TestUserEmailForm:
         assert fake_emails == non_existant_emails
 
 
-    
+class TestAdminRoleForm:
+    def test_valid_form(self, perm_const_override, create_test_prof):
+        profiles = [create_test_prof(i) for i in range(10)]
+
+        data = {
+            'permissions': ['add-admin', 'modify-club'],
+            'emails': [p.email for p in profiles]
+        }
+
+        assert AdminRoleForm(hier_role=PermConst.CLUB_EDITOR, data=data).is_valid() is True
+
+    def test_invalid_perms_given(self, perm_const_override, create_test_prof):
+        profiles = [create_test_prof(i) for i in range(10)]
+
+        data = {
+            'permissions': ['create-school', 'modify-district'],
+            'emails': [p.email for p in profiles]
+        }
+
+        assert AdminRoleForm(hier_role=PermConst.CLUB_EDITOR, data=data).is_valid() is False

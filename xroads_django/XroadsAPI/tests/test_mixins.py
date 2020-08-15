@@ -1,11 +1,15 @@
 from XroadsAPI.mixins import *
+import pytest
+from rest_framework.test import APIRequestFactory
 
-class DummyAddAdmin(AddAdminMixin):
-    pass
 
 class TestAddAdminMixin:
     def valid_post_request(self):
-        pass
+        factory = APIRequestFactory()
+        body = {
+            ''
+        }
+        factory.post('some-url/', )
 
 class TestRemoveAdminMixin:
     def valid_post_request(self):
