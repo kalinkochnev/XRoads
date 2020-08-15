@@ -217,7 +217,7 @@ class Role:
             user.hierarchy_perms.remove(perm)
         except HierarchyPerms.DoesNotExist:
             pass
-
+    
     def __eq__(self, other_inst: Role):
         return self._comparison(other_inst) == 0
 
