@@ -30,13 +30,18 @@ class TestUserEmailForm:
 class TestAdminRoleForm:
     def test_valid_form(self, perm_const_override, create_test_prof):
         profiles = [create_test_prof(i) for i in range(10)]
+        permissions = ['add-admin', 'modify-club']
 
         data = {
-            'permissions': ['add-admin', 'modify-club'],
+            'permissions': permissions,
             'emails': [p.email for p in profiles]
         }
 
-        assert AdminRoleForm(hier_role=PermConst.CLUB_EDITOR, data=data).is_valid() is True
+
+        form = AdminRoleForm(hier_role=PermConst.CLUB_EDITOR, data=data)
+
+        assert form.is_valid() is True
+        assert form.validated_data['permissions'] == permissions
 
     def test_invalid_perms_given(self, perm_const_override, create_test_prof):
         profiles = [create_test_prof(i) for i in range(10)]
