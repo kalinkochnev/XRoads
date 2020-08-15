@@ -29,7 +29,7 @@ class UserViewset(viewsets.GenericViewSet, generics.RetrieveAPIView):
 class DistrictViewset(mixins.ModifyAndReadViewset, mixins.AdminMixin):
     queryset = District.objects.all()
     serializer_class = DistrictSerializer
-    
+    allowed_methods = ['get', 'post', 'put', 'patch']
     hier_perms = []
     permission_classes = [IsAuthenticated, MinDistrictRole]
 
