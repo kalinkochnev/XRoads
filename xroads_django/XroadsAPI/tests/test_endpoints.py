@@ -247,7 +247,54 @@ class TestAdmin:
             path = reverse(self.retrieve_url_name, args={'district_pk': d1.id, 'pk': 1})
             response = make_request(client, 'get', path=path, format='json')
             assert response.status_code == status.HTTP_404_NOT_FOUND
+    
+    class TestClubViewset:
+        # GET and LIST cannot be easily tested because the img field screws things up
+        retrieve_url_name = 'api:admin-club-detail'
+
+        @pytest.fixture
+        def prof_w_perm(self, setup_client_auth):
+            def setup(club):
+                prof, client = setup_client_auth
+                role = Role.from_start_model(club)
+                role.give_role(prof)
+                return prof, client
+            return setup
+
+        @pytest.fixture
+        def prof_wo_perm(self, setup_client_no_auth):
+            return prof, client
+
+        def valid_retrieve(self, client, club):
+            path = reverse(self.retrieve_url_name, kwargs={'district_pk': club.district.id, 'school_pk': club.school.pk,'pk': club.pk})
+            return client.get(path, format='json')
+
+        def test_no_login_retrieve(self, role_model_instances, setup_client_no_auth):
+            d1, s1, c1 = role_model_instances()
+            user, client = setup_client_no_auth
+            response = self.valid_retrieve(client, c1)
+
+            assert response.status_code == 403
+
+        @pytest.mark.parametrize("method", ['post', 'delete', 'trace'])
+        def test_methods_disabled_retrieve(self, method, make_request, prof_w_perm, role_model_instances):
+            d1, s1, c1 = role_model_instances()
+            profile, client = prof_w_perm(s1)
+            path = reverse(self.retrieve_url_name, kwargs={'district_pk': c1.district.id, 'school_pk': c1.school.pk,'pk': c1.pk})
+            response = make_request(client, method, path=path, format='json')
             
+            assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+
+        def test_does_not_exist(self, setup_client_auth, make_request, role_model_instances):
+            d1, s1, c1 = role_model_instances()
+            c1.delete()
+
+            user, client = setup_client_auth
+            path = reverse(self.retrieve_url_name, args={'district_pk': c1.district.id, 'school_pk': c1.school.pk, 'pk':1})
+            response = make_request(client, 'get', path=path, format='json')
+            assert response.status_code == status.HTTP_404_NOT_FOUND
+    
+     
 class TestNoAuth:
     class TestUserDetail:
         @pytest.fixture

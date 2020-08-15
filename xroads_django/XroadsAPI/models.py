@@ -132,12 +132,15 @@ class Club(models.Model):
     def slides(self):
         return Slide.objects.filter(club=self)
 
+    @property
+    def district(self):
+        return self.school.district
 
 class School(models.Model):
     name = models.CharField(max_length=40)
     img = models.ImageField()
     district = models.ForeignKey(
-        'District', on_delete=models.SET_NULL, null=True)
+        'District', on_delete=models.CASCADE, null=True)
 
     def make_save(self, save):
         if save:
