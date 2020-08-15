@@ -189,7 +189,65 @@ class TestAdmin:
             response = make_request(client, 'get', path=path, format='json')
             assert response.status_code == status.HTTP_404_NOT_FOUND
             
+    class TestSchoolViewset:
+        # GET and LIST cannot be easily tested because the img url is different since the response is from a view
+        retrieve_url_name = 'api:admin-school-detail'
+        list_url_name = 'api:admin-school-list'
+
+        @pytest.fixture
+        def prof_w_perm(self, setup_client_auth):
+            def setup(school):
+                prof, client = setup_client_auth
+                role = Role.from_start_model(school)
+                role.give_role(prof)
+                return prof, client
+            return setup
+
+        @pytest.fixture
+        def prof_wo_perm(self, setup_client_no_auth):
+            return prof, client
+
+        def valid_retrieve(self, client, school):
+            path = reverse(self.retrieve_url_name, kwargs={'district_pk': school.district.id, 'pk': school.pk})
+            return client.get(path, format='json')
+
+        def valid_list(self, client, school):
+            path = reverse(self.list_url_name, kwargs={'district_pk': school.district.id, 'pk': school.pk})
+            return client.get(path, format='json')
+
+        def test_no_login_retrieve(self, role_model_instances, setup_client_no_auth):
+            d1, s1, c1 = role_model_instances()
+            user, client = setup_client_no_auth
+            response = self.valid_retrieve(client, s1)
+
+            assert response.status_code == 403
+
+        @pytest.mark.parametrize("method", ['post', 'delete', 'trace'])
+        def test_methods_disabled_retrieve(self, method, make_request, prof_w_perm, role_model_instances):
+            d1, s1, c1 = role_model_instances()
+            profile, client = prof_w_perm(s1)
+            path = reverse(self.retrieve_url_name, kwargs={'district_pk': s1.district.id, 'pk': s1.pk})
+            response = make_request(client, method, path=path, format='json')
+            
+            assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
         
+        @pytest.mark.parametrize("method", ['post', 'delete', 'trace'])
+        def test_methods_disabled_list(self, method, make_request, prof_w_perm, role_model_instances):
+            d1, s1, c1 = role_model_instances()
+            user, client = prof_w_perm(s1)
+            path = reverse(self.list_url_name, kwargs={'district_pk': s1.district.id})
+            response = make_request(client, method, path=path, format='json')
+            
+            assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+
+        def test_does_not_exist(self, setup_client_auth, make_request):
+            d1 = District.objects.create(name='d1')
+
+            user, client = setup_client_auth
+            path = reverse(self.retrieve_url_name, args={'district_pk': d1.id, 'pk': 1})
+            response = make_request(client, 'get', path=path, format='json')
+            assert response.status_code == status.HTTP_404_NOT_FOUND
+            
 class TestNoAuth:
     class TestUserDetail:
         @pytest.fixture
