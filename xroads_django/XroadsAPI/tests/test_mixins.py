@@ -16,7 +16,7 @@ class DummyAddAdmin(AddAdminMixin):
         return self.object
 
 class TestAddAdminMixin:
-    def test_add_admin_request(self, create_test_prof):
+    def test_add_admin_request(self, create_test_prof, perm_const_override):
         factory = APIRequestFactory()
 
         d1 = District.objects.create(name='d1')
@@ -43,7 +43,7 @@ class TestAddAdminMixin:
 
         assert response.status_code == status.HTTP_202_ACCEPTED
     
-    def test_send_invalid_data(self, create_test_prof):
+    def test_send_invalid_data(self, create_test_prof, perm_const_override):
         factory = APIRequestFactory()
 
         d1 = District.objects.create(name='d1')

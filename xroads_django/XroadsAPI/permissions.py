@@ -36,6 +36,12 @@ class Permissions:
         return self.permissions == intersection
 
     def add(self, *perms):
+        poss_perms = set(self.hierarchy.poss_perms)
+        perms = set(perms)
+
+        assert perms.issubset(poss_perms) or perms == {
+        }, f'The {perms} not legal for this hierarchy: {self.hierarchy.name}'
+
         if self.has_all_perms:
             return
 
@@ -43,13 +49,25 @@ class Permissions:
             self.allow_all_perms()
             return
 
-        poss_perms = self.hierarchy.poss_perms
+        self.permissions.update(set(perms))
+
+    def remove(self, *perms):
+        poss_perms = set(self.hierarchy.poss_perms)
         perms = set(perms)
 
         assert perms.issubset(poss_perms) or perms == {
         }, f'The {perms} not legal for this hierarchy: {self.hierarchy.name}'
 
-        self.permissions.update(set(perms))
+        if '__all__' in perms:
+            self.permissions.clear()
+            return
+
+        if self.has_all_perms:
+            new_perms = poss_perms.difference({'__all__', *perms})
+            self.permissions = new_perms
+            return
+
+        self.permissions.difference_update(perms)
 
     def __str__(self):
         perm_str = ', '.join(map(str, self.permissions))

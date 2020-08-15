@@ -103,9 +103,34 @@ class TestPermissionClass:
     def test_is_allowed_all(self, perm_test_class):
         perm = perm_test_class
 
-        # Test list of perms is more than perms of permission class
+        # Test that if given extra perms it is still valid
         perm.add('create-school')
         assert perm.is_allowed(['create-school', 'modify-district']) is True
+
+    def test_remove_all_perms(self, perm_test_class):
+        perm = perm_test_class
+        perm.add('create-school', 'modify-district')
+        assert perm.is_allowed(['create-school', 'modify-district']) is True
+
+        # Test that when all perms are removed there are no permissions left
+        perm.remove('__all__')
+        assert perm.permissions == set()
+
+    def test_remove_perms_if_all(self, perm_test_class):
+        perm: Permissions = perm_test_class
+        perm.allow_all_perms()
+        assert perm.permissions == {'__all__'}
+
+        # Test that when all perms are removed there are no permissions left
+        perm.remove('create-school')
+        assert perm.permissions == {'modify-district'}
+
+    def test_normal_remove_perms(self, perm_test_class):
+        perm: Permissions = perm_test_class
+        perm.add('create-school', 'modify-district')
+
+        perm.remove('create-school')
+        assert perm.permissions == {'modify-district'}
 
 @pytest.mark.usefixtures("perm_const_override", "db")
 class TestRole:
