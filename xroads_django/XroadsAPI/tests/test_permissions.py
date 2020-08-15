@@ -388,6 +388,17 @@ class TestRole:
         role.give_role(prof)
         assert role.is_allowed(user=prof) is True
 
+    def test_remove_permission(self, role_model_instances, create_test_prof):
+        prof = create_test_prof(num=1)
+        district1, school1, club1 = role_model_instances()
+
+        role = Role.create(district1, school1, club1)
+        role.give_role(prof)
+
+        assert role.is_allowed(user=prof) is True
+
+        role.remove_role(prof)
+        assert role.is_allowed(user=prof) is False
 
 @pytest.fixture
 def role_test_data():
