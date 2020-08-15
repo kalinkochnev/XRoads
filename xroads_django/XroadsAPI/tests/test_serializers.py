@@ -4,6 +4,7 @@ from collections import OrderedDict
 import tempfile
 import pytest
 
+
 def test_profile_serialization(db):
     user_obj: Profile = Profile.objects.create_user(
         email="a@email.com", password="password", first_name="a", last_name="b", phone="1234567899", is_anon=True)
