@@ -98,8 +98,8 @@ class Slideshow extends React.Component {
                     <TextSlide title="a slide with a body" subtitle="and a subtitle" body="I'm not a witch. Oh! Come and see the violence inherent in the system! Help, help, I'm being repressed! We shall say 'Ni' again to you, if you do not appease us. No, no, no! Yes, yes. A bit. But she's got a wart. You don't vote for kings. Be quiet! Camelot! Shut up! Will you shut up?! I am your king. Why? We found them. No, no, no! Yes, yes. A bit. But she's got a wart. You don't frighten us, English pig-dogs! Go and boil your bottoms, sons of a silly person!" color="lightblue"></TextSlide>
                     <ImageSlide source="https://brainhubeu.github.io/react-carousel/static/mona-7a1ceae9bdb8c43272eb101c091c5408.jpg" caption="an image with a caption"></ImageSlide>
                     <TextSlide title="a slide with no body"></TextSlide>
-                    <VideoSlide source="https://vimeo.com/212103091"></VideoSlide>
-                    <VideoSlide source="https://www.youtube.com/watch?v=zCLOJ9j1k2Y"></VideoSlide>
+                    <VideoSlide videoURL="https://vimeo.com/212103091"></VideoSlide>
+                    <VideoSlide videoURL="https://www.youtube.com/watch?v=7LJIcrJKDI0"></VideoSlide>
                 </Carousel>
             </div>
         );
@@ -158,29 +158,33 @@ class VideoSlide extends React.Component {
     }
 
     render() {
+        function getEmbed(url){
 
-        if(this.props.source.includes("youtu")){
-            function getID(url){
+            var noVideoEmbed = "https://player.vimeo.com/video/no-video";
+
+
+            
+            if(url != null && url.includes("youtu")){
                 var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
                 var match = url.match(regExp);
-                return (match&&match[7].length==11)? match[7] : false;
+                return (match&&match[7].length==11)? ("https://www.youtube-nocookie.com/embed/"+match[7]) : noVideoEmbed;
             }
-            var embedSource="https://www.youtube-nocookie.com/embed/" + getID(this.props.source)
-        }
 
-        else if(this.props.source.includes("vimeo")){
-            function getID(url){
+            else if(url != null && url.includes("vimeo")){
                 var regExp = /(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)(?:[a-zA-Z0-9_\-]+)?/i
                 var match = url.match(regExp);
-                return(match[1]);
+                return (match&&match.length==2)? ("https://player.vimeo.com/video/"+match[1]) : noVideoEmbed;
             }
-            var embedSource="https://player.vimeo.com/video/" + getID(this.props.source);
+            else {
+                return noVideoEmbed;
+            }
+
         }
 
         return (
         <div class="slide video-slide" style={{transform: "scale("+scaleAmount+")"}}>
             <div class="slide-content">
-                <iframe width="1000" height="600" src={embedSource} frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe width="1000" height="600" src={getEmbed(this.props.videoURL)} frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
         );
