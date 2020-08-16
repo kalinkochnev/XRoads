@@ -139,8 +139,8 @@ class ImageSlide extends React.Component {
 
     render() {
         return (
-        <div class="slide image-slide" style={{transform: "scale("+scaleAmount+")"}}>
-            <div class="slide-content">
+        <div class="slide image-slide">
+            <div class="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
                 <img src={this.props.source}></img>
                 <p>{this.props.caption}</p>
             </div>
@@ -162,8 +162,6 @@ class VideoSlide extends React.Component {
 
             var noVideoEmbed = "https://player.vimeo.com/video/no-video";
 
-
-            
             if(url != null && url.includes("youtu")){
                 var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
                 var match = url.match(regExp);
@@ -180,11 +178,14 @@ class VideoSlide extends React.Component {
             }
 
         }
-
+        
+        var slideWidth = variables.maxPageWidth.replace('px','')*scaleAmount;
+        var slideHeight = slideWidth/variables.slideAspectRatio;
+        console.log(slideHeight);
         return (
-        <div class="slide video-slide" style={{transform: "scale("+scaleAmount+")"}}>
+        <div class="slide video-slide">
             <div class="slide-content">
-                <iframe width="1000" height="600" src={getEmbed(this.props.videoURL)} frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe width={slideWidth} height={slideHeight} src={getEmbed(this.props.videoURL)} frameborder="0" allow="encrypted-media;" allowfullscreen></iframe>
             </div>
         </div>
         );
