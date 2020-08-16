@@ -2,12 +2,7 @@ import React from 'react';
 import './styles/_navBars.scss';
 import './styles/_clubPage.scss';
 import { Navbar } from './ClubBrowser';
-import variables from './styles/_variables.scss';
-
-import Carousel, { slidesToShowPlugin, fastSwipe } from '@brainhubeu/react-carousel';
-import '@brainhubeu/react-carousel/lib/style.css';
-
-var scaleAmount
+import { Slideshow, TextSlide, ImageSlide, VideoSlide } from './Slideshow';
 
 class ClubPage extends React.Component {
     constructor(props) {
@@ -21,7 +16,13 @@ class ClubPage extends React.Component {
         return (
         <div>
             <Navbar>xroads</Navbar>
-            <Slideshow></Slideshow>
+            <Slideshow>
+                    <TextSlide title="a slide with a body" subtitle="and a subtitle" body="I'm not a witch. Oh! Come and see the violence inherent in the system! Help, help, I'm being repressed! We shall say 'Ni' again to you, if you do not appease us. No, no, no! Yes, yes. A bit. But she's got a wart. You don't vote for kings. Be quiet! Camelot! Shut up! Will you shut up?! I am your king. Why? We found them. No, no, no! Yes, yes. A bit. But she's got a wart. You don't frighten us, English pig-dogs! Go and boil your bottoms, sons of a silly person!" color="lightblue"></TextSlide>
+                    <ImageSlide source="https://brainhubeu.github.io/react-carousel/static/mona-7a1ceae9bdb8c43272eb101c091c5408.jpg" caption="an image with a caption"></ImageSlide>
+                    <TextSlide title="a slide with no body"></TextSlide>
+                    <VideoSlide videoURL="https://vimeo.com/212103091"></VideoSlide>
+                    <VideoSlide videoURL="https://www.youtube.com/watch?v=7LJIcrJKDI0"></VideoSlide>
+            </Slideshow>
             <ClubInfo></ClubInfo>
         </div>
         );
@@ -51,141 +52,6 @@ class ClubInfo extends React.Component {
             Green Acres is the place to be. Farm livin' is the life for me. Land spreadin' out so far and wide. Keep Manhattan, just give me that countryside. New York is where I'd rather stay. I get allergic smelling hay. I just adore a penthouse view. Darling I love you but give me Park Avenue. The chores! The stores! Fresh air! Times Square! You are my wife. Good bye, city life. Green Acres we are there!
             <br></br><br></br>
             Gathered together from the cosmic reaches of the universe, here in this great Hall of Justice, are the most powerful forces of good ever assembled: Superman! Batman and Robin! Wonder Woman! Aquaman! And The Wonder Twins: Zan and Jayna, with their space monkey, Gleek! Dedicated to prove justice and peace for all mankind!
-            </div>
-        </div>
-        );
-    }
-}
-
-class Slideshow extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        value: null,
-        };
-    }
-    
-    render() {
-        var numSlides = (window.innerWidth)/variables.maxPageWidth.replace('px','');
-        scaleAmount = (window.innerWidth)/variables.maxPageWidth.replace('px','');
-        var slideshowHeight = variables.maxPageWidth.replace('px','')/variables.slideAspectRatio*scaleAmount;
-
-        if(window.innerWidth < variables.maxPageWidth.replace('px','')){
-            numSlides = 1;
-        }
-        else {
-            scaleAmount = 1;
-        }
-
-
-        
-        return (
-            <div class="slideshow" style={{height: slideshowHeight}}>
-                <Carousel
-                plugins={[
-                    'centered',
-                    'infinite',
-                    'arrows',
-                    'fastSwipe',
-                    {
-                        resolve: slidesToShowPlugin,
-                        options: {
-                            numberOfSlides: numSlides
-                        }
-                    }
-                ]}   
-                >
-                    <TextSlide title="a slide with a body" subtitle="and a subtitle" body="I'm not a witch. Oh! Come and see the violence inherent in the system! Help, help, I'm being repressed! We shall say 'Ni' again to you, if you do not appease us. No, no, no! Yes, yes. A bit. But she's got a wart. You don't vote for kings. Be quiet! Camelot! Shut up! Will you shut up?! I am your king. Why? We found them. No, no, no! Yes, yes. A bit. But she's got a wart. You don't frighten us, English pig-dogs! Go and boil your bottoms, sons of a silly person!" color="lightblue"></TextSlide>
-                    <ImageSlide source="https://brainhubeu.github.io/react-carousel/static/mona-7a1ceae9bdb8c43272eb101c091c5408.jpg" caption="an image with a caption"></ImageSlide>
-                    <TextSlide title="a slide with no body"></TextSlide>
-                    <VideoSlide videoURL="https://vimeo.com/212103091"></VideoSlide>
-                    <VideoSlide videoURL="https://www.youtube.com/watch?v=7LJIcrJKDI0"></VideoSlide>
-                </Carousel>
-            </div>
-        );
-    }
-}
-
-class TextSlide extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        value: null,
-        };
-    }
-
-    render() {
-        return (
-        <div class="slide text-slide" style={{backgroundColor: this.props.color }}>
-            <div class="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
-                <div class="text-area">
-                    <h1>{this.props.title}</h1>
-                    <h2>{this.props.subtitle}</h2>
-                    <p>{this.props.body}</p>
-                </div>
-            </div>
-        </div>
-        );
-    }
-}
-
-class ImageSlide extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        value: null,
-        };
-    }
-
-    render() {
-        return (
-        <div class="slide image-slide">
-            <div class="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
-                <img src={this.props.source}></img>
-                <p>{this.props.caption}</p>
-            </div>
-        </div>
-        );
-    }
-}
-
-class VideoSlide extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        value: null,
-        };
-    }
-
-    render() {
-        function getEmbed(url){
-
-            var noVideoEmbed = "https://player.vimeo.com/video/no-video";
-
-            if(url != null && url.includes("youtu")){
-                var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-                var match = url.match(regExp);
-                return (match&&match[7].length==11)? ("https://www.youtube-nocookie.com/embed/"+match[7]) : noVideoEmbed;
-            }
-
-            else if(url != null && url.includes("vimeo")){
-                var regExp = /(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)(?:[a-zA-Z0-9_\-]+)?/i
-                var match = url.match(regExp);
-                return (match&&match.length==2)? ("https://player.vimeo.com/video/"+match[1]) : noVideoEmbed;
-            }
-            else {
-                return noVideoEmbed;
-            }
-
-        }
-        
-        var slideWidth = variables.maxPageWidth.replace('px','')*scaleAmount;
-        var slideHeight = slideWidth/variables.slideAspectRatio;
-        console.log(slideHeight);
-        return (
-        <div class="slide video-slide">
-            <div class="slide-content">
-                <iframe width={slideWidth} height={slideHeight} src={getEmbed(this.props.videoURL)} frameborder="0" allow="encrypted-media; fullscreen;" allowfullscreen></iframe>
             </div>
         </div>
         );
