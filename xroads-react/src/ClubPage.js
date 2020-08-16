@@ -185,7 +185,7 @@ class VideoSlide extends React.Component {
         return (
         <div class="slide video-slide">
             <div class="slide-content">
-                <iframe width={slideWidth} height={slideHeight} src={getEmbed(this.props.videoURL)} frameborder="0" allow="encrypted-media;" allowfullscreen></iframe>
+                <iframe width={slideWidth} height={slideHeight} src={getEmbed(this.props.videoURL)} frameborder="0" allow="encrypted-media; fullscreen;" allowfullscreen></iframe>
             </div>
         </div>
         );
