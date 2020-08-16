@@ -125,23 +125,30 @@
     position: relative;
 }
 
+.BrainhubCarousel__container, .BrainhubCarousel, .BrainhubCarousel__trackContainer{
+    max-height: $maxPageWidth/$slideAspectRatio;
+    height:inherit;
+}
+
 .BrainhubCarousel__arrows {
     position: absolute !important;
     background-color: $redDefault !important;
     border-radius: 5px;
-    padding-top:50px !important;
+    padding-left:12px !important;
+    padding-top:35px !important;
     z-index:10;
+    transition:0.2s;
 }
 
 .BrainhubCarousel__arrowRight {
-    right:30px;
+    right:20px;
 }
 .BrainhubCarousel__arrowLeft {
-    left:30px;
+    left:20px;
 }
 
-@media only screen and (max-width: 600px) {
+@media (max-width: 1000px) {
     .BrainhubCarousel__arrows {
-        display:none;
+        opacity: 0.5;
     }
 }
