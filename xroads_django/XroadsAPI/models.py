@@ -8,7 +8,6 @@ from XroadsAPI.exceptions import *
 from XroadsAuth.manager import CustomUserManager
 from XroadsAuth.models import Profile
 
-
 class Slide(models.Model):
     class Meta:
         ordering = ['position']

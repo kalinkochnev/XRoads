@@ -13,6 +13,30 @@ from django.dispatch import receiver
 class HierarchyPerms(models.Model):
     perm_name = models.CharField(max_length=200)
 
+"""class AddRemoveAdminMixin(models.Model):
+    class Meta:
+        abstract = True
+    
+    @property
+    def members(self):
+        raise NotImplementedError('Must implement members property to use add/remove admin mixin')
+
+    def add_admin(self, user: Profile, permissions):
+        role = Role.from_start_model(self)
+
+
+
+        assert permissions.issubset(role.hierarchy.) or perms == {
+        }, f'The {perms} not legal for this hierarchy: {self.hierarchy.name}'
+
+        
+        
+
+        permissions = admin_role_serializer.validated_data['permissions']
+        role.permissions.add(*permissions)
+
+        role.give_role(prof)"""
+    
 class Profile(AbstractUser):
     """User model that uses email instead of username."""
     email = models.EmailField(_('email address'), unique=True)
