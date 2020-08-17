@@ -25,7 +25,7 @@ class Slide(models.Model):
 
     @property
     def template(self):
-        return SlideTemp.SlideTemplate.get(temp_id=self.template_type)
+        return SlideTemp.SlideTemplates.get(temp_id=self.template_type)
 
     def __str__(self):
         return f"{self.club} slide {self.position} {self.template.name}"

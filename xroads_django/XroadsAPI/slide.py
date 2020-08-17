@@ -21,6 +21,7 @@ class SlideTemplates:
         Template(temp_id=1, name="img/text",  required=['img', 'text']),
         Template(temp_id=2, name="img_only", required=['img']),
         Template(temp_id=3, name="video_only", required=['video_url']),
+        Template(temp_id=4, name="text_only", required=['text'])
     ]
 
     @classmethod
