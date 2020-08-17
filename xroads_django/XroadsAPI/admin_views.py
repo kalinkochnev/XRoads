@@ -10,7 +10,7 @@ from XroadsAPI.permissions import *
 from XroadsAPI.serializers import *
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from XroadsAPI.forms import *
-from XroadsAPI import mixins
+from XroadsAPI import mixins as api_mixins
 
 # TODO make sure that you set read_only=True on nested fields so then .update() works
 
@@ -26,10 +26,10 @@ class UserViewset(viewsets.GenericViewSet, generics.RetrieveAPIView):
         return super().retrieve(request, *args, **kwargs)
 
 # TODO make views that lists everybody who has permissions for that view
-class DistrictViewset(mixins.ModifyAndReadViewset, mixins.AdminMixin):
+class DistrictViewset(api_mixins.ModifyAndReadViewset, api_mixins.AdminMixin):
     queryset = District.objects.all()
     serializer_class = DistrictSerializer
-    
+    allowed_methods = ['get', 'post', 'put', 'patch']
     hier_perms = []
     permission_classes = [IsAuthenticated, MinDistrictRole]
 
@@ -42,7 +42,7 @@ class DistrictViewset(mixins.ModifyAndReadViewset, mixins.AdminMixin):
         return self.remove_admins(request)
 
 
-class SchoolViewset(mixins.ModifyAndReadViewset, mixins.AdminMixin):
+class SchoolViewset(api_mixins.ModifyAndReadViewset, api_mixins.AdminMixin):
     queryset = School.objects.all()
     serializer_class = SchoolAdminSerializer
     permission_classes = [IsAuthenticated, MinSchoolRole]
@@ -63,6 +63,10 @@ class SchoolViewset(mixins.ModifyAndReadViewset, mixins.AdminMixin):
         school.toggle_hide()
         return Response(status=204)
 
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated, MinSchoolRole], hier_perms=['add_admin'])
+    def clubs(self, request):
+        return self.add_admins(request, hier_role=PermConst.SCHOOL_ADMIN)
+        
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinDistrictRole], hier_perms=['add_admin'])
     def add_admin(self, request):
         return self.add_admins(request, hier_role=PermConst.SCHOOL_ADMIN)
@@ -83,7 +87,7 @@ class SchoolViewset(mixins.ModifyAndReadViewset, mixins.AdminMixin):
 
 
 
-class ClubViewset(mixins.ModifyAndReadViewset, mixins.AdminMixin):
+class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins.AdminMixin):
     queryset = Club.objects.all()
     serializer_class = ClubEditorSerializer
     permission_classes = [IsAuthenticated, MinClubEditor]

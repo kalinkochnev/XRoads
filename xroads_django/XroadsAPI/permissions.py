@@ -29,12 +29,19 @@ class Permissions:
         if given_perms == {'__all__'}:
             return True
 
-        assert given_perms.issubset(set(self.hierarchy.poss_perms)), f'The {given_perms} not possible for this hierarchy: {self.hierarchy}'
+        assert given_perms.issubset(set(
+            self.hierarchy.poss_perms)), f'The {given_perms} not possible for this hierarchy: {self.hierarchy}'
 
         intersection = given_perms.intersection(self.permissions)
         return self.permissions == intersection
 
     def add(self, *perms):
+        poss_perms = set(self.hierarchy.poss_perms)
+        perms = set(perms)
+
+        assert perms.issubset(poss_perms) or perms == {
+        }, f'The {perms} not legal for this hierarchy: {self.hierarchy.name}'
+
         if self.has_all_perms:
             return
 
@@ -42,13 +49,25 @@ class Permissions:
             self.allow_all_perms()
             return
 
-        poss_perms = self.hierarchy.poss_perms
+        self.permissions.update(set(perms))
+
+    def remove(self, *perms):
+        poss_perms = set(self.hierarchy.poss_perms)
         perms = set(perms)
 
         assert perms.issubset(poss_perms) or perms == {
         }, f'The {perms} not legal for this hierarchy: {self.hierarchy.name}'
 
-        self.permissions.update(set(perms))
+        if '__all__' in perms:
+            self.permissions.clear()
+            return
+
+        if self.has_all_perms:
+            new_perms = poss_perms.difference({'__all__', *perms})
+            self.permissions = new_perms
+            return
+
+        self.permissions.difference_update(perms)
 
     def __str__(self):
         perm_str = ', '.join(map(str, self.permissions))
@@ -137,9 +156,11 @@ class Role:
 
     def go_up_levels(self, times, perms=[]):
         level_index = PermConst.ROLES.index(self.hierarchy)
-        assert level_index-times > -1, 'You cannot increase the level by this amount since you will surpass the highest level'
+        assert level_index-times > - \
+            1, 'You cannot increase the level by this amount since you will surpass the highest level'
 
-        model_instances = self.model_instances[:len(self.model_instances)-times]
+        model_instances = self.model_instances[:len(
+            self.model_instances)-times]
 
         new_role = Role(model_instances=model_instances, permissions=perms)
         self.model_instances = new_role.model_instances
@@ -147,7 +168,6 @@ class Role:
         self.permissions = new_role.permissions
 
         del new_role
-
 
     def reset_perms(self, perms=[]):
         self.permissions = Permissions(perms, self.hierarchy)
@@ -191,6 +211,13 @@ class Role:
             perm_name=str(self))
         user.add_perm(perm)
 
+    def remove_role(self, user: Profile):
+        try:
+            perm = HierarchyPerms.objects.get(perm_name=str(self))
+            user.hierarchy_perms.remove(perm)
+        except HierarchyPerms.DoesNotExist:
+            pass
+    
     def __eq__(self, other_inst: Role):
         return self._comparison(other_inst) == 0
 
@@ -207,7 +234,7 @@ class Role:
     def __ge__(self, other_inst: Role):
         comparison = self._comparison(other_inst)
         return comparison == 1 or comparison == 0
-    
+
     def __str__(self):
         def key_val_format(key, val):
             return f'{key}-{val}/'
@@ -282,21 +309,27 @@ class BaseMinRole(permissions.BasePermission):
 
         # Get the required perms
         permissions = view.hier_perms
-        min_admin_role = Role.from_start_model(self.get_start_user_attr(request, obj))
+        min_admin_role = Role.from_start_model(
+            self.get_start_user_attr(request, obj))
 
         if permissions != '__any__':
             min_admin_role.permissions.add(*permissions)
-        
+
         user = request.user
         return min_admin_role.is_allowed(user=user) or user.is_superuser
 
 
 class MinClubEditor(BaseMinRole):
     pass
+
+
 class MinSchoolRole(BaseMinRole):
     pass
+
+
 class MinDistrictRole(BaseMinRole):
     pass
+
 
 class MinSchoolAdminForUser(BaseMinRole):
     def get_start_user_attr(self, request, obj):

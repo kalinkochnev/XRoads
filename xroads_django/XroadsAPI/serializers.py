@@ -1,13 +1,6 @@
 from XroadsAPI.models import *
 from rest_framework import serializers
 
-
-class PermissionSerializer(serializers.BaseSerializer):
-    permission = serializers.CharField()
-
-class EmailSerializer(serializers.BaseSerializer):
-    email = serializers.EmailField()
-
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """
     A ModelSerializer that takes an additional `fields` argument that
@@ -31,7 +24,7 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon', 'phone']
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon']
         allow_null = True
 
 class MeetingDaysSerializer(serializers.ModelSerializer):
@@ -42,7 +35,7 @@ class MeetingDaysSerializer(serializers.ModelSerializer):
 class AnonProfileSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Profile
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon', 'phone_num']
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon']
         allow_null = True
 
     def to_representation(self, instance):

@@ -32,7 +32,7 @@ router.register('district', views.DistrictViewset, basename="district")
 school_router = routers.NestedDefaultRouter(router, "district", lookup=r"district")
 school_router.register('school', views.SchoolViewset, basename="school")
 
-# admin/district/school/club/
+# district/school/club/
 club_router = routers.NestedDefaultRouter(school_router, 'school', lookup=r"school")
 club_router.register('club', views.ClubViewset, basename='club')
 
@@ -48,11 +48,11 @@ router.register('admin/district', admin_views.DistrictViewset,
 
 # admin/district/school/
 admin_school_router = routers.NestedDefaultRouter(router, "admin/district", lookup=r"district")
-admin_school_router.register('school', admin_views.SchoolViewset, basename="school")
+admin_school_router.register('school', admin_views.SchoolViewset, basename="admin-school")
 
 # admin/district/school/club/
 admin_club_router = routers.NestedDefaultRouter(admin_school_router, 'school', lookup=r"school")
-admin_club_router.register('club', admin_views.ClubViewset, basename='club')
+admin_club_router.register('club', admin_views.ClubViewset, basename='admin-club')
 
 
 
