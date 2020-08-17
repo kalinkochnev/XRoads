@@ -3,6 +3,7 @@ from XroadsAPI.serializers import *
 from collections import OrderedDict
 import tempfile
 import pytest
+from XroadsAPI.slide import SlideTemplates
 
 
 def test_profile_serialization(db):

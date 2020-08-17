@@ -1,5 +1,6 @@
 import pytest
 from XroadsAPI.models import *
+from XroadsAPI.slide import SlideTemplates
 from XroadsAPI.exceptions import *
 import tempfile
 

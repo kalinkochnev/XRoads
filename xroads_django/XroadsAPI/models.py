@@ -7,6 +7,8 @@ from django.dispatch import receiver
 from XroadsAPI.exceptions import *
 from XroadsAuth.manager import CustomUserManager
 from XroadsAuth.models import Profile
+import XroadsAPI.slide as SlideTemp
+
 
 class Slide(models.Model):
     class Meta:
@@ -21,45 +23,12 @@ class Slide(models.Model):
     img = models.ImageField(blank=True, null=True)
     text = models.TextField(blank=True, null=True)
 
+    @property
+    def template(self):
+        return SlideTemp.SlideTemplate.get(temp_id=self.template_type)
 
-class SlideTemplates:
-    class Template:
-        possible_args = ['img', 'text', 'video_url']
-
-        def __init__(self, temp_id: int, name, required):
-            self.temp_id = temp_id
-
-            # makes sure that position is always included
-            self.required_args = required
-            self.required_args.append('position')
-
-            self.name = name
-
-        def args_match(self, args):
-            return set(args) == set(self.required_args)
-
-    templates = [
-        Template(temp_id=1, name="img/text",  required=['img', 'text']),
-        Template(temp_id=2, name="img_only", required=['img']),
-        Template(temp_id=3, name="video_only", required=['video_url']),
-    ]
-
-    @classmethod
-    def get(cls, temp_id: int):
-        for temp in cls.templates:
-            if temp.temp_id == temp_id:
-                return temp
-        raise InvalidSlideTemplate(
-            'The specified template type does not exist')
-
-    @classmethod
-    def new_slide(cls, temp_id, club, **kwargs: dict) -> Slide:
-        template = SlideTemplates.get(temp_id)
-
-        if template.args_match(kwargs.keys()):
-            return Slide.objects.create(club=club, template_type=temp_id, **kwargs)
-        raise SlideParamError(
-            f'Args given do not match. Expected args: {template.required_args} Given: {kwargs} ')
+    def __str__(self):
+        return f"{self.club} slide {self.position} {self.template.name}"
 
 
 class MeetDay(models.Model):
@@ -76,6 +45,9 @@ class MeetDay(models.Model):
     day = models.CharField(
         max_length=15, choices=Day.choices, default=Day.CUSTOM)
 
+    def __str__(self):
+        return f"{self.day} id: {self.id}"
+
 
 class Club(models.Model):
     name = models.CharField(max_length=30)
@@ -88,6 +60,9 @@ class Club(models.Model):
 
     meeting_days = models.ManyToManyField(MeetDay, blank=True)
     members = models.ManyToManyField(Profile, blank=True)
+
+    def __str__(self):
+        return self.name
 
     def make_save(self, save):
         if save:
@@ -106,7 +81,7 @@ class Club(models.Model):
 
     def add_slide(self, template_type, save=True, **kwargs) -> Slide:
         max_pos = self.slides.count()
-        new_slide = SlideTemplates.new_slide(
+        new_slide = SlideTemp.SlideTemplates.new_slide(
             template_type, club=self, position=max_pos+1, **kwargs)
         self.make_save(save)
         return new_slide
@@ -135,11 +110,15 @@ class Club(models.Model):
     def district(self):
         return self.school.district
 
+
 class School(models.Model):
     name = models.CharField(max_length=40)
     img = models.ImageField()
     district = models.ForeignKey(
         'District', on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return self.name
 
     def make_save(self, save):
         if save:
@@ -160,6 +139,9 @@ class School(models.Model):
 
 class District(models.Model):
     name = models.CharField(max_length=40)
+
+    def __str__(self):
+        return self.name
 
     def add_school(self, school: School):
         school.district = self
