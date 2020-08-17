@@ -41,19 +41,12 @@ def create_club(db, temp_img):
 @pytest.fixture
 def create_test_prof(db):
     def create_test_prof2(num, **kwargs) -> Profile:
-        from random import randint
-
-        def gen_random_phone():
-            chunk1 = randint(100, 999)
-            chunk2 = randint(100, 999)
-            chunk3 = randint(1000, 9999)
-            return f'({chunk1}) {chunk2}-{chunk3}'
+        
         params = {
             'email': f'test{num}@email.com',
             'password': 'password',
             'first': f'testfirst{num}',
             'last': f'testlast{num}',
-            'phone': gen_random_phone(),
             'is_anon': False,
         }
 
@@ -62,7 +55,7 @@ def create_test_prof(db):
             if key in params.keys():
                 params[key] = arg
 
-        return Profile.create_profile(email=params['email'], password=params['password'], first=params['first'], last=params['last'], phone=params['phone'], is_anon=params['is_anon'])
+        return Profile.create_profile(email=params['email'], password=params['password'], first=params['first'], last=params['last'], is_anon=params['is_anon'])
     return create_test_prof2
 
 

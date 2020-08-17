@@ -52,39 +52,17 @@ class Profile(AbstractUser):
     objects = CustomUserManager()
 
     # Everything past this point is not related to the custom user model
-    phone = models.CharField(max_length=10, null=True, blank=True)
     is_anon = models.BooleanField(default=False)
 
-    hierarchy_perms = models.ManyToManyField(HierarchyPerms)
+    hierarchy_perms = models.ManyToManyField(HierarchyPerms, blank=True)
 
     def make_save(self, save):
         if save:
             self.save()
 
-    @property
-    def phone_num(self):
-        return None if self.phone is None else int(self.phone)
-
-    @phone_num.setter
-    def phone_num(self, val: int):
-        self.phone = str(val)
-        self.make_save(save=True)
-
-    @staticmethod
-    def parse_phone(input_str):
-        parsed = re.sub('[^0-9]', '', input_str)
-
-        if len(parsed) != 10:
-            raise FieldError(
-                'The phone number provided must have len of 10 and include the area code')
-
-        return parsed
-
     @classmethod
-    def create_profile(cls, email, password, first, last, phone='', is_anon=False):
-        phone = None if phone == '' else cls.parse_phone(phone)
-
-        return cls.objects.create_user(email=email, first_name=first, last_name=last, password=password, phone=phone, is_anon=is_anon)
+    def create_profile(cls, email, password, first, last, is_anon=False):
+        return cls.objects.create_user(email=email, first_name=first, last_name=last, password=password, is_anon=is_anon)
 
     def join_school(self, school, save=True):
         self.school = school

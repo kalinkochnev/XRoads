@@ -8,7 +8,7 @@ import tempfile
 @pytest.fixture
 def club_fix(db, temp_img):
     profile = Profile.create_profile(
-        email="a@gmail.com", password="password", first="kalin", last="kochnev", phone="518-888-1548")
+        email="a@gmail.com", password="password", first="kalin", last="kochnev")
     name = "Test Club"
     description = "This is a club description"
     commitment = "7hrs/week"

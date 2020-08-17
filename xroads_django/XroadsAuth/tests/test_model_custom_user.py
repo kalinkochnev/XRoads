@@ -99,31 +99,13 @@ def sample_user():
     password = "2323hj23hk2h"
     first_name = "kalin"
     last_name = "kochnev"
-    phone_number_str = '5188881542'
     is_anon = True
-    return Profile(email=email, password=password, first_name=first_name, last_name=last_name, phone=phone_number_str, is_anon=True)
-
-
-@pytest.mark.parametrize("input_phone,expected", [
-    ['518-888-1542', "5188881542"],
-    ['(518) 888-1542', "5188881542"],
-    ['518 888 1542', "5188881542"],
-    ['5 1 8 8 8 8 1 5 4 2', "5188881542"]
-])
-def test_parse_phone_valid_len(input_phone, expected):
-    assert Profile.parse_phone(input_phone) == expected
-
-
-@pytest.mark.parametrize('input_phone', ['518-888-154211111', '123-4567', '12345678'])
-def test_parse_phone_invalid_len(input_phone):
-    with pytest.raises(FieldError) as context:
-        assert Profile.parse_phone(input_phone)
+    return Profile(email=email, password=password, first_name=first_name, last_name=last_name, is_anon=True)
 
 
 def test_creation_optional(db, sample_user):
     prof: Profile = Profile.create_profile(
         email=sample_user.email, password=sample_user.password, first=sample_user.first_name, last=sample_user.last_name)
-    assert prof.phone_num is None
     assert prof.is_anon is False
 
     assert prof.first_name == sample_user.first_name
@@ -137,8 +119,7 @@ def test_creation_optional(db, sample_user):
 
 def test_creation_all_params(db, sample_user):
     prof: Profile = Profile.create_profile(email=sample_user.email, password=sample_user.password,
-                                           first=sample_user.first_name, last=sample_user.last_name, phone=sample_user.phone, is_anon=sample_user.is_anon)
-    assert prof.phone_num == sample_user.phone_num
+                                           first=sample_user.first_name, last=sample_user.last_name, is_anon=sample_user.is_anon)
     assert prof.is_anon == sample_user.is_anon
 
 
@@ -147,7 +128,6 @@ def test_create_test_prof(create_test_prof):
     prof_num = 1
     prof = create_test_prof(prof_num)
     assert prof.email == f'test{prof_num}@email.com'
-    assert len(prof.phone) == 10
     assert prof.first_name == f'testfirst{prof_num}'
     assert prof.last_name == f'testlast{prof_num}'
 

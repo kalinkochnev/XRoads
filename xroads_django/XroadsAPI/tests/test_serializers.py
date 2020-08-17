@@ -8,14 +8,13 @@ from XroadsAPI.slide import SlideTemplates
 
 def test_profile_serialization(db):
     user_obj: Profile = Profile.objects.create_user(
-        email="a@email.com", password="password", first_name="a", last_name="b", phone="1234567899", is_anon=True)
+        email="a@email.com", password="password", first_name="a", last_name="b", is_anon=True)
     expected = {
         'id': user_obj.id,
         'email': user_obj.email,
         'first_name': user_obj.first_name,
         'last_name': user_obj.last_name,
         'is_anon': user_obj.is_anon,
-        'phone': user_obj.phone,
     }
 
     assert expected == ProfileSerializer(user_obj).data
@@ -30,7 +29,6 @@ def test_profile_optional_fields(db):
         'first_name': user_obj.first_name,
         'last_name': user_obj.last_name,
         'is_anon': user_obj.is_anon,
-        'phone': None
     }
 
     assert expected == ProfileSerializer(user_obj).data
@@ -38,13 +36,12 @@ def test_profile_optional_fields(db):
 
 def test_profile_from_dict(db):
     user_obj: Profile = Profile(email="a@email.com", password="password",
-                                first_name="a", last_name="b", phone="1234567899", is_anon=True)
+                                first_name="a", last_name="b",is_anon=True)
     data = OrderedDict({
         'email': user_obj.email,
         'first_name': user_obj.first_name,
         'last_name': user_obj.last_name,
         'is_anon': user_obj.is_anon,
-        'phone': user_obj.phone,
     })
 
     serializer = ProfileSerializer(data=data)
@@ -55,8 +52,6 @@ def test_profile_from_dict(db):
     assert result.first_name == user_obj.first_name
     assert result.last_name == user_obj.last_name
     assert result.is_anon == user_obj.is_anon
-    assert result.phone == user_obj.phone
-    assert result.phone_num == user_obj.phone_num
 
 
 @pytest.fixture
@@ -89,7 +84,6 @@ def test_anon_prof_not_anon_serialization(db, create_test_prof):
         'first_name': prof1.first_name,
         'last_name': prof1.last_name,
         'is_anon': prof1.is_anon,
-        'phone_num': prof1.phone_num,
     }
 
     assert AnonProfileSerializer(prof1).data == expected
