@@ -136,6 +136,9 @@ class School(models.Model):
     def clubs(self):
         return Club.objects.filter(school=self)
 
+class DistrictDomain(models.Model):
+    domain = models.CharField(max_length=20, unique=True)
+    district = models.ForeignKey('XroadsAPI.District', on_delete=models.CASCADE)
 
 class District(models.Model):
     name = models.CharField(max_length=40)
@@ -150,3 +153,17 @@ class District(models.Model):
     @property
     def schools(self):
         return School.objects.filter(district=self)
+
+    @property
+    def email_domains(self):
+        return DistrictDomain.objects.filter(district=self)
+
+    def add_email_domain(self, domain: str):
+        DistrictDomain.objects.create(domain=domain, district=self)
+
+    def remove_email_domain(self, domain: str):
+        try:
+            domain = DistrictDomain.objects.get(domain=domain, district=self)
+            domain.delete()
+        except DistrictDomain.DoesNotExist:
+            pass

@@ -3,20 +3,25 @@ from rest_framework import serializers
 from XroadsAPI.forms import *
 import XroadsAPI.permisson_constants as PermConst
 
+@pytest.fixture
+def profiles_data(create_test_prof):
+    return [create_test_prof(i) for i in range(3)]
+
+
 class TestUserEmailForm:
     def test_invalid_when_account_doesnt_exist(self, create_test_prof):
-        emails = [f'email{i}@email.com' for i in range(10)]
+        emails = [f'email{i}@email.com' for i in range(3)]
         assert UserEmailForm(data={'profile_emails': emails}).is_valid() is False
 
-    def test_valid_when_account_exists(self, create_test_prof):
-        profiles = [create_test_prof(i) for i in range(10)]
+    def test_valid_when_account_exists(self, create_test_prof, profiles_data):
+        profiles = profiles_data
         emails = [p.email for p in profiles] 
 
         assert UserEmailForm(data={'emails': emails}).is_valid() is True
 
-    def test_profiles_attr(self, create_test_prof):
-        profiles = [create_test_prof(i) for i in range(10)]
-        fake_emails = [f'email{i}@email.com' for i in range(20, 30)]
+    def test_profiles_attr(self, create_test_prof, profiles_data):
+        profiles = profiles_data
+        fake_emails = [f'email{i}@email.com' for i in range(3, 5)]
         emails = [p.email for p in profiles] + fake_emails
 
         email_form = UserEmailForm(data={'emails': emails})
@@ -28,8 +33,8 @@ class TestUserEmailForm:
 
 
 class TestAdminRoleForm:
-    def test_valid_form(self, perm_const_override, create_test_prof):
-        profiles = [create_test_prof(i) for i in range(10)]
+    def test_valid_form(self, perm_const_override, create_test_prof, profiles_data):
+        profiles = profiles_data
         permissions = ['add-admin', 'modify-club']
 
         data = {
@@ -43,8 +48,8 @@ class TestAdminRoleForm:
         assert form.is_valid() is True
         assert form.validated_data['permissions'] == permissions
 
-    def test_invalid_perms_given(self, perm_const_override, create_test_prof):
-        profiles = [create_test_prof(i) for i in range(10)]
+    def test_invalid_perms_given(self, perm_const_override, create_test_prof, profiles_data):
+        profiles = profiles_data
 
         data = {
             'permissions': ['create-school', 'modify-district'],

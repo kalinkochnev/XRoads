@@ -44,6 +44,7 @@ class Profile(AbstractUser):
 
     school = models.ForeignKey('XroadsAPI.School', on_delete=models.SET_NULL, null=True)
 
+
     # used for making sure the admin login and signup page works correctly
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -68,6 +69,7 @@ class Profile(AbstractUser):
         self.school = school
         self.make_save(save)
 
+    # TODO not made
     def make_editor(self, club):
         assert club.school == self.school, "You can't make somebody the editor of a club they aren't in"
 
@@ -77,3 +79,11 @@ class Profile(AbstractUser):
 
     def verify(self):
         email = EmailAddress.objects.get_for_user(self, self.email)
+
+    @property
+    def district(self):
+        domain = self.email.split('@')[1]
+        try:
+            return api_models.DistrictDomain.objects.get(domain=domain).district
+        except api_models.DistrictDomain.DoesNotExist:
+            return None
