@@ -4,23 +4,23 @@ from rest_framework.decorators import action
 from rest_framework import viewsets
 from XroadsAPI.serializers import *
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 def csrf(request):
     return render(request, template_name='home.html')
 
-class UserViewset(viewsets.GenericViewSet, generics.RetrieveAPIView):
-    serializer_class = AnonProfileSerializer
-    queryset = Profile
 
 # TODO change querysets
 class DistrictViewset(viewsets.ReadOnlyModelViewSet):
     queryset = District.objects.all()
     serializer_class = DistrictSerializer
+    permission_classes = [IsAuthenticated]
 
 class SchoolViewset(viewsets.ReadOnlyModelViewSet):
     queryset = School.objects.all()
     serializer_class = BasicInfoSchoolSerial
+    permission_classes = [IsAuthenticated]
 
     # TODO make permission that checks the request user belongs to the object
     @action(detail=True, methods=['post'])
@@ -36,6 +36,12 @@ class ClubViewset(viewsets.ReadOnlyModelViewSet):
     queryset = Club.objects.all()
     # TODO change the serializer depending on what request it is
     serializer_class = ClubDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request, *args, **kwargs):
+        school_id = self.kwargs['school_pk']
+        queryset = Club.objects.filter(school=school_id)
+        return Response(BasicClubInfoSerial(queryset, many=True).data)
 
     @action(detail=True, methods=['post'])
     def join_club(self, request):

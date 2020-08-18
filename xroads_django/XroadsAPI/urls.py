@@ -23,7 +23,7 @@ app_name = "api"
 router = routers.SimpleRouter(trailing_slash=True)
 # ----- Normal Routes
 # user/
-router.register('user', views.UserViewset, basename="user")
+# router.register('user', views.UserViewset, basename="user")
 
 # district/
 router.register('district', views.DistrictViewset, basename="district")

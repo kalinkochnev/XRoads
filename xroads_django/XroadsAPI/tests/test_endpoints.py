@@ -17,7 +17,6 @@ from collections import OrderedDict
 def setup_client_no_auth(create_test_prof):
     profile = create_test_prof(num=1)
     client = APIClient()
-    client.force_authenticate(user=profile)
 
     return profile, client
 
@@ -296,19 +295,28 @@ class TestAdmin:
     
      
 class TestNoAuth:
-    class TestUserDetail:
-        @pytest.fixture
-        def path_other_user(self, create_test_prof):
-            other_prof = create_test_prof(num=1)
-            # DANGER WARNING!!!! PERIODS SCREWED UP THE REGEX FOR THE URL MATCHER
-            path = reverse('api:user-detail', kwargs={'pk': other_prof.pk})
-            return other_prof, path
+    class TestClubViewset:
+        club_path_name = "api:club-list"
 
-        def test_get_user_no_login(self, path_other_user):
-            client = APIClient()
-            other_prof, path = path_other_user
+        def test_retrieves_club_list_no_auth(self, role_model_instances, make_request, setup_client_no_auth):
+            d1, s1, c1 = role_model_instances()
+            profile, client = setup_client_no_auth
+            path = reverse(self.club_path_name, kwargs={'district_pk': d1.id, 'school_pk': s1.id})
+            response: Response = make_request(client, 'get', path=path, format='json')
 
-            # Test error when not logged in
-            response: Response = client.get(path, format='json')
-            assert response.status_code == 200
-            assert response.data == AnonProfileSerializer(other_prof).data
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+        
+        def test_retrieves_club_list_w_auth(self, role_model_instances, make_request, setup_client_auth, create_club):
+            d1, s1, c1 = role_model_instances()
+            for i in range(2, 5):
+                club = create_club(id=i)
+                s1.add_club(club, save=False)
+            s1.make_save(save=True)
+
+            profile, client = setup_client_auth
+            path = reverse(self.club_path_name, kwargs={'district_pk': d1.id, 'school_pk': s1.id})
+            response: Response = make_request(client, 'get', path=path, format='json')
+
+            assert response.status_code == status.HTTP_200_OK
+            assert response.data == BasicClubInfoSerial(s1.clubs, many=True).data
+
