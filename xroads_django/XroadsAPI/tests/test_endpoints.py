@@ -74,7 +74,7 @@ class TestAdmin:
             other_prof, path = path_other_user
             # Test error when not logged in
             response: Response = client.get(path, format='json')
-            assert response.status_code == 403
+            assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
         def test_at_least_school_admin(self, role_model_instances, create_client_roles, path_other_user):
             d1, s1, c1 = role_model_instances()
@@ -91,14 +91,14 @@ class TestAdmin:
 
             # Test request user must be at least a school admin to get detailed info
             response1: Response = d1_client.get(path, format='json')
-            assert response1.status_code == 200
+            assert response1.status_code == status.HTTP_200_OK
             assert response1.data == ProfileSerializer(other_prof).data
 
             response2: Response = s1_client.get(path, format='json')
-            assert response2.status_code == 200
+            assert response2.status_code == status.HTTP_200_OK
 
             response3: Response = c1_client.get(path, format='json')
-            assert response3.status_code == 403
+            assert response3.status_code == status.HTTP_403_FORBIDDEN
 
 
         def test_user_doesnt_exist(self, role_model_instances, path_other_user, create_client_roles):
@@ -108,7 +108,7 @@ class TestAdmin:
             path = reverse('api:admin-user-detail', args={'lookup': 'kalin.kochnev@gmail.com'})
             response: Response = d1_client.get(path, format='json')
 
-            assert response.status_code == 404
+            assert response.status_code == status.HTTP_404_NOT_FOUND
 
     class TestDistrictViewset:
         retrieve_url_name = 'api:admin-district-detail'
@@ -140,7 +140,7 @@ class TestAdmin:
             user, client = setup_client_no_auth
             response = self.valid_retrieve(client, d1)
 
-            assert response.status_code == 403
+            assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
         @pytest.mark.parametrize("method", ['post', 'delete', 'trace'])
         def test_methods_disabled_retrieve(self, method, make_request, prof_w_perm, role_model_instances):
@@ -219,7 +219,7 @@ class TestAdmin:
             user, client = setup_client_no_auth
             response = self.valid_retrieve(client, s1)
 
-            assert response.status_code == 403
+            assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
         @pytest.mark.parametrize("method", ['post', 'delete', 'trace'])
         def test_methods_disabled_retrieve(self, method, make_request, prof_w_perm, role_model_instances):
@@ -273,7 +273,7 @@ class TestAdmin:
             user, client = setup_client_no_auth
             response = self.valid_retrieve(client, c1)
 
-            assert response.status_code == 403
+            assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
         @pytest.mark.parametrize("method", ['post', 'delete', 'trace'])
         def test_methods_disabled_retrieve(self, method, make_request, prof_w_perm, role_model_instances):
@@ -304,7 +304,7 @@ class TestNoAuth:
             path = reverse(self.club_path_name, kwargs={'district_pk': d1.id, 'school_pk': s1.id})
             response: Response = make_request(client, 'get', path=path, format='json')
 
-            assert response.status_code == status.HTTP_403_FORBIDDEN
+            assert response.status_code == status.HTTP_401_UNAUTHORIZED
         
         def test_retrieves_club_list_w_auth(self, role_model_instances, make_request, setup_client_auth, create_club):
             d1, s1, c1 = role_model_instances()

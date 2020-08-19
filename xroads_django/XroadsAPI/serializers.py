@@ -27,11 +27,6 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'email', 'first_name', 'last_name', 'is_anon']
         allow_null = True
 
-class MeetingDaysSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MeetDay
-        fields = ['day']
-
 class AnonProfileSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Profile
@@ -46,6 +41,12 @@ class AnonProfileSerializer(DynamicFieldsModelSerializer):
             return {'is_anon': True}
         return rep
 
+class MeetingDaysSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MeetDay
+        fields = ['day']
+
+
 class SlideSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Slide
@@ -53,11 +54,10 @@ class SlideSerializer(DynamicFieldsModelSerializer):
         allow_null = True
 
 class BasicClubInfoSerial(serializers.ModelSerializer):
-    meeting_days = MeetingDaysSerializer(many=True)
 
     class Meta:
         model = Club
-        fields = ['id', 'description', 'main_img', 'is_visible', 'meeting_days']
+        fields = ['id', 'name', 'description', 'main_img', 'is_visible']
 
 class ClubDetailSerializer(serializers.ModelSerializer):
     meeting_days = MeetingDaysSerializer(many=True)
@@ -74,6 +74,7 @@ class BasicInfoSchoolSerial(serializers.ModelSerializer):
 
 class DistrictSerializer(serializers.ModelSerializer):
     schools = BasicInfoSchoolSerial(many=True)
+
     class Meta:
         model = District
         fields = '__all__'
