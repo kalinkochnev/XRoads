@@ -1,8 +1,5 @@
 from XroadsAPI.models import *
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
 from rest_framework import serializers
-
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """
@@ -27,18 +24,13 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon', 'phone']
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon']
         allow_null = True
-
-class MeetingDaysSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MeetDay
-        fields = ['day']
 
 class AnonProfileSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Profile
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon', 'phone_num']
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon']
         allow_null = True
 
     def to_representation(self, instance):
@@ -49,23 +41,28 @@ class AnonProfileSerializer(DynamicFieldsModelSerializer):
             return {'is_anon': True}
         return rep
 
+class MeetingDaysSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MeetDay
+        fields = ['day']
+
+
 class SlideSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Slide
         fields = '__all__'
+        allow_null = True
 
 class BasicClubInfoSerial(serializers.ModelSerializer):
-    meeting_days = MeetingDaysSerializer(many=True)
 
     class Meta:
         model = Club
-        fields = ['id', 'description', 'main_img', 'is_visible', 'meeting_days']
+        fields = ['id', 'name', 'description', 'main_img', 'is_visible']
 
 class ClubDetailSerializer(serializers.ModelSerializer):
     meeting_days = MeetingDaysSerializer(many=True)
     members = AnonProfileSerializer(many=True, fields=('first_name', 'last_name'))
     slides = SlideSerializer(many=True)
-
     class Meta:
         model = Club
         fields = '__all__'
@@ -73,6 +70,31 @@ class ClubDetailSerializer(serializers.ModelSerializer):
 class BasicInfoSchoolSerial(serializers.ModelSerializer):
     class Meta:
         model = School
-        fields = ['name', 'img']
+        fields = ['id', 'name', 'img']
+
+class DistrictSerializer(serializers.ModelSerializer):
+    schools = BasicInfoSchoolSerial(many=True)
+
+    class Meta:
+        model = District
+        fields = '__all__'
+
+# ADMIN SERIALIZERS ---------------------
+class ClubEditorSerializer(serializers.ModelSerializer):
+    meeting_days = MeetingDaysSerializer(many=True)
+    members = ProfileSerializer(many=True)
+    slides = SlideSerializer(many=True)
+    class Meta:
+        model = Club
+        fields = '__all__'
+
+class SchoolAdminSerializer(serializers.ModelSerializer):
+    clubs = BasicClubInfoSerial(many=True)
+    students = ProfileSerializer(many=True)
+
+    class Meta:
+        model = School
+        fields = '__all__'
 
 
+    
