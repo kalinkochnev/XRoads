@@ -13,49 +13,26 @@
 }
 
 .text-slide {
-    background-color: #eee;
-}
-
-.text-slide h1 {
-    font-family: Rubik;
-    font-size: 60px;
-    margin-top:0;
-    margin-bottom:0;
-}
-
-.text-slide h2 {
-    font-family: Rubik;
-    font-size: 30px;
-    margin-top:0;
-    margin-bottom:0;
+    background-color: #fff;
 }
 
 .text-slide p {
-    font-family: Raleway;
     font-size: 30px;
     text-align:left;
-    line-height: 1.3;
 }
-
-.text-slide .body {
-    text-align:right;
-    font-family: Raleway;
-    font-size: 40px;
-}
-
 
 /*Image Slide*/
-.image-slide p {
+.image-slide p{
     margin:0;
     position: absolute;
     bottom:0;
     left:0;
     width:100%;
     padding:20px;
-    background-color:#000111aa;
-    font-family: Raleway;
+    background-color:#000111cc;
     font-size: 20px;
     color:white;
+    z-index: 10;
 }
 
 .image-slide c:empty {
@@ -67,9 +44,18 @@
 }
 
 /*Video Slide*/
-.video-slide .slide-content {
-    width:100%;
-    height:100%;
+.video-slide iframe {
+    margin-bottom:-5px;
+}
+
+
+.video-slide p{
+    margin:0;
+    width:calc(100% - 40px);
+    padding:20px;
+    background-color:black;
+    font-size: 20px;
+    color:white;
 }
 
 
@@ -78,7 +64,28 @@
     max-height: $maxPageWidth/$slideAspectRatio;
     padding: 0;
     margin: 0;
-    overflow: hidden;
+    background-color: #fff;
+    box-shadow: $lightShadow;
+    position: relative;
+}
+
+.haze {
+    position: absolute;
+    top:0;
+    width:calc((100vw - 1000px) / 2);
+    height: 100%;
+    z-index: 9;
+}
+
+$hazeGradient: rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%;
+.left-haze {
+    left:0;
+    background: linear-gradient(90deg, $hazeGradient);
+}
+
+.right-haze {
+    right:0;
+    background: linear-gradient(270deg, $hazeGradient);
 }
 
 .slide {
@@ -92,6 +99,7 @@
     height:$maxPageWidth/$slideAspectRatio;
     transform-origin: top left;
     position: relative;
+    overflow: hidden;
 }
 
 .BrainhubCarousel__container, .BrainhubCarousel, .BrainhubCarousel__trackContainer{

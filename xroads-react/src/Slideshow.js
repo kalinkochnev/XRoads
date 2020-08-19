@@ -31,6 +31,8 @@ class Slideshow extends React.Component {
         
         return (
             <div class="slideshow" style={{height: slideshowHeight}}>
+                <div class="haze left-haze"></div>
+                <div class="haze right-haze"></div>
                 <Carousel
                 plugins={[
                     'centered',
@@ -126,12 +128,14 @@ class VideoSlide extends React.Component {
         }
         
         var slideWidth = variables.maxPageWidth.replace('px','')*scaleAmount;
-        var slideHeight = slideWidth/variables.slideAspectRatio;
+        var slideHeight = slideWidth/variables.slideAspectRatio-65*scaleAmount;
+
         console.log(slideHeight);
         return (
         <div class="slide video-slide">
-            <div class="slide-content">
-                <iframe width={slideWidth} height={slideHeight} src={getEmbed(this.props.videoURL)} frameborder="0" allow="encrypted-media; fullscreen;" allowfullscreen></iframe>
+            <iframe width={slideWidth} height={slideHeight} src={getEmbed(this.props.videoURL)} frameborder="0" allow="encrypted-media; fullscreen;" allowfullscreen></iframe>
+            <div class="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
+                <p>{this.props.caption}</p>
             </div>
         </div>
         );

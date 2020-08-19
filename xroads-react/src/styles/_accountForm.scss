@@ -18,7 +18,7 @@ $paddingHorizInput: 15px;
 }
 
 .accountForm {
-  @include card(15px, 5px);
+  @include card(10px, 2px);
   @extend .flex-center-col;
 
   padding: $authFormPadding;
@@ -31,7 +31,7 @@ $paddingHorizInput: 15px;
 
       /*Styles main input fields, not including submit*/
       border-color: $greyOutline;
-      border-width: 3px;
+      border-width: 2px;
       border-style: solid solid none;
 
       font-family: Raleway, sans-serif;

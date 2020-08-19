@@ -17,11 +17,12 @@ class ClubPage extends React.Component {
         <div>
             <Navbar>xroads</Navbar>
             <Slideshow>
-                    <TextSlide title="a slide with a body" subtitle="and a subtitle" body="I'm not a witch. Oh! Come and see the violence inherent in the system! Help, help, I'm being repressed! We shall say 'Ni' again to you, if you do not appease us. No, no, no! Yes, yes. A bit. But she's got a wart. You don't vote for kings. Be quiet! Camelot! Shut up! Will you shut up?! I am your king. Why? We found them. No, no, no! Yes, yes. A bit. But she's got a wart. You don't frighten us, English pig-dogs! Go and boil your bottoms, sons of a silly person!" color="lightblue"></TextSlide>
-                    <ImageSlide source="https://brainhubeu.github.io/react-carousel/static/mona-7a1ceae9bdb8c43272eb101c091c5408.jpg" caption="an image with a caption"></ImageSlide>
-                    <TextSlide title="a slide with no body"></TextSlide>
-                    <VideoSlide videoURL="https://vimeo.com/212103091"></VideoSlide>
-                    <VideoSlide videoURL="https://www.youtube.com/watch?v=7LJIcrJKDI0"></VideoSlide>
+                    <ImageSlide source="https://lh3.googleusercontent.com/pw/ACtC-3dTHcR7fGDF02Z4rAWarD_Jek_kbVPCL6WzU4iju57ePIN2W1bd-uhWUi8yVW4dStChrDK2fdSmTo7R7e4PTSi-aEV4PROwsf7eqp8sFiSOnuxQGaj2qCfr198pxY6H9TR0YpJw2RLXkBpz0Ec-jxjX7w=w1291-h969-no?authuser=0" caption="Our driving team and robot (bottom left) just before the begining of the match."></ImageSlide>
+                    <TextSlide title="We compete in the FTC" body="Each year, more than 7,000 high school teams around the world go head to head in the First Tech Challenge. The competition changes each year, keeping teams on their toes." color="lightblue"></TextSlide>
+                    <ImageSlide source="https://lh3.googleusercontent.com/Hh7-xwoD3hz1g6SZ_MXnCeuFveffb9IU0nc6R3eot76xFFNo6To2v6Jzy2vHsSbrA4K3aVQWkYXqk7BWsLks6DXn0ivb2KhKBRgQ9Q_56hXzqmkQWDUZIMgJLQ0_TEah6U6hIgb8yky_PXTERAE0XUAKyCmwzvOCYOzOIxmZr3_mFggYcNpFR9uKpOLEys3uBj68EC3RwRPrd5idynC-vOoFVsbuiasaN0Hl13NnR3gYB4ORmV0WzzNU-gPEhHFTDn4wqEkDWjZyfRlGdAp0em3jS02awHBXtti7t4bmY971Ldy0mN8OrkH4FWS1Qt1th87Tip2eh960IbsufQSU5zD5byrBkou_I30RAMYhQgPiGDMByc87Pq8hRGdKhuW2JVgApYncJxjGq3MMOTLlzCrGiRw5DAvSeqJDZw5PLu2VDQxV53c_DjP-FNrF95sZmLyb71x5B5H2ShXZK5GGnWx-WhRIAT9F86Z-S2c4qHCwdp04T_9DUZmUQDJ5mOtbPIY4xgl5X1OdxowM80q2HBQB5WPJOj7P6l1Fd11HF1LApipLBBnIhmVAMX6sAPzuhP7qrAtaaJYVRPGVwNeA1yYJSYUOU86P4WFN9xrAJvz0R0-jECciEeokyOXySLkBKiUypg_f5tlWVzHMXSrbkXQfaU6eTLFD39PVF7kgBN6xqWH1f6sX0kD0Bx_ntg=w1785-h1340-no?authuser=0
+" caption="Sam describes his innovative duct tape and nylon cord intake to a skeptical team."></ImageSlide>
+                    <TextSlide title="What we're about" body="Robotics is a great way to put all those STEM skills from class to a good use. But it's more than that too. It's about creative thinking and problem solving under pressure." color="#ffc4c4"></TextSlide>
+                    <VideoSlide videoURL="https://www.youtube.com/watch?v=D2-CRBoGpJQ" caption="Here's our challenge kickoff from our past season."></VideoSlide>
             </Slideshow>
             <ClubInfo></ClubInfo>
         </div>
@@ -41,17 +42,52 @@ class ClubInfo extends React.Component {
         return (
         <div class="clubDetails">
             <div class="clubHeading">
-                <t>Drama Club</t>
-                <h1>Meets Wednesday after school to 4 pm.</h1>
+                <h1>Robotics Club</h1>
+                <h2>Text @niskyrobot to 81010 to join</h2>
             </div>
             <div class="details">
-            Once upon a time there were three little girls who went to the police academy. Two in Los Angeles. The other in San Francisco. And they were each assigned very hazardous duties. But I took them away from all that. And now they work for me. My name is Charlie.
-            <br></br><br></br>
-            Spiderman, Spiderman, does whatever a spider can. Spins a web, any size, catches thieves just like flies, look out! Here comes the Spiderman. Is he strong? Listen bud, he's got radioactive blood. Can he swing from a thread? Take a look overhead. Hey there, there goes the Spiderman. In the chill of night at the scene of a crime, like a streak of light he arrives just in time! Spiderman, Spiderman, friendly neighborhood Spiderman. Wealth and fame, He's ignored. Action is his reward. To him, life is a great big bang up. Whenever there's a hang up, you'll find the Spiderman!
-            <br></br><br></br>
-            Green Acres is the place to be. Farm livin' is the life for me. Land spreadin' out so far and wide. Keep Manhattan, just give me that countryside. New York is where I'd rather stay. I get allergic smelling hay. I just adore a penthouse view. Darling I love you but give me Park Avenue. The chores! The stores! Fresh air! Times Square! You are my wife. Good bye, city life. Green Acres we are there!
-            <br></br><br></br>
-            Gathered together from the cosmic reaches of the universe, here in this great Hall of Justice, are the most powerful forces of good ever assembled: Superman! Batman and Robin! Wonder Woman! Aquaman! And The Wonder Twins: Zan and Jayna, with their space monkey, Gleek! Dedicated to prove justice and peace for all mankind!
+            <p>
+            <h2>What we do</h2>
+            Robotics club is where all the action is at. We create robots and compete against other schools for the glory of having the best robot. We’re pretty good at what we do, and not to brag, but we qualified for the World Championships last year! That’s no joke!
+            </p><p>
+            The First Tech Challenge (FTC) is an international organization where about 7,000 highschool teams go head to head in a competition that changes every year. No person alone could take on such an amazing feat. Robotics is about banding together with your peers to create something awesome.
+            </p><p>
+            As a current club member, I can vouch and say that I have met some of the most creative, smart, funny and resourceful people ever. Robotics can be a rollercoaster of emotions sometimes. It definitely was last year. We were so happy that we qualified for worlds, but later disappointed when it was canceled because of COVID.
+            </p><p>
+            <h2>Who its for</h2>
+            Robotics is probably the best opportunity you have in high school to take STEM to the next level. If you love engineering or coding, this is a great place to apply what you learn. If you want to learn coding or engineering, this is a great place to learn. If you don’t even like coding or engineering, but like tough problem solving and fierce competition, this is a ton of fun. What we’re trying to say is that there’s no reason not to join.
+            </p><p>
+            Building a robot takes a lot of time and that’s why we meet as much as we do, but it doesn’t mean that you can’t join if you’re a busy person. Members always welcome to pop in for whatever time they’re available for.
+            </p><p>
+            Robotics is all about being able to react as situations change. Sometimes we have a plan, but most of the time we’re winging it. Robotics is definitely going to be different this year due to COVID, but we have a plan (we’re totally winging it) and it’s gonna be more exciting than ever before.
+            </p>
+            <div class="clubHeading">
+            <h1>FAQ</h1>
+            </div>
+                <p>
+                    <h3>
+                        Q: When do we meet?
+                    </h3>
+                    A: We meet twice a week, mondays and fridays under normal circumstances. Depending on what the situation is like, it may change so be sure to check back.
+                </p>
+                <p>
+                    <h3>
+                        Q: I don’t have a lot of experience, can I still join?
+                    </h3>
+                    A: Yeah anybody can join! You end up learning as you go. Even if you aren’t interested in STEM, there’s lots of other stuff you can do.
+                </p>
+                <p>
+                    <h3>
+                        Q: What language do you program your robots in?
+                    </h3>
+                    A: We use a set of two android phones as the brains of our robot. We write java to control the various motors and sensors on board.
+                </p>
+                <p>
+                    <h3>
+                        Q: What are your robots made of?
+                    </h3>
+                    A: We use all sorts of materials, but the main robot design is made from aluminum. We use 3D printed and custom parts all the time as well.
+                </p>
             </div>
         </div>
         );
