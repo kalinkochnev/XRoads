@@ -21,6 +21,11 @@ curl -X POST http://localhost:8000/auth/login/ -d '{"email":"akochnev+xruser2@gm
 ```
 
 * Put the token in the .env.development file as the value of the REACT_APP_XROADS_TEMP_TOKEN env var
+
+As a side note, with this token, now you can call the REST API: 
+```bash
+curl -X GET -H 'Accept: application/json' -H 'Content-Type: application/json' -H 'Authorization: Token 5b4ab7859fc63d623df1d8a5072f519aca9c8abb' -i http://localhost:8000/api/district/1/school/1/club/
+```
 ## Available Scripts
 
 In the project directory, you can run:
