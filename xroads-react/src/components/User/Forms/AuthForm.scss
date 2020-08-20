@@ -8,7 +8,8 @@ $authFormPadding: 40px;
 $paddingVertInput: 25px;
 $paddingHorizInput: 15px;
 
-$submitSpacing: 40px;
+$submitSpacing: 50px;
+$submitBottomSpacing: 40px;
 
 $minInputWidth: 250px;
 $inputWidth: 275px;
@@ -36,7 +37,7 @@ $errorBoxTopPadding: 3px;
   .fields {
     @extend .flex-center-col;
     margin: $authFormPadding;
-    margin-bottom: $authFormPadding - (2 * $errorBoxTopPadding - 13);
+    margin-bottom: 0;
 
     input {
       padding: $paddingVertInput $paddingHorizInput $paddingVertInput $paddingHorizInput;
@@ -81,6 +82,8 @@ $errorBoxTopPadding: 3px;
   min-width: $minInputWidth;
   width: $inputWidth;
   height: 50px;
+
+  margin-bottom:$submitBottomSpacing;
 
   background-color: $redDefault;
   border-style: none;
