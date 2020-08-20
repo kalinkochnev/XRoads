@@ -87,8 +87,9 @@ const SignupForm = () => {
               <button type="submit" id="account-submit">
                 Sign up
               </button>
-              {showOneError(formik)}
             </div>
+            {showOneError(formik)}
+
           </form>
         </div>
       )}
@@ -97,52 +98,3 @@ const SignupForm = () => {
 };
 
 export default SignupForm;
-{
-  /* <Form className="accountForm">
-          <div className="fields">
-            <Field
-              name="email"
-              type="email"
-              className="first-field"
-              placeholder="Email Address"
-            />
-            <Field name="firstName" type="text" placeholder="First name" />
-            <Field name="lastName" type="text" placeholder="Last name" />
-            <Field name="password1" type="password" placeholder="Password" />
-            <Field
-              className="last-field"
-              name="password2"
-              type="password"
-              placeholder="Confirm Password"
-            />
-
-            <button type="submit" id="account-submit">
-              Sign up
-            </button>
-          </div>
-        </Form>
-        <ErrorMessage name="email" />
-      <ErrorMessage name="firstName" />
-      <ErrorMessage name="lastName" />
-      <ErrorMessage name="password1" />
-      <ErrorMessage name="password2" /> */
-}
-
-// class SignupForm extends React.Component {
-
-//     render() {
-//         return (
-//             <div class="accountLayout">
-//                 <form class="accountForm">
-//                     <div class="fields">
-//                         <input class="first-field" type="email" name="email-address" placeholder="Email Address" />
-//                         <input type="text" name="first-name" placeholder="First name" />
-//                         <input type="text" name="last-name" placeholder="Last name" />
-//                         <input type="password" name="password" placeholder="Password" />
-//                         <input class="last-field" type="password" name="password" placeholder="Confirm Password" />
-//                     </div>
-//                 </form>
-//             </div>
-//         );
-//     }
-// }

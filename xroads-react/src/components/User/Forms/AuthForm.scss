@@ -1,13 +1,23 @@
 @import "../../Common/Common.scss";
 @import "../../Common/Variables.scss";
+@import "../../Common/AlertBar/AlertBar.scss";
 
 $authFormBorderRadius: 8px;
 $authFormPadding: 40px;
+
 $paddingVertInput: 25px;
 $paddingHorizInput: 15px;
+
+$submitSpacing: 40px;
+
 $minInputWidth: 250px;
 $inputWidth: 275px;
 
+$cardBorderWidth: 10px;
+$cardBorderSize: 2px;
+
+$errorBoxSidePadding: 10px;
+$errorBoxTopPadding: 3px;
 
 .accountLayout {
   @extend .flex-center-col;
@@ -19,13 +29,14 @@ $inputWidth: 275px;
 }
 
 .accountForm {
-  @include card(10px, 2px);
+  @include card($cardBorderWidth, $cardBorderSize);
   @extend .flex-center-col;
 
-  padding: $authFormPadding;
 
   .fields {
     @extend .flex-center-col;
+    margin: $authFormPadding;
+    margin-bottom: $authFormPadding - (2 * $errorBoxTopPadding - 13);
 
     input {
       padding: $paddingVertInput $paddingHorizInput $paddingVertInput $paddingHorizInput;
@@ -62,7 +73,7 @@ $inputWidth: 275px;
   /*Sets the border styling of the last field. For whatever reason it only works with !important*/
   border-style: solid !important;
   border-radius: 0px 0px $authFormBorderRadius $authFormBorderRadius;
-  margin-bottom: 30px;
+  margin-bottom: $submitSpacing;
 }
 
 
@@ -83,5 +94,10 @@ $inputWidth: 275px;
 }
 
 .error-box {
-  background-color: red;
+  border-radius: 0px 0px $cardBorderWidth $cardBorderWidth;
+  background-color: $dangerColor;
+  width: 100%;
+  text-align: center;
+  padding: $errorBoxTopPadding $errorBoxSidePadding $errorBoxTopPadding $errorBoxSidePadding;
+  box-sizing: border-box;
 }
