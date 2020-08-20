@@ -9,7 +9,7 @@ export default function App() {
         <Switch>
             <Route exact path="/" component={ClubBrowser} />
             <Route path="/accounts" component={Accounts}/>
-            <Route path="/page" component={ClubPage}/>
+            <Route path="/club/:clubId" component={ClubPage}/>
             <Route component={NotFound}/>
         </Switch>
     );

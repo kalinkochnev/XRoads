@@ -1,5 +1,26 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Temporary REST API calls to django backend
+
+While we are figuring out the login process and where/how we will store the auth token, here is a temporary procedure for dealing with it: 
+
+* Use any rest client to register a valid user
+```
+curl -X POST http://localhost:8000/auth/registration/ -d '{"email":"akochnev+xruser2@gmail.com", "password1":"nimda123", "password2":"nimda123"}' -H "Content-Type:application/json"
+```
+
+* Verify the user from the URL that is printed on the django console
+The message on the console looks something like this: 
+```
+To confirm this is correct, go to http://localhost:8000/auth/registration/account-confirm-email/Mg:1k8cFU:T73WqnRYwgQWscswsF_w4Jeq5jQ/
+```
+* Use a rest client to login with the new user and get a valid token
+```bash
+curl -X POST http://localhost:8000/auth/login/ -d '{"email":"akochnev+xruser2@gmail.com", "password":"nimda123"}' -H "Content-Type:application/json"
+{"key":"5b4ab7859fc63d623df1d8a5072f519aca9c8abb"}
+```
+
+* Put the token in the .env.development file as the value of the REACT_APP_XROADS_TEMP_TOKEN env var
 ## Available Scripts
 
 In the project directory, you can run:
