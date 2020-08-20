@@ -1,6 +1,6 @@
 import React from 'react';
-import variables from './styles/_variables.scss';
-import './styles/_slideshow.scss';
+import variables from '../Variables.scss';
+import './Slides.scss';
 
 import Carousel, { slidesToShowPlugin, fastSwipe } from '@brainhubeu/react-carousel';
 import '@brainhubeu/react-carousel/lib/style.css';

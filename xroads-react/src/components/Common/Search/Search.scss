@@ -1,5 +1,5 @@
-@import "variables";
-@import "commonComponents";
+@import "../Variables.scss";
+@import "../Common.scss";
 
 .default-searchbar {
   /*Setting up the flexbox*/
@@ -32,7 +32,7 @@
   #search-submit {
     @extend .basic_button;
     /*Creates a centered icon*/
-    @include center-icon("../icons/search-icon.svg");
+    @include center-icon("icons/search-icon.svg");
 
     height: 40px;
     width: 40px;
