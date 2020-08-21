@@ -56,6 +56,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'dj_rest_auth.registration',
 
+    # JWT tokens
+    'rest_framework_simplejwt',
+
     # documentation for api
     'drf_yasg',
 
@@ -187,8 +190,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication'
-#         'rest_framework.authentication.BasicAuthentication',
-#         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+
+        # 'rest_framework.authentication.TokenAuthentication'
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
     ]
+}
+
+# JWT Token Settings
+REST_USE_JWT = True
+JWT_AUTH_COOKIE = 'xroads-auth'
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
 }

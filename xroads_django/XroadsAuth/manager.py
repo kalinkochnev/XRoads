@@ -1,6 +1,7 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model, authenticate
+from allauth.account.models import EmailAddress
 
 class CustomUserManager(BaseUserManager):
     """This custom user manager uses email as the unique identifiers for authentication instead of usernames.
@@ -51,6 +52,10 @@ class CustomUserManager(BaseUserManager):
 
         # creates a user using parameters given and extra fields provides superuser status
         user = self.create_user(email, password, **extra_fields)
+
+        # TEST Probably difficult to test. Used for django allauth
+        EmailAddress.objects.create(user=user, email=user.email, verified=True, primary=True)
+
         return user
 
     # Use default authentication method for login
