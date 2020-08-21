@@ -11,11 +11,11 @@ class Navbar extends React.Component {
 
   render() {
     return (
-      <div class="navbar-simple">
-        <div class="xroadsLogo">
+      <div className="navbar-simple">
+        <div className="xroadsLogo">
           <h1>xroads</h1>
         </div>
-        <div class="navbar-buttons">
+        <div className="navbar-buttons">
           <button>logout</button>
         </div>
       </div>

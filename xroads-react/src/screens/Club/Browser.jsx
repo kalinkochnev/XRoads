@@ -4,7 +4,7 @@ import Navbar from '../../components/Common/Navbar/Navbar';
 import SearchBar from '../../components/Common/Search/Search';
 import ClubCard from '../../components/Club/Card/Card';
 
-import * as XroadsAPI from './service/xroads-api';
+import * as XroadsAPI from '../../service/xroads-api';
 
 
 
@@ -40,9 +40,9 @@ class ScreenClubBrowser extends React.Component {
     return (  //TODO: Change the URL to actually work.
       <div>
         <Navbar>xroads</Navbar>
-        <div class="body">
+        <div className="body">
           <SearchBar></SearchBar>
-           <div class="card-container">
+           <div className="card-container">
              
             {this.state.clubs.map(club => <ClubCard key={club.id} id={club.id} title={club.name} imageURL={club.main_img} description={club.description} meetTimes={["M","W","S"]}/>)} 
             </div>
