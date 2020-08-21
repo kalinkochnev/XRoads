@@ -42,9 +42,6 @@ INSTALLED_APPS = [
     # Rest app
     'XroadsAPI.apps.XroadsapiConfig',
     'XroadsAuth.apps.XroadsauthConfig',
-
-    # REST library
-    'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
     'rest_framework_nested',
@@ -65,6 +62,9 @@ INSTALLED_APPS = [
 ]
 
 # Needed for dj-rest-auth
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'XroadsAuth.serializers.CustomRegister'
+}
 SITE_ID = 1
 
 # Need for custom user model allauth
