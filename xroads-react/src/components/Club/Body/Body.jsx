@@ -9,18 +9,18 @@ const ClubBodyDetail = (props) => {
   console.log("Received club in ClubBodyDetails",props.club);
 
   return (
-    <div class="clubDetails">
-      <div class="clubHeading">
+    <div className="clubDetails">
+      <div className="clubHeading">
         <h1>{props.club.name}</h1>
         <h2>Text @niskyrobot to 81010 to join</h2>
       </div>
-      <div class="details">
+      <div className="details">
         <p>
           <h2>What we do</h2>
           {props.club.description} 
         </p>
         
-        <div class="clubHeading">
+        <div className="clubHeading">
           <h1>FAQ</h1>
         </div>
         <p>

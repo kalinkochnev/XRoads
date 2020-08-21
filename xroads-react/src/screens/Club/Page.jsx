@@ -37,7 +37,7 @@ const ScreenClubDetail = ({ match: {  params: { clubId }}}) => {
           if (slide.img) {
             return <ImageSlide key={slide.id} source={slide.img} caption={slide.text}  />
           } else if(slide.video_url) {
-            return <VideoSlide videoURL={slide.video_url} caption={slide.text} />
+            return <VideoSlide key={slide.id} videoURL={slide.video_url} caption={slide.text} />
           } else {
             return <TextSlide key={slide.id} title={slide.text} body={slide.text} color="lightblue"/>  
           }
@@ -45,7 +45,7 @@ const ScreenClubDetail = ({ match: {  params: { clubId }}}) => {
       } 
         
       </Slideshow>
-      <ClubBodyDetail club={club}></ClubBodyDetail> 
+      <ClubBodyDetail  club={club}></ClubBodyDetail> 
     </div> 
   );
 };
