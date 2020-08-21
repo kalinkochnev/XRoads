@@ -14,7 +14,7 @@ const ScreensRoot = () => {
         <Route exact path="/signup/" component={ScreenSignup} />
         <Route exact path="/login/" component={ScreenLogin} />
         <Route exact path="/clubs/" component={ScreenClubBrowser} />
-        <Route exact path="/clubs/:id/" component={ScreenClubDetail} />
+        <Route exact path="/clubs/:clubId/" component={ScreenClubDetail} />
         <Route exact component={ScreenNotFound} />
       </Switch>
     </Router>

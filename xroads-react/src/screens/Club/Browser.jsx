@@ -24,7 +24,9 @@ class ScreenClubBrowser extends React.Component {
   }
 
   getClubs() {
-    XroadsAPI.fetchClubs().then( res => {
+    // FIXME : replace the hardcoded distictId = 1, schoolId below with the actual values
+    // FIXME : that should be coming in as parameters in the component
+    XroadsAPI.fetchClubs(1,1).then( res => {
       console.log("Received res from club endpoint", res);
       return res.json().then( clubs => {
         console.log("Parsed out clubs from endpoint", clubs);
@@ -43,8 +45,9 @@ class ScreenClubBrowser extends React.Component {
         <div className="body">
           <SearchBar></SearchBar>
            <div className="card-container">
-             
-            {this.state.clubs.map(club => <ClubCard key={club.id} id={club.id} title={club.name} imageURL={club.main_img} description={club.description} meetTimes={["M","W","S"]}/>)} 
+            {
+              this.state.clubs.map(club => <ClubCard key={club.id} id={club.id} title={club.name} imageURL={club.main_img} description={club.description} meetTimes={["M","W","S"]}/>)
+            } 
             </div>
         </div>
       </div>

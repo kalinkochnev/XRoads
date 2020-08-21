@@ -27,12 +27,10 @@ class Slideshow extends React.Component {
             scaleAmount = 1;
         }
 
-
-        
         return (
-            <div class="slideshow" style={{height: slideshowHeight}}>
-                <div class="haze left-haze"></div>
-                <div class="haze right-haze"></div>
+            <div className="slideshow" style={{height: slideshowHeight}}>
+                <div className="haze left-haze"></div>
+                <div className="haze right-haze"></div>
                 <Carousel
                 plugins={[
                     'centered',
@@ -64,9 +62,9 @@ class TextSlide extends React.Component {
 
     render() {
         return (
-        <div class="slide text-slide" style={{backgroundColor: this.props.color }}>
-            <div class="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
-                <div class="text-area">
+        <div className="slide text-slide" style={{backgroundColor: this.props.color }}>
+            <div className="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
+                <div className="text-area">
                     <h1>{this.props.title}</h1>
                     <h2>{this.props.subtitle}</h2>
                     <p>{this.props.body}</p>
@@ -87,8 +85,8 @@ class ImageSlide extends React.Component {
 
     render() {
         return (
-        <div class="slide image-slide">
-            <div class="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
+        <div className="slide image-slide">
+            <div className="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
                 <img src={this.props.source}></img>
                 <p>{this.props.caption}</p>
             </div>
@@ -132,9 +130,9 @@ class VideoSlide extends React.Component {
 
         console.log(slideHeight);
         return (
-        <div class="slide video-slide">
-            <iframe width={slideWidth} height={slideHeight} src={getEmbed(this.props.videoURL)} frameborder="0" allow="encrypted-media; fullscreen;" allowfullscreen></iframe>
-            <div class="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
+        <div className="slide video-slide">
+            <iframe width={slideWidth} height={slideHeight} src={getEmbed(this.props.videoURL)} frameBorder="0" allow="encrypted-media; fullscreen;" allowFullScreen></iframe>
+            <div className="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
                 <p>{this.props.caption}</p>
             </div>
         </div>

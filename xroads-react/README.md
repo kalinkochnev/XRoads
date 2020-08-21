@@ -20,7 +20,7 @@ curl -X POST http://localhost:8000/auth/login/ -d '{"email":"akochnev+xruser2@gm
 {"key":"5b4ab7859fc63d623df1d8a5072f519aca9c8abb"}
 ```
 
-* Put the token in the .env.development file as the value of the REACT_APP_XROADS_TEMP_TOKEN env var
+* Copy the `.env.development` file to a `.env.development.local` , and set the value of REACT_APP_XROADS_TEMP_TOKEN env var in `.env.development.local`  to the token that you retrieved above
 
 As a side note, with this token, now you can call the REST API: 
 ```bash
