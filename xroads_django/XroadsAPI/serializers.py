@@ -37,7 +37,7 @@ class AnonProfileSerializer(DynamicFieldsModelSerializer):
         rep = super().to_representation(instance)
 
         # Removes all anonymous users information from serialization
-        if rep['is_anon']:
+        if 'is_anon' in rep and rep['is_anon']:
             return {'is_anon': True}
         return rep
 
