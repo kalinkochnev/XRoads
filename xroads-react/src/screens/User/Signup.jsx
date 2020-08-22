@@ -5,7 +5,6 @@ import { Switch, Route, useRouteMatch,} from "react-router-dom";
 
 const ScreenSignup = () => {
   let match = useRouteMatch();
-  console.log(match)
   return (
     <div>
       <Navbar></Navbar>

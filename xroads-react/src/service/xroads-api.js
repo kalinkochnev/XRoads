@@ -1,4 +1,40 @@
+import InvalidKeysProvided from '../utils/exceptions';
+import {isEqual} from '../utils/arrays';
 
+// To have keyworded args use this format:   :keyword_arg
+const endpoint_templates = {
+    'login': '/auth/login/',
+    'logout': '/auth/logout/',
+    'signup': '/auth/registration/',
+    'club_list': '/api/district/:districtId/school/:schoolId/club/',
+    'club_detail': '/api/district/:districtId/school/:schoolId/club/:clubId',
+};
+
+function fillTemplate(urlName, urlArgs) {
+    let template = endpoint_templates[urlName];
+
+    let items = template.split("/");
+    let urlFragments = [];
+    for (var item of items) {
+        if (item !== '') {
+            urlFragments.push(item)
+        }
+    }
+
+    let newUrl = "";
+    for (var part of urlFragments) {
+        if (part.charAt(0) === ":") {
+            newUrl += "/" + urlArgs[part.substring(1, part.length)];
+        } else {
+            newUrl += "/" + part;
+        }
+    }
+    return newUrl + '/';
+}
+
+function getUrl(urlName, urlArgs) {
+    return process.env.REACT_APP_XROADS_API_ENDPOINT + fillTemplate(urlName, urlArgs);
+}
 
 
 /**
@@ -8,30 +44,46 @@
  * @param  {object}            [body=null] payload for post/put
  * @return {object}                        config
  */
-function generateFetchConfig(method, body = null) {
+function generateFetchConfig(method, body = null, authorize = true) {
     const upCasedMethod = method.toUpperCase();
     // const token = Cookies.get('xroads-token');
 
     const token = process.env.REACT_APP_XROADS_TEMP_TOKEN;
-    const config = {
+    let config = {
         method: upCasedMethod,
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': `Token ${token}`
         },
         credentials: 'same-origin'
     };
+
+    if (authorize) {
+        config.headers['Authorization'] = `Token ${token}`;
+    }
+
     if (['POST', 'PUT'].includes(upCasedMethod)) {
         config.body = JSON.stringify(body);
     }
     return config;
 }
 
+async function sendRequest(urlName, urlArgs, method, body = null, authorize = true) {
+    return await fetch(getUrl(urlName, urlArgs), generateFetchConfig(method, body, authorize));
+}
+
 export function fetchClubs(districtId, schoolId) {
-    return fetch(`${process.env.REACT_APP_XROADS_API_ENDPOINT}/district/${districtId}/school/${schoolId}/club/`, generateFetchConfig("GET"));
+    return sendRequest('club_list', { 'districtId': districtId, 'schoolId': schoolId }, 'GET');
 }
 
 export function fetchClub(districtId, schoolId, clubId) {
-    return fetch(`${process.env.REACT_APP_XROADS_API_ENDPOINT}/district/${districtId}/school/${schoolId}/club/${clubId}`, generateFetchConfig("GET"));
+    return sendRequest('club_detail', { 'districtId': districtId, 'schoolId': schoolId, 'clubId': clubId }, 'GET');
+}
+
+export function signup(formData) {
+    let requiredKeys = ['email', 'first_name', 'last_name', 'password1', 'password2']
+    if (!isEqual(Object.keys(formData), requiredKeys)) {
+        throw InvalidKeysProvided('The signup form did not have the right values')
+    }
+    return sendRequest('signup', {}, 'POST', formData, false);
 }

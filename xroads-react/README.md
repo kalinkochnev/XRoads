@@ -6,7 +6,7 @@ While we are figuring out the login process and where/how we will store the auth
 
 * Use any rest client to register a valid user
 ```
-curl -X POST http://localhost:8000/auth/registration/ -d '{"email":"akochnev+xruser2@gmail.com", "password1":"nimda123", "password2":"nimda123"}' -H "Content-Type:application/json"
+curl -X POST http://localhost:8000/auth/registration/ -d '{"email":"akochnev+xruser2@gmail.com", "password1":"nimda123", "password2":"nimda123", "first_name": "alex", "last_name": "kochnev"}' -H "Content-Type:application/json"
 ```
 
 * Verify the user from the URL that is printed on the django console

@@ -2,6 +2,7 @@ import React from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import "./AuthForm.scss";
+import { signup } from "../../../service/xroads-api";
 
 const SignupForm = () => {
   function showOneError(formik) {
@@ -18,8 +19,8 @@ const SignupForm = () => {
     <Formik
       initialValues={{
         email: "",
-        firstName: "",
-        lastName: "",
+        first_name: "",
+        last_name: "",
         password1: "",
         password2: "",
       }}
@@ -27,10 +28,10 @@ const SignupForm = () => {
         email: Yup.string()
           .required("Email required")
           .email("Please provide a valid email"),
-        firstName: Yup.string()
+        first_name: Yup.string()
           .required("First name required")
           .max(15, "Must be 15 characters or less"),
-        lastName: Yup.string()
+        last_name: Yup.string()
           .required("Last name required")
           .max(15, "Must be 15 characters or less"),
         password1: Yup.string()
@@ -40,15 +41,21 @@ const SignupForm = () => {
           .required("Confirm password required")
           .min(8, "Password must be 8 characters or more")
           .test("passwords-match", "Passwords must match", function (value) {
-            return this.parent.password1 == value;
+            return this.parent.password1 === value;
           }),
       })}
       onSubmit={(values, { setSubmitting }) => {
         // TODO send request to the server
-        setTimeout(() => {
-          alert(JSON.stringify(values, null, 2));
+        let responsePromise = signup(values);
+        responsePromise.then((response) => {
+          if (response.ok) {
+            response.json().then(body => {
+              console.log(body)
+            })
+          }
+          
           setSubmitting(false);
-        }, 400);
+        });
       }}
     >
       {(formik) => (
@@ -65,12 +72,12 @@ const SignupForm = () => {
               <input
                 type="text"
                 placeholder="First name"
-                {...formik.getFieldProps("firstName")}
+                {...formik.getFieldProps("first_name")}
               />
               <input
                 type="text"
                 placeholder="Last name"
-                {...formik.getFieldProps("lastName")}
+                {...formik.getFieldProps("last_name")}
               />
               <input
                 type="password"
@@ -89,7 +96,6 @@ const SignupForm = () => {
               </button>
             </div>
             {showOneError(formik)}
-
           </form>
         </div>
       )}

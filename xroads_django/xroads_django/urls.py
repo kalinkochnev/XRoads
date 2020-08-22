@@ -32,7 +32,7 @@ schema_view = get_schema_view(
       license=openapi.License(name="Not currently available"),
    ),
    public=False,
-   permission_classes=(permissions.AllowAny,)#permissions.IsAdminUser,),
+   permission_classes=(permissions.AllowAny, )#permissions.IsAdminUser,),
 )
 
 urlpatterns = [
