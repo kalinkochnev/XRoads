@@ -1,4 +1,65 @@
-$successColor: green;
-$infoColor: blue;
-$dangerColor: #f56767;
-$warningColor: yellow;
+$successColor: #87b387;
+$infoColor: #b4d5ee;
+$dangerColor: #eeb4b4;
+$warningColor: #e8e9b0;
+
+.base-alert {
+    display: flex;
+    height: auto;
+    padding: 10px 20px 10px 20px;
+    justify-content: center;
+    text-align: center;
+
+    h2 {
+        width: 75%;
+        margin: 0px auto;
+        align-self: center;
+        font-family: Raleway, sans-serif;
+        color: black;
+        font-weight: 500;   
+        font-size: 16px;
+    }
+}
+
+.success-alert {
+    @extend .base-alert;
+    background-color: $successColor;
+
+    h2 {
+        color: #263326;
+    }
+}
+
+.info-alert {
+    @extend .base-alert;
+    background-color: $infoColor;
+
+    h2 {
+        color: #272e33;
+    }
+}
+
+.danger-alert {
+    @extend .base-alert;
+    background-color: $dangerColor;
+
+    h2 {
+        color: #332727;
+    }
+}
+
+.warning-alert {
+    @extend .base-alert;
+    background-color: $warningColor;
+
+    h2 {
+        color: #333327;
+    }
+}
+
+:export {
+    successColor: $successColor;
+    infoColor: $infoColor;
+    dangerColor: $dangerColor;
+    warningColor: $warningColor 
+  }
