@@ -3,8 +3,9 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import "./AuthForm.scss";
 import { signup } from "../../../service/xroads-api";
+import { Message } from "../../Common/AlertBar/AlertBar";
 
-const SignupForm = () => {
+const SignupForm = ({addAlert}) => {
   function showOneError(formik) {
     let touched = Object.keys(formik.touched);
     for (var t_field of touched) {
@@ -44,18 +45,17 @@ const SignupForm = () => {
             return this.parent.password1 === value;
           }),
       })}
-      onSubmit={(values, { setSubmitting }) => {
+      onSubmit={async (values, { setSubmitting }) => {
         // TODO send request to the server
-        let responsePromise = signup(values);
-        responsePromise.then((response) => {
-          if (response.ok) {
-            response.json().then(body => {
-              console.log(body)
-            })
-          }
+        let response = await signup(values);
+        if (response.ok) {
+          addAlert((<Message type="success" dismissable={true}> You successfully signed up!</Message>))
+        } else {
+          addAlert((<Message type="danger" dismissable={true}> You successfully signed up!</Message>))
+          console.log(await response.json())
+        }
           
           setSubmitting(false);
-        });
       }}
     >
       {(formik) => (

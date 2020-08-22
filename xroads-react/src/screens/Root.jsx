@@ -6,7 +6,6 @@ import ScreenClubDetail from "./Club/Page";
 import ScreenLogin from "./User/Login";
 import ScreenSignup from "./User/Signup";
 import ScreenNotFound from "./Generic/NotFound";
-import {AlertBar, Message} from '../components/Common/AlertBar/AlertBar';
 
 const ScreensRoot = () => {
   return (
