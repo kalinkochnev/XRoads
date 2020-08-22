@@ -45,10 +45,10 @@ p {
 }
 
 @mixin center-icon($iconUrl) {
-  background-image: url($iconUrl);
+  mask-image: url($iconUrl);
   background-color: transparent;
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
+  mask-position: 50% 50%;
+  mask-repeat: no-repeat;
 }
 
 @mixin card($borderRadius, $borderSize) {

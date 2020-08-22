@@ -1,32 +1,65 @@
+@import "../Variables.scss";
+@import "../Common.scss";
+
 $successColor: #87b387;
 $infoColor: #b4d5ee;
 $dangerColor: #eeb4b4;
 $warningColor: #e8e9b0;
 
+$fontSize: 12px;
+$iconSize: 9px;
+$paddingVert: 7px;
+$paddingHoriz:12px;
+
 .base-alert {
     display: flex;
+    flex-direction: row;
     height: auto;
-    padding: 10px 20px 10px 20px;
-    justify-content: center;
+    padding: $paddingVert $paddingHoriz;
+    align-items: center;
     text-align: center;
+}
 
+.alert-message {
+    width: 90%;
+    margin: 0px auto;
+    
     h2 {
-        width: 75%;
         margin: 0px auto;
-        align-self: center;
+        font-weight: 500;   
+        font-size: $fontSize;
         font-family: Raleway, sans-serif;
         color: black;
-        font-weight: 500;   
-        font-size: 16px;
     }
 }
+
+.dismiss-button {
+    @extend .basic_button;
+    @include center-icon("icons/dismiss.svg");
+    height: $iconSize;
+    width: $iconSize;
+}
+
+/* This is used to make the alert to look normal without the button */
+.empty-dismiss {
+    min-height: $iconSize;
+    min-width: $iconSize;
+    padding-right: 5px;
+}
+
+
 
 .success-alert {
     @extend .base-alert;
     background-color: $successColor;
 
-    h2 {
-        color: #263326;
+    $darkerColor: #394d39;
+    .alert-message {
+        color: $darkerColor;
+    }
+
+    .dismiss-button {
+        background-color: $darkerColor;
     }
 }
 
@@ -34,8 +67,13 @@ $warningColor: #e8e9b0;
     @extend .base-alert;
     background-color: $infoColor;
 
-    h2 {
-        color: #272e33;
+    $darkerColor: #3a454d;
+    .alert-message {
+        color: $darkerColor;
+    }
+
+    .dismiss-button {
+        background-color: $darkerColor;
     }
 }
 
@@ -43,8 +81,14 @@ $warningColor: #e8e9b0;
     @extend .base-alert;
     background-color: $dangerColor;
 
-    h2 {
-        color: #332727;
+    $darkerColor: #4d3a3a;
+    .alert-message {
+        color: $darkerColor;
+        
+    }
+
+    .dismiss-button {
+        background-color: $darkerColor;
     }
 }
 
@@ -52,10 +96,18 @@ $warningColor: #e8e9b0;
     @extend .base-alert;
     background-color: $warningColor;
 
-    h2 {
-        color: #333327;
+    $darkerColor:  #4d4d3a;
+    .alert-message {
+        color: $darkerColor;
+    }
+
+    .dismiss-button {
+        background-color: $darkerColor;
     }
 }
+
+
+
 
 :export {
     successColor: $successColor;
@@ -63,3 +115,4 @@ $warningColor: #e8e9b0;
     dangerColor: $dangerColor;
     warningColor: $warningColor 
   }
+
