@@ -5,6 +5,8 @@
 $authFormBorderRadius: 8px;
 $authFormPadding: 40px;
 
+$maxWidthForm: 405px;
+
 $paddingVertInput: 25px;
 $paddingHorizInput: 15px;
 
@@ -17,8 +19,8 @@ $inputWidth: 275px;
 $cardBorderWidth: 10px;
 $cardBorderSize: 2px;
 
-$errorBoxSidePadding: 10px;
-$errorBoxTopPadding: 3px;
+$errorBoxSidePadding: 40px;
+$errorBoxTopPadding: 6px;
 
 .accountLayout {
   @extend .flex-center-col;
@@ -32,7 +34,6 @@ $errorBoxTopPadding: 3px;
 .accountForm {
   @include card($cardBorderWidth, $cardBorderSize);
   @extend .flex-center-col;
-
 
   .fields {
     @extend .flex-center-col;
@@ -100,7 +101,14 @@ $errorBoxTopPadding: 3px;
   border-radius: 0px 0px $cardBorderWidth $cardBorderWidth;
   background-color: $dangerColor;
   width: 100%;
+
   text-align: center;
   padding: $errorBoxTopPadding $errorBoxSidePadding $errorBoxTopPadding $errorBoxSidePadding;
   box-sizing: border-box;
+
+  p {
+    max-width: $inputWidth;
+    font-size: 16px;
+    margin: 0px;
+  }
 }

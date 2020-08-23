@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Navbar from "../../components/Common/Navbar/Navbar";
 import LoginForm from '../../components/User/Forms/Login';
-import { AlertBar, Message } from '../../components/Common/AlertBar/AlertBar';
+import { AlertBar } from '../../components/Common/AlertBar/AlertBar';
 
 
 const ScreenLogin = () => {

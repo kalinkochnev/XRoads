@@ -1,11 +1,11 @@
 import React from 'react';
-import variables from '../Variables.scss';
+import letiables from '../Variables.scss';
 import './Slides.scss';
-
-import Carousel, { slidesToShowPlugin, fastSwipe } from '@brainhubeu/react-carousel';
+// import Carousel, { slidesToShowPlugin, fastSwipe } from '@brainhubeu/react-carousel';
+import Carousel, { slidesToShowPlugin } from '@brainhubeu/react-carousel';
 import '@brainhubeu/react-carousel/lib/style.css';
 
-var scaleAmount
+let scaleAmount
 
 class Slideshow extends React.Component {
     constructor(props) {
@@ -16,11 +16,11 @@ class Slideshow extends React.Component {
     }
     
     render() {
-        var numSlides = (window.innerWidth)/variables.maxPageWidth.replace('px','');
-        scaleAmount = (window.innerWidth)/variables.maxPageWidth.replace('px','');
-        var slideshowHeight = variables.maxPageWidth.replace('px','')/variables.slideAspectRatio*scaleAmount;
+        let numSlides = (window.innerWidth)/letiables.maxPageWidth.replace('px','');
+        scaleAmount = (window.innerWidth)/letiables.maxPageWidth.replace('px','');
+        let slideshowHeight = letiables.maxPageWidth.replace('px','')/letiables.slideAspectRatio*scaleAmount;
 
-        if(window.innerWidth < variables.maxPageWidth.replace('px','')){
+        if(window.innerWidth < letiables.maxPageWidth.replace('px','')){
             numSlides = 1;
         }
         else {
@@ -106,18 +106,18 @@ class VideoSlide extends React.Component {
     render() {
         function getEmbed(url){
 
-            var noVideoEmbed = "https://player.vimeo.com/video/no-video";
+            let noVideoEmbed = "https://player.vimeo.com/video/no-video";
 
             if(url != null && url.includes("youtu")){
-                var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-                var match = url.match(regExp);
-                return (match&&match[7].length==11)? ("https://www.youtube-nocookie.com/embed/"+match[7]) : noVideoEmbed;
+                let regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+                let match = url.match(regExp);
+                return (match&&match[7].length===11)? ("https://www.youtube-nocookie.com/embed/"+match[7]) : noVideoEmbed;
             }
 
             else if(url != null && url.includes("vimeo")){
-                var regExp = /(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)(?:[a-zA-Z0-9_\-]+)?/i
-                var match = url.match(regExp);
-                return (match&&match.length==2)? ("https://player.vimeo.com/video/"+match[1]) : noVideoEmbed;
+                let regExp = /(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)(?:[a-zA-Z0-9_\-]+)?/i
+                let match = url.match(regExp);
+                return (match&&match.length===2)? ("https://player.vimeo.com/video/"+match[1]) : noVideoEmbed;
             }
             else {
                 return noVideoEmbed;
@@ -125,13 +125,13 @@ class VideoSlide extends React.Component {
 
         }
         
-        var slideWidth = variables.maxPageWidth.replace('px','')*scaleAmount;
-        var slideHeight = slideWidth/variables.slideAspectRatio-65*scaleAmount;
+        let slideWidth = letiables.maxPageWidth.replace('px','')*scaleAmount;
+        let slideHeight = slideWidth/letiables.slideAspectRatio-65*scaleAmount;
 
         console.log(slideHeight);
         return (
         <div className="slide video-slide">
-            <iframe width={slideWidth} height={slideHeight} src={getEmbed(this.props.videoURL)} frameBorder="0" allow="encrypted-media; fullscreen;" allowFullScreen></iframe>
+            <iframe title="slideshow-iframe" width={slideWidth} height={slideHeight} src={getEmbed(this.props.videoURL)} frameBorder="0" allow="encrypted-media; fullscreen;" allowFullScreen></iframe>
             <div className="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
                 <p>{this.props.caption}</p>
             </div>

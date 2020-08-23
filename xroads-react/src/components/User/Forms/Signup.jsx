@@ -1,17 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import "./AuthForm.scss";
 import { signup } from "../../../service/xroads-api";
-import { Message } from "../../Common/AlertBar/AlertBar";
 
-const SignupForm = ({addAlert}) => {
+
+const SignupForm = ({ addAlert }) => {
   function showOneError(formik) {
     let touched = Object.keys(formik.touched);
     for (var t_field of touched) {
       let error = formik.errors[t_field];
       if (error) {
-        return <div class="error-box">{error}</div>;
+        return <div class="error-box"><p>{error}</p></div>;
       }
     }
   }
@@ -45,17 +45,21 @@ const SignupForm = ({addAlert}) => {
             return this.parent.password1 === value;
           }),
       })}
-      onSubmit={async (values, { setSubmitting }) => {
+      onSubmit={async (values, { setSubmitting, setFieldError }) => {
         // TODO send request to the server
         let response = await signup(values);
         if (response.ok) {
-          addAlert((<Message type="success" dismissable={true}> You successfully signed up!</Message>))
+          addAlert("success", "You signed up successfully!", true)
         } else {
-          addAlert((<Message type="danger" dismissable={true}> You successfully signed up!</Message>))
-          console.log(await response.json())
+          let body = await response.json();
+          for (var field of Object.keys(body)) {
+            if (Object.keys(values).includes(field)) {
+              setFieldError(field, body[field][0])
+            }
+          }
         }
-          
-          setSubmitting(false);
+
+        setSubmitting(false);
       }}
     >
       {(formik) => (
@@ -99,6 +103,7 @@ const SignupForm = ({addAlert}) => {
           </form>
         </div>
       )}
+
     </Formik>
   );
 };
