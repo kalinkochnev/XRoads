@@ -167,3 +167,11 @@ class District(models.Model):
             domain.delete()
         except DistrictDomain.DoesNotExist:
             pass
+
+    @classmethod
+    def match_district(cls, email):
+        domain = email.split('@')[1]
+        try:
+            return DistrictDomain.objects.get(domain=domain).district
+        except DistrictDomain.DoesNotExist:
+            return None

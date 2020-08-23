@@ -13,6 +13,8 @@ def test_match_email_with_district(create_test_prof):
     prof.save()
 
     domain = d1.add_email_domain('school.org')
+
+    prof.match_district()
     assert prof.district == d1
     
 def test_domain_already_created(db):

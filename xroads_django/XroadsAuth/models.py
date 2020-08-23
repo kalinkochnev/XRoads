@@ -43,7 +43,7 @@ class Profile(AbstractUser):
     username = None
 
     school = models.ForeignKey('XroadsAPI.School', on_delete=models.SET_NULL, null=True)
-
+    district = models.ForeignKey('XroadsAPI.District', on_delete=models.SET_NULL, null=True)
 
     # used for making sure the admin login and signup page works correctly
     USERNAME_FIELD = 'email'
@@ -80,10 +80,6 @@ class Profile(AbstractUser):
     def verify(self):
         email = EmailAddress.objects.get_for_user(self, self.email)
 
-    @property
-    def district(self):
-        domain = self.email.split('@')[1]
-        try:
-            return api_models.DistrictDomain.objects.get(domain=domain).district
-        except api_models.DistrictDomain.DoesNotExist:
-            return None
+    def match_district(self, save=True):
+        self.district = api_models.District.match_district(self.email)
+        self.make_save(save)
