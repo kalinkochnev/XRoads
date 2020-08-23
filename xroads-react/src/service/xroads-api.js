@@ -87,3 +87,11 @@ export function signup(formData) {
     }
     return sendRequest('signup', {}, 'POST', formData, false);
 }
+
+export function login(formData) {
+    let requiredKeys = ['email', 'password']
+    if (!isEqual(Object.keys(formData), requiredKeys)) {
+        throw InvalidKeysProvided('The login form did not have the right values')
+    }
+    return sendRequest('login', {}, 'POST', formData, false);
+}

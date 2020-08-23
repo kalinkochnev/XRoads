@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import "./AuthForm.scss";
@@ -49,9 +49,12 @@ const SignupForm = ({ addAlert }) => {
         // TODO send request to the server
         let response = await signup(values);
         if (response.ok) {
-          addAlert("success", "You signed up successfully!", true)
+          addAlert("success", "You signed up successfully! Check your email for confirmation!", true)
         } else {
           let body = await response.json();
+          if (Object.keys(body).includes("non_field_errors")) {
+            addAlert("warning", body.non_field_errors[0], true);
+          }
           for (var field of Object.keys(body)) {
             if (Object.keys(values).includes(field)) {
               setFieldError(field, body[field][0])

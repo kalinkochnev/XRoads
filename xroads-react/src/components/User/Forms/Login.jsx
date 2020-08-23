@@ -2,8 +2,9 @@ import React from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import "./AuthForm.scss";
+import { login } from "../../../service/xroads-api";
 
-const LoginForm = () => {
+const LoginForm = ({ addAlert }) => {
   function showOneError(formik) {
     let touched = Object.keys(formik.touched);
     for (var t_field of touched) {
@@ -26,12 +27,23 @@ const LoginForm = () => {
           .email("Please provide a valid email"),
         password: Yup.string().required("Password required"),
       })}
-      onSubmit={(values, { setSubmitting }) => {
-        // TODO send request to the server
-        setTimeout(() => {
-          alert(JSON.stringify(values, null, 2));
-          setSubmitting(false);
-        }, 400);
+      onSubmit={async (values, { setSubmitting, setFieldError }) => {
+        let response = await login(values);
+        if (response.ok) {
+          addAlert("success", "You logged in successfully!", true);
+        } else {
+          let body = await response.json();
+          if (Object.keys(body).includes("non_field_errors")) {
+            addAlert("warning", body.non_field_errors[0], true);
+          }
+          for (var field of Object.keys(body)) {
+            if (Object.keys(values).includes(field)) {
+              setFieldError(field, body[field][0])
+            }
+          }
+        }
+
+        setSubmitting(false);
       }}
     >
       {(formik) => (

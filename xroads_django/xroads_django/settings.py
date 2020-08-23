@@ -194,7 +194,7 @@ REST_FRAMEWORK = {
 
         # 'rest_framework.authentication.TokenAuthentication'
         # 'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication', # FIXME make sure to remove this in production
+        # 'rest_framework.authentication.SessionAuthentication', # FIXME make sure to remove this in production
     ]
 }
 
