@@ -70,15 +70,12 @@ class Profile(AbstractUser):
         self.make_save(save)
 
     # TODO not made
-    def make_editor(self, club):
+    """def make_editor(self, club):
         assert club.school == self.school, "You can't make somebody the editor of a club they aren't in"
-
+"""
     def add_perm(self, perm):
         self.hierarchy_perms.add(perm)
         self.make_save(save=True) 
-
-    def verify(self):
-        email = EmailAddress.objects.get_for_user(self, self.email)
 
     def match_district(self, save=True):
         self.district = api_models.District.match_district(self.email)

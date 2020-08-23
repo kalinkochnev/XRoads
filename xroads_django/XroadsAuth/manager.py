@@ -58,7 +58,9 @@ class CustomUserManager(BaseUserManager):
         user = self.create_user(email, password, **extra_fields)
 
         # TEST Probably difficult to test. Used for django allauth
-        EmailAddress.objects.create(user=user, email=user.email, verified=True, primary=True)
+        allauth_email = EmailAddress.objects.get(user=user)
+        allauth_email.verified = True
+        allauth_email.save()
 
         return user
 
