@@ -1,12 +1,26 @@
 @import "../../Common/Common.scss";
 @import "../../Common/Variables.scss";
+@import "../../Common/AlertBar/AlertBar.scss";
 
 $authFormBorderRadius: 8px;
 $authFormPadding: 40px;
+
+$maxWidthForm: 405px;
+
 $paddingVertInput: 25px;
 $paddingHorizInput: 15px;
 
+$submitSpacing: 50px;
+$submitBottomSpacing: 40px;
 
+$minInputWidth: 250px;
+$inputWidth: 275px;
+
+$cardBorderWidth: 10px;
+$cardBorderSize: 2px;
+
+$errorBoxSidePadding: 40px;
+$errorBoxTopPadding: 6px;
 
 .accountLayout {
   @extend .flex-center-col;
@@ -18,13 +32,13 @@ $paddingHorizInput: 15px;
 }
 
 .accountForm {
-  @include card(10px, 2px);
+  @include card($cardBorderWidth, $cardBorderSize);
   @extend .flex-center-col;
-
-  padding: $authFormPadding;
 
   .fields {
     @extend .flex-center-col;
+    margin: $authFormPadding;
+    margin-bottom: 0;
 
     input {
       padding: $paddingVertInput $paddingHorizInput $paddingVertInput $paddingHorizInput;
@@ -43,8 +57,8 @@ $paddingHorizInput: 15px;
     /*Styling for all input fields*/
     box-sizing: border-box;
 
-    min-width: 250px;
-    width: 275px;
+    min-width: $minInputWidth;
+    width: $inputWidth;
     height: 50px;
   }
 
@@ -61,10 +75,17 @@ $paddingHorizInput: 15px;
   /*Sets the border styling of the last field. For whatever reason it only works with !important*/
   border-style: solid !important;
   border-radius: 0px 0px $authFormBorderRadius $authFormBorderRadius;
-  margin-bottom: 30px;
+  margin-bottom: $submitSpacing;
 }
 
+
 #account-submit {
+  min-width: $minInputWidth;
+  width: $inputWidth;
+  height: 50px;
+
+  margin-bottom:$submitBottomSpacing;
+
   background-color: $redDefault;
   border-style: none;
   border-radius: 5px;
@@ -74,4 +95,20 @@ $paddingHorizInput: 15px;
   font-family: "Arial", sans-serif;
   font-weight: 700;
   font-size: 20px;
+}
+
+.error-box {
+  border-radius: 0px 0px $cardBorderWidth $cardBorderWidth;
+  background-color: $dangerColor;
+  width: 100%;
+
+  text-align: center;
+  padding: $errorBoxTopPadding $errorBoxSidePadding $errorBoxTopPadding $errorBoxSidePadding;
+  box-sizing: border-box;
+
+  p {
+    max-width: $inputWidth;
+    font-size: 16px;
+    margin: 0px;
+  }
 }

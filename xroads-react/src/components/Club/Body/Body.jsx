@@ -5,59 +5,22 @@ import './Body.scss';
 
 // TODO eventually we should not have this component existing and just have it directly in the equivalent screen
 
-const ClubBodyDetail = () => {
+const ClubBodyDetail = (props) => {
+  console.log("Received club in ClubBodyDetails",props.club);
+
   return (
-    <div class="clubDetails">
-      <div class="clubHeading">
-        <h1>Robotics Club</h1>
+    <div className="clubDetails">
+      <div className="clubHeading">
+        <h1>{props.club.name}</h1>
         <h2>Text @niskyrobot to 81010 to join</h2>
       </div>
-      <div class="details">
+      <div className="details">
         <p>
           <h2>What we do</h2>
-          Robotics club is where all the action is at. We create robots and
-          compete against other schools for the glory of having the best robot.
-          We’re pretty good at what we do, and not to brag, but we qualified for
-          the World Championships last year! That’s no joke!
+          {props.club.description} 
         </p>
-        <p>
-          The First Tech Challenge (FTC) is an international organization where
-          about 7,000 highschool teams go head to head in a competition that
-          changes every year. No person alone could take on such an amazing
-          feat. Robotics is about banding together with your peers to create
-          something awesome.
-        </p>
-        <p>
-          As a current club member, I can vouch and say that I have met some of
-          the most creative, smart, funny and resourceful people ever. Robotics
-          can be a rollercoaster of emotions sometimes. It definitely was last
-          year. We were so happy that we qualified for worlds, but later
-          disappointed when it was canceled because of COVID.
-        </p>
-        <p>
-          <h2>Who its for</h2>
-          Robotics is probably the best opportunity you have in high school to
-          take STEM to the next level. If you love engineering or coding, this
-          is a great place to apply what you learn. If you want to learn coding
-          or engineering, this is a great place to learn. If you don’t even like
-          coding or engineering, but like tough problem solving and fierce
-          competition, this is a ton of fun. What we’re trying to say is that
-          there’s no reason not to join.
-        </p>
-        <p>
-          Building a robot takes a lot of time and that’s why we meet as much as
-          we do, but it doesn’t mean that you can’t join if you’re a busy
-          person. Members always welcome to pop in for whatever time they’re
-          available for.
-        </p>
-        <p>
-          Robotics is all about being able to react as situations change.
-          Sometimes we have a plan, but most of the time we’re winging it.
-          Robotics is definitely going to be different this year due to COVID,
-          but we have a plan (we’re totally winging it) and it’s gonna be more
-          exciting than ever before.
-        </p>
-        <div class="clubHeading">
+        
+        <div className="clubHeading">
           <h1>FAQ</h1>
         </div>
         <p>

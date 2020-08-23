@@ -16,7 +16,7 @@ class Navbar extends React.Component {
           <img class="logo-svg" src={require('../icons/logo-color.svg')}></img>
           <span class="school-name">niskayuna</span>
         </div>
-        <div class="navbar-buttons">
+        <div className="navbar-buttons">
           <button>logout</button>
         </div>
       </div>

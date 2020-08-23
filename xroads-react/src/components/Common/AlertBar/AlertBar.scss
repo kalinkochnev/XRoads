@@ -1,0 +1,118 @@
+@import "../Variables.scss";
+@import "../Common.scss";
+
+$successColor: #87b387;
+$infoColor: #b4d5ee;
+$dangerColor: #eeb4b4;
+$warningColor: #e8e9b0;
+
+$fontSize: 18px;
+$iconSize: 12px;
+$paddingVert: 10px;
+$paddingHoriz:12px;
+
+.base-alert {
+    display: flex;
+    flex-direction: row;
+    height: auto;
+    padding: $paddingVert $paddingHoriz;
+    align-items: center;
+    text-align: center;
+}
+
+.alert-message {
+    width: 90%;
+    margin: 0px auto;
+    
+    h2 {
+        margin: 0px auto;
+        font-weight: 500;   
+        font-size: $fontSize;
+        font-family: Raleway, sans-serif;
+        color: black;
+    }
+}
+
+.dismiss-button {
+    @extend .basic_button;
+    @include center-icon("icons/dismiss.svg");
+    height: $iconSize;
+    width: $iconSize;
+}
+
+/* This is used to make the alert to look normal without the button */
+.empty-dismiss {
+    min-height: $iconSize;
+    min-width: $iconSize;
+    padding-right: 5px;
+}
+
+
+
+.success-alert {
+    @extend .base-alert;
+    background-color: $successColor;
+
+    $darkerColor: #394d39;
+    .alert-message {
+        color: $darkerColor;
+    }
+
+    .dismiss-button {
+        background-color: $darkerColor;
+    }
+}
+
+.info-alert {
+    @extend .base-alert;
+    background-color: $infoColor;
+
+    $darkerColor: #3a454d;
+    .alert-message {
+        color: $darkerColor;
+    }
+
+    .dismiss-button {
+        background-color: $darkerColor;
+    }
+}
+
+.danger-alert {
+    @extend .base-alert;
+    background-color: $dangerColor;
+
+    $darkerColor: #4d3a3a;
+    .alert-message {
+        color: $darkerColor;
+        
+    }
+
+    .dismiss-button {
+        background-color: $darkerColor;
+    }
+}
+
+.warning-alert {
+    @extend .base-alert;
+    background-color: $warningColor;
+
+    $darkerColor:  #4d4d3a;
+    .alert-message {
+        color: $darkerColor;
+    }
+
+    .dismiss-button {
+        background-color: $darkerColor;
+    }
+}
+
+
+
+
+:export {
+    successColor: $successColor;
+    infoColor: $infoColor;
+    dangerColor: $dangerColor;
+    warningColor: $warningColor 
+  }
+

@@ -11,15 +11,17 @@ class ClubBrowserCard extends React.Component {
   
     render() {
       return (
-        <div class="card" style={{ backgroundImage:`url(${this.props.imageURL})` }}>
-          <div class="info">
-            <h1>{this.props.title}</h1>
-            <div class="bubble-container">
-              {this.props.meetTimes.map(time => <p class="bubble" key={time}>{time}</p>)}
+        <a href={`/clubs/${this.props.id}`}>
+          <div className="card" style={{ backgroundImage:`url(${this.props.imageURL})` }}>
+            <div className="info">
+              <h1>{this.props.title}</h1>
+              <div className="bubble-container">
+                {this.props.meetTimes.map(time => <p className="bubble" key={time}>{time}</p>)}
+              </div>
+              <p>{this.props.description}</p>
             </div>
-            <p>{this.props.description}</p>
           </div>
-        </div>
+        </a>
       );
     }
   }

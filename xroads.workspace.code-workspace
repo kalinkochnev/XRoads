@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "xroads_django"
+		},
+		{
+			"path": "xroads-react"
+		},
+		{
+			"path": "../github/letters-social"
+		}
+	],
+	"settings": {}
+}
