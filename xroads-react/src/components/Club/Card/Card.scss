@@ -12,6 +12,11 @@
     background-clip: content-box;
     background-color:white;
     box-shadow: $lightShadow;
+    transition: 0.25s;
+}
+
+.card:hover {
+    box-shadow: $darkShadow;
 }
 
 .card-container{
@@ -34,17 +39,14 @@
     padding-right:20px;
     transition:0.4s;
     overflow: hidden;
-    border: $thinOutline;
-    border-top: none;
     border-radius: 0px 0px $cardRoundSmall $cardRoundSmall;
+    z-index:12;
 }
 
 .info:hover{
     height: 100%;
-    border: $thinOutline;
     border-radius: $cardRoundSmall;
 }
-
 .info h1{
     margin-top: 18px;
     font-size:30px;

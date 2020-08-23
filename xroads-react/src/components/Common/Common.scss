@@ -54,8 +54,7 @@ p {
 @mixin card($borderRadius, $borderSize) {
   border-radius: $borderRadius;
   background-color: #fff;
-  border: $borderSize solid $greyOutline;
-  box-shadow: 6px 6px 18px -19px #000;
+  box-shadow: $lightShadow
 }
 
 .xroadsLogo {

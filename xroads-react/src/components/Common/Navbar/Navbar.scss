@@ -36,7 +36,7 @@
       /*Styles text*/
       font-size: $font-size;
       font-weight: 400;
-      color: white;
+      color: black;
     }
 
     button:hover {
@@ -45,8 +45,18 @@
   }
 
   .logo-svg {
-    height:40px;
-    padding: 50px;
+    height:35px;
+    padding-left: 50px;
+    padding-right: 15px;
+  }
+
+  .school-name {
+    color:black;
+    vertical-align:top;
+    font-size:46px;
+    font-family:"Space Grotesk";
+    color: #444;
+    font-weight: 400;
   }
 
 }

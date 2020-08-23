@@ -5,9 +5,10 @@ $redHover: #b92133;
 $navbarColor: white;
 $greyBackground: aliceblue;
 
-$greyOutline: #FF4F3B;
+$greyOutline: #FF9260;
 $thinOutline: solid $greyOutline 3px;
-$lightShadow: 6px 6px 18px -19px #000;
+$lightShadow: 0 4px 8px rgba(0,0,0,0.07), 0 4px 8px rgba(0,0,0,0.10);
+$darkShadow: 0 6px 10px rgba(0,0,0,0.12), 0 6px 10px rgba(0,0,0,0.18);
 
 $cardRoundBig: 20px;
 $cardRoundSmall: 10px;
