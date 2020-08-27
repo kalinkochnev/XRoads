@@ -12,9 +12,7 @@
   right: 0px;
   overflow: hidden;
   /*Styling of background and text*/
-  background-color: $navbarColor;
-  border-bottom:$thinOutline;
-  box-shadow: $lightShadow;
+  background-color: $redDefault;
   color: white;
 
   /*Center items vertically in a row with elements at start, end and center*/
@@ -43,10 +41,5 @@
       background-color: $redHover;
     }
   }
-
-  .logo-svg {
-    height:40px;
-    padding: 50px;
-  }
-
 }
+

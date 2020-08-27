@@ -13,7 +13,7 @@ class Navbar extends React.Component {
     return (
       <div class="navbar-simple">
         <div class="xroadsLogo">
-          <img class="logo-svg" src={require('../icons/logo-color.svg')}></img>
+          <h1>xroads</h1>
         </div>
         <div className="navbar-buttons">
           <button>logout</button>
