@@ -68,13 +68,15 @@ $errorBoxTopPadding: 6px;
 }
 
 .first-field {
-  border-radius: $authFormBorderRadius $authFormBorderRadius 0px 0px;
+  border-top-left-radius: $authFormBorderRadius;
+  border-top-right-radius: $authFormBorderRadius;
 }
 
 .last-field {
   /*Sets the border styling of the last field. For whatever reason it only works with !important*/
   border-style: solid !important;
-  border-radius: 0px 0px $authFormBorderRadius $authFormBorderRadius;
+  border-bottom-left-radius: $authFormBorderRadius;
+  border-bottom-right-radius: $authFormBorderRadius;
   margin-bottom: $submitSpacing;
 }
 
