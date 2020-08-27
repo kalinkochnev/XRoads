@@ -14,7 +14,6 @@ class Navbar extends React.Component {
       <div class="navbar-simple">
         <div class="xroadsLogo">
           <img class="logo-svg" src={require('../icons/logo-color.svg')}></img>
-          <span class="school-name">niskayuna</span>
         </div>
         <div className="navbar-buttons">
           <button>logout</button>
