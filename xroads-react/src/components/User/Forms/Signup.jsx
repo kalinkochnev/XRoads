@@ -3,18 +3,9 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import "./AuthForm.scss";
 import { signup } from "../../../service/xroads-api";
+import {showOneError, defaultFail, displayFormHelp} from "./helper"
 
-
-const SignupForm = ({ addAlert }) => {
-  function showOneError(formik) {
-    let touched = Object.keys(formik.touched);
-    for (var t_field of touched) {
-      let error = formik.errors[t_field];
-      if (error) {
-        return <div class="error-box"><p>{error}</p></div>;
-      }
-    }
-  }
+const SignupForm = ({ setAlert }) => {
 
   return (
     <Formik
@@ -48,19 +39,15 @@ const SignupForm = ({ addAlert }) => {
       onSubmit={async (values, { setSubmitting, setFieldError }) => {
         // TODO send request to the server
         let response = await signup(values);
-        if (response.ok) {
-          addAlert("success", "You signed up successfully! Check your email for confirmation!", true)
-        } else {
-          let body = await response.json();
-          if (Object.keys(body).includes("non_field_errors")) {
-            addAlert("warning", body.non_field_errors[0], true);
-          }
-          for (var field of Object.keys(body)) {
-            if (Object.keys(values).includes(field)) {
-              setFieldError(field, body[field][0])
-            }
-          }
+        function successCallback(response, functions, data) {
+          functions.setAlert("success", "You signed up successfully! Please check your email for confirmation", false);
         }
+
+        let funcs = {
+          'setAlert': setAlert, 'setSubmitting': setSubmitting, 'setFieldError': setFieldError
+        }
+        displayFormHelp(response, { 'values': values }, funcs, successCallback, defaultFail)
+
 
         setSubmitting(false);
       }}

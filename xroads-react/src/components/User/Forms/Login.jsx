@@ -57,6 +57,7 @@ const LoginForm = ({ addAlert })  => {
             }
           }
         }
+        displayFormHelp(response, { 'values': values }, funcs, successCallback, defaultFail)
 
         setSubmitting(false);
       }}

@@ -38,8 +38,8 @@ def test_norm_user_creation(db, setup_user):
 def test_create_superuser(db):
     User = get_user_model()
     admin_user = User.objects.create_superuser(
-        email='super@user.com', password='foo')
-    assert admin_user.email == 'super@user.com'
+        email='super10@user.com', password='foo')
+    assert admin_user.email == 'super10@user.com'
     assert admin_user.is_active == True
     assert admin_user.is_staff == True
     assert admin_user.is_superuser == True
@@ -50,7 +50,7 @@ def test_create_superuser(db):
     # tests that if is_superuser=False that it raises an error
     with pytest.raises(ValueError):
         User.objects.create_superuser(
-            email='super@user.com', password='foo', is_superuser=False
+            email='super@user2.com', password='foo', is_superuser=False
         )
 
 
