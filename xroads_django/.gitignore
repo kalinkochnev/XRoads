@@ -2,4 +2,3 @@ venv/
 htmlcov/*
 test_media/*
 media/*
-fixtures/*

@@ -3,9 +3,27 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import "./AuthForm.scss";
 import { login } from "../../../service/xroads-api";
-import { displayFormHelp, defaultFail, defaultOk, showOneError } from './helper';
+import { useCookies } from "react-cookie";
+import { useHistory } from 'react-router-dom';
 
-const LoginForm = ({ setAlert }) => {
+
+
+const LoginForm = ({ addAlert })  => {
+
+  let history = useHistory();
+
+  const [cookies, setCookie] = useCookies(['xroads-jwt-token']);
+
+  function showOneError(formik) {
+    let touched = Object.keys(formik.touched);
+    for (var t_field of touched) {
+      let error = formik.errors[t_field];
+      if (error) {
+        return <div className="error-box">{error}</div>;
+      }
+    }
+  }
+
   return (
     <Formik
       initialValues={{
@@ -20,13 +38,24 @@ const LoginForm = ({ setAlert }) => {
       })}
       onSubmit={async (values, { setSubmitting, setFieldError }) => {
         let response = await login(values);
-
-        function successCallback(response, functions, data) {
-          functions.setAlert("success", "You logged in successfully!", false);
-        }
-
-        let funcs = {
-          'setAlert': setAlert, 'setSubmitting': setSubmitting, 'setFieldError': setFieldError
+        if (response.ok) {
+          addAlert("success", "You logged in successfully!", true);
+          response.json().then( jwt => {
+            console.log("received token ", jwt);
+            setCookie("xroads-token", jwt, { path: "/"});
+            console.log("Redirecting to clubs");
+            history.push('/clubs');
+          });
+        } else {
+          let body = await response.json();
+          if (Object.keys(body).includes("non_field_errors")) {
+            addAlert("warning", body.non_field_errors[0], true);
+          }
+          for (var field of Object.keys(body)) {
+            if (Object.keys(values).includes(field)) {
+              setFieldError(field, body[field][0])
+            }
+          }
         }
         displayFormHelp(response, { 'values': values }, funcs, successCallback, defaultFail)
 
@@ -34,18 +63,18 @@ const LoginForm = ({ setAlert }) => {
       }}
     >
       {(formik) => (
-        <div class="accountLayout">
+        <div className="accountLayout">
           <form onSubmit={formik.handleSubmit} className="accountForm">
-            <div class="fields">
+            <div className="fields">
               <input
-                class="first-field"
+                className="first-field"
                 type="email"
                 placeholder="Email address"
                 {...formik.getFieldProps("email")}
               />
 
               <input
-                class="last-field"
+                className="last-field"
                 type="password"
                 placeholder="Password"
                 {...formik.getFieldProps("password")}

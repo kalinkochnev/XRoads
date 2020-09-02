@@ -1,5 +1,6 @@
 import InvalidKeysProvided from '../utils/exceptions';
 import {isEqual} from '../utils/arrays';
+import { getCookie, Cookies } from 'react-cookie'; 
 
 // To have keyworded args use this format:   :keyword_arg
 const endpoint_templates = {
@@ -46,9 +47,9 @@ function getUrl(urlName, urlArgs) {
  */
 function generateFetchConfig(method, body = null, authorize = true) {
     const upCasedMethod = method.toUpperCase();
-    // const token = Cookies.get('xroads-token');
 
-    const token = process.env.REACT_APP_XROADS_TEMP_TOKEN;
+
+    
     let config = {
         method: upCasedMethod,
         headers: {
@@ -59,7 +60,10 @@ function generateFetchConfig(method, body = null, authorize = true) {
     };
 
     if (authorize) {
-        config.headers['Authorization'] = `Token ${token}`;
+        const cookies = new Cookies()    
+        // const token = process.env.REACT_APP_XROADS_TEMP_TOKEN;
+        const token = cookies.get("xroads-token").access_token;
+        config.headers['Authorization'] = `Bearer ${token}`;
     }
 
     if (['POST', 'PUT'].includes(upCasedMethod)) {

@@ -1,8 +1,10 @@
 from rest_framework import serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
-from XroadsAPI.models import District
+from django.conf import settings
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework import exceptions
+from rest_framework.authentication import CSRFCheck
+from dj_rest_auth.jwt_auth import JWTCookieAuthentication
 
 class CustomRegister(RegisterSerializer):
     first_name = serializers.CharField(write_only=True)
@@ -33,18 +35,32 @@ class CustomRegister(RegisterSerializer):
         }
 
 
+"""
+class CustomCookieAuth(JWTCookieAuthentication):
+    
+    An authentication plugin that hopefully authenticates requests through a JSON web
+    token provided in a request cookie (and through the header as normal, with a
+    preference to the header).
+    
 
+    def authenticate(self, request):
+        cookie_name = getattr(settings, 'JWT_AUTH_COOKIE', None)
+        header = self.get_header(request)
+        if header is None:
+            if cookie_name:
+                raw_token = request.COOKIES.get(cookie_name)
+                if getattr(settings, 'JWT_AUTH_COOKIE_ENFORCE_CSRF_ON_UNAUTHENTICATED', False): #True at your own risk 
+                    self.enforce_csrf(request)
+                elif raw_token is not None and getattr(settings, 'JWT_AUTH_COOKIE_USE_CSRF', False):
+                    self.enforce_csrf(request)
+            else:
+                return None
+        else:
+            raw_token = self.get_raw_token(header)
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
+        if raw_token is None:
+            return None
 
-        # Add custom claims
-        token['name'] = user.name
-        # ...
-
-        return token
-
-class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
+        validated_token = self.get_validated_token(raw_token)
+        return self.get_user(validated_token), validated_token
+"""
