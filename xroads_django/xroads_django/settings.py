@@ -117,7 +117,7 @@ WSGI_APPLICATION = 'xroads_django.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'xroadsdb',
         'USER': 'djangouser',
         'PASSWORD': 'PTUvEj9Bh9P2',
