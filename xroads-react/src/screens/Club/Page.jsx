@@ -14,9 +14,12 @@ const ScreenClubDetail = ({ match: {  params: { clubId }}}) => {
 
   const [club, setClub] = useState({slides:[]});
   useEffect(() => {
-
     // FIXME : replace the hardcoded districtId and schoolId below
-    XroadsAPI.fetchClub(1,1,clubId).then( res => {
+    // with the information from the user's profile
+    let districtId = 1;
+    let schoolId = 1; 
+    
+    XroadsAPI.fetchClub(districtId,schoolId,clubId).then( res => {
       console.log("Received res from club endpoint", res);
       return res.json().then( clubRes => {
         console.log("Parsed out club from endpoint", clubRes);
