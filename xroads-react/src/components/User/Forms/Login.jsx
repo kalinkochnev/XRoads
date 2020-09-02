@@ -5,10 +5,10 @@ import "./AuthForm.scss";
 import { login } from "../../../service/xroads-api";
 import { useCookies } from "react-cookie";
 import { useHistory } from 'react-router-dom';
+import {displayFormHelp, defaultFail} from '../../../components/User/Forms/helper';
 
 
-
-const LoginForm = ({ addAlert })  => {
+const LoginForm = ({ setAlert })  => {
 
   let history = useHistory();
 
@@ -38,25 +38,21 @@ const LoginForm = ({ addAlert })  => {
       })}
       onSubmit={async (values, { setSubmitting, setFieldError }) => {
         let response = await login(values);
-        if (response.ok) {
-          addAlert("success", "You logged in successfully!", true);
+
+        let successCallback = (response, functions, data) => {
+          functions.setAlert("success", "You logged in successfully!", true);
           response.json().then( jwt => {
             console.log("received token ", jwt);
             setCookie("xroads-token", jwt, { path: "/"});
             console.log("Redirecting to clubs");
             history.push('/clubs');
           });
-        } else {
-          let body = await response.json();
-          if (Object.keys(body).includes("non_field_errors")) {
-            addAlert("warning", body.non_field_errors[0], true);
-          }
-          for (var field of Object.keys(body)) {
-            if (Object.keys(values).includes(field)) {
-              setFieldError(field, body[field][0])
-            }
-          }
         }
+
+        let funcs = {
+          'setAlert': setAlert
+        }
+
         displayFormHelp(response, { 'values': values }, funcs, successCallback, defaultFail)
 
         setSubmitting(false);
