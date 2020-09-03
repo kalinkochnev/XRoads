@@ -196,6 +196,10 @@ class TestLoginView:
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         # Testing that error data is still returned
+        
         assert 'email' in response.data.keys()
-        assert ['access_token', 'refresh_token'] not in response.data.keys()
-        assert ['JWT-HEADER-PAYLOAD', 'JWT-SIGNATURE', 'xroads-auth'] not in response.cookies.keys()
+        assert 'access_token' not in response.data.keys()
+        assert 'refresh_token' not in response.data.keys()
+        assert PAYLOAD_COOKIE_NAME not in response.cookies.keys()
+        assert SIGNATURE_COOKIE_NAME not in response.cookies.keys()
+        assert 'xroads-auth' not in response.cookies.keys()

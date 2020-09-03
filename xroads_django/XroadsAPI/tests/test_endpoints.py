@@ -277,7 +277,7 @@ class TestNoAuth:
 
         def test_retrieves_club_list_w_auth(self, role_model_instances, make_request, setup_client_auth, create_club):
             d1, s1, c1 = role_model_instances()
-            for i in range(2, 5):
+            for i in range(c1.id+1, c1.id+4):
                 club = create_club(id=i)
                 s1.add_club(club, save=False)
             s1.make_save(save=True)

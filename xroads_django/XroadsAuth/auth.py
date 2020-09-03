@@ -12,6 +12,9 @@ class CustomCookieAuthentication(JWTCookieAuthentication):
         Header + Payload Cookie: SameSite, Secure 
     """
     def authenticate(self, request):
+        return super().authenticate(request)
+    
+    def authenticate(self, request):
         payload_cookie_name = getattr(settings, 'JWT_PAYLOAD_COOKIE_NAME', None)
         signature_cookie_name = getattr(settings, 'JWT_SIGNATURE_COOKIE_NAME', None)
 
@@ -20,8 +23,10 @@ class CustomCookieAuthentication(JWTCookieAuthentication):
             if payload_cookie_name and signature_cookie_name:
                 header_payload = request.COOKIES.get(payload_cookie_name)
                 signature = request.COOKIES.get(signature_cookie_name)
-
-                raw_token = f"{header_payload}.{signature}"
+                if header_payload is None or signature is None:
+                    raw_token = None
+                else:
+                    raw_token = f"{header_payload}.{signature}"
 
                 if getattr(settings, 'JWT_AUTH_COOKIE_ENFORCE_CSRF_ON_UNAUTHENTICATED', False): #True at your own risk 
                     self.enforce_csrf(request)
@@ -38,5 +43,5 @@ class CustomCookieAuthentication(JWTCookieAuthentication):
 
         validated_token = self.get_validated_token(raw_token)
         return self.get_user(validated_token), validated_token
-
-
+    
+    
