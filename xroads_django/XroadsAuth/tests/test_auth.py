@@ -10,6 +10,10 @@ from rest_framework.views import APIView, Response
 from rest_framework.permissions import IsAuthenticated
 from http.cookies import SimpleCookie
 import datetime
+from django.conf import settings
+
+PAYLOAD_COOKIE_NAME = settings.JWT_PAYLOAD_COOKIE_NAME
+SIGNATURE_COOKIE_NAME = settings.JWT_SIGNATURE_COOKIE_NAME
 
 class AuthRequiredViewStub(APIView):
     permission_classes = [IsAuthenticated]
@@ -28,17 +32,16 @@ def setup_auth_cookies(create_test_prof):
         cookies = SimpleCookie()
 
         signature_cookie = 'JWT-SIGNATURE'
-        cookies[signature_cookie] = access_token.split('.')[-1]
-        cookies[signature_cookie]['HttpOnly'] = True
-        cookies[signature_cookie]['SameSite'] = "Strict"
-        cookies[signature_cookie]['Secure'] = True
+        cookies[SIGNATURE_COOKIE_NAME] = access_token.split('.')[-1]
+        cookies[SIGNATURE_COOKIE_NAME]['HttpOnly'] = True
+        cookies[SIGNATURE_COOKIE_NAME]['SameSite'] = "Strict"
+        cookies[SIGNATURE_COOKIE_NAME]['Secure'] = True
 
-        header_payload = 'JWT-HEADER-PAYLOAD'
         # This joins together the header and payload list items into a string
-        cookies[header_payload] = '.'.join(access_token.split('.')[:2])
-        cookies[header_payload]['Secure'] = True
-        cookies[header_payload]['SameSite'] = "Strict"
-        cookies[header_payload]['Max-Age'] = datetime.timedelta(days=7).total_seconds()
+        cookies[PAYLOAD_COOKIE_NAME] = '.'.join(access_token.split('.')[:2])
+        cookies[PAYLOAD_COOKIE_NAME]['Secure'] = True
+        cookies[PAYLOAD_COOKIE_NAME]['SameSite'] = "Strict"
+        cookies[PAYLOAD_COOKIE_NAME]['Max-Age'] = datetime.timedelta(days=7).total_seconds()
 
         return prof, cookies
     return func
@@ -141,9 +144,9 @@ class TestAuthenticatedRequest:
         assert response.status_code == status.HTTP_200_OK
 
 
-    def test_invalid_cookie_auth(self):
+    def test_invalid_cookie_auth(self, setup_auth_cookies):
         prof, cookies = setup_auth_cookies(prof_id=1)
-        cookies['JWT-SIGNATURE'] = 'blahblahblah'
+        cookies[SIGNATURE_COOKIE_NAME] = 'blahblahblah'
 
         factory = APIRequestFactory()
         factory.cookies = cookies
@@ -172,8 +175,8 @@ class TestLoginView:
         response = make_request(client, 'post', path=path, data=data, format='json')
 
         assert response.status_code == status.HTTP_200_OK
-        assert cookies['JWT-HEADER-PAYLOAD'] == response.cookies['JWT-HEADER-PAYLOAD']
-        assert cookies['JWT-SIGNATURE'] == response.cookies['JWT-SIGNATURE']
+        assert cookies[PAYLOAD_COOKIE_NAME] == response.cookies[PAYLOAD_COOKIE_NAME]
+        assert cookies[SIGNATURE_COOKIE_NAME] == response.cookies[SIGNATURE_COOKIE_NAME]
         assert 'xroads-auth' not in response.cookies.keys()
 
     def test_invalid_data_no_cookies(self, make_request, role_model_instances, setup_client_no_auth):
