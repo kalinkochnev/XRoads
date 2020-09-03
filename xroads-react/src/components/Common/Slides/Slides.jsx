@@ -1,5 +1,5 @@
 import React from 'react';
-import letiables from '../Variables.scss';
+import variables from '../Variables.scss';
 import './Slides.scss';
 // import Carousel, { slidesToShowPlugin, fastSwipe } from '@brainhubeu/react-carousel';
 import Carousel, { slidesToShowPlugin } from '@brainhubeu/react-carousel';
@@ -16,27 +16,29 @@ class Slideshow extends React.Component {
     }
     
     render() {
-        let numSlides = (window.innerWidth)/letiables.maxPageWidth.replace('px','');
-        scaleAmount = (window.innerWidth)/letiables.maxPageWidth.replace('px','');
-        let slideshowHeight = letiables.maxPageWidth.replace('px','')/letiables.slideAspectRatio*scaleAmount;
+        let numSlides = (window.innerWidth)/variables.maxPageWidth.replace('px','');
+        scaleAmount = (window.innerWidth)/variables.maxPageWidth.replace('px','');
+        let slideshowHeight = variables.maxPageWidth.replace('px','')/variables.slideAspectRatio*scaleAmount;
 
-        if(window.innerWidth < letiables.maxPageWidth.replace('px','')){
+        if(window.innerWidth < variables.maxPageWidth.replace('px','')){
             numSlides = 1;
         }
         else {
             scaleAmount = 1;
         }
-
+        
         return (
             <div className="slideshow" style={{height: slideshowHeight}}>
                 <div className="haze left-haze"></div>
                 <div className="haze right-haze"></div>
                 <Carousel
+                onChange={console.log(this.props.value)}
                 plugins={[
                     'centered',
                     'infinite',
                     'arrows',
                     'fastSwipe',
+                    'clickToChange',
                     {
                         resolve: slidesToShowPlugin,
                         options: {
@@ -45,8 +47,28 @@ class Slideshow extends React.Component {
                     }
                 ]}   
                 >
-                    {this.props.children}
+                        {this.props.children}
                 </Carousel>
+            </div>
+        );
+    }
+}
+
+class SlideshowFiller extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+        value: null,
+        };
+    }
+    
+    render() {
+        let slideshowHeight = variables.maxPageWidth.replace('px','')/variables.slideAspectRatio*scaleAmount;
+        return (
+            <div className="slideshow" style={{height: slideshowHeight}}>
+                <div className="haze left-haze"></div>
+                <div className="haze right-haze"></div>
+
             </div>
         );
     }
@@ -125,10 +147,13 @@ class VideoSlide extends React.Component {
 
         }
         
-        let slideWidth = letiables.maxPageWidth.replace('px','')*scaleAmount;
-        let slideHeight = slideWidth/letiables.slideAspectRatio-65*scaleAmount;
+        let slideWidth = variables.maxPageWidth.replace('px','')*scaleAmount;
+        let slideHeight = slideWidth/variables.slideAspectRatio*scaleAmount;
 
-        console.log(slideHeight);
+        if(this.props.caption.length > 0){
+            slideHeight -= 65;
+        }
+
         return (
         <div className="slide video-slide">
             <iframe title="slideshow-iframe" width={slideWidth} height={slideHeight} src={getEmbed(this.props.videoURL)} frameBorder="0" allow="encrypted-media; fullscreen;" allowFullScreen></iframe>
@@ -140,4 +165,4 @@ class VideoSlide extends React.Component {
     }
 }
 
-export {Slideshow, TextSlide, ImageSlide, VideoSlide};
+export {Slideshow, SlideshowFiller, TextSlide, ImageSlide, VideoSlide};
