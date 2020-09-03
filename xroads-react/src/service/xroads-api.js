@@ -1,6 +1,6 @@
 import InvalidKeysProvided from '../utils/exceptions';
 import {isEqual} from '../utils/arrays';
-import { getCookie, Cookies } from 'react-cookie'; 
+import { Cookies } from 'react-cookie';
 
 // To have keyworded args use this format:   :keyword_arg
 const endpoint_templates = {
@@ -92,7 +92,11 @@ export function signup(formData) {
     return sendRequest('signup', {}, 'POST', formData, false);
 }
 
+
+
 export function login(formData) {
+    
+
     let requiredKeys = ['email', 'password']
     if (!isEqual(Object.keys(formData), requiredKeys)) {
         throw InvalidKeysProvided('The login form did not have the right values')
