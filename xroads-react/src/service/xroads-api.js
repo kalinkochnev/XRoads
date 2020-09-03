@@ -1,6 +1,7 @@
 import InvalidKeysProvided from '../utils/exceptions';
 import {isEqual} from '../utils/arrays';
 import { Cookies } from 'react-cookie';
+import { Redirect } from 'react-router-dom';
 
 // To have keyworded args use this format:   :keyword_arg
 const endpoint_templates = {
@@ -92,11 +93,14 @@ export function signup(formData) {
     return sendRequest('signup', {}, 'POST', formData, false);
 }
 
-
+export function removeAuthCookies() {
+    let cookies = new Cookies();
+    cookies.remove('JWT-SIGNATURE');
+    cookies.remove('JWT-HEADER-PAYLOAD');
+}
 
 export function login(formData) {
-    
-
+    removeAuthCookies();
     let requiredKeys = ['email', 'password']
     if (!isEqual(Object.keys(formData), requiredKeys)) {
         throw InvalidKeysProvided('The login form did not have the right values')
