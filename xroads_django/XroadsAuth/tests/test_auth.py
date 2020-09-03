@@ -156,7 +156,43 @@ class TestAuthenticatedRequest:
 
 class TestLoginView:
     def test_valid_data_cookies_set(self, setup_auth_cookies, make_request, role_model_instances, setup_client_no_auth):
-        pass
+        prof = Profile.create_profile("test@niskyschools.org", "password123", 'a', 'b', verified=True)
+        prof, cookies = setup_auth_cookies(prof=prof)
 
-    def test_invalid_data_no_cookies(self):
-        pass
+        d1, s1, c1 = role_model_instances()
+        d1.add_email_domain('niskyschools.org')
+        client = setup_client_no_auth
+
+        data = {
+            'email': 'test@niskyschools.org',
+            'password': 'password123',
+        }
+
+        path = reverse('rest_login')
+        response = make_request(client, 'post', path=path, data=data, format='json')
+
+        assert response.status_code == status.HTTP_200_OK
+        assert cookies['JWT-HEADER-PAYLOAD'] == response.cookies['JWT-HEADER-PAYLOAD']
+        assert cookies['JWT-SIGNATURE'] == response.cookies['JWT-SIGNATURE']
+        assert 'xroads-auth' not in response.cookies.keys()
+
+    def test_invalid_data_no_cookies(self, make_request, role_model_instances, setup_client_no_auth):
+        prof = Profile.create_profile("test@niskyschools.org", "password123", 'a', 'b', verified=True)
+
+        d1, s1, c1 = role_model_instances()
+        d1.add_email_domain('niskyschools.org')
+        client = setup_client_no_auth
+
+        data = {
+            'email': 'bademail',
+            'password': 'password123',
+        }
+
+        path = reverse('rest_login')
+        response = make_request(client, 'post', path=path, data=data, format='json')
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        # Testing that error data is still returned
+        assert 'email' in response.data.keys()
+        assert ['access_token', 'refresh_token'] not in response.data.keys()
+        assert ['JWT-HEADER-PAYLOAD', 'JWT-SIGNATURE', 'xroads-auth'] not in response.cookies.keys()
