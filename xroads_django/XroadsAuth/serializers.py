@@ -13,6 +13,19 @@ class CustomRegister(RegisterSerializer):
     def custom_signup(self, request, user):
         pass
 
+    # def validate_email(self, email):
+    #     valid_email = super().validate_email(email)
+
+    #     return valid_email
+
+    def validate(self, data):
+        is_valid = super().validate(data)
+
+        if (District.match_district(data['email']) is None):
+            raise serializers.ValidationError('Your district doesn\'t use xroads :(  Ask them to contact us!')
+        
+        return is_valid
+
     def get_cleaned_data(self):
         return {
             'password1': self.validated_data.get('password1', ''),

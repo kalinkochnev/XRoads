@@ -14,22 +14,6 @@ from collections import OrderedDict
 
 
 @pytest.fixture
-def setup_client_no_auth(create_test_prof):
-    profile = create_test_prof(num=1)
-    client = APIClient()
-
-    return profile, client
-
-
-@pytest.fixture
-def setup_client_auth(setup_client_no_auth):
-    profile, client = setup_client_no_auth
-    client.force_authenticate(user=profile)
-
-    return profile, client
-
-
-@pytest.fixture
 def create_client_roles(create_test_prof):
     def create(prof_id, role_objs, is_auth=True, perms=['__all__']):
         prof = create_test_prof(num=prof_id)
@@ -43,21 +27,6 @@ def create_client_roles(create_test_prof):
         return prof, role, client
     return create
 
-@pytest.fixture
-def make_request():
-    def make(client, method, *args, **kwargs):
-        method_map = {
-            'get': client.get,
-            'post': client.post,
-            'put': client.put,
-            'patch': client.patch, 
-            'delete': client.delete,
-            'head': client.head,
-            'options': client.options,
-            'trace': client.trace,
-        }
-        return method_map[method](*args, **kwargs)
-    return make
 
 class TestAdmin:
 
@@ -66,7 +35,8 @@ class TestAdmin:
         def path_other_user(self, create_test_prof):
             other_prof = create_test_prof(num=1)
             # DANGER WARNING!!!! PERIODS SCREWED UP THE REGEX FOR THE URL MATCHER
-            path = reverse('api:admin-user-detail', kwargs={'pk': other_prof.pk})
+            path = reverse('api:admin-user-detail',
+                           kwargs={'pk': other_prof.pk})
             return other_prof, path
 
         def test_get_user_no_login(self, path_other_user):
@@ -82,10 +52,11 @@ class TestAdmin:
             other_prof, path = path_other_user
             other_prof.join_school(s1)
 
-            district_admin, d1_admin_role, d1_client = create_client_roles(2, [d1])
-            
+            district_admin, d1_admin_role, d1_client = create_client_roles(2, [
+                                                                           d1])
+
             school_admin, s1_admin_role, s1_client = create_client_roles(3, [
-                                                                        d1, s1])
+                d1, s1])
             club_editor, c1_admin_role, c1_client = create_client_roles(4, [
                                                                         d1, s1, c1])
 
@@ -100,12 +71,13 @@ class TestAdmin:
             response3: Response = c1_client.get(path, format='json')
             assert response3.status_code == status.HTTP_403_FORBIDDEN
 
-
         def test_user_doesnt_exist(self, role_model_instances, path_other_user, create_client_roles):
             d1, s1, c1 = role_model_instances()
-            district_admin, d1_admin_role, d1_client = create_client_roles(2, [d1])
+            district_admin, d1_admin_role, d1_client = create_client_roles(2, [
+                                                                           d1])
 
-            path = reverse('api:admin-user-detail', args={'lookup': 'kalin.kochnev@gmail.com'})
+            path = reverse('api:admin-user-detail',
+                           args={'lookup': 'kalin.kochnev@gmail.com'})
             response: Response = d1_client.get(path, format='json')
 
             assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -123,10 +95,6 @@ class TestAdmin:
                 return prof, client
             return setup
 
-        @pytest.fixture
-        def prof_wo_perm(self, setup_client_no_auth):
-            return prof, client
-
         def valid_retrieve(self, client, district):
             path = reverse(self.retrieve_url_name, kwargs={'pk': district.pk})
             return client.get(path, format='json')
@@ -137,7 +105,7 @@ class TestAdmin:
 
         def test_no_login_retrieve(self, role_model_instances, setup_client_no_auth):
             d1, s1, c1 = role_model_instances()
-            user, client = setup_client_no_auth
+            client = setup_client_no_auth
             response = self.valid_retrieve(client, d1)
 
             assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -148,25 +116,24 @@ class TestAdmin:
             profile, client = prof_w_perm(d1)
             path = reverse(self.retrieve_url_name, kwargs={'pk': d1.pk})
             response = make_request(client, method, path=path, format='json')
-            
+
             assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
-        
+
         @pytest.mark.parametrize("method", ['post', 'delete', 'trace'])
         def test_methods_disabled_list(self, method, make_request, prof_w_perm, role_model_instances):
             d1, s1, c1 = role_model_instances()
             user, client = prof_w_perm(d1)
             path = reverse(self.list_url_name)
             response = make_request(client, method, path=path, format='json')
-            
-            assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
+            assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
         def test_retrieve_data(self, role_model_instances, prof_w_perm, make_request):
             d1, s1, c1 = role_model_instances()
             user, client = prof_w_perm(d1)
             path = reverse(self.retrieve_url_name, kwargs={'pk': d1.pk})
             response = make_request(client, 'get', path=path, format='json')
-            
+
             expected_data = DistrictSerializer(d1).data
             assert response.data == expected_data
 
@@ -177,7 +144,7 @@ class TestAdmin:
             user, client = prof_w_perm(d1)
             path = reverse(self.list_url_name)
             response = make_request(client, 'get', path=path, format='json')
-            
+
             expected_data = DistrictSerializer([d1, d2], many=True).data
 
             assert response.data == expected_data
@@ -187,7 +154,7 @@ class TestAdmin:
             path = reverse(self.retrieve_url_name, args={'pk': 1})
             response = make_request(client, 'get', path=path, format='json')
             assert response.status_code == status.HTTP_404_NOT_FOUND
-            
+
     class TestSchoolViewset:
         # GET and LIST cannot be easily tested because the img url is different since the response is from a view
         retrieve_url_name = 'api:admin-school-detail'
@@ -202,21 +169,19 @@ class TestAdmin:
                 return prof, client
             return setup
 
-        @pytest.fixture
-        def prof_wo_perm(self, setup_client_no_auth):
-            return prof, client
-
         def valid_retrieve(self, client, school):
-            path = reverse(self.retrieve_url_name, kwargs={'district_pk': school.district.id, 'pk': school.pk})
+            path = reverse(self.retrieve_url_name, kwargs={
+                           'district_pk': school.district.id, 'pk': school.pk})
             return client.get(path, format='json')
 
         def valid_list(self, client, school):
-            path = reverse(self.list_url_name, kwargs={'district_pk': school.district.id, 'pk': school.pk})
+            path = reverse(self.list_url_name, kwargs={
+                           'district_pk': school.district.id, 'pk': school.pk})
             return client.get(path, format='json')
 
         def test_no_login_retrieve(self, role_model_instances, setup_client_no_auth):
             d1, s1, c1 = role_model_instances()
-            user, client = setup_client_no_auth
+            client = setup_client_no_auth
             response = self.valid_retrieve(client, s1)
 
             assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -225,28 +190,31 @@ class TestAdmin:
         def test_methods_disabled_retrieve(self, method, make_request, prof_w_perm, role_model_instances):
             d1, s1, c1 = role_model_instances()
             profile, client = prof_w_perm(s1)
-            path = reverse(self.retrieve_url_name, kwargs={'district_pk': s1.district.id, 'pk': s1.pk})
+            path = reverse(self.retrieve_url_name, kwargs={
+                           'district_pk': s1.district.id, 'pk': s1.pk})
             response = make_request(client, method, path=path, format='json')
-            
+
             assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
-        
+
         @pytest.mark.parametrize("method", ['post', 'delete', 'trace'])
         def test_methods_disabled_list(self, method, make_request, prof_w_perm, role_model_instances):
             d1, s1, c1 = role_model_instances()
             user, client = prof_w_perm(s1)
-            path = reverse(self.list_url_name, kwargs={'district_pk': s1.district.id})
+            path = reverse(self.list_url_name, kwargs={
+                           'district_pk': s1.district.id})
             response = make_request(client, method, path=path, format='json')
-            
+
             assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
         def test_does_not_exist(self, setup_client_auth, make_request):
             d1 = District.objects.create(name='d1')
 
             user, client = setup_client_auth
-            path = reverse(self.retrieve_url_name, args={'district_pk': d1.id, 'pk': 1})
+            path = reverse(self.retrieve_url_name, args={
+                           'district_pk': d1.id, 'pk': 1})
             response = make_request(client, 'get', path=path, format='json')
             assert response.status_code == status.HTTP_404_NOT_FOUND
-    
+
     class TestClubViewset:
         # GET and LIST cannot be easily tested because the img field screws things up
         retrieve_url_name = 'api:admin-club-detail'
@@ -260,17 +228,14 @@ class TestAdmin:
                 return prof, client
             return setup
 
-        @pytest.fixture
-        def prof_wo_perm(self, setup_client_no_auth):
-            return prof, client
-
         def valid_retrieve(self, client, club):
-            path = reverse(self.retrieve_url_name, kwargs={'district_pk': club.district.id, 'school_pk': club.school.pk,'pk': club.pk})
+            path = reverse(self.retrieve_url_name, kwargs={
+                           'district_pk': club.district.id, 'school_pk': club.school.pk, 'pk': club.pk})
             return client.get(path, format='json')
 
         def test_no_login_retrieve(self, role_model_instances, setup_client_no_auth):
             d1, s1, c1 = role_model_instances()
-            user, client = setup_client_no_auth
+            client = setup_client_no_auth
             response = self.valid_retrieve(client, c1)
 
             assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -279,9 +244,10 @@ class TestAdmin:
         def test_methods_disabled_retrieve(self, method, make_request, prof_w_perm, role_model_instances):
             d1, s1, c1 = role_model_instances()
             profile, client = prof_w_perm(s1)
-            path = reverse(self.retrieve_url_name, kwargs={'district_pk': c1.district.id, 'school_pk': c1.school.pk,'pk': c1.pk})
+            path = reverse(self.retrieve_url_name, kwargs={
+                           'district_pk': c1.district.id, 'school_pk': c1.school.pk, 'pk': c1.pk})
             response = make_request(client, method, path=path, format='json')
-            
+
             assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
         def test_does_not_exist(self, setup_client_auth, make_request, role_model_instances):
@@ -289,23 +255,26 @@ class TestAdmin:
             c1.delete()
 
             user, client = setup_client_auth
-            path = reverse(self.retrieve_url_name, args={'district_pk': c1.district.id, 'school_pk': c1.school.pk, 'pk':1})
+            path = reverse(self.retrieve_url_name, args={
+                           'district_pk': c1.district.id, 'school_pk': c1.school.pk, 'pk': 1})
             response = make_request(client, 'get', path=path, format='json')
             assert response.status_code == status.HTTP_404_NOT_FOUND
-    
-     
+
+
 class TestNoAuth:
     class TestClubViewset:
         club_path_name = "api:club-list"
 
         def test_retrieves_club_list_no_auth(self, role_model_instances, make_request, setup_client_no_auth):
             d1, s1, c1 = role_model_instances()
-            profile, client = setup_client_no_auth
-            path = reverse(self.club_path_name, kwargs={'district_pk': d1.id, 'school_pk': s1.id})
-            response: Response = make_request(client, 'get', path=path, format='json')
+            client = setup_client_no_auth
+            path = reverse(self.club_path_name, kwargs={
+                           'district_pk': d1.id, 'school_pk': s1.id})
+            response: Response = make_request(
+                client, 'get', path=path, format='json')
 
             assert response.status_code == status.HTTP_401_UNAUTHORIZED
-        
+
         def test_retrieves_club_list_w_auth(self, role_model_instances, make_request, setup_client_auth, create_club):
             d1, s1, c1 = role_model_instances()
             for i in range(2, 5):
@@ -314,9 +283,11 @@ class TestNoAuth:
             s1.make_save(save=True)
 
             profile, client = setup_client_auth
-            path = reverse(self.club_path_name, kwargs={'district_pk': d1.id, 'school_pk': s1.id})
-            response: Response = make_request(client, 'get', path=path, format='json')
+            path = reverse(self.club_path_name, kwargs={
+                           'district_pk': d1.id, 'school_pk': s1.id})
+            response: Response = make_request(
+                client, 'get', path=path, format='json')
 
             assert response.status_code == status.HTTP_200_OK
-            assert response.data == BasicClubInfoSerial(s1.clubs, many=True).data
-
+            assert response.data == BasicClubInfoSerial(
+                s1.clubs, many=True).data
