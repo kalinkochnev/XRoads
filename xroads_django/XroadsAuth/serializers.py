@@ -5,6 +5,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import exceptions
 from rest_framework.authentication import CSRFCheck
 from dj_rest_auth.jwt_auth import JWTCookieAuthentication
+from XroadsAPI.models import District
 
 class CustomRegister(RegisterSerializer):
     first_name = serializers.CharField(write_only=True)
