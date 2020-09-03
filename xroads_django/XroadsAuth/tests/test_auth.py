@@ -40,12 +40,16 @@ def setup_auth_cookies(create_test_prof):
         cookies[SIGNATURE_COOKIE_NAME] = access_token.split('.')[-1]
         cookies[SIGNATURE_COOKIE_NAME]['HttpOnly'] = True
         cookies[SIGNATURE_COOKIE_NAME]['SameSite'] = "Strict"
-        cookies[SIGNATURE_COOKIE_NAME]['Secure'] = True
+        
+        # FIXME make secure = to TRUE in production
+        cookies[SIGNATURE_COOKIE_NAME]['Secure'] = False
         cookies[SIGNATURE_COOKIE_NAME]['Path'] = '/'
 
         # This joins together the header and payload list items into a string
         cookies[PAYLOAD_COOKIE_NAME] = '.'.join(access_token.split('.')[:2])
-        cookies[PAYLOAD_COOKIE_NAME]['Secure'] = True
+
+        # FIXME make secure = to TRUE in production
+        cookies[PAYLOAD_COOKIE_NAME]['Secure'] = False
         cookies[PAYLOAD_COOKIE_NAME]['SameSite'] = "Strict"
         expire_time = (datetime.now(tz=timezone.utc) + settings.ACCESS_TOKEN_LIFETIME)
         cookies[PAYLOAD_COOKIE_NAME]['Expires'] = expire_time.strftime("%a, %d %b %Y %H:%M:%S GMT")

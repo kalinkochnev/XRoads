@@ -30,19 +30,21 @@ class CustomLoginView(LoginView):
             payload_cookie_name,
             header_payload_key,
             expires=expiration,
-            secure=True,
+            secure=False,
             samesite='Strict'
         )
-        # TODO check if the cookie needs to be samesite
+        # FIXME make secure = to TRUE in production
 
         # Creates Signature cookie name (permanent cookie)
         response.set_cookie(
             signature_cookie_name,
             signature_key,
-            secure=True,
+            secure=False,
             httponly=True,
             samesite='Strict'
         )
+                # FIXME make secure = to TRUE in production
+
 
     def get_response(self):
         serializer_class = self.get_response_serializer()

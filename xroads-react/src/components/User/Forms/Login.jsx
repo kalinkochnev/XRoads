@@ -12,7 +12,7 @@ const LoginForm = ({ setAlert })  => {
 
   let history = useHistory();
 
-  const [cookies, setCookie] = useCookies(['xroads-jwt-token']);
+  // const [cookies, setCookie] = useCookies(['xroads-jwt-token']);
 
   function showOneError(formik) {
     let touched = Object.keys(formik.touched);
@@ -41,12 +41,12 @@ const LoginForm = ({ setAlert })  => {
 
         let successCallback = (response, functions, data) => {
           functions.setAlert("success", "You logged in successfully!", true);
-          response.json().then( jwt => {
-            console.log("received token ", jwt);
-            setCookie("xroads-token", jwt, { path: "/"});
-            console.log("Redirecting to clubs");
-            history.push('/clubs');
-          });
+          // response.json().then( jwt => {
+          //   console.log("received token ", jwt);
+          //   setCookie("xroads-token", jwt, { path: "/"});
+          //   console.log("Redirecting to clubs");
+          //   history.push('/clubs');
+          // });
         }
 
         let funcs = {
