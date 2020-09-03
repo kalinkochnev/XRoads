@@ -3,16 +3,15 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import "./AuthForm.scss";
 import { login } from "../../../service/xroads-api";
-import { useCookies } from "react-cookie";
 import { useHistory } from 'react-router-dom';
-import {displayFormHelp, defaultFail} from '../../../components/User/Forms/helper';
+import { displayFormHelp, defaultFail} from '../../../components/User/Forms/helper';
+import { CSRFToken} from '../csrf';
 
 
 const LoginForm = ({ setAlert })  => {
 
   let history = useHistory();
 
-  const [cookies, setCookie] = useCookies(['xroads-jwt-token']);
 
   function showOneError(formik) {
     let touched = Object.keys(formik.touched);
@@ -41,12 +40,7 @@ const LoginForm = ({ setAlert })  => {
 
         let successCallback = (response, functions, data) => {
           functions.setAlert("success", "You logged in successfully!", true);
-          response.json().then( jwt => {
-            console.log("received token ", jwt);
-            setCookie("xroads-token", jwt, { path: "/"});
-            console.log("Redirecting to clubs");
-            history.push('/clubs');
-          });
+          history.push('/clubs');
         }
 
         let funcs = {

@@ -1,6 +1,7 @@
 import InvalidKeysProvided from '../utils/exceptions';
 import {isEqual} from '../utils/arrays';
-import { getCookie, Cookies } from 'react-cookie'; 
+import { Cookies } from 'react-cookie';
+import { Redirect } from 'react-router-dom';
 
 // To have keyworded args use this format:   :keyword_arg
 const endpoint_templates = {
@@ -59,12 +60,12 @@ function generateFetchConfig(method, body = null, authorize = true) {
         credentials: 'same-origin'
     };
 
-    if (authorize) {
-        const cookies = new Cookies()    
-        // const token = process.env.REACT_APP_XROADS_TEMP_TOKEN;
-        const token = cookies.get("xroads-token").access_token;
-        config.headers['Authorization'] = `Bearer ${token}`;
-    }
+    // if (authorize) {
+    //     const cookies = new Cookies()    
+    //     // const token = process.env.REACT_APP_XROADS_TEMP_TOKEN;
+    //     const token = cookies.get("xroads-token").access_token;
+    //     config.headers['Authorization'] = `Bearer ${token}`;
+    // }
 
     if (['POST', 'PUT'].includes(upCasedMethod)) {
         config.body = JSON.stringify(body);
@@ -92,7 +93,14 @@ export function signup(formData) {
     return sendRequest('signup', {}, 'POST', formData, false);
 }
 
+export function removeAuthCookies() {
+    let cookies = new Cookies();
+    cookies.remove('JWT-SIGNATURE');
+    cookies.remove('JWT-HEADER-PAYLOAD');
+}
+
 export function login(formData) {
+    removeAuthCookies();
     let requiredKeys = ['email', 'password']
     if (!isEqual(Object.keys(formData), requiredKeys)) {
         throw InvalidKeysProvided('The login form did not have the right values')

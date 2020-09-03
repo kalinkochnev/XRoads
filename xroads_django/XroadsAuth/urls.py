@@ -20,6 +20,7 @@ from allauth.account.views import confirm_email
 from . import views
 
 urlpatterns = [
+    path('login/', views.CustomLoginView.as_view(), name='cookie_login'),
     path('', include('dj_rest_auth.urls')),
     path('registration/success/', views.email_confirm_success, name="account_registration_success"),
     re_path(r"^registration/account-confirm-email/(?P<key>[\s\d\w().+-_',:&]+)/$", confirm_email, name="account_confirm_email"),    

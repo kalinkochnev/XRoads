@@ -2,6 +2,63 @@ import pytest
 from django.contrib.auth import get_user_model, authenticate
 from XroadsAPI.models import *
 from XroadsAuth.models import *
+from rest_framework import status
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.reverse import reverse
+from rest_framework.test import APIRequestFactory
+from rest_framework.views import APIView, Response
+from rest_framework.permissions import IsAuthenticated
+from http.cookies import SimpleCookie
+from datetime import timedelta, datetime
+from django.conf import settings
+from django.test import override_settings
+from django.utils import timezone
+
+PAYLOAD_COOKIE_NAME = settings.JWT_PAYLOAD_COOKIE_NAME
+SIGNATURE_COOKIE_NAME = settings.JWT_SIGNATURE_COOKIE_NAME
+
+class AuthRequiredViewStub(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({}, status=200)
+
+
+@pytest.fixture
+@override_settings(ACCESS_TOKEN_LIFETIME=timedelta(days=7))
+def setup_auth_cookies(create_test_prof):
+    @override_settings(ACCESS_TOKEN_LIFETIME=timedelta(days=7))
+    def func(prof_id=None, prof=None, expire_date=settings.ACCESS_TOKEN_LIFETIME):
+        if prof is None:
+            assert prof_id is not None, 'Must include a prof_id if you do not provide a profile'
+            prof = create_test_prof(prof_id)
+        access_token = str(TokenObtainPairSerializer.get_token(prof).access_token)
+
+        cookies = SimpleCookie()
+
+        signature_cookie = 'JWT-SIGNATURE'
+        cookies[SIGNATURE_COOKIE_NAME] = access_token.split('.')[-1]
+        cookies[SIGNATURE_COOKIE_NAME]['HttpOnly'] = True
+        cookies[SIGNATURE_COOKIE_NAME]['SameSite'] = "Strict"
+        
+        # FIXME make secure = to TRUE in production
+        cookies[SIGNATURE_COOKIE_NAME]['Secure'] = False
+        cookies[SIGNATURE_COOKIE_NAME]['Path'] = '/'
+
+        # This joins together the header and payload list items into a string
+        cookies[PAYLOAD_COOKIE_NAME] = '.'.join(access_token.split('.')[:2])
+
+        # FIXME make secure = to TRUE in production
+        cookies[PAYLOAD_COOKIE_NAME]['Secure'] = False
+        cookies[PAYLOAD_COOKIE_NAME]['SameSite'] = "Strict"
+        expire_time = (datetime.now(tz=timezone.utc) + settings.ACCESS_TOKEN_LIFETIME)
+        cookies[PAYLOAD_COOKIE_NAME]['Expires'] = expire_time.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        cookies[PAYLOAD_COOKIE_NAME]['Max-Age'] = int(settings.ACCESS_TOKEN_LIFETIME.total_seconds())
+        cookies[PAYLOAD_COOKIE_NAME]['Path'] = '/'
+
+
+        return prof, cookies
+    return func
 
 class TestRegistration:
     url = "/auth/registration/"
@@ -62,19 +119,104 @@ class TestRegistration:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert 'non_field_errors' in response.data
 
+
+
 class TestAuthenticatedRequest:
-    def test_normal_auth_request(self):
-        pass
+    auth_required_url_name = "api:district-list"
 
-    def test_cookie_auth(self):
-        pass
+    def test_normal_auth_request(self, create_test_prof):
+        factory = APIRequestFactory()
+        view = AuthRequiredViewStub.as_view()
 
-    def test_invalid_cookie_auth(self):
-        pass
+        prof = create_test_prof(1)
+        access_token = str(TokenObtainPairSerializer.get_token(prof).access_token)
+
+        request = factory.get('', **{'HTTP_AUTHORIZATION': f"Bearer {access_token}"})
+        response = view(request)
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_normal_auth_invalid(self, create_test_prof):
+        factory = APIRequestFactory()
+        view = AuthRequiredViewStub.as_view()
+
+        prof = create_test_prof(1)
+
+        request = factory.get('', **{'HTTP_AUTHORIZATION': f"Bearer asdflaskdfjalsdkfj"})
+        response = view(request)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    
+    @override_settings(ACCESS_TOKEN_LIFETIME=timedelta(days=7))
+    def test_cookie_auth(self, setup_auth_cookies):
+        prof, cookies = setup_auth_cookies(prof_id=1)
+
+        factory = APIRequestFactory()
+        factory.cookies = cookies
+        view = AuthRequiredViewStub.as_view()
+
+        request = factory.get('')
+        response = view(request)
+
+        assert response.status_code == status.HTTP_200_OK
+
+    @override_settings(ACCESS_TOKEN_LIFETIME=timedelta(days=7))
+    def test_invalid_cookie_auth(self, setup_auth_cookies):
+        prof, cookies = setup_auth_cookies(prof_id=1)
+        cookies[SIGNATURE_COOKIE_NAME] = 'blahblahblah'
+
+        factory = APIRequestFactory()
+        factory.cookies = cookies
+        view = AuthRequiredViewStub.as_view()
+
+        request = factory.get('')
+        response = view(request)
+        
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 class TestLoginView:
-    def test_valid_data_cookies_set(self):
-        pass
+    @override_settings(ACCESS_TOKEN_LIFETIME=timedelta(days=7))
+    def test_valid_data_cookies_set(self, setup_auth_cookies, make_request, role_model_instances, setup_client_no_auth):
+        prof = Profile.create_profile("test@niskyschools.org", "password123", 'a', 'b', verified=True)
+        prof, cookies = setup_auth_cookies(prof=prof)
 
-    def test_invalid_data_no_cookies(self):
-        pass
+        d1, s1, c1 = role_model_instances()
+        d1.add_email_domain('niskyschools.org')
+        client = setup_client_no_auth
+
+        data = {
+            'email': 'test@niskyschools.org',
+            'password': 'password123',
+        }
+
+        path = reverse('cookie_login')
+        response = make_request(client, 'post', path=path, data=data, format='json')
+
+        assert response.status_code == status.HTTP_200_OK
+        assert cookies[PAYLOAD_COOKIE_NAME]._flags == response.cookies[PAYLOAD_COOKIE_NAME]._flags
+        
+        assert cookies[SIGNATURE_COOKIE_NAME]._flags == response.cookies[SIGNATURE_COOKIE_NAME]._flags
+        assert 'xroads-auth' not in response.cookies.keys()
+
+    def test_invalid_data_no_cookies(self, make_request, role_model_instances, setup_client_no_auth):
+        prof = Profile.create_profile("test@niskyschools.org", "password123", 'a', 'b', verified=True)
+
+        d1, s1, c1 = role_model_instances()
+        d1.add_email_domain('niskyschools.org')
+        client = setup_client_no_auth
+
+        data = {
+            'email': 'bademail',
+            'password': 'password123',
+        }
+
+        path = reverse('cookie_login')
+        response = make_request(client, 'post', path=path, data=data, format='json')
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        # Testing that error data is still returned
+        
+        assert 'email' in response.data.keys()
+        assert 'access_token' not in response.data.keys()
+        assert 'refresh_token' not in response.data.keys()
+        assert PAYLOAD_COOKIE_NAME not in response.cookies.keys()
+        assert SIGNATURE_COOKIE_NAME not in response.cookies.keys()
+        assert 'xroads-auth' not in response.cookies.keys()

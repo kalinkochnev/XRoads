@@ -62,8 +62,8 @@ class Profile(AbstractUser):
             self.save()
 
     @classmethod
-    def create_profile(cls, email, password, first, last, is_anon=False):
-        return cls.objects.create_user(email=email, first_name=first, last_name=last, password=password, is_anon=is_anon)
+    def create_profile(cls, email, password, first, last, is_anon=False, verified=False):
+        return cls.objects.create_user(email=email, first_name=first, last_name=last, password=password, is_anon=is_anon, verified=verified)
 
     def join_school(self, school, save=True):
         self.school = school

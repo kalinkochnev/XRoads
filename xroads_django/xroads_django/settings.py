@@ -61,10 +61,7 @@ INSTALLED_APPS = [
 
 ]
 
-# Needed for dj-rest-auth
-REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'XroadsAuth.serializers.CustomRegister'
-}
+
 SITE_ID = 1
 
 # Need for custom user model allauth
@@ -190,8 +187,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-
+        'XroadsAuth.auth.CustomCookieAuthentication',
+        
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
         # 'rest_framework.authentication.TokenAuthentication'
         # 'rest_framework.authentication.BasicAuthentication',
         # 'rest_framework.authentication.SessionAuthentication', # FIXME make sure to remove this in production
@@ -200,7 +198,16 @@ REST_FRAMEWORK = {
 
 # JWT Token Settings
 REST_USE_JWT = True
-JWT_AUTH_COOKIE = 'xroads-auth'
+JWT_PAYLOAD_COOKIE_NAME = 'JWT-HEADER-PAYLOAD'
+JWT_SIGNATURE_COOKIE_NAME = 'JWT-SIGNATURE'
+
+from datetime import timedelta
+ACCESS_TOKEN_LIFETIME = timedelta(days=7)
+
+# Needed for dj-rest-auth
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'XroadsAuth.serializers.CustomRegister'
+}
 
 SWAGGER_SETTINGS = {
     'USE_SESSION_AUTH': False,

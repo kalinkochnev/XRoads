@@ -19,7 +19,7 @@ class CustomUserManager(BaseUserManager):
         return user
 
     # Create and save a User with the given email and password, automatically generate a tag
-    def create_user(self, email, password, **extra_fields):
+    def create_user(self, email, password, verified=False, **extra_fields):
 
         # tests that the given parameters have values that fall in given constraints
         if not email:
@@ -36,7 +36,8 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
 
         # TEST Probably difficult to test. Used for django allauth
-        EmailAddress.objects.create(user=user, email=user.email, verified=False, primary=True)
+
+        EmailAddress.objects.create(user=user, email=user.email, verified=verified, primary=True)
 
         return user
 
