@@ -140,6 +140,8 @@ class DistrictDomain(models.Model):
     domain = models.CharField(max_length=20, unique=True)
     district = models.ForeignKey('XroadsAPI.District', on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f'{self.district}: {self.domain}'
 class District(models.Model):
     name = models.CharField(max_length=40)
 
@@ -167,3 +169,11 @@ class District(models.Model):
             domain.delete()
         except DistrictDomain.DoesNotExist:
             pass
+
+    @classmethod
+    def match_district(cls, email):
+        domain = email.split('@')[1]
+        try:
+            return DistrictDomain.objects.get(domain=domain).district
+        except DistrictDomain.DoesNotExist:
+            return None

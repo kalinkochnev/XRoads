@@ -34,6 +34,10 @@ class CustomUserManager(BaseUserManager):
         # sets the password using a method on the model (more secure with hashing) and save the changes
         user.set_password(password)
         user.save(using=self._db)
+
+        # TEST Probably difficult to test. Used for django allauth
+        EmailAddress.objects.create(user=user, email=user.email, verified=False, primary=True)
+
         return user
 
     # Create and save a superuser with the given email and password. Is already verified
@@ -54,7 +58,9 @@ class CustomUserManager(BaseUserManager):
         user = self.create_user(email, password, **extra_fields)
 
         # TEST Probably difficult to test. Used for django allauth
-        EmailAddress.objects.create(user=user, email=user.email, verified=True, primary=True)
+        allauth_email = EmailAddress.objects.get(user=user)
+        allauth_email.verified = True
+        allauth_email.save()
 
         return user
 

@@ -12,41 +12,65 @@ class ScreenClubBrowser extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      allClubs: [],
       clubs: [],
+      clubIds: "",
     };
 
-    this.getClubs = this.getClubs.bind(this);
+    this.loadClubs = this.loadClubs.bind(this);
+    this.filterClubs = this.filterClubs.bind(this);
   }
 
   componentDidMount() {
     console.log("ClubBrowser component did mount");
-    this.getClubs()
+    this.loadClubs()
   }
 
-  getClubs() {
+  filterClubs(matchingClubIds) {
+    let matchingClubs = this.state.allClubs;
+    if (matchingClubIds.length > 0) {
+      matchingClubs = this.state.allClubs.filter( (c,i) => matchingClubIds.includes(c.id.toString()) );
+    } else {
+      matchingClubs = [];
+    }
+
+    this.setState({
+      clubs: matchingClubs
+    });
+
+  }
+
+  loadClubs() {
     // FIXME : replace the hardcoded distictId = 1, schoolId below with the actual values
     // FIXME : that should be coming in as parameters in the component
-    XroadsAPI.fetchClubs(1,1).then( res => {
+    let districtId = 1;
+    let schoolId = 1;
+    XroadsAPI.fetchClubs(districtId,schoolId).then( res => {
       console.log("Received res from club endpoint", res);
       return res.json().then( clubs => {
         console.log("Parsed out clubs from endpoint", clubs);
-        this.setState(() => ({
-          clubs: clubs
-        }));
+        // clubIds - this concatenates all clubids that come back into a string
+        this.setState({
+          allClubs : clubs,
+          clubs: clubs, 
+          clubIds : clubs.reduceRight( (c,a) => c.id + a, "")
+        });
       });
     });
     
   }
 
   render() {
+    const clubs = this.state.clubs;
     return (  //TODO: Change the URL to actually work.
+      
       <div>
         <Navbar>xroads</Navbar>
         <div className="body">
-          <SearchBar></SearchBar>
+          <SearchBar key={this.state.clubIds} clubs={clubs} filterClubs={this.filterClubs}></SearchBar>
            <div className="card-container">
             {
-              this.state.clubs.map(club => <ClubCard key={club.id} id={club.id} title={club.name} imageURL={club.main_img} description={club.description} meetTimes={["M","W","S"]}/>)
+              clubs.map(club => <ClubCard key={club.id} id={club.id} title={club.name} imageURL={club.main_img} description={club.description} meetTimes={["M","W","S"]}/>)
             } 
             </div>
         </div>

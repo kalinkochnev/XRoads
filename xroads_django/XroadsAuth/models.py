@@ -43,7 +43,7 @@ class Profile(AbstractUser):
     username = None
 
     school = models.ForeignKey('XroadsAPI.School', on_delete=models.SET_NULL, null=True)
-
+    district = models.ForeignKey('XroadsAPI.District', on_delete=models.SET_NULL, null=True)
 
     # used for making sure the admin login and signup page works correctly
     USERNAME_FIELD = 'email'
@@ -70,20 +70,13 @@ class Profile(AbstractUser):
         self.make_save(save)
 
     # TODO not made
-    def make_editor(self, club):
+    """def make_editor(self, club):
         assert club.school == self.school, "You can't make somebody the editor of a club they aren't in"
-
+"""
     def add_perm(self, perm):
         self.hierarchy_perms.add(perm)
         self.make_save(save=True) 
 
-    def verify(self):
-        email = EmailAddress.objects.get_for_user(self, self.email)
-
-    @property
-    def district(self):
-        domain = self.email.split('@')[1]
-        try:
-            return api_models.DistrictDomain.objects.get(domain=domain).district
-        except api_models.DistrictDomain.DoesNotExist:
-            return None
+    def match_district(self, save=True):
+        self.district = api_models.District.match_district(self.email)
+        self.make_save(save)
