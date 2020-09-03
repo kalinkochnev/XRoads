@@ -4,6 +4,6 @@
 
 source $1/bin/activate
 pip install -r requirements.txt
-pytest --cov=XroadsAPI/ XroadsAPI/tests/ --count=1
+pytest --cov=XroadsAPI/ XroadsAPI/tests/ --count=10
 pytest --cov-append --cov=XroadsAuth/ XroadsAuth/tests/ --count=1
 coverage html --omit="*/test*"

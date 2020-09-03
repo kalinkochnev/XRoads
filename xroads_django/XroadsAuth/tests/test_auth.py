@@ -9,8 +9,10 @@ from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView, Response
 from rest_framework.permissions import IsAuthenticated
 from http.cookies import SimpleCookie
-import datetime
+from datetime import timedelta, datetime
 from django.conf import settings
+from django.test import override_settings
+from django.utils import timezone
 
 PAYLOAD_COOKIE_NAME = settings.JWT_PAYLOAD_COOKIE_NAME
 SIGNATURE_COOKIE_NAME = settings.JWT_SIGNATURE_COOKIE_NAME
@@ -21,9 +23,12 @@ class AuthRequiredViewStub(APIView):
     def get(self, request):
         return Response({}, status=200)
 
+
 @pytest.fixture
+@override_settings(ACCESS_TOKEN_LIFETIME=timedelta(days=7))
 def setup_auth_cookies(create_test_prof):
-    def func(prof_id=None, prof=None):
+    @override_settings(ACCESS_TOKEN_LIFETIME=timedelta(days=7))
+    def func(prof_id=None, prof=None, expire_date=settings.ACCESS_TOKEN_LIFETIME):
         if prof is None:
             assert prof_id is not None, 'Must include a prof_id if you do not provide a profile'
             prof = create_test_prof(prof_id)
@@ -36,12 +41,17 @@ def setup_auth_cookies(create_test_prof):
         cookies[SIGNATURE_COOKIE_NAME]['HttpOnly'] = True
         cookies[SIGNATURE_COOKIE_NAME]['SameSite'] = "Strict"
         cookies[SIGNATURE_COOKIE_NAME]['Secure'] = True
+        cookies[SIGNATURE_COOKIE_NAME]['Path'] = '/'
 
         # This joins together the header and payload list items into a string
         cookies[PAYLOAD_COOKIE_NAME] = '.'.join(access_token.split('.')[:2])
         cookies[PAYLOAD_COOKIE_NAME]['Secure'] = True
         cookies[PAYLOAD_COOKIE_NAME]['SameSite'] = "Strict"
-        cookies[PAYLOAD_COOKIE_NAME]['Max-Age'] = datetime.timedelta(days=7).total_seconds()
+        expire_time = (datetime.now(tz=timezone.utc) + settings.ACCESS_TOKEN_LIFETIME)
+        cookies[PAYLOAD_COOKIE_NAME]['Expires'] = expire_time.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        cookies[PAYLOAD_COOKIE_NAME]['Max-Age'] = int(settings.ACCESS_TOKEN_LIFETIME.total_seconds())
+        cookies[PAYLOAD_COOKIE_NAME]['Path'] = '/'
+
 
         return prof, cookies
     return func
@@ -131,6 +141,7 @@ class TestAuthenticatedRequest:
         response = view(request)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
     
+    @override_settings(ACCESS_TOKEN_LIFETIME=timedelta(days=7))
     def test_cookie_auth(self, setup_auth_cookies):
         prof, cookies = setup_auth_cookies(prof_id=1)
 
@@ -143,7 +154,7 @@ class TestAuthenticatedRequest:
 
         assert response.status_code == status.HTTP_200_OK
 
-
+    @override_settings(ACCESS_TOKEN_LIFETIME=timedelta(days=7))
     def test_invalid_cookie_auth(self, setup_auth_cookies):
         prof, cookies = setup_auth_cookies(prof_id=1)
         cookies[SIGNATURE_COOKIE_NAME] = 'blahblahblah'
@@ -158,6 +169,7 @@ class TestAuthenticatedRequest:
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 class TestLoginView:
+    @override_settings(ACCESS_TOKEN_LIFETIME=timedelta(days=7))
     def test_valid_data_cookies_set(self, setup_auth_cookies, make_request, role_model_instances, setup_client_no_auth):
         prof = Profile.create_profile("test@niskyschools.org", "password123", 'a', 'b', verified=True)
         prof, cookies = setup_auth_cookies(prof=prof)
@@ -171,12 +183,13 @@ class TestLoginView:
             'password': 'password123',
         }
 
-        path = reverse('rest_login')
+        path = reverse('cookie_login')
         response = make_request(client, 'post', path=path, data=data, format='json')
 
         assert response.status_code == status.HTTP_200_OK
-        assert cookies[PAYLOAD_COOKIE_NAME] == response.cookies[PAYLOAD_COOKIE_NAME]
-        assert cookies[SIGNATURE_COOKIE_NAME] == response.cookies[SIGNATURE_COOKIE_NAME]
+        assert cookies[PAYLOAD_COOKIE_NAME]._flags == response.cookies[PAYLOAD_COOKIE_NAME]._flags
+        
+        assert cookies[SIGNATURE_COOKIE_NAME]._flags == response.cookies[SIGNATURE_COOKIE_NAME]._flags
         assert 'xroads-auth' not in response.cookies.keys()
 
     def test_invalid_data_no_cookies(self, make_request, role_model_instances, setup_client_no_auth):
@@ -191,7 +204,7 @@ class TestLoginView:
             'password': 'password123',
         }
 
-        path = reverse('rest_login')
+        path = reverse('cookie_login')
         response = make_request(client, 'post', path=path, data=data, format='json')
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
