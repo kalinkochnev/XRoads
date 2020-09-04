@@ -51,23 +51,3 @@
     display: inline-block;
     margin-bottom:0px;
 }
-
-.bubble {
-    background-color: $redDefault;
-    border-radius: 30px;
-    float:left;
-    direction: rtl;
-    min-width:1.1em;
-    height:1.1em;
-    padding:5px;
-    text-align: center;
-    color:white;
-    font-family: Rubik;
-    margin-right: 5px;
-    margin-top:20px;
-    font-weight:900;
-}
-
-.bubble-container{
-    float:right;
-}

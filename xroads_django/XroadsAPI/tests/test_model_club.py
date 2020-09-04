@@ -19,26 +19,6 @@ def club_fix(db, temp_img):
     return Club.objects.create(name=name, description=description, main_img=test_image.name, hours=commitment, is_visible=is_visible)
 
 
-def test_add_meet_day(club_fix: Club):
-    day_obj1 = club_fix.add_meet_day(MeetDay.Day.MONDAY)
-    day_obj2 = club_fix.add_meet_day(MeetDay.Day.TUESDAY)
-
-    assert club_fix.meeting_days.count() == 2
-    assert club_fix.meeting_days.get(day=MeetDay.Day.MONDAY) == day_obj1
-    assert club_fix.meeting_days.get(day=MeetDay.Day.TUESDAY) == day_obj2
-
-    # Test that if you add same day it doesn't duplicate
-    day_obj = club_fix.add_meet_day(MeetDay.Day.MONDAY)
-    assert club_fix.meeting_days.count() == 2
-
-
-def test_remove_meet_day(club_fix):
-    day_obj = club_fix.add_meet_day(MeetDay.Day.MONDAY)
-
-    club_fix.remove_meet_day(MeetDay.Day.MONDAY)
-    assert club_fix.meeting_days.count() == 0
-
-
 def test_add_slide(club_fix, create_test_slide):
     template, params = create_test_slide()
     slide1 = club_fix.add_slide(template.temp_id, **params)

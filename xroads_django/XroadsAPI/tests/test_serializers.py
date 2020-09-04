@@ -89,14 +89,6 @@ def test_anon_prof_not_anon_serialization(db, create_test_prof):
     assert AnonProfileSerializer(prof1).data == expected
 
 
-def test_meeting_day_choices_serializer(db):
-    day1 = MeetDay.objects.create(day=MeetDay.Day.MONDAY)
-    assert MeetingDaysSerializer(day1).data == {'day': "MONDAY"}
-
-    day2 = MeetDay.objects.create(day=MeetDay.Day.CUSTOM)
-    assert MeetingDaysSerializer(day2).data == {'day': "CUSTOM"}
-
-
 def test_slide_serialization(db, temp_img, create_club):
     # Creates temp test iamge
     temp_file = tempfile.NamedTemporaryFile()
@@ -144,7 +136,6 @@ def test_club_creation(db, temp_img):
         'main_img': club.main_img.url,
         'hours': club.hours,
         'is_visible': club.is_visible,
-        'meeting_days': [],
         'members': [],
         'slides': [],
     })

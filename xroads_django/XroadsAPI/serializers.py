@@ -41,11 +41,6 @@ class AnonProfileSerializer(DynamicFieldsModelSerializer):
             return {'is_anon': True}
         return rep
 
-class MeetingDaysSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MeetDay
-        fields = ['day']
-
 
 class SlideSerializer(DynamicFieldsModelSerializer):
     class Meta:
@@ -60,7 +55,6 @@ class BasicClubInfoSerial(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'main_img', 'is_visible']
 
 class ClubDetailSerializer(serializers.ModelSerializer):
-    meeting_days = MeetingDaysSerializer(many=True)
     members = AnonProfileSerializer(many=True, fields=('first_name', 'last_name'))
     slides = SlideSerializer(many=True)
     class Meta:
@@ -81,7 +75,6 @@ class DistrictSerializer(serializers.ModelSerializer):
 
 # ADMIN SERIALIZERS ---------------------
 class ClubEditorSerializer(serializers.ModelSerializer):
-    meeting_days = MeetingDaysSerializer(many=True)
     members = ProfileSerializer(many=True)
     slides = SlideSerializer(many=True)
     class Meta:
