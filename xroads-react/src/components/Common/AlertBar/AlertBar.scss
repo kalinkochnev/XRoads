@@ -24,6 +24,7 @@ $paddingHoriz:12px;
     width: 90%;
     margin: 0px auto;
     
+    word-wrap: break-word;
     h2 {
         margin: 0px auto;
         font-weight: 500;   
@@ -107,12 +108,9 @@ $paddingHoriz:12px;
 }
 
 
-
-
 :export {
     successColor: $successColor;
     infoColor: $infoColor;
     dangerColor: $dangerColor;
     warningColor: $warningColor 
   }
-

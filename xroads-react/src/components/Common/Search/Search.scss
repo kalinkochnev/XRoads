@@ -7,11 +7,13 @@
   flex-flow: row nowrap;
   justify-content: flex-start;
   align-items: center;
+  box-sizing: border-box;
+
 
   /*Sets form properties*/
   @include card(40px, 4px);
-  height: 30px;
-  width: 75%;
+  height: 60px;
+  width: 100%;
   margin: 150px 0px 0px 0px;
   padding: 10px 20px 10px 20px;
 
@@ -32,11 +34,12 @@
   #search-submit {
     @extend .basic_button;
     /*Creates a centered icon*/
-    @include center-icon("icons/search-icon.svg");
 
+    @include center-icon("icons/search-icon.svg");
     height: 40px;
     width: 40px;
     padding-left: 10px;
+    background-color: $greyOutline;
   }
 
   #search-submit:hover {
@@ -47,6 +50,5 @@
 @media (max-width: 991px) {
   .default-searchbar {
     margin: 100px auto 0px auto;
-    width: 100% - 2 * $siteMargins;
   }
 }

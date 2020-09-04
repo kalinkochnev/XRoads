@@ -4,7 +4,7 @@
     color:black;
     height: 300px;
     border-radius: $cardRoundSmall + 2px;
-    margin:20px;
+    margin: 20px;
     width: calc(100% - 40px);
     background-image: url("https://www.teknozeka.com/wp-content/uploads/2020/03/wp-header-logo-28.png");
     background-size: cover;
@@ -51,3 +51,9 @@
     display: inline-block;
     margin-bottom:0px;
 }
+
+@media (max-width: 991px) {
+    .card-container{
+        grid-template-columns: repeat(auto-fill,minmax(100%, 1fr));
+    }
+  }
