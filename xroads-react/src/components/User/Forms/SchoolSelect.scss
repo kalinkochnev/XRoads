@@ -1,0 +1,61 @@
+@import "../../Common/Common.scss";
+@import "../../Common/Variables.scss";
+@import "../../Common/AlertBar/AlertBar.scss";
+@import "../../User/Forms/AuthForm.scss";
+
+.school-select {
+    width: 275px;
+    border: none !important;
+    overflow: auto;
+    margin:0;
+    margin-bottom: 25px;
+    padding:0;
+    max-height:300px;
+    max-width:$maxWidthForm;
+    outline: none;
+  
+    .school-option {
+      display:block;
+      height:80px;
+      width:275px;
+      font-family: Raleway, sans-serif;
+      border-radius: $authFormBorderRadius;
+      border: solid 2px $greyOutline;
+      overflow: hidden;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+      cursor: pointer;
+  
+      .option-content{
+        display:block;
+        line-height: 80px;
+        font-family: Raleway, sans-serif;
+        background-color: white;
+        padding-left: 15px;
+      }
+  
+      img{
+        height:80px;
+        float: right;
+      }
+  
+    }
+  
+    .school-option:hover {
+      filter: brightness(0.90);
+      -webkit-filter: brightness(0.90);
+    }
+  
+    input {
+      position: absolute;
+      opacity: 1;
+      width: 0px;
+      height: 0px;
+    }
+  
+    input:checked + .option-content{
+      filter: brightness(0.8);
+      -webkit-filter: brightness(0.8);
+    }
+  
+  }
