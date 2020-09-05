@@ -36,28 +36,29 @@ const SignupForm = ({ setAlert }) => {
             return this.parent.password1 === value;
           }),
       })}
-      onSubmit={async (values, { setSubmitting, setFieldError }) => {
+      onSubmit={(values, { setSubmitting, setFieldError }) => {
         // TODO send request to the server
-        let response = await signup(values);
-        function successCallback(response, functions, data) {
-          functions.setAlert("success", "You signed up successfully! Please check your email for confirmation", false);
-        }
+        signup(values).then(response => {
+          function successCallback(response, functions, data) {
+            functions.setAlert("success", "You signed up successfully! Please check your email for confirmation", false);
+          }
+  
+          let funcs = {
+            'setAlert': setAlert, 'setSubmitting': setSubmitting, 'setFieldError': setFieldError
+          }
+          displayFormHelp(response, { 'values': values }, funcs, successCallback, defaultFail)
 
-        let funcs = {
-          'setAlert': setAlert, 'setSubmitting': setSubmitting, 'setFieldError': setFieldError
-        }
-        displayFormHelp(response, { 'values': values }, funcs, successCallback, defaultFail)
-
-
+        })
+        
         setSubmitting(false);
       }}
     >
       {(formik) => (
-        <div class="accountLayout">
+        <div className="accountLayout">
           <form onSubmit={formik.handleSubmit} className="accountForm">
-            <div class="fields">
+            <div className="fields">
               <input
-                class="first-field"
+                className="first-field"
                 type="email"
                 placeholder="Email address"
                 {...formik.getFieldProps("email")}
@@ -79,7 +80,7 @@ const SignupForm = ({ setAlert }) => {
                 {...formik.getFieldProps("password1")}
               />
               <input
-                class="last-field"
+                className="last-field"
                 type="password"
                 placeholder="Confirm Password"
                 {...formik.getFieldProps("password2")}

@@ -11,16 +11,18 @@ export function showOneError(formik) {
     }
   }
   
-export async function defaultFail(response, functions, data) {
-    let body = await response.json();
-    if (Object.keys(body).includes("non_field_errors")) {
-        functions.setAlert("warning", body.non_field_errors[0], false);
-    }
-    for (var field of Object.keys(body)) {
-        if (Object.keys(data.values).includes(field)) {
-            functions.setFieldError(field, body[field][0])
+export function defaultFail(response, functions, data) {
+    response.json().then(body => {
+        if (Object.keys(body).includes("non_field_errors")) {
+            functions.setAlert("warning", body.non_field_errors[0], false);
         }
-    }
+        for (var field of Object.keys(body)) {
+            if (Object.keys(data.values).includes(field)) {
+                functions.setFieldError(field, body[field][0])
+            }
+        }
+    })
+    
 }
 
 export async function defaultOk(response, functions, data) {

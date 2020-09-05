@@ -23,21 +23,20 @@ const LoginForm = ({ setAlert })  => {
     }
   }
 
-  const onSubmit = async (values, { setSubmitting, setFieldError }) => {
-      let response = await login(values);
+  const onSubmit = (values, { setSubmitting, setFieldError }) => {
+      login(values).then(response => {
+        let successCallback = (response, functions, data) => {
+          functions.setAlert("success", "You logged in successfully!", true);
+  
+          history.push('/clubs');
+        }
 
-      let successCallback = (response, functions, data) => {
-        functions.setAlert("success", "You logged in successfully!", true);
+        let funcs = {
+          'setAlert': setAlert
+        }
 
-        history.push('/clubs');
-      }
-
-      let funcs = {
-        'setAlert': setAlert
-      }
-
-      displayFormHelp(response, { 'values': values }, funcs, successCallback, defaultFail)
-
+        displayFormHelp(response, { 'values': values }, funcs, successCallback, defaultFail)
+      })
       setSubmitting(false);
     }
   
