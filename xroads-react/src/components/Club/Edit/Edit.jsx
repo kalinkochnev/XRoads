@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Slideshow, SlideshowFiller, TextSlide, ImageSlide, VideoSlide } from '../../Common/Slides/Slides';
 import './Edit.scss';
+import editSCSSVariables from './Edit.scss';
 
 import Carousel, { slidesToShowPlugin } from '@brainhubeu/react-carousel';
 import '@brainhubeu/react-carousel/lib/style.css';
@@ -17,8 +18,8 @@ const ClubEdit = (props) => {
 
                 <h2>General</h2>
                 <form className="clubEdit">
-                    <label className="short" for="title">Club Name<br />
-                        <input type="text" id="title" name="title" value={props.club.name} />
+                    <label for="title">Club Name<br />
+                        <input class="medium" type="text" id="title" name="title" value={props.club.name} />
                     </label>
 
                     <label className="" for="join">How to join<br />
@@ -26,7 +27,7 @@ const ClubEdit = (props) => {
                     </label>
 
                     <label className="" for="description">Description<br />
-                        <textarea type="textarea" id="title" name="title">{props.club.description}</textarea>
+                        <textarea class="long" type="textarea" id="description" name="description">{props.club.description}</textarea>
                     </label>
                 </form>
 
@@ -35,32 +36,33 @@ const ClubEdit = (props) => {
                     {
                         props.club.slides.map(slide => {
                             if (slide.img) {
-                                return <div className="slideContain"> <ImageSlide key={slide.id} source={slide.img} caption={slide.text} scaleAmount={0.4}/> </div>
+                                return <div className="slideContain"> <ImageSlide key={slide.id} source={slide.img} caption={slide.text} scaleAmount={editSCSSVariables.slideScaleAmount}/> </div>
                             } else if (slide.video_url) {
-                                return <div className="slideContain"> <VideoSlide key={slide.id} videoURL={slide.video_url} caption={slide.text} scaleAmount={0.4}/> </div>
+                                return <div className="slideContain"> <VideoSlide key={slide.id} videoURL={slide.video_url} caption={slide.text} scaleAmount={editSCSSVariables.slideScaleAmount}/> </div>
                             } else {
-                                return <div className="slideContain"> <TextSlide key={slide.id} title={slide.text} body={slide.text} color="lightblue" scaleAmount={0.4}/> </div>
+                                return <div className="slideContain"> <TextSlide key={slide.id} title={slide.text} body={slide.text} color="lightblue" scaleAmount={editSCSSVariables.slideScaleAmount}/> </div>
                             }
                         })
                         
                     }
-                    <div class="dummySpacer"></div>
+                    <div className="slideContain addSlide">+</div>
+                    <div className="spacer"></div>
                 </div>
                 <form className="clubEdit">
-                    <label className="short" for="title">Slide Template<br />
-                        <select id="title" name="title">
+                    <label for="title">Slide Template<br />
+                        <select class="short" id="title" name="title">
                             <option>Text</option>
                             <option>Image</option>
                             <option>Video</option>
                         </select>
                     </label>
 
-                    <label className="" for="join">Title<br />
-                        <input type="text" id="join" name="join"/>
+                    <label className="" for="title">Title<br />
+                        <input class="medium" type="text" id="title" name="title"/>
                     </label>
 
-                    <label className="" for="description">Body<br />
-                        <textarea type="textarea" id="title" name="title"></textarea>
+                    <label className="" for="body">Body<br />
+                        <input class="long" type="text" id="body" name="body"></input>
                     </label>
 
                 </form>

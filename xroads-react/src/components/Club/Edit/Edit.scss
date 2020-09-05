@@ -2,6 +2,64 @@
 @import "../../Common/Common.scss";
 @import "../Body/Body.scss";
 
+$slideScaleAmount: 0.35;
+
+.editBody {
+    input, select {
+        font-family: Raleway;
+        font-size:18px;
+        line-height:1.3;
+        font-weight: 400;
+        display: block;
+
+        &.short {
+            max-width: 300px;
+        }
+    
+        &.medium {
+            max-width: 500px;
+        }
+
+        &.long {
+            max-width: 100%;
+        }
+    
+    }
+    
+    input, select{
+        font-family: Raleway;
+        font-size:20px;
+        line-height:1.3;
+        font-weight: 400;
+        width:100%;
+        padding: 10px;
+        margin-bottom: 30px;
+        box-sizing: border-box;
+    }
+    
+    textarea {
+        padding: 10px;
+        font-family: Raleway;
+        font-size:20px;
+        line-height:1.3;
+        font-weight: 400;
+        width: 100%;
+        box-sizing: border-box;
+    
+        &.short {
+            height: 150px;
+        }
+    
+        &.medium {
+            height: 300px;
+        }
+
+        &.long {
+            height: 500px;
+        }
+    }
+}
+
 .clubHeading {
     margin-top: 30px;
     margin-bottom: 60px;
@@ -14,30 +72,8 @@
 }
 
 form.clubEdit {
-    label {
-        font-family: Raleway;
-        font-size:18px;
-        line-height:1.3;
-        font-weight: 400;
-        display: block;
-    }
 
-    label.short {
-        max-width: 500px;
-    }
-
-    input, select{
-        font-family: Raleway;
-        font-size:20px;
-        line-height:1.3;
-        font-weight: 400;
-        width:100%;
-        padding: 10px;
-        margin-bottom: 30px;
-        box-sizing: border-box;
-    }
-
-    textarea {
+    textarea.long {
         padding: 10px;
         font-family: Raleway;
         font-size:20px;
@@ -53,7 +89,6 @@ form.clubEdit {
     display: flex;
     flex-direction: row;
     width: calc(100% - 30px);
-    height: 270px;
     background-color: white;
     overflow-y: hidden;
     overflow-x: scroll;
@@ -62,15 +97,26 @@ form.clubEdit {
 
     .slideContain {
         margin:15px;
-        $scaleAmount: 0.4;
-        min-width: $maxPageWidth * $scaleAmount;
-        height: $maxPageWidth / $slideAspectRatio * $scaleAmount;
+        min-width: $maxPageWidth * $slideScaleAmount;
+        height: $maxPageWidth / $slideAspectRatio * $slideScaleAmount;
         overflow: hidden;
         border-radius: 10px;
     }
 
-    .dummySpacer {
+    .addSlide {
+        min-width: $maxPageWidth * $slideScaleAmount;
+        line-height: $maxPageWidth / $slideAspectRatio * $slideScaleAmount;
+        text-align: center;
+        font-size: 80px;
+        background-color: #ddd;
+    }
+
+    .spacer {
         min-width: 15px;
     }
 
+}
+
+:export {
+    slideScaleAmount: $slideScaleAmount;
 }
