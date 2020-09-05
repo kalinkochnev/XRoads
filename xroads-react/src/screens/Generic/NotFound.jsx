@@ -1,11 +1,14 @@
-import React from 'react';
+import React from "react";
+import { useContext } from "react";
+import { UserContext } from "../../service/UserContext";
 
-class ScreenNotFound extends React.Component {
-    render() {
-      return (
-        <h1>this page was not found</h1>
-      );
-    }
-  }
 
+const ScreenNotFound = () => {
+  // const user = useContext(UserContext);
+  return (
+    <div>
+      <h1>this page was not found </h1>
+    </div>
+  );
+};
 export default ScreenNotFound;

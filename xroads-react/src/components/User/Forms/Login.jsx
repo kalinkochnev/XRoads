@@ -5,13 +5,13 @@ import "./AuthForm.scss";
 import { login } from "../../../service/xroads-api";
 import { useHistory } from 'react-router-dom';
 import { displayFormHelp, defaultFail} from '../../../components/User/Forms/helper';
-import { CSRFToken} from '../csrf';
+import { UserContext } from "../../../service/UserContext";
+import { useContext } from "react";
 
 
 const LoginForm = ({ setAlert })  => {
-
   let history = useHistory();
-
+  let [user, setUser] = useContext(UserContext);
 
   function showOneError(formik) {
     let touched = Object.keys(formik.touched);
@@ -22,6 +22,25 @@ const LoginForm = ({ setAlert })  => {
       }
     }
   }
+
+  const onSubmit = async (values, { setSubmitting, setFieldError }) => {
+      let response = await login(values);
+
+      let successCallback = (response, functions, data) => {
+        functions.setAlert("success", "You logged in successfully!", true);
+
+        history.push('/clubs');
+      }
+
+      let funcs = {
+        'setAlert': setAlert
+      }
+
+      displayFormHelp(response, { 'values': values }, funcs, successCallback, defaultFail)
+
+      setSubmitting(false);
+    }
+  
 
   return (
     <Formik
@@ -35,22 +54,7 @@ const LoginForm = ({ setAlert })  => {
           .email("Please provide a valid email"),
         password: Yup.string().required("Password required"),
       })}
-      onSubmit={async (values, { setSubmitting, setFieldError }) => {
-        let response = await login(values);
-
-        let successCallback = (response, functions, data) => {
-          functions.setAlert("success", "You logged in successfully!", true);
-          history.push('/clubs');
-        }
-
-        let funcs = {
-          'setAlert': setAlert
-        }
-
-        displayFormHelp(response, { 'values': values }, funcs, successCallback, defaultFail)
-
-        setSubmitting(false);
-      }}
+      onSubmit={onSubmit}
     >
       {(formik) => (
         <div className="accountLayout">

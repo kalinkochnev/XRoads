@@ -6,15 +6,22 @@ import ScreenClubDetail from "./Club/Page";
 import ScreenLogin from "./User/Login";
 import ScreenSignup from "./User/Signup";
 import ScreenNotFound from "./Generic/NotFound";
+import { AuthRoute } from "./Routes/AuthenticatedRoute";
+import { useContext } from "react";
+import {UserContext} from '../service/UserContext';
 
 const ScreensRoot = () => {
+  let user = useContext(UserContext);
+  
   return (
     <Router>
       <Switch>
         <Route path="/signup" component={ScreenSignup} />
         <Route exact path="/login" component={ScreenLogin} />
-        <Route exact path="/clubs" component={ScreenClubBrowser} />
-        <Route exact path="/clubs/:clubId" component={ScreenClubDetail} />
+
+        <AuthRoute exact path="/clubs" component={ScreenClubBrowser} auth={user.loggedIn}/>
+        <AuthRoute exact path="/clubs/:clubId" component={ScreenClubDetail} auth={user.loggedIn}/>
+
         <Route exact component={ScreenNotFound} />
       </Switch>
     </Router>
