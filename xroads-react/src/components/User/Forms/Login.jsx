@@ -27,7 +27,13 @@ const LoginForm = ({ setAlert })  => {
       login(values).then(response => {
         let successCallback = (response, functions, data) => {
           functions.setAlert("success", "You logged in successfully!", true);
-  
+          
+          setUser(prevState => {
+            let user = Object.assign({}, prevState);
+            user.loggedIn = true;
+            return user;
+          });
+
           history.push('/clubs');
         }
 

@@ -6,7 +6,6 @@ class User {
         this.loggedIn = false;
         this.permissions = [];
         
-        
         this.school = null;
         this.district = null;
         this.followed_clubs = [];

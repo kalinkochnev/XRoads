@@ -16,13 +16,13 @@ const ScreensRoot = () => {
   return (
     <Router>
       <Switch>
-        <Route path="/signup" component={ScreenSignup} />
+        <Route exact path="/signup" component={ScreenSignup} />
         <Route exact path="/login" component={ScreenLogin} />
 
-        <AuthRoute exact path="/clubs" component={ScreenClubBrowser} auth={user.loggedIn}/>
-        <AuthRoute exact path="/clubs/:clubId" component={ScreenClubDetail} auth={user.loggedIn}/>
+        <AuthRoute exact path="/clubs/:clubId" component={ScreenClubDetail} />
+        <AuthRoute exact path="/clubs" component={ScreenClubBrowser} />
 
-        <Route exact component={ScreenNotFound} />
+        <Route component={ScreenNotFound} />
       </Switch>
     </Router>
   );

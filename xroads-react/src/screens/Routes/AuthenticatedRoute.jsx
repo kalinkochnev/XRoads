@@ -1,14 +1,24 @@
-import React from "react"
-import {Route, useHistory} from "react-router-dom"
+import React from "react";
+import { Route, useHistory, Redirect } from "react-router-dom";
+import { useEffect } from "react";
+import { useContext } from "react";
+import { UserContext } from "../../service/UserContext";
 
-const AuthRoute = ({component: Component, authenticated: auth, ...other}) => {
-    let history = useHistory();
+const AuthRoute = ({ component: Component, ...other }) => {
+  let [user, setUser] = useContext(UserContext);
 
-    if (!auth) {
-        history.replace('/login')
-        return null;
-    }
-    return (<Route {...other} render={props => (<Component {...props} />)} ></Route>)
-}
+  return (
+    <Route
+      {...other}
+      render={(props) => {
+        if (user.loggedIn) {
+          return <Component {...props} />;
+        } else {
+          return <Redirect to="/login" />;
+        }
+      }}
+    />
+  );
+};
 
-export {AuthRoute};
+export { AuthRoute };
