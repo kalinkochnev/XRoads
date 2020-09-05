@@ -44,6 +44,12 @@ p {
   height: 20px;
 }
 
+.centerContent {
+  padding: 10px 20px;
+  max-width:$maxPageWidth;
+  margin:auto;
+}
+
 @mixin center-icon($iconUrl) {
   mask-image: url($iconUrl);
   background-color: transparent;
@@ -77,6 +83,7 @@ p {
 
 #root{
   background-color: $greyBackground;
+  min-height: 100vh;
 }
 
 @media (max-width: 991px) {

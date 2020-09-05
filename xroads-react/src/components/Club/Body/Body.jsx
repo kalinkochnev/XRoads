@@ -9,7 +9,7 @@ const ClubBodyDetail = (props) => {
   console.log("Received club in ClubBodyDetails", props.club);
 
   return (
-    <div className="clubBody">
+    <div className="centerContent">
       <div className="details">
         <div className="clubHeading">
           <h1>{props.club.name}</h1>

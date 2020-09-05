@@ -5,19 +5,17 @@ import './Slides.scss';
 import Carousel, { slidesToShowPlugin } from '@brainhubeu/react-carousel';
 import '@brainhubeu/react-carousel/lib/style.css';
 
-let scaleAmount
-
 class Slideshow extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-        value: null,
+        scaleAmount: 1,
         };
     }
     
     render() {
         let numSlides = (window.innerWidth)/variables.maxPageWidth.replace('px','');
-        scaleAmount = (window.innerWidth)/variables.maxPageWidth.replace('px','');
+        let scaleAmount = (window.innerWidth)/variables.maxPageWidth.replace('px','');
         let slideshowHeight = variables.maxPageWidth.replace('px','')/variables.slideAspectRatio*scaleAmount;
 
         if(window.innerWidth < variables.maxPageWidth.replace('px','')){
@@ -26,6 +24,8 @@ class Slideshow extends React.Component {
         else {
             scaleAmount = 1;
         }
+
+        this.state.scaleAmount = scaleAmount;
         
         return (
             <div className="slideshow" style={{height: slideshowHeight}}>
@@ -63,7 +63,7 @@ class SlideshowFiller extends React.Component {
     }
     
     render() {
-        let slideshowHeight = variables.maxPageWidth.replace('px','')/variables.slideAspectRatio*scaleAmount;
+        let slideshowHeight = variables.maxPageWidth.replace('px','')/variables.slideAspectRatio*this.props.scaleAmount;
         return (
             <div className="slideshow" style={{height: slideshowHeight}}>
                 <div className="haze left-haze"></div>
@@ -85,7 +85,7 @@ class TextSlide extends React.Component {
     render() {
         return (
         <div className="slide text-slide" style={{backgroundColor: this.props.color }}>
-            <div className="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
+            <div className="slide-content" style={{transform: "scale("+this.props.scaleAmount+")"}}>
                 <div className="text-area">
                     <h1>{this.props.title}</h1>
                     <h2>{this.props.subtitle}</h2>
@@ -108,7 +108,7 @@ class ImageSlide extends React.Component {
     render() {
         return (
         <div className="slide image-slide">
-            <div className="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
+            <div className="slide-content" style={{transform: "scale("+this.props.scaleAmount+")"}}>
                 <img src={this.props.source}></img>
                 <p>{this.props.caption}</p>
             </div>
@@ -146,9 +146,9 @@ class VideoSlide extends React.Component {
             }
 
         }
-        
-        let slideWidth = variables.maxPageWidth.replace('px','')*scaleAmount;
-        let slideHeight = slideWidth/variables.slideAspectRatio*scaleAmount;
+
+        let slideWidth = variables.maxPageWidth.replace('px','')*this.props.scaleAmount;
+        let slideHeight = slideWidth/variables.slideAspectRatio;
 
         if(this.props.caption.length > 0){
             slideHeight -= 65;
@@ -157,7 +157,7 @@ class VideoSlide extends React.Component {
         return (
         <div className="slide video-slide">
             <iframe title="slideshow-iframe" width={slideWidth} height={slideHeight} src={getEmbed(this.props.videoURL)} frameBorder="0" allow="encrypted-media; fullscreen;" allowFullScreen></iframe>
-            <div className="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
+            <div className="slide-content" style={{transform: "scale("+this.props.scaleAmount+")"}}>
                 <p>{this.props.caption}</p>
             </div>
         </div>

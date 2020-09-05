@@ -7,6 +7,8 @@
 }
 
 .text-slide .text-area {
+    box-sizing: border-box;
+    width: 100%;
     margin:auto;
     padding:50px;
     text-align: center;
