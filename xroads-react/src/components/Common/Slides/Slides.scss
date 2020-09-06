@@ -102,8 +102,8 @@ $hazeGradient: rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%;
 
 .slide {
     width:100%;
-    max-width: $maxPageWidth;
-    height:$maxPageWidth/$slideAspectRatio;
+    height: 100%;
+    display: block;
 }
 
 .slide-content {
@@ -112,6 +112,10 @@ $hazeGradient: rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%;
     transform-origin: top left;
     position: relative;
     overflow: hidden;
+}
+
+.BrainhubCarousel__track {
+    height: 100%;
 }
 
 .BrainhubCarouselItem--active .video-slide {

@@ -1,11 +1,10 @@
 import React from 'react';
 
-import { Slideshow, SlideshowFiller, TextSlide, ImageSlide, VideoSlide } from '../../Common/Slides/Slides';
 import './Edit.scss';
-import editSCSSVariables from './Edit.scss';
 
-import Carousel, { slidesToShowPlugin } from '@brainhubeu/react-carousel';
-import '@brainhubeu/react-carousel/lib/style.css';
+import RichEditor from '../../Common/RichEditor/RichEditor'
+import { TextSlide, ImageSlide, VideoSlide } from '../../Common/Slides/Slides';
+
 
 const ClubEdit = (props) => {
     return (
@@ -27,7 +26,7 @@ const ClubEdit = (props) => {
                     </label>
 
                     <label className="" for="description">Description<br />
-                        <textarea class="long" type="textarea" id="description" name="description">{props.club.description}</textarea>
+                        <RichEditor />
                     </label>
                 </form>
 
@@ -36,14 +35,14 @@ const ClubEdit = (props) => {
                     {
                         props.club.slides.map(slide => {
                             if (slide.img) {
-                                return <div className="slideContain"> <ImageSlide key={slide.id} source={slide.img} caption={slide.text} scaleAmount={editSCSSVariables.slideScaleAmount}/> </div>
+                                return <div className="slideContain"> <ImageSlide key={slide.id} source={slide.img} caption={slide.text}/> </div>
                             } else if (slide.video_url) {
-                                return <div className="slideContain"> <VideoSlide key={slide.id} videoURL={slide.video_url} caption={slide.text} scaleAmount={editSCSSVariables.slideScaleAmount}/> </div>
+                                return <div className="slideContain"> <VideoSlide key={slide.id} videoURL={slide.video_url} caption={slide.text}/> </div>
                             } else {
-                                return <div className="slideContain"> <TextSlide key={slide.id} title={slide.text} body={slide.text} color="lightblue" scaleAmount={editSCSSVariables.slideScaleAmount}/> </div>
+                                return <div className="slideContain"> <TextSlide key={slide.id} title={slide.text} body={slide.text} color="lightblue"/> </div>
                             }
                         })
-                        
+
                     }
                     <div className="slideContain addSlide">+</div>
                     <div className="spacer"></div>
@@ -58,7 +57,7 @@ const ClubEdit = (props) => {
                     </label>
 
                     <label className="" for="title">Title<br />
-                        <input class="medium" type="text" id="title" name="title"/>
+                        <input class="medium" type="text" id="title" name="title" />
                     </label>
 
                     <label className="" for="body">Body<br />

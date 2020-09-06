@@ -22,7 +22,7 @@ const ScreensRoot = () => {
 
         <AuthRoute exact path="/clubs/:clubId" component={ScreenClubDetail} />
         <AuthRoute exact path="/clubs" component={ScreenClubBrowser} />
-        <AuthRoute exact path="/clubs/:clubId/edit" component={ScreenClubEdit} />
+        <Route exact path="/clubs/:clubId/edit" component={ScreenClubEdit} />
 
         <Route component={ScreenNotFound} />
       </Switch>
