@@ -1,7 +1,6 @@
 import InvalidKeysProvided from '../utils/exceptions';
 import {isEqual} from '../utils/arrays';
 import { Cookies } from 'react-cookie';
-import { Redirect } from 'react-router-dom';
 
 // To have keyworded args use this format:   :keyword_arg
 const endpoint_templates = {

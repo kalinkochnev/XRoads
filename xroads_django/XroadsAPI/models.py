@@ -31,24 +31,6 @@ class Slide(models.Model):
         return f"{self.club} slide {self.position} {self.template.name}"
 
 
-class MeetDay(models.Model):
-    class Day(models.TextChoices):
-        MONDAY = 'MONDAY'
-        TUESDAY = 'TUESDAY'
-        WEDNESDAY = 'WEDNESDAY'
-        THURSDAY = 'THURSDAY'
-        FRIDAY = 'FRIDAY'
-        SATURDAY = 'SATURDAY'
-        SUNDAY = 'SUNDAY'
-        CUSTOM = 'CUSTOM'
-
-    day = models.CharField(
-        max_length=15, choices=Day.choices, default=Day.CUSTOM)
-
-    def __str__(self):
-        return f"{self.day} id: {self.id}"
-
-
 class Club(models.Model):
     name = models.CharField(max_length=30)
     description = models.TextField()
@@ -58,7 +40,6 @@ class Club(models.Model):
 
     school = models.ForeignKey('School', on_delete=models.CASCADE, null=True)
 
-    meeting_days = models.ManyToManyField(MeetDay, blank=True)
     members = models.ManyToManyField(Profile, blank=True)
 
     def __str__(self):
@@ -68,16 +49,6 @@ class Club(models.Model):
         if save:
             self.save()
 
-    def add_meet_day(self, day: MeetDay.Day, save=True) -> MeetDay:
-        day, created = MeetDay.objects.get_or_create(day=day)
-        if created:
-            self.meeting_days.add(day)
-            self.make_save(save)
-        return day
-
-    def remove_meet_day(self, day: MeetDay.Day, save=True):
-        self.meeting_days.remove(self.meeting_days.get(day=day))
-        self.make_save(save)
 
     def add_slide(self, template_type, save=True, **kwargs) -> Slide:
         max_pos = self.slides.count()

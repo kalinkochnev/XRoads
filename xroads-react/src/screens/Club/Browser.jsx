@@ -53,7 +53,7 @@ class ScreenClubBrowser extends React.Component {
         this.setState({
           allClubs : clubs,
           clubs: clubs, 
-          clubIds : clubs.reduceRight( (c,a) => c.id + a, "")
+          clubIds : ""// clubs.reduceRight( (c,a) => c.id + a, "")
         });
       });
     });
