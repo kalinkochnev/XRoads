@@ -1,4 +1,5 @@
 import React from "react";
+import Linkify from "react-linkify"
 
 import "./Body.scss";
 const Markdown = require('react-markdown')
@@ -14,7 +15,7 @@ const ClubBodyDetail = (props) => {
         <div className="clubHeading">
           <h1>{props.club.name}</h1>
 
-          <h2>{props.club.join_promo} </h2>
+          <Linkify><h2> {props.club.join_promo}</h2></Linkify>
         </div>
         
         <Markdown source={props.club.description}/>
