@@ -26,11 +26,12 @@ const Navbar = () => {
           <h1>xroads</h1>
         </div>
         <div className="navbar-buttons">
-          <button onClick={logout}>logout</button>
+          { user.loggedIn ? 
+            <button onClick={logout}>Log Out</button> : <span></span>
+          }
         </div>
       </div>
       <AlertBar>
-        <Message type="info">I AM  T E X T asdk fklsdajf lksdalfk sdalfkljsadjklf askjlsakljf jlksdafalkj sadkljfkj lsdals kjdlkjk jlfkljalk jsadlkj flds kljajklf aslkf lkjas kla</Message>
       </AlertBar>
     </div>
     );
