@@ -4,18 +4,14 @@ import './Edit.scss';
 
 import RichEditor from '../../Common/RichEditor/RichEditor'
 import { TextSlide, ImageSlide, VideoSlide } from '../../Common/Slides/Slides';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFilm, faFont, faImage, faImages, faTextHeight, faVideo } from '@fortawesome/free-solid-svg-icons'
 
 
-const ClubEdit = (props) => {
+const GeneralEdit = (props) => {
     return (
         <div className="centerContent">
             <div className="editBody">
-                <div className="clubHeading">
-                    <h2>Now Editing</h2>
-                    <h1>{props.club.name}</h1>
-                </div>
-
-                <h2>General</h2>
                 <form className="clubEdit">
                     <label for="title">Club Name<br />
                         <input class="medium" type="text" id="title" name="title" value={props.club.name} />
@@ -29,22 +25,33 @@ const ClubEdit = (props) => {
                         <RichEditor />
                     </label>
                 </form>
+            </div>
+        </div>
+    );
+}
 
-                <h2>Slideshow</h2>
+const SlideshowEdit = (props) => {
+    return (
+        <div className="centerContent">
+            <div className="editBody">
                 <div className="slideshowSelect">
                     {
                         props.club.slides.map(slide => {
                             if (slide.img) {
-                                return <div className="slideContain"> <ImageSlide key={slide.id} source={slide.img} caption={slide.text}/> </div>
+                                return <div className="slideContain"> <ImageSlide key={slide.id} source={slide.img} caption={slide.text} /> </div>
                             } else if (slide.video_url) {
-                                return <div className="slideContain"> <VideoSlide key={slide.id} videoURL={slide.video_url} caption={slide.text}/> </div>
+                                return <div className="slideContain"> <VideoSlide key={slide.id} videoURL={slide.video_url} caption={slide.text} /> </div>
                             } else {
-                                return <div className="slideContain"> <TextSlide key={slide.id} title={slide.text} body={slide.text} color="lightblue"/> </div>
+                                return <div className="slideContain"> <TextSlide key={slide.id} title={slide.text} body={slide.text} color="lightblue" /> </div>
                             }
                         })
 
                     }
-                    <div className="slideContain addSlide">+</div>
+                    <div className="slideContain addSlide">
+                        <div className="add"><FontAwesomeIcon icon={faFont} />Add a text slide</div>
+                        <div className="add middle"><FontAwesomeIcon icon={faImage} />Add an image slide</div>
+                        <div className="add"><FontAwesomeIcon icon={faFilm} />Add a video slide</div>
+                    </div>
                     <div className="spacer"></div>
                 </div>
                 <form className="clubEdit">
@@ -70,4 +77,4 @@ const ClubEdit = (props) => {
     );
 }
 
-export default ClubEdit;
+export {GeneralEdit, SlideshowEdit};

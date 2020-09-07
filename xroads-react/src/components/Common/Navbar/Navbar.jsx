@@ -29,9 +29,9 @@ const Navbar = () => {
           <button onClick={logout}>logout</button>
         </div>
       </div>
-      <AlertBar>
+      {/*<AlertBar>
         <Message type="info">I AM  T E X T asdk fklsdajf lksdalfk sdalfkljsadjklf askjlsakljf jlksdafalkj sadkljfkj lsdals kjdlkjk jlfkljalk jsadlkj flds kljajklf aslkf lkjas kla</Message>
-      </AlertBar>
+      </AlertBar>*/}
     </div>
     );
 

@@ -62,7 +62,7 @@ $slideScaleAmount: 0.35;
 
 .clubHeading {
     margin-top: 30px;
-    margin-bottom: 60px;
+    margin-bottom: 30px;
     h1, h2 {
         margin: 0px;
         padding:10px 20px 10px 20px;
@@ -105,10 +105,33 @@ form.clubEdit {
 
     .addSlide {
         min-width: $maxPageWidth * $slideScaleAmount;
-        line-height: $maxPageWidth / $slideAspectRatio * $slideScaleAmount;
-        text-align: center;
-        font-size: 80px;
+        line-height: $maxPageWidth / $slideAspectRatio * $slideScaleAmount / 3;
+        text-align: left;
+        font-size: 22px;
         background-color: #ddd;
+        font-family: Raleway;
+
+        .add {
+            padding-left: 60px;
+            box-sizing: border-box;
+
+            .svg-inline--fa {
+                padding-right: 20px;
+                font-size: 30px;
+                vertical-align: text-bottom;
+            }
+
+            height: 33.33%;
+            width: 100%;
+
+            &.middle {
+                border-top:1px solid #aaa;
+                border-bottom:1px solid #aaa;
+            }
+        }
+        .add:hover {
+            background-color: #ccc;
+        }
     }
 
     .spacer {

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Common/Navbar/Navbar';
-import { Slideshow, SlideshowFiller, TextSlide, ImageSlide, VideoSlide } from '../../components/Common/Slides/Slides';
 
-import ClubEdit from '../../components/Club/Edit/Edit';
+import { Tabs } from '../../components/Common/Tabs/Tabs';
+import { GeneralEdit, SlideshowEdit } from '../../components/Club/Edit/Edit';
 
 import * as XroadsAPI from '../../service/xroads-api';
 
@@ -42,7 +42,25 @@ const ScreenClubEdit = ({ match: { params: { clubId } } }) => {
     return (
       <div>
         <Navbar>xroads</Navbar>
-        <ClubEdit club={club}></ClubEdit>
+        <div className="centerContent">
+          <div className="clubHeading">
+            <h2>Now Editing</h2>
+            <h1>{club.name}</h1>
+          </div>
+        <Tabs>
+          <div label="General">
+            <GeneralEdit label="General" club={club}></GeneralEdit>
+          </div>
+
+          <div label="Slideshow">
+            <SlideshowEdit label="Slideshow" club={club}></SlideshowEdit>
+          </div>
+
+          <div label="Add Members">
+            There is nothing here
+          </div>
+        </Tabs>
+        </div>
       </div>
     );
   }
