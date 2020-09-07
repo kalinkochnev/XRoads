@@ -129,7 +129,7 @@ def test_club_creation(db, temp_img):
     test_image = temp_img(temp_file)
 
     club: Club = Club.objects.create(
-        name="a", description="b", main_img=test_image.name, hours="7hrs/week", is_visible=True)
+        name="a", description="b", main_img=test_image.name, hours="7hrs/week", is_visible=True, join_promo="Join today")
     data = OrderedDict({
         'name': club.name,
         'description': club.description,
@@ -138,6 +138,7 @@ def test_club_creation(db, temp_img):
         'is_visible': club.is_visible,
         'members': [],
         'slides': [],
+        'join_promo': club.join_promo,
     })
 
     serializer = ClubDetailSerializer(data=data)

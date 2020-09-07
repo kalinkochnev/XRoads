@@ -13,8 +13,8 @@ const ClubBodyDetail = (props) => {
       <div className="details">
         <div className="clubHeading">
           <h1>{props.club.name}</h1>
-          {/* TODO make a field that shows the how to join */}
-          <h2>Text @niskyrobot to 81010 to join </h2>
+
+          <h2>{props.club.join_promo} </h2>
         </div>
         
         <Markdown source={props.club.description}/>

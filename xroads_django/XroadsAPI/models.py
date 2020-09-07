@@ -37,6 +37,7 @@ class Club(models.Model):
     main_img = models.ImageField()
     hours = models.CharField(max_length=10)
     is_visible = models.BooleanField(default=False)
+    join_promo = models.TextField(blank=True, null=True)
 
     school = models.ForeignKey('School', on_delete=models.CASCADE, null=True)
 

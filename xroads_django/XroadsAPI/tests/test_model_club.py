@@ -13,10 +13,11 @@ def club_fix(db, temp_img):
     description = "This is a club description"
     commitment = "7hrs/week"
     is_visible = False
+    join_promo = "Join our club"
 
     temp_file = tempfile.NamedTemporaryFile()
     test_image = temp_img(temp_file)
-    return Club.objects.create(name=name, description=description, main_img=test_image.name, hours=commitment, is_visible=is_visible)
+    return Club.objects.create(name=name, description=description, main_img=test_image.name, hours=commitment, is_visible=is_visible, join_promo = join_promo)
 
 
 def test_add_slide(club_fix, create_test_slide):
