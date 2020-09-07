@@ -5,49 +5,49 @@ import './Slides.scss';
 import Carousel, { slidesToShowPlugin } from '@brainhubeu/react-carousel';
 import '@brainhubeu/react-carousel/lib/style.css';
 
-let scaleAmount
-
 class Slideshow extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-        value: null,
+            scaleAmount: 1,
         };
     }
-    
-    render() {
-        let numSlides = (window.innerWidth)/variables.maxPageWidth.replace('px','');
-        scaleAmount = (window.innerWidth)/variables.maxPageWidth.replace('px','');
-        let slideshowHeight = variables.maxPageWidth.replace('px','')/variables.slideAspectRatio*scaleAmount;
 
-        if(window.innerWidth < variables.maxPageWidth.replace('px','')){
+    render() {
+        let numSlides = (window.innerWidth) / variables.maxPageWidth.replace('px', '');
+        let scaleAmount = (window.innerWidth) / variables.maxPageWidth.replace('px', '');
+        let slideshowHeight = variables.maxPageWidth.replace('px', '') / variables.slideAspectRatio * scaleAmount;
+
+        if (window.innerWidth < variables.maxPageWidth.replace('px', '')) {
             numSlides = 1;
         }
         else {
             scaleAmount = 1;
         }
-        
+
+        this.state.scaleAmount = scaleAmount;
+
         return (
-            <div className="slideshow" style={{height: slideshowHeight}}>
+            <div className="slideshow" style={{ height: slideshowHeight }}>
                 <div className="haze left-haze"></div>
                 <div className="haze right-haze"></div>
                 <Carousel
-                onChange={console.log(this.props.value)}
-                plugins={[
-                    'centered',
-                    'infinite',
-                    'arrows',
-                    'fastSwipe',
-                    'clickToChange',
-                    {
-                        resolve: slidesToShowPlugin,
-                        options: {
-                            numberOfSlides: numSlides
+                    onChange={console.log(this.props.value)}
+                    plugins={[
+                        'centered',
+                        'infinite',
+                        'arrows',
+                        'fastSwipe',
+                        'clickToChange',
+                        {
+                            resolve: slidesToShowPlugin,
+                            options: {
+                                numberOfSlides: numSlides
+                            }
                         }
-                    }
-                ]}   
+                    ]}
                 >
-                        {this.props.children}
+                    {this.props.children}
                 </Carousel>
             </div>
         );
@@ -58,14 +58,14 @@ class SlideshowFiller extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-        value: null,
+            value: null,
         };
     }
-    
+
     render() {
-        let slideshowHeight = variables.maxPageWidth.replace('px','')/variables.slideAspectRatio*scaleAmount;
+        let slideshowHeight = variables.maxPageWidth.replace('px', '') / variables.slideAspectRatio * this.props.scaleAmount;
         return (
-            <div className="slideshow" style={{height: slideshowHeight}}>
+            <div className="slideshow" style={{ height: slideshowHeight }}>
                 <div className="haze left-haze"></div>
                 <div className="haze right-haze"></div>
 
@@ -78,21 +78,30 @@ class TextSlide extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-        value: null,
+            scaleAmount: 1,
         };
+        this.slideContainer = React.createRef();
+    }
+
+    componentDidMount() {
+        var height = this.slideContainer.current.offsetHeight;
+        console.log("Slidewidth is: " + height);
+        this.setState({
+            scaleAmount: height / (variables.maxPageWidth.replace('px', '') / variables.slideAspectRatio)
+        });
     }
 
     render() {
         return (
-        <div className="slide text-slide" style={{backgroundColor: this.props.color }}>
-            <div className="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
-                <div className="text-area">
-                    <h1>{this.props.title}</h1>
-                    <h2>{this.props.subtitle}</h2>
-                    <p>{this.props.body}</p>
+            <div ref={this.slideContainer} className="slide text-slide" style={{ backgroundColor: this.props.color }}>
+                <div className="slide-content" style={{ transform: "scale(" + this.state.scaleAmount + ")" }}>
+                    <div className="text-area">
+                        <h1>{this.props.title}</h1>
+                        <h2>{this.props.subtitle}</h2>
+                        <p>{this.props.body}</p>
+                    </div>
                 </div>
             </div>
-        </div>
         );
     }
 }
@@ -101,18 +110,27 @@ class ImageSlide extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-        value: null,
+            scaleAmount: 1,
         };
+        this.slideContainer = React.createRef();
+    }
+
+    componentDidMount() {
+        var height = this.slideContainer.current.offsetHeight;
+        console.log("Slidewidth is: " + height);
+        this.setState({
+            scaleAmount: height / (variables.maxPageWidth.replace('px', '') / variables.slideAspectRatio)
+        });
     }
 
     render() {
         return (
-        <div className="slide image-slide">
-            <div className="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
-                <img src={this.props.source}></img>
-                <p>{this.props.caption}</p>
+            <div ref={this.slideContainer} className="slide image-slide">
+                <div className="slide-content" style={{ transform: "scale(" + this.state.scaleAmount + ")" }}>
+                    <img src={this.props.source}></img>
+                    <p>{this.props.caption}</p>
+                </div>
             </div>
-        </div>
         );
     }
 }
@@ -121,48 +139,47 @@ class VideoSlide extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-        value: null,
+            scaleAmount: 1,
         };
+        this.slideContainer = React.createRef();
+    }
+
+    componentDidMount() {
+        var height = this.slideContainer.current.offsetHeight;
+        console.log("Slidewidth is: " + height);
+        this.setState({
+            scaleAmount: height / (variables.maxPageWidth.replace('px', '') / variables.slideAspectRatio)
+        });
     }
 
     render() {
-        function getEmbed(url){
+        function getEmbed(url) {
 
             let noVideoEmbed = "https://player.vimeo.com/video/no-video";
 
-            if(url != null && url.includes("youtu")){
+            if (url != null && url.includes("youtu")) {
                 let regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
                 let match = url.match(regExp);
-                return (match&&match[7].length===11)? ("https://www.youtube-nocookie.com/embed/"+match[7]) : noVideoEmbed;
+                return (match && match[7].length === 11) ? ("https://www.youtube-nocookie.com/embed/" + match[7]) : noVideoEmbed;
             }
 
-            else if(url != null && url.includes("vimeo")){
+            else if (url != null && url.includes("vimeo")) {
                 let regExp = /(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)(?:[a-zA-Z0-9_\-]+)?/i
                 let match = url.match(regExp);
-                return (match&&match.length===2)? ("https://player.vimeo.com/video/"+match[1]) : noVideoEmbed;
+                return (match && match.length === 2) ? ("https://player.vimeo.com/video/" + match[1]) : noVideoEmbed;
             }
             else {
                 return noVideoEmbed;
             }
 
         }
-        
-        let slideWidth = variables.maxPageWidth.replace('px','')*scaleAmount;
-        let slideHeight = slideWidth/variables.slideAspectRatio*scaleAmount;
-
-        if(this.props.caption.length > 0){
-            slideHeight -= 65;
-        }
 
         return (
-        <div className="slide video-slide">
-            <iframe title="slideshow-iframe" width={slideWidth} height={slideHeight} src={getEmbed(this.props.videoURL)} frameBorder="0" allow="encrypted-media; fullscreen;" allowFullScreen></iframe>
-            <div className="slide-content" style={{transform: "scale("+scaleAmount+")"}}>
-                <p>{this.props.caption}</p>
+            <div ref={this.slideContainer} className="slide video-slide">
+                <iframe title="slideshow-iframe" width={"100%"} height={"100%"} src={getEmbed(this.props.videoURL)} frameBorder="0" allow="encrypted-media; fullscreen;" allowFullScreen></iframe>
             </div>
-        </div>
         );
     }
 }
 
-export {Slideshow, SlideshowFiller, TextSlide, ImageSlide, VideoSlide};
+export { Slideshow, SlideshowFiller, TextSlide, ImageSlide, VideoSlide };

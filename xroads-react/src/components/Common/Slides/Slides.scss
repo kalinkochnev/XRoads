@@ -7,6 +7,8 @@
 }
 
 .text-slide .text-area {
+    box-sizing: border-box;
+    width: 100%;
     margin:auto;
     padding:50px;
     text-align: center;
@@ -46,6 +48,10 @@
 }
 
 /*Video Slide*/
+.video-slide {
+    pointer-events: none;
+}
+
 .video-slide iframe {
     margin-bottom:-5px;
 }
@@ -76,6 +82,7 @@
 
 .haze {
     position: absolute;
+    pointer-events: none;
     top:0;
     width:calc((100vw - 1000px) / 2);
     height: 100%;
@@ -95,8 +102,8 @@ $hazeGradient: rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%;
 
 .slide {
     width:100%;
-    max-width: $maxPageWidth;
-    height:$maxPageWidth/$slideAspectRatio;
+    height: 100%;
+    display: block;
 }
 
 .slide-content {
@@ -105,6 +112,18 @@ $hazeGradient: rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%;
     transform-origin: top left;
     position: relative;
     overflow: hidden;
+}
+
+.BrainhubCarousel__track {
+    height: 100%;
+}
+
+.BrainhubCarouselItem--active .video-slide {
+    pointer-events: all;
+}
+
+.BrainhubCarouselItem--active {
+    cursor: auto !important;
 }
 
 .BrainhubCarousel__container, .BrainhubCarousel, .BrainhubCarousel__trackContainer{

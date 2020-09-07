@@ -1,0 +1,26 @@
+@import "../Variables.scss";
+@import "../Common.scss";
+
+.tab-list {
+    margin-top: 60px;
+    font-size: 27px;
+    font-family: Raleway;
+    font-weight: bold;
+    padding-left: 0;
+    width: 100%;
+    display: flex;
+}
+
+.tab-list-item {
+    text-align: center;
+    width: 100%;
+    list-style: none;
+    margin-bottom: -1px;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 6px solid transparent;
+    transition: 0.3s;
+}
+
+.tab-list-active {
+    border-bottom-color: $redDefault;
+}
