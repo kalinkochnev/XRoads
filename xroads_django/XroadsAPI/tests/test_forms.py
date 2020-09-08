@@ -1,7 +1,8 @@
 import pytest
-from rest_framework import serializers
-from XroadsAPI.forms import *
+
 import XroadsAPI.permisson_constants as PermConst
+from XroadsAPI.forms import *
+
 
 @pytest.fixture
 def profiles_data(create_test_prof):

@@ -1,8 +1,9 @@
-from XroadsAuth.models import Profile
 from XroadsAPI.models import *
-from rest_framework import serializers
-from XroadsAPI.permissions import Hierarchy, Permissions
 from rest_framework.fields import empty
+
+from XroadsAPI.models import *
+from XroadsAPI.permissions import Hierarchy, Permissions
+from rest_framework import serializers
 
 class UserEmailForm(serializers.Serializer):
     emails = serializers.ListField(child=serializers.EmailField())

@@ -1,5 +1,7 @@
-from XroadsAPI.models import *
 from rest_framework import serializers
+
+from XroadsAPI.models import *
+
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """

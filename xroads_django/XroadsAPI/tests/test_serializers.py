@@ -1,8 +1,9 @@
-from XroadsAPI.models import *
-from XroadsAPI.serializers import *
-from collections import OrderedDict
 import tempfile
+from collections import OrderedDict
+
 import pytest
+
+from XroadsAPI.serializers import *
 from XroadsAPI.slide import SlideTemplates
 
 

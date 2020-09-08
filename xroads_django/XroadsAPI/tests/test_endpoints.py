@@ -1,14 +1,13 @@
 import pytest
-from rest_framework.test import APIClient
-from XroadsAuth.models import *
-from XroadsAPI.models import *
-from XroadsAPI.serializers import *
-import XroadsAPI.permisson_constants as PermConst
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.response import Response
-from XroadsAPI.permissions import Role, Permissions, Hierarchy
-from collections import OrderedDict
+from rest_framework.test import APIClient
+
+from XroadsAPI.permissions import Role
+from XroadsAPI.serializers import *
+
+
 # ALL views will have their authentication forced. The system used is subject to
 # being changed so it will not be included here for now
 

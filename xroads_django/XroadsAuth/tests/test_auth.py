@@ -1,18 +1,18 @@
-import pytest
-from django.contrib.auth import get_user_model, authenticate
-from XroadsAPI.models import *
-from XroadsAuth.models import *
-from rest_framework import status
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework.reverse import reverse
-from rest_framework.test import APIRequestFactory
-from rest_framework.views import APIView, Response
-from rest_framework.permissions import IsAuthenticated
-from http.cookies import SimpleCookie
 from datetime import timedelta, datetime
+from http.cookies import SimpleCookie
+
+import pytest
 from django.conf import settings
 from django.test import override_settings
 from django.utils import timezone
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.reverse import reverse
+from rest_framework.test import APIRequestFactory
+from rest_framework.views import APIView, Response
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+from XroadsAuth.models import *
 
 PAYLOAD_COOKIE_NAME = settings.JWT_PAYLOAD_COOKIE_NAME
 SIGNATURE_COOKIE_NAME = settings.JWT_SIGNATURE_COOKIE_NAME

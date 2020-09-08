@@ -1,13 +1,8 @@
 from django.db import models
-from django.db.models.signals import post_save
-from django.conf import settings
 
-from django.dispatch import receiver
-
-from XroadsAPI.exceptions import *
-from XroadsAuth.manager import CustomUserManager
-from XroadsAuth.models import Profile
 import XroadsAPI.slide as SlideTemp
+from XroadsAPI.exceptions import *
+from XroadsAuth.models import Profile
 
 
 class Slide(models.Model):

@@ -1,7 +1,9 @@
 import pytest
+from django.db import IntegrityError
+
 from XroadsAPI.models import *
 from XroadsAuth.models import Profile
-from django.db import IntegrityError
+
 
 def test_match_email_with_district(create_test_prof):
     d1: District = District.objects.create(name='d1')

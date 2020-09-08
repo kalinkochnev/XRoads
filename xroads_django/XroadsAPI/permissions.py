@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 from typing import List, Set
-from XroadsAPI.models import *
-from XroadsAuth.models import Profile, HierarchyPerms
-from XroadsAPI import permisson_constants as PermConst
-from XroadsAPI.permisson_constants import Hierarchy
+
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import permissions
+
+from XroadsAPI import permisson_constants as PermConst
+from XroadsAPI.models import *
+from XroadsAPI.permisson_constants import Hierarchy
 from XroadsAPI.utils import get_parent_model
+from XroadsAuth.models import Profile, HierarchyPerms
 
 
 class Permissions:

@@ -1,13 +1,12 @@
-from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.utils.translation import gettext_lazy as _
-from XroadsAuth.manager import CustomUserManager 
-import re
 from allauth.account.models import EmailAddress
-from django.core.exceptions import FieldError
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+
 import XroadsAPI.models as api_models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+from XroadsAuth.manager import CustomUserManager
+
+
 # Create your models here
 
 class HierarchyPerms(models.Model):

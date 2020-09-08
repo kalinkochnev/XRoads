@@ -1,4 +1,3 @@
-import pytest
 from XroadsAPI.models import School
 
 def test_join_school(create_test_prof):

@@ -1,9 +1,10 @@
 import pytest
+
+import XroadsAPI.permisson_constants as PermConst
+from XroadsAPI.exceptions import *
 from XroadsAPI.models import *
 from XroadsAPI.permissions import Role, Permissions
 from XroadsAPI.permisson_constants import Hierarchy
-import XroadsAPI.permisson_constants as PermConst
-from XroadsAPI.exceptions import *
 
 
 @pytest.mark.usefixtures("db")
