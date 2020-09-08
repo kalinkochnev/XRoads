@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from XroadsAPI.forms import *
-from XroadsAPI.permissions import *
+from XroadsAuth.permissions import *
 
 
 class ModifyAndReadViewset(mixins.RetrieveModelMixin,

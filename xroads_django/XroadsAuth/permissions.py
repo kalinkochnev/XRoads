@@ -5,17 +5,17 @@ from typing import List, Set
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import permissions
 
-from XroadsAPI import permisson_constants as PermConst
-from XroadsAPI.models import *
-from XroadsAPI.permisson_constants import Hierarchy
-from XroadsAPI.utils import get_parent_model
-from XroadsAuth.models import Profile, HierarchyPerms
+from . import permisson_constants as PermConst
+from .models import Profile, HierarchyPerms
+from .exceptions import RoleNotComparable, InvalidRoleCreated
+from .utils import get_parent_model
 
+import XroadsAPI.models as APIModels
 
 class Permissions:
     def __init__(self, perm_strs: List[str], hierarchy):
         self.permissions: Set[str] = set()
-        self.hierarchy: Hierarchy = hierarchy
+        self.hierarchy: PermConst.Hierarchy = hierarchy
 
         self.add(*perm_strs)
 
@@ -81,7 +81,7 @@ class Role:
         self.model_instances = model_instances
 
         role = kwargs.get('role', self._role_matcher(model_instances))
-        self.hierarchy = Hierarchy.get_hierarchy(role)
+        self.hierarchy = PermConst.Hierarchy.get_hierarchy(role)
 
         perms = kwargs.get('permissions', [])
         self.permissions = Permissions(perms, self.hierarchy)
@@ -165,18 +165,15 @@ class Role:
             self.model_instances)-times]
 
         new_role = Role(model_instances=model_instances, permissions=perms)
-        self.model_instances = new_role.model_instances
-        self.hierarchy = new_role.hierarchy
-        self.permissions = new_role.permissions
 
-        del new_role
+        return new_role
 
     def reset_perms(self, perms=[]):
         self.permissions = Permissions(perms, self.hierarchy)
 
     def _role_matcher(self, model_instances):
         inst_names = [inst.__class__.__name__ for inst in model_instances]
-        role_name = Hierarchy.match_hierarchy(inst_names, PermConst.ROLES)
+        role_name = PermConst.Hierarchy.match_hierarchy(inst_names, PermConst.ROLES)
         assert role_name is not None, 'Role matcher could not find role with that hierarchy of models'
         return role_name
 

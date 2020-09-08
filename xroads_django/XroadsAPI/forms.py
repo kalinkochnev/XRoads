@@ -2,7 +2,10 @@ from XroadsAPI.models import *
 from rest_framework.fields import empty
 
 from XroadsAPI.models import *
-from XroadsAPI.permissions import Hierarchy, Permissions
+import XroadsAuth.permisson_constants as PermConst
+from XroadsAuth.permissions import Permissions
+
+import XroadsAuth.models as AuthModels
 from rest_framework import serializers
 
 class UserEmailForm(serializers.Serializer):
@@ -19,8 +22,8 @@ class UserEmailForm(serializers.Serializer):
 
         for email in self.validated_data['emails']:
             try:
-                profiles.append(Profile.objects.get(email=email))
-            except Profile.DoesNotExist:
+                profiles.append(AuthModels.Profile.objects.get(email=email))
+            except AuthModels.Profile.DoesNotExist:
                 non_existant_emails.append(email)
         
         return profiles, non_existant_emails
@@ -34,7 +37,7 @@ class AdminRoleForm(UserEmailForm):
 
 
     def validate_permissions(self, value):
-        hier = Hierarchy.get_hierarchy(self.hier_role)
+        hier = PermConst.Hierarchy.get_hierarchy(self.hier_role)
         try:
             perm_class = Permissions(value, hier)
             return value

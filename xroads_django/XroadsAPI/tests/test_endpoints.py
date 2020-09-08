@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.test import APIClient
 
-from XroadsAPI.permissions import Role
+from XroadsAuth.permissions import Role
 from XroadsAPI.serializers import *
 
 

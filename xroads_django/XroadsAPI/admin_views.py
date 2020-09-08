@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from XroadsAPI import mixins as api_mixins
 from XroadsAPI.forms import *
-from XroadsAPI.permissions import *
+from XroadsAuth.permissions import *
 from XroadsAPI.serializers import *
 
 

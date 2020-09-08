@@ -5,6 +5,7 @@ import pytest
 
 from XroadsAPI.serializers import *
 from XroadsAPI.slide import SlideTemplates
+from XroadsAuth.models import Profile
 
 
 def test_profile_serialization(db):

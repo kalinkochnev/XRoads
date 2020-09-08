@@ -1,6 +1,6 @@
 import pytest
 
-import XroadsAPI.permisson_constants as PermConst
+import XroadsAuth.permisson_constants as PermConst
 from XroadsAPI.forms import *
 
 

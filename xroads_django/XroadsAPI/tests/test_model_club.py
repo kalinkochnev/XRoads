@@ -2,7 +2,8 @@ import tempfile
 
 import pytest
 
-from XroadsAPI.models import *
+from XroadsAuth.models import Profile
+from XroadsAPI.models import School, District, Club
 
 
 @pytest.fixture

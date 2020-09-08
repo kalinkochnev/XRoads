@@ -1,16 +1,15 @@
 import pytest
 
-import XroadsAPI.permisson_constants as PermConst
 from XroadsAPI.exceptions import *
 from XroadsAPI.models import *
-from XroadsAPI.permissions import Role, Permissions
-from XroadsAPI.permisson_constants import Hierarchy
-
+from XroadsAuth.permissions import Role, Permissions
+import XroadsAuth.permisson_constants as PermConst
+from XroadsAuth.exceptions import RoleNotComparable, InvalidRoleCreated
 
 @pytest.mark.usefixtures("db")
 class TestHierarchy:
     def test_create_hierarchy(self):
-        heirarchy = Hierarchy(District, School, Club, name="Club Editor")
+        heirarchy = PermConst.Hierarchy(District, School, Club, name="Club Editor")
 
         assert heirarchy.level_names[0] == 'District'
         assert heirarchy.level_names[1] == 'School'
@@ -18,9 +17,9 @@ class TestHierarchy:
 
     def test_get_hier(self):
         PermConst.ROLES = [
-            Hierarchy(District, name=PermConst.DISTRICT_ADMIN)
+            PermConst.Hierarchy(District, name=PermConst.DISTRICT_ADMIN)
         ]
-        assert Hierarchy.get_hierarchy(
+        assert PermConst.Hierarchy.get_hierarchy(
             PermConst.DISTRICT_ADMIN) == PermConst.ROLES[0]
 
 
@@ -63,7 +62,7 @@ class TestPermissionClass:
         assert perm.has_all_perms is True
 
     def test_add_perms_already_all(self, perm_const_override):
-        test_hier = Hierarchy(District, School, Club, name="test_hier", poss_perms=[
+        test_hier = PermConst.Hierarchy(District, School, Club, name="test_hier", poss_perms=[
                               'some_str', 'other_str'])
         perm = Permissions([], hierarchy=test_hier)
 
@@ -73,7 +72,7 @@ class TestPermissionClass:
         assert perm.permissions == {'__all__'}
 
     def test_to_str(self, perm_const_override):
-        test_hier = Hierarchy(District, School, Club, name="test_hier", poss_perms=[
+        test_hier = PermConst.Hierarchy(District, School, Club, name="test_hier", poss_perms=[
                               'some_str', 'other_str'])
         perm = Permissions([], hierarchy=test_hier)
 
@@ -144,7 +143,7 @@ class TestRole:
     def test_str_matches(self, role_model_instances, perm_const_override):
         district1, school1, club1 = role_model_instances()
 
-        test_hier = Hierarchy(District, School, Club, name="test_hier", poss_perms=[
+        test_hier = PermConst.Hierarchy(District, School, Club, name="test_hier", poss_perms=[
                               'some_str', 'other_str'])
         role = Role.create(district1, school1, club1)
         role.hierarchy = test_hier
@@ -382,16 +381,16 @@ class TestRole:
         district1, school1, club1 = role_model_instances()
 
         role = Role.create(district1, school1, club1)
-        role.go_up_levels(times=1, perms=['modify-school'])
+        new_role = role.go_up_levels(times=1, perms=['modify-school'])
 
-        assert Role.create(district1, school1) == role
-        assert role.permissions.permissions == {'modify-school'}
+        assert Role.create(district1, school1) == new_role
+        assert new_role.permissions.permissions == {'modify-school'}
 
         role = Role.create(district1, school1, club1)
-        role.go_up_levels(times=2, perms=['create-school', 'modify-district'])
+        new_role = role.go_up_levels(times=2, perms=['create-school', 'modify-district'])
 
-        assert Role.create(district1) == role
-        assert role.permissions.permissions == {'create-school', 'modify-district'}
+        assert Role.create(district1) == new_role
+        assert new_role.permissions.permissions == {'create-school', 'modify-district'}
 
         # Goes outside of possible roles
         with pytest.raises(AssertionError):
@@ -428,7 +427,7 @@ class TestRole:
 
 @pytest.fixture
 def role_test_data():
-    min_hier = Hierarchy.get_hierarchy(PermConst.SCHOOL_ADMIN)
+    min_hier = PermConst.Hierarchy.get_hierarchy(PermConst.SCHOOL_ADMIN)
     min_perms = ['modify-school']
 
     return min_hier, min_perms

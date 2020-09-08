@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from XroadsAPI.models import *
+import XroadsAuth.models as AuthModels
 
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
@@ -25,13 +26,13 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Profile
+        model = AuthModels.Profile
         fields = ['id', 'email', 'first_name', 'last_name', 'is_anon']
         allow_null = True
 
 class AnonProfileSerializer(DynamicFieldsModelSerializer):
     class Meta:
-        model = Profile
+        model = AuthModels.Profile
         fields = ['id', 'email', 'first_name', 'last_name', 'is_anon']
         allow_null = True
 
