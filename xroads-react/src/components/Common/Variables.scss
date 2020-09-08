@@ -2,11 +2,12 @@
 
 $redDefault: #c32032;
 $redHover: #b92133;
-$greyBackground: #F5FAFC;
+$greyBackground: #e2ebee;
 
 $greyOutline: rgb(211, 211, 211);
 $thinOutline: solid $greyOutline 2px;
-$lightShadow: 6px 6px 18px -19px #000;
+$darkShadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+$lightShadow: 0 10px 20px rgba(0,0,0,0.07), 0 6px 6px rgba(0,0,0,0.08);
 
 $cardRoundBig: 20px;
 $cardRoundSmall: 10px;

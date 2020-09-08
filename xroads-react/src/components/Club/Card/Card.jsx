@@ -19,7 +19,6 @@ class ClubBrowserCard extends React.Component {
         >
           <div className="info">
             <h1>{this.props.title}</h1>
-            <p>{this.props.description}</p>
           </div>
         </div>
       </Link>
