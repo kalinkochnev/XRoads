@@ -15,7 +15,10 @@ class TestProfileSerializers:
             'first_name': user_obj.first_name,
             'last_name': user_obj.last_name,
             'is_anon': user_obj.is_anon,
+            'school': None,
+            'district': None,
             'permissions': [],
+            
         }
 
         assert expected == ProfileSerializer(user_obj).data
@@ -30,6 +33,8 @@ class TestProfileSerializers:
             'first_name': user_obj.first_name,
             'last_name': user_obj.last_name,
             'is_anon': user_obj.is_anon,
+            'school': None,
+            'district': None,
             'permissions': [],
         }
 
@@ -72,6 +77,8 @@ class TestProfileSerializers:
             'email': prof.email,
             'first_name': prof.first_name,
             'last_name': prof.last_name,
+            'school': None,
+            'district': None,
             'is_anon': prof.is_anon,
             'permissions': [
                 f'Club-{c1.id}/perms=[add-admin, modify-club]',
@@ -80,6 +87,27 @@ class TestProfileSerializers:
         }
 
         assert ProfileSerializer(prof).data == expected
+
+    def test_district_school_set(self, role_model_instances, create_test_prof):
+        d1, s1, c1 = role_model_instances()
+        
+        prof = create_test_prof(1)
+        prof.join_school(s1)
+        prof.district = d1
+        prof.save()
+
+        expected = {
+            'id': prof.id,
+            'email': prof.email,
+            'first_name': prof.first_name,
+            'last_name': prof.last_name,
+            'school': s1.id,
+            'district': d1.id,
+            'is_anon': prof.is_anon,
+            'permissions': []
+        }
+
+
 
 
 class TestAnonProfileSerializers:
