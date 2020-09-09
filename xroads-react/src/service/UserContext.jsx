@@ -1,5 +1,6 @@
 import React from "react";
 import { useState } from "react";
+import { Cookies } from "react-cookie";
 
 class User {
     constructor() {
@@ -10,6 +11,19 @@ class User {
         this.district = null;
         this.firstName = '';
         this.lastName = '';
+
+        this.checkLoggedIn();
+    }
+
+    checkLoggedIn() {
+        let cookies = new Cookies();
+        // Only need to check if Header Payload is null since js can't access the signature
+        if (cookies.get('JWT-HEADER-PAYLOAD') == null) {
+            this.loggedIn = false;
+        } else {
+            this.loggedIn = true;
+        }
+
     }
 
     logIn(response) {

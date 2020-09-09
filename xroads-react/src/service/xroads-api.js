@@ -87,8 +87,8 @@ export function signup(formData) {
 
 export function removeAuthCookies() {
     let cookies = new Cookies();
-    cookies.remove('JWT-SIGNATURE');
-    cookies.remove('JWT-HEADER-PAYLOAD');
+    cookies.remove('JWT-SIGNATURE', { path: '/' });
+    cookies.remove('JWT-HEADER-PAYLOAD', { path: '/' });
 }
 
 export function login(formData) {

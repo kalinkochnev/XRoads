@@ -1,4 +1,4 @@
-from dj_rest_auth.views import LoginView
+from dj_rest_auth.views import LoginView, LogoutView
 from django.conf import settings
 from django.shortcuts import render
 from rest_framework import status
@@ -63,3 +63,6 @@ class CustomLoginView(LoginView):
         self.bake_cookies(response)
         
         return response
+
+class CustomLogoutView(LogoutView):
+    pass
