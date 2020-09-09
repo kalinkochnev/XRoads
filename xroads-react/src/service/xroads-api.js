@@ -45,11 +45,9 @@ function getUrl(urlName, urlArgs) {
  * @param  {object}            [body=null] payload for post/put
  * @return {object}                        config
  */
-function generateFetchConfig(method, body = null, authorize = true) {
+function generateFetchConfig(method, body = null) {
     const upCasedMethod = method.toUpperCase();
 
-
-    
     let config = {
         method: upCasedMethod,
         headers: {
@@ -59,21 +57,16 @@ function generateFetchConfig(method, body = null, authorize = true) {
         credentials: 'same-origin'
     };
 
-    // if (authorize) {
-    //     const cookies = new Cookies()    
-    //     // const token = process.env.REACT_APP_XROADS_TEMP_TOKEN;
-    //     const token = cookies.get("xroads-token").access_token;
-    //     config.headers['Authorization'] = `Bearer ${token}`;
-    // }
-
     if (['POST', 'PUT'].includes(upCasedMethod)) {
+        // Get the CSRF token from the cookies
+        // config.headers = new Cookies().get('')
         config.body = JSON.stringify(body);
     }
     return config;
 }
 
-async function sendRequest(urlName, urlArgs, method, body = null, authorize = true) {
-    return await fetch(getUrl(urlName, urlArgs), generateFetchConfig(method, body, authorize));
+async function sendRequest(urlName, urlArgs, method, body = null) {
+    return await fetch(getUrl(urlName, urlArgs), generateFetchConfig(method, body));
 }
 
 export function fetchClubs(districtId, schoolId) {
@@ -100,9 +93,10 @@ export function removeAuthCookies() {
 
 export function login(formData) {
     removeAuthCookies();
+    
     let requiredKeys = ['email', 'password']
     if (!isEqual(Object.keys(formData), requiredKeys)) {
         throw InvalidKeysProvided('The login form did not have the right values')
     }
-    return sendRequest('login', {}, 'POST', formData, false);
+    return sendRequest('login', {}, 'POST', formData);
 }

@@ -5,7 +5,7 @@ import "./AuthForm.scss";
 import { login } from "../../../service/xroads-api";
 import { useHistory } from 'react-router-dom';
 import { displayFormHelp, defaultFail} from '../../../components/User/Forms/helper';
-import { UserContext } from "../../../service/UserContext";
+import { UserContext, User } from "../../../service/UserContext";
 import { useContext } from "react";
 
 
@@ -24,13 +24,17 @@ const LoginForm = ({ setAlert })  => {
   }
 
   const onSubmit = (values, { setSubmitting, setFieldError }) => {
+    console.log(values)
       login(values).then(response => {
+        console.log(response);
         let successCallback = (response, functions, data) => {
           functions.setAlert("success", "You logged in successfully!", true);
           
           setUser(prevState => {
             let user = Object.assign({}, prevState);
-            user.loggedIn = true;
+            Object.setPrototypeOf(user, User.prototype );
+            
+            user.logIn(response);
             return user;
           });
 

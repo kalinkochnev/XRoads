@@ -8,16 +8,27 @@ class User {
         
         this.school = null;
         this.district = null;
-        this.followed_clubs = [];
-        console.log(this);
+        this.firstName = '';
+        this.lastName = '';
     }
 
-    logIn() {
+    logIn(response) {
         this.loggedIn = true;
+        response.json().then(body => {
+            this.loadUserDetail(body.user);
+        });
     }
 
     logout() {
         this.loggedIn = false;
+    }
+
+    loadUserDetail(data) {
+        this.permissions = data.permissions;
+        this.school = data.school;
+        this.district = data.district;
+        this.firstName = data.first_name;
+        this.lastName = data.last_name;
     }
 
 }
