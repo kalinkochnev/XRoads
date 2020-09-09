@@ -89,7 +89,7 @@ class Profile(AbstractUser):
     @property
     def permissions(self):
         from .permissions import Role
-        return [Role.from_str(i) for i in self.hierarchy_perms]
+        return [Role.from_str(i.perm_name) for i in self.hierarchy_perms.all()]
 
     def match_district(self, save=True):
         self.district = AuthModels.District.match_district(self.email)

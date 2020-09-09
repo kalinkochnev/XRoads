@@ -72,7 +72,7 @@ class Permissions:
         self.permissions.difference_update(perms)
 
     def __str__(self):
-        perm_str = ', '.join(map(str, self.permissions))
+        perm_str = ', '.join(map(str, sorted(self.permissions)))
         return f'perms=[{perm_str}]'
 
 

@@ -6,6 +6,7 @@ from rest_framework.test import APIClient
 
 from XroadsAuth.permissions import Role
 from XroadsAPI.serializers import *
+from XroadsAuth.serializers import *
 
 
 # ALL views will have their authentication forced. The system used is subject to

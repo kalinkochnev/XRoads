@@ -7,7 +7,7 @@ from XroadsAPI import mixins as api_mixins
 from XroadsAPI.forms import *
 from XroadsAuth.permissions import *
 from XroadsAPI.serializers import *
-
+from XroadsAuth.serializers import ProfileSerializer
 
 # TODO make sure that you set read_only=True on nested fields so then .update() works
 

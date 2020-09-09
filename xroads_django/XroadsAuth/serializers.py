@@ -3,7 +3,30 @@ from dj_rest_auth.serializers import LoginSerializer
 from rest_framework import serializers
 
 from XroadsAPI.models import District
-from XroadsAuth.models import HierarchyPerms
+from XroadsAuth.models import HierarchyPerms, Profile
+from XroadsAuth.utils import DynamicFieldsModelSerializer
+
+class ProfileSerializer(serializers.ModelSerializer):
+    permissions = serializers.ListField(child=serializers.CharField(), read_only=True)
+    class Meta:
+        model = Profile
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon', 'permissions']
+        read_only_fields = ['permissions']
+        allow_null = True
+
+class AnonProfileSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon']
+        allow_null = True
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+
+        # Removes all anonymous users information from serialization
+        if 'is_anon' in rep and rep['is_anon']:
+            return {'is_anon': True}
+        return rep
 
 
 class CustomRegister(RegisterSerializer):
@@ -28,6 +51,8 @@ class CustomRegister(RegisterSerializer):
             'first_name': self.validated_data.get('first_name', ''),
             'last_name': self.validated_data.get('last_name', ''),
         }
+
+
 
 
 class CustomLoginSerializer(LoginSerializer):

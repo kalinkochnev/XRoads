@@ -207,7 +207,11 @@ ACCESS_TOKEN_LIFETIME = timedelta(days=7)
 
 # Needed for dj-rest-auth
 REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'XroadsAuth.serializers.CustomRegister'
+    'REGISTER_SERIALIZER': 'XroadsAuth.serializers.CustomRegister',
+}
+
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'XroadsAuth.serializers.ProfileSerializer',
 }
 
 SWAGGER_SETTINGS = {
