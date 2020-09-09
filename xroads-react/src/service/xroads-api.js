@@ -9,6 +9,7 @@ const endpoint_templates = {
     'signup': '/auth/registration/',
     'club_list': '/api/district/:districtId/school/:schoolId/club/',
     'club_detail': '/api/district/:districtId/school/:schoolId/club/:clubId',
+    'admin_club_detail': '/api/admin/district/:districtId/school/:schoolId/club/:clubId'
 };
 
 function fillTemplate(urlName, urlArgs) {
@@ -59,13 +60,6 @@ function generateFetchConfig(method, body = null, authorize = true) {
         credentials: 'same-origin'
     };
 
-    // if (authorize) {
-    //     const cookies = new Cookies()    
-    //     // const token = process.env.REACT_APP_XROADS_TEMP_TOKEN;
-    //     const token = cookies.get("xroads-token").access_token;
-    //     config.headers['Authorization'] = `Bearer ${token}`;
-    // }
-
     if (['POST', 'PUT'].includes(upCasedMethod)) {
         config.body = JSON.stringify(body);
     }
@@ -90,6 +84,10 @@ export function signup(formData) {
         throw InvalidKeysProvided('The signup form did not have the right values')
     }
     return sendRequest('signup', {}, 'POST', formData, false);
+}
+
+export function updateClub(districtId, schoolId, clubId, updatedClub) {
+    return sendRequest('admin_club_detail', { 'districtId': districtId, 'schoolId': schoolId, 'clubId': clubId }, 'PUT', updatedClub);
 }
 
 export function removeAuthCookies() {

@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { Editor, EditorState, RichUtils, getDefaultKeyBinding } from 'draft-js';
+import { Editor, EditorState, ContentState, RichUtils, getDefaultKeyBinding , convertFromRaw, convertToRaw } from 'draft-js';
+import { draftToMarkdown, markdownToDraft } from 'markdown-draft-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faListOl, faQuoteLeft, fa, faUnderline, faItalic, faBold, faListUl } from '@fortawesome/free-solid-svg-icons'
+import { faListOl, faQuoteLeft, fa, faUnderline, faItalic, faBold, faListUl, faHeading } from '@fortawesome/free-solid-svg-icons'
 
 
 import 'draft-js/dist/Draft.css';
@@ -13,7 +14,10 @@ import './RichEditor.scss';
 const {useState, useRef, useCallback} = React;
 
 function RichEditor(props) {
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+
+  const currContentState = convertFromRaw(markdownToDraft(props.mdContent));
+
+  const [editorState, setEditorState] = useState(EditorState.createWithContent(currContentState));
   const editor = useRef(null);
 
   const focus = () => {
@@ -66,6 +70,14 @@ function RichEditor(props) {
     }
   }
 
+  const updateEditorState = (newEditorState) => {
+    const content = newEditorState.getCurrentContent();
+    const rawObject = convertToRaw(content);
+    const markdownString = draftToMarkdown(rawObject);
+    props.onChange(markdownString);
+    setEditorState(newEditorState);
+  }
+
   return (
     <div className="RichEditor-root">
       <InlineStyleControls
@@ -92,7 +104,7 @@ function RichEditor(props) {
           editorState={editorState}
           handleKeyCommand={handleKeyCommand}
           keyBindingFn={mapKeyToEditorCommand}
-          onChange={setEditorState}
+          onChange={updateEditorState}
           ref={editor}
           spellCheck={true}
         />
@@ -120,7 +132,7 @@ function getBlockStyle(block) {
   }
 }
 
-function StyleButton({onToggle, active, label, style}) {
+function StyleButton({onToggle, active, label, icon, style}) {
   let className = 'RichEditor-styleButton';
   if (active) {
     className += ' RichEditor-activeButton';
@@ -134,18 +146,19 @@ function StyleButton({onToggle, active, label, style}) {
         onToggle(style);
       }}>
       {typeof(label)=='string' && <b>{label}</b>}
-      <FontAwesomeIcon icon={label} />
+      { icon && <FontAwesomeIcon icon={icon} /> }
+      
     </span>
   );
 }
 
 const BLOCK_TYPES = [
-  {label: 'H1', style: 'header-one'},
-  {label: 'H2', style: 'header-two'},
-  {label: 'H3', style: 'header-three'},
-  {label: faQuoteLeft, style: 'blockquote'},
-  {label: faListUl, style: 'unordered-list-item'},
-  {label: faListOl, style: 'ordered-list-item'},
+  {id: 'h1', label: 'H1', style: 'header-one'},
+  {id: 'h2', label: 'H2', style: 'header-two'},
+  {id: 'h3', label: 'H3', style: 'header-three'},
+  {id: 'leftQuote', icon: faQuoteLeft,  style: 'blockquote'},
+  {id: 'unorderedList',  icon: faListUl, style: 'unordered-list-item'},
+  {id: 'orderedList',  icon: faListOl, style: 'ordered-list-item'},
 ];
 
 function BlockStyleControls({editorState, onToggle}) {
@@ -159,11 +172,12 @@ function BlockStyleControls({editorState, onToggle}) {
     <div className="RichEditor-controls RichEditor-blockControls">
       {BLOCK_TYPES.map(type => (
         <StyleButton
-          key={type.label}
+          key={type.id}
           active={type.style === blockType}
           label={type.label}
           onToggle={onToggle}
           style={type.style}
+          icon={type.icon}
         />
       ))}
     </div>
@@ -171,9 +185,9 @@ function BlockStyleControls({editorState, onToggle}) {
 }
 
 const INLINE_STYLES = [
-  {label: faBold, style: 'BOLD'},
-  {label: faItalic, style: 'ITALIC'},
-  {label: faUnderline, style: 'UNDERLINE'},
+  {id: 'bold', label: faBold, icon: faBold, style: 'BOLD'},
+  {id: 'italic', label: faItalic, icon: faItalic, style: 'ITALIC'},
+  {id: 'underline', label: faUnderline, icon: faUnderline, style: 'UNDERLINE'},
 ];
 
 function InlineStyleControls({editorState, onToggle}) {
@@ -182,11 +196,12 @@ function InlineStyleControls({editorState, onToggle}) {
     <div className="RichEditor-controls">
       {INLINE_STYLES.map(type => (
         <StyleButton
-          key={type.label}
+          key={type.id}
           active={currentStyle.has(type.style)}
           label={type.label}
           onToggle={onToggle}
           style={type.style}
+          icon={type.icon}
         />
       ))}
     </div>
