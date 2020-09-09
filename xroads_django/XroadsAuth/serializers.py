@@ -33,6 +33,4 @@ class CustomRegister(RegisterSerializer):
 class CustomLoginSerializer(LoginSerializer):
     pass
 
-# This should be used for read only
-class PermissionSerializer(serializers.Serializer): 
-    clubs = serializers.ID
+    

@@ -13,7 +13,7 @@ class ScreenClubBrowser extends React.Component {
     super(props);
     this.state = {
       allClubs: [],
-      clubs: [],
+      displayedClubs: [],
       clubIds: "",
     };
 
@@ -35,9 +35,25 @@ class ScreenClubBrowser extends React.Component {
     }
 
     this.setState({
-      clubs: matchingClubs
+      displayedClubs: matchingClubs
     });
 
+  }
+
+  removeInvisible(clubs) {
+    let editableClubsIDs = [5];
+    let filteredClubs = [];
+
+    for (let i = 0; i < clubs.length; i++) {
+      if (!clubs[i].is_visible) {
+        if (editableClubsIDs.includes(clubs[i].id)) {
+          filteredClubs.push(clubs[i]);
+        }
+      } else  {
+        filteredClubs.push(clubs[i]);
+      }
+    }
+    return filteredClubs;
   }
 
   loadClubs() {
@@ -46,14 +62,13 @@ class ScreenClubBrowser extends React.Component {
     let districtId = 1;
     let schoolId = 1;
     XroadsAPI.fetchClubs(districtId,schoolId).then( res => {
-      console.log("Received res from club endpoint", res);
       return res.json().then( clubs => {
-        console.log("Parsed out clubs from endpoint", clubs);
+        clubs = this.removeInvisible(clubs);
         // clubIds - this concatenates all clubids that come back into a string
         this.setState({
           allClubs : clubs,
-          clubs: clubs, 
-          clubIds : ""// clubs.reduceRight( (c,a) => c.id + a, "")
+          displayedClubs: clubs, 
+          clubIds : clubs.reduceRight( (c,a) => c.id + a, "")
         });
       });
     });
@@ -61,7 +76,7 @@ class ScreenClubBrowser extends React.Component {
   }
 
   render() {
-    const clubs = this.state.clubs;
+    const clubs = this.state.displayedClubs;
     return (  //TODO: Change the URL to actually work.
       
       <div>
