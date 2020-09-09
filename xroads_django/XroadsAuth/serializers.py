@@ -3,6 +3,7 @@ from dj_rest_auth.serializers import LoginSerializer
 from rest_framework import serializers
 
 from XroadsAPI.models import District
+from XroadsAuth.models import HierarchyPerms
 
 
 class CustomRegister(RegisterSerializer):
@@ -31,3 +32,7 @@ class CustomRegister(RegisterSerializer):
 
 class CustomLoginSerializer(LoginSerializer):
     pass
+
+# This should be used for read only
+class PermissionSerializer(serializers.Serializer): 
+    clubs = serializers.ID

@@ -82,9 +82,14 @@ class Profile(AbstractUser):
     """def make_editor(self, club):
         assert club.school == self.school, "You can't make somebody the editor of a club they aren't in"
 """
-    def add_perm(self, perm):
-        self.hierarchy_perms.add(perm)
-        self.make_save(save=True) 
+    def add_perms(self, *perms, save=True):
+        self.hierarchy_perms.add(*perms)
+        self.make_save(save) 
+
+    @property
+    def permissions(self):
+        from .permissions import Role
+        return [Role.from_str(i) for i in self.hierarchy_perms]
 
     def match_district(self, save=True):
         self.district = AuthModels.District.match_district(self.email)

@@ -208,7 +208,7 @@ class Role:
     def give_role(self, user: Profile):
         perm, created = HierarchyPerms.objects.get_or_create(
             perm_name=str(self))
-        user.add_perm(perm)
+        user.add_perms(perm)
 
     def remove_role(self, user: Profile):
         try:
