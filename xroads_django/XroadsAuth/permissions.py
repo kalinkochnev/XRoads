@@ -250,6 +250,12 @@ class Role:
 
         return perm_str
 
+    @property
+    def highest_level_str(self):
+        model_name = self.hierarchy.highest_level.__name__
+        model_id = self.model_instances[-1].id
+        return f'{model_name}-{model_id}/{self.permissions}'
+
     def _comparison(self, other_inst):
         # THIS DOES NOT COMPARE PERMISSIONS
 

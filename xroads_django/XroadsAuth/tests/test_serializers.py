@@ -74,8 +74,8 @@ class TestProfileSerializers:
             'last_name': prof.last_name,
             'is_anon': prof.is_anon,
             'permissions': [
-                f'District-{d1.id}/School-{s1.id}/Club-{c1.id}/perms=[add-admin, modify-club]',
-                f'District-{d1.id}/School-{s1.id}/perms=[__all__]',
+                f'Club-{c1.id}/perms=[add-admin, modify-club]',
+                f'School-{s1.id}/perms=[__all__]',
             ]
         }
 
@@ -129,7 +129,7 @@ class TestPermissionSerializer:
         role.give_role(prof)
 
         hier_perm = HierarchyPerms.objects.get(perm_name=str(role))
-        assert hier_perm.highest_level_str == 'School-1/perms=[create-club]'
+        assert hier_perm.highest_level_str == f'School-{school1.id}/perms=[create-club]'
 
     def test_serialize_permission(self, perm_const_override, create_test_prof, role_model_instances):
         prof = create_test_prof(1)

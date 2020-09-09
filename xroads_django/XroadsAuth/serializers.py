@@ -7,11 +7,10 @@ from XroadsAuth.models import HierarchyPerms, Profile
 from XroadsAuth.utils import DynamicFieldsModelSerializer
 
 class ProfileSerializer(serializers.ModelSerializer):
-    permissions = serializers.ListField(child=serializers.CharField(), read_only=True)
+    permissions = serializers.ListField(child=serializers.CharField(), read_only=True, source='simple_perm_strs')
     class Meta:
         model = Profile
         fields = ['id', 'email', 'first_name', 'last_name', 'is_anon', 'permissions']
-        read_only_fields = ['permissions']
         allow_null = True
 
 class AnonProfileSerializer(DynamicFieldsModelSerializer):
