@@ -1,7 +1,8 @@
+from allauth.account.models import EmailAddress
+from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth import get_user_model, authenticate
-from allauth.account.models import EmailAddress
+
 
 class CustomUserManager(BaseUserManager):
     """This custom user manager uses email as the unique identifiers for authentication instead of usernames.

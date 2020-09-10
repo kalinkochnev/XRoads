@@ -1,17 +1,29 @@
-from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.utils.translation import gettext_lazy as _
-from XroadsAuth.manager import CustomUserManager 
-import re
 from allauth.account.models import EmailAddress
-from django.core.exceptions import FieldError
-import XroadsAPI.models as api_models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-# Create your models here
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.utils.translation import gettext_lazy as _
 
+from XroadsAuth.manager import CustomUserManager
+import XroadsAPI.models as AuthModels
+
+# Create your models here
 class HierarchyPerms(models.Model):
     perm_name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.perm_name
+
+    @property
+    def role(self):
+        from .permissions import Role
+        return Role.from_str(self.perm_name)
+
+    @property
+    def highest_level_str(self):
+        # This creates a string in the format of [highest_level]/perms=[]  ex School-1/perms=[]
+        return '/'.join(str(self.role).split("/")[-2:])
+
+
 
 """class AddRemoveAdminMixin(models.Model):
     class Meta:
@@ -73,10 +85,19 @@ class Profile(AbstractUser):
     """def make_editor(self, club):
         assert club.school == self.school, "You can't make somebody the editor of a club they aren't in"
 """
-    def add_perm(self, perm):
-        self.hierarchy_perms.add(perm)
-        self.make_save(save=True) 
+    def add_perms(self, *perms, save=True):
+        self.hierarchy_perms.add(*perms)
+        self.make_save(save) 
+
+    @property
+    def permissions(self):
+        from .permissions import Role
+        return [Role.from_str(i.perm_name) for i in self.hierarchy_perms.all()]
+
+    @property
+    def simple_perm_strs(self):
+        return [i.highest_level_str for i in self.permissions]
 
     def match_district(self, save=True):
-        self.district = api_models.District.match_district(self.email)
+        self.district = AuthModels.District.match_district(self.email)
         self.make_save(save)

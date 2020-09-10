@@ -1,93 +1,11 @@
-from XroadsAPI.models import *
-from XroadsAPI.serializers import *
-from collections import OrderedDict
 import tempfile
+from collections import OrderedDict
+
 import pytest
+
+from XroadsAPI.serializers import *
 from XroadsAPI.slide import SlideTemplates
-
-
-def test_profile_serialization(db):
-    user_obj: Profile = Profile.objects.create_user(
-        email="a@email.com", password="password", first_name="a", last_name="b", is_anon=True)
-    expected = {
-        'id': user_obj.id,
-        'email': user_obj.email,
-        'first_name': user_obj.first_name,
-        'last_name': user_obj.last_name,
-        'is_anon': user_obj.is_anon,
-    }
-
-    assert expected == ProfileSerializer(user_obj).data
-
-
-def test_profile_optional_fields(db):
-    user_obj = Profile.objects.create_user(
-        email="a@email.com", password="password", first_name="a", last_name="b")
-    expected = {
-        'id': user_obj.id,
-        'email': user_obj.email,
-        'first_name': user_obj.first_name,
-        'last_name': user_obj.last_name,
-        'is_anon': user_obj.is_anon,
-    }
-
-    assert expected == ProfileSerializer(user_obj).data
-
-
-def test_profile_from_dict(db):
-    user_obj: Profile = Profile(email="a@email.com", password="password",
-                                first_name="a", last_name="b",is_anon=True)
-    data = OrderedDict({
-        'email': user_obj.email,
-        'first_name': user_obj.first_name,
-        'last_name': user_obj.last_name,
-        'is_anon': user_obj.is_anon,
-    })
-
-    serializer = ProfileSerializer(data=data)
-    serializer.is_valid()
-    result: Profile = serializer.save()
-
-    assert result.email == user_obj.email
-    assert result.first_name == user_obj.first_name
-    assert result.last_name == user_obj.last_name
-    assert result.is_anon == user_obj.is_anon
-
-
-@pytest.fixture
-def gen_profiles(db, create_test_prof):
-    def gen_profiles(num):
-        visible = []
-        invisible = []
-        for i in range(num):
-            if i % 2 == 0:
-                visible.append(create_test_prof(num))
-            else:
-                invisible.append(create_test_prof(num))
-        return visible, invisible
-
-
-def test_anon_profile_remove_anon(db, gen_profiles, create_test_prof):
-    prof1 = create_test_prof(1, is_anon=True)
-    expected = {
-        'is_anon': True
-    }
-
-    assert AnonProfileSerializer(prof1).data == expected
-
-
-def test_anon_prof_not_anon_serialization(db, create_test_prof):
-    prof1 = create_test_prof(1)
-    expected = {
-        'id': prof1.id,
-        'email': prof1.email,
-        'first_name': prof1.first_name,
-        'last_name': prof1.last_name,
-        'is_anon': prof1.is_anon,
-    }
-
-    assert AnonProfileSerializer(prof1).data == expected
-
+from XroadsAuth.models import Profile
 
 def test_slide_serialization(db, temp_img, create_club):
     # Creates temp test iamge

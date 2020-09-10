@@ -1,18 +1,19 @@
-import pytest
-from django.contrib.auth import get_user_model, authenticate
-from XroadsAPI.models import *
-from XroadsAuth.models import *
-from rest_framework import status
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework.reverse import reverse
-from rest_framework.test import APIRequestFactory
-from rest_framework.views import APIView, Response
-from rest_framework.permissions import IsAuthenticated
-from http.cookies import SimpleCookie
 from datetime import timedelta, datetime
+from http.cookies import SimpleCookie
+
+import pytest
 from django.conf import settings
 from django.test import override_settings
 from django.utils import timezone
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.reverse import reverse
+from rest_framework.test import APIRequestFactory
+from rest_framework.views import APIView, Response
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+from XroadsAuth.models import *
+from XroadsAuth.serializers import ProfileSerializer
 
 PAYLOAD_COOKIE_NAME = settings.JWT_PAYLOAD_COOKIE_NAME
 SIGNATURE_COOKIE_NAME = settings.JWT_SIGNATURE_COOKIE_NAME
@@ -220,3 +221,21 @@ class TestLoginView:
         assert PAYLOAD_COOKIE_NAME not in response.cookies.keys()
         assert SIGNATURE_COOKIE_NAME not in response.cookies.keys()
         assert 'xroads-auth' not in response.cookies.keys()
+
+    def test_user_serializer_used(self, role_model_instances, setup_client_no_auth, make_request, setup_auth_cookies):
+        prof = Profile.create_profile("test@niskyschools.org", "password123", 'a', 'b', verified=True)
+        prof, cookies = setup_auth_cookies(prof=prof)
+
+        d1, s1, c1 = role_model_instances()
+        d1.add_email_domain('niskyschools.org')
+        client = setup_client_no_auth
+
+        data = {
+            'email': 'test@niskyschools.org',
+            'password': 'password123',
+        }
+
+        path = reverse('cookie_login')
+        response = make_request(client, 'post', path=path, data=data, format='json')
+        
+        assert response.data['user'] == ProfileSerializer(prof).data

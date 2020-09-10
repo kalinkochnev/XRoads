@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from XroadsAPI.models import *
-
+import XroadsAPI.models as Models
 
 class Hierarchy:
     def __init__(self, *models, poss_perms=[], **kwargs):
@@ -16,7 +15,7 @@ class Hierarchy:
         return [level.__name__ for level in self.levels]
 
     @classmethod
-    def get_hierarchy(cls, name) -> PermConst.Hierarchy:
+    def get_hierarchy(cls, name):
         results = list(filter(lambda x: x.name == name, ROLES))
         assert len(results) == 1, 'There are multiple hierarchies with the same name!'
 
@@ -44,13 +43,13 @@ class Hierarchy:
 DISTRICT_ADMIN = 'District Admin'
 SCHOOL_ADMIN = 'School Admin'
 CLUB_EDITOR = 'Club Editor'
-ROLE_HIERARCHY = Hierarchy(District, School, Club, name=CLUB_EDITOR)
+ROLE_HIERARCHY = Hierarchy(Models.District, Models.School, Models.Club, name=CLUB_EDITOR)
 # TODO create permission constants so then the strings can be changed
 # TODO create permission thing that updates the old strings with the renamed strings
 # TODO create permission thing that finds permission objects with the same string instead of creating a new permission 
 # Roles go from highest level to lowest level in ROLES list 
 ROLES = [
-    Hierarchy(District, name=DISTRICT_ADMIN, poss_perms=['__all__', 'create-school', 'modify-district', 'add-admin', 'remove-admin']),
-    Hierarchy(District, School, name=SCHOOL_ADMIN, poss_perms=['__all__', 'create-club', 'modify-school', 'hide-club', 'view-user-detail', 'hide-school',]),
-    Hierarchy(District, School, Club, name=CLUB_EDITOR, poss_perms=['__all__', 'modify-club', 'add-admin']),
+    Hierarchy(Models.District, name=DISTRICT_ADMIN, poss_perms=['__all__', 'create-school', 'modify-district', 'add-admin', 'remove-admin']),
+    Hierarchy(Models.District, Models.School, name=SCHOOL_ADMIN, poss_perms=['__all__', 'create-club', 'modify-school', 'hide-club', 'view-user-detail', 'hide-school',]),
+    Hierarchy(Models.District, Models.School, Models.Club, name=CLUB_EDITOR, poss_perms=['__all__', 'modify-club', 'add-admin', 'hide-club']),
 ]

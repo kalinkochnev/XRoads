@@ -1,7 +1,8 @@
 import pytest
 from django.test import override_settings
 from XroadsAPI.models import *
-import XroadsAPI.permisson_constants as PermConst
+from XroadsAuth.models import Profile
+import XroadsAuth.permisson_constants as PermConst
 import tempfile
 from PIL import Image
 from XroadsAPI.slide import SlideTemplates

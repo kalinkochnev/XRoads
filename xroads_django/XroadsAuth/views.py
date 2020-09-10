@@ -1,11 +1,9 @@
-from django.shortcuts import render
-from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from dj_rest_auth.views import LoginView
+from dj_rest_auth.views import LoginView, LogoutView
 from django.conf import settings
-from rest_framework.response import Response
+from django.shortcuts import render
 from rest_framework import status
-from rest_framework_simplejwt.settings import api_settings as jwt_settings
+from rest_framework.response import Response
+
 
 # Create your views here.
 def email_confirm_success(request):
@@ -65,3 +63,6 @@ class CustomLoginView(LoginView):
         self.bake_cookies(response)
         
         return response
+
+class CustomLogoutView(LogoutView):
+    pass

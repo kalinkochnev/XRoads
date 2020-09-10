@@ -16,6 +16,7 @@
     "markdown-draft-js": "^2.2.1",
     "react": "^16.13.1",
     "react-cookie": "^4.0.3",
+    "react-cookies": "^0.1.1",
     "react-dom": "^16.13.1",
     "react-linkify": "^1.0.0-alpha",
     "react-markdown": "^4.3.1",
