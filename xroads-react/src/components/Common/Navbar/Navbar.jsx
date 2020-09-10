@@ -4,7 +4,7 @@ import {removeAuthCookies} from '../../../service/xroads-api'
 import { useHistory } from "react-router-dom";
 import { AlertBar, Message } from "../AlertBar/AlertBar";
 import { useContext } from "react";
-import { UserContext } from "../../../service/UserContext";
+import { UserContext, User } from "../../../service/UserContext";
 
 const Navbar = () => {
   const history = useHistory();
@@ -14,7 +14,8 @@ const Navbar = () => {
     removeAuthCookies();
     setUser(prevState => {
       let user = Object.assign({}, prevState);
-      user.loggedIn = false
+      Object.setPrototypeOf(user, User.prototype );
+      user.logout();
       return user;
     });
     return history.replace('/login')

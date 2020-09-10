@@ -1,16 +1,13 @@
-from XroadsAPI.models import *
 from rest_framework import generics, viewsets, mixins, status
-from rest_framework.views import APIView
 from rest_framework.decorators import action
-from rest_framework.generics import get_object_or_404
-from XroadsAPI.serializers import *
-from rest_framework.response import Response
-from collections import OrderedDict
-from XroadsAPI.permissions import *
-from XroadsAPI.serializers import *
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from XroadsAPI.forms import *
+from rest_framework.response import Response
+
 from XroadsAPI import mixins as api_mixins
+from XroadsAPI.forms import *
+from XroadsAuth.permissions import *
+from XroadsAPI.serializers import *
+from XroadsAuth.serializers import ProfileSerializer
 
 # TODO make sure that you set read_only=True on nested fields so then .update() works
 

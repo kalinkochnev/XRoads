@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from rest_framework import generics, viewsets, mixins
-from rest_framework.decorators import action
 from rest_framework import viewsets
-from XroadsAPI.serializers import *
-from rest_framework.response import Response
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from XroadsAPI.serializers import *
+
 
 # Create your views here.
 def csrf(request):

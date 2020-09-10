@@ -1,7 +1,10 @@
-import pytest
-from XroadsAPI.models import *
 import tempfile
+
+import pytest
+
+from XroadsAPI.models import *
 from XroadsAPI.slide import SlideTemplates
+
 
 @pytest.fixture
 def template_setup():

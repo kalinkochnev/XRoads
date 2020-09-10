@@ -13,13 +13,21 @@ export function showOneError(formik) {
   
 export function defaultFail(response, functions, data) {
     response.json().then(body => {
+        let hasKnownError = false;
+
         if (Object.keys(body).includes("non_field_errors")) {
             functions.setAlert("warning", body.non_field_errors[0], false);
+            hasKnownError = true;
         }
         for (var field of Object.keys(body)) {
             if (Object.keys(data.values).includes(field)) {
                 functions.setFieldError(field, body[field][0])
+                hasKnownError = true;
             }
+        }
+
+        if (!hasKnownError) {
+            functions.setAlert("danger", "An unexpected error occurred");
         }
     })
     
