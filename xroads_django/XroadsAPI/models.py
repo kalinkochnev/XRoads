@@ -39,7 +39,7 @@ class Club(models.Model):
     members = models.ManyToManyField('XroadsAuth.Profile', blank=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - id: {self.id}"
 
     def make_save(self, save):
         if save:
@@ -85,7 +85,7 @@ class School(models.Model):
         'District', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - id: {self.id}"
 
     def make_save(self, save):
         if save:
@@ -113,7 +113,7 @@ class District(models.Model):
     name = models.CharField(max_length=40)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - id: {self.id}"
 
     def add_school(self, school: School):
         school.district = self

@@ -9,6 +9,7 @@ const endpoint_templates = {
     'signup': '/auth/registration/',
     'club_list': '/api/district/:districtId/school/:schoolId/club/',
     'club_detail': '/api/district/:districtId/school/:schoolId/club/:clubId',
+    'user_detail': '/auth/user/'
 };
 
 function fillTemplate(urlName, urlArgs) {
@@ -65,7 +66,7 @@ function generateFetchConfig(method, body = null) {
     return config;
 }
 
-async function sendRequest(urlName, urlArgs, method, body = null) {
+export async function sendRequest(urlName, urlArgs, method, body = null) {
     return await fetch(getUrl(urlName, urlArgs), generateFetchConfig(method, body));
 }
 

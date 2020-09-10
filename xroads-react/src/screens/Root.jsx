@@ -7,12 +7,8 @@ import ScreenLogin from "./User/Login";
 import ScreenSignup from "./User/Signup";
 import ScreenNotFound from "./Generic/NotFound";
 import { AuthRoute } from "./Routes/AuthenticatedRoute";
-import { useContext } from "react";
-import {UserContext} from '../service/UserContext';
 
-const ScreensRoot = () => {
-  let user = useContext(UserContext);
-  
+const ScreensRoot = () => {  
   return (
     <Router>
       <Switch>

@@ -10,6 +10,9 @@ import XroadsAPI.models as AuthModels
 class HierarchyPerms(models.Model):
     perm_name = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.perm_name
+
     @property
     def role(self):
         from .permissions import Role
