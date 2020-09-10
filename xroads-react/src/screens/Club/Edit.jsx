@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Common/Navbar/Navbar';
 
-import { Tabs } from '../../components/Common/Tabs/Tabs';
+import Tabs from '../../components/Common/Tabs/Tabs';
 import { GeneralEdit, SlideshowEdit } from '../../components/Club/Edit/Edit';
 
 import * as XroadsAPI from '../../service/xroads-api';
@@ -56,7 +56,7 @@ const ScreenClubEdit = ({ match: { params: { clubId } } }) => {
             <SlideshowEdit label="Slideshow" club={club}></SlideshowEdit>
           </div>
 
-          <div label="Add Members">
+          <div label="Editors">
             There is nothing here
           </div>
         </Tabs>
