@@ -18,7 +18,7 @@ const GeneralEdit = (props) => {
                     </label>
 
                     <label className="" for="join">How to join<br />
-                        <input type="text" id="join" name="join" value={props.club.join} />
+                        <input type="text" id="join" name="join" value={props.club.join_promo} />
                     </label>
 
                     <label className="" for="description">Description<br />
