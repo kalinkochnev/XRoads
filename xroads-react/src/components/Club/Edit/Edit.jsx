@@ -9,6 +9,8 @@ import { faFilm, faFont, faImage, faImages, faTextHeight, faVideo } from '@forta
 import { useState } from 'react'
 import { updateClub } from '../../../service/xroads-api'
 
+import ReactTooltip from 'react-tooltip';
+
 
 
 const GeneralEdit = (props) => {
@@ -29,7 +31,7 @@ const GeneralEdit = (props) => {
             description: clubDescriptionMd,
             name: clubName,
             join_promo: clubJoinPromo
-        }; 
+        };
         console.log("Updated club would be", updatedClub);
         const saveRes = updateClub(districtId, props.club.school, props.club.id, updatedClub);
         console.log("Save club result", saveRes);
@@ -39,12 +41,16 @@ const GeneralEdit = (props) => {
         <div className="centerContent">
             <div className="editBody">
                 <form className="clubEdit">
-                    <label htmlFor="title">Club Name<br />
-                        <input className="medium" type="text" id="title" name="title" value={clubName} onChange={(e) => setClubName(e.target.value)} />
+                    
+                    <label className="" htmlFor="join">Hide this club</label>
+                    <label class="switch">
+                        <input type="checkbox" />
+                        <span class="slider round"></span>
                     </label>
+                    <ReactTooltip place="right" effect="solid"/>
 
                     <label className="" htmlFor="join">How to join<br />
-                        <input type="text" id="join" name="join" value={clubJoinPromo}  onChange={(e) => setClubJoinPromo(e.target.value)}/>
+                        <input type="text" id="join" name="join" value={clubJoinPromo} onChange={(e) => setClubJoinPromo(e.target.value)} />
                     </label>
 
                     <label className="" htmlFor="description">Description<br />

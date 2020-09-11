@@ -5,17 +5,19 @@
 $slideScaleAmount: 0.25;
 
 .editBody {
-    input, select {
+
+    input,
+    select {
         font-family: Raleway;
-        font-size:18px;
-        line-height:1.3;
+        font-size: 18px;
+        line-height: 1.3;
         font-weight: 400;
         display: block;
 
         &.short {
             max-width: 300px;
         }
-    
+
         &.medium {
             max-width: 500px;
         }
@@ -23,33 +25,34 @@ $slideScaleAmount: 0.25;
         &.long {
             max-width: 100%;
         }
-    
+
     }
-    
-    input, select{
+
+    input,
+    select {
         font-family: Raleway;
-        font-size:20px;
-        line-height:1.3;
+        font-size: 20px;
+        line-height: 1.3;
         font-weight: 400;
-        width:100%;
+        width: 100%;
         padding: 10px;
         margin-bottom: 30px;
         box-sizing: border-box;
     }
-    
+
     textarea {
         padding: 10px;
         font-family: Raleway;
-        font-size:20px;
-        line-height:1.3;
+        font-size: 20px;
+        line-height: 1.3;
         font-weight: 400;
         width: 100%;
         box-sizing: border-box;
-    
+
         &.short {
             height: 150px;
         }
-    
+
         &.medium {
             height: 300px;
         }
@@ -58,17 +61,81 @@ $slideScaleAmount: 0.25;
             height: 500px;
         }
     }
+
+    .switch {
+        position: relative;
+        display: block;
+        width: 60px;
+        height: 34px;
+        margin-bottom: 30px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .2s;
+        transition: .2s;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .2s;
+        transition: .2s;
+    }
+
+    input:checked+.slider {
+        background-color: $redDefault;
+    }
+
+    input:focus+.slider {
+        box-shadow: 0 0 1px $redDefault;
+    }
+
+    input:checked+.slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 34px;
+    }
+
+    .slider.round:before {
+        border-radius: 50%;
+    }
 }
 
 .clubHeading {
     margin-top: 30px;
     margin-bottom: 30px;
-    h1, h2 {
+
+    h1,
+    h2 {
         margin: 0px;
-        padding:10px 20px 10px 20px;
+        padding: 10px 20px 10px 20px;
         border-left: solid 13px $redDefault;
         line-height: .8;
     }
+
     h1 {
         display: inline-block;
     }
@@ -79,8 +146,8 @@ form.clubEdit {
     textarea.long {
         padding: 10px;
         font-family: Raleway;
-        font-size:20px;
-        line-height:1.3;
+        font-size: 20px;
+        line-height: 1.3;
         font-weight: 400;
         width: 100%;
         height: 500px;
@@ -103,7 +170,7 @@ form.clubEdit {
     padding: 15px;
 
     .slideContain {
-        margin:15px;
+        margin: 15px;
         min-width: $maxPageWidth * $slideScaleAmount;
         height: $maxPageWidth / $slideAspectRatio * $slideScaleAmount;
         overflow: hidden;
@@ -132,10 +199,11 @@ form.clubEdit {
             width: 100%;
 
             &.middle {
-                border-top:1px solid #aaa;
-                border-bottom:1px solid #aaa;
+                border-top: 1px solid #aaa;
+                border-bottom: 1px solid #aaa;
             }
         }
+
         .add:hover {
             background-color: #ccc;
         }
@@ -150,14 +218,14 @@ form.clubEdit {
 #club-submit {
     min-width: 125px;
     height: 50px;
-  
-    margin-top: 18px; 
-    margin-bottom:40px;
-  
+
+    margin-top: 18px;
+    margin-bottom: 40px;
+
     background-color: $redDefault;
     border-style: none;
     border-radius: 5px;
-  
+
     /*Changes font of submit button*/
     color: whitesmoke;
     font-family: "Arial", sans-serif;
