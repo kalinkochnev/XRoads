@@ -14,11 +14,15 @@ class ClubBrowserCard extends React.Component {
   }
 
   render() {
+    var clubStyle = { backgroundImage: `url(${this.props.imageURL})`};
+    if(this.props.hidden){
+      clubStyle = { backgroundImage: `url(${this.props.imageURL})`, filter: "grayscale()"}
+    }
     return (
       <Link to={`/clubs/${this.props.id}`}>
         <div
           className="card"
-          style={{ backgroundImage: `url(${this.props.imageURL})` }}
+          style={clubStyle}
         >
           <div className="info">
             <h1>
