@@ -19,6 +19,10 @@ class Tabs extends React.Component {
 
     onClickTabItem = (tab) => {
         this.setState({ activeTab: tab });
+        this.tabContent.current.classList.add("fadeIn")
+        setTimeout(() => {
+          this.tabContent.current.classList.remove("fadeIn")
+        }, 300);
     }
 
 
@@ -98,4 +102,4 @@ class Tab extends React.Component {
     }
   }
 
-export { Tabs };
+export default Tabs;
