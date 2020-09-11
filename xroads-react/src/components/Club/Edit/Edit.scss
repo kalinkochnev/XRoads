@@ -2,7 +2,7 @@
 @import "../../Common/Common.scss";
 @import "../Body/Body.scss";
 
-$slideScaleAmount: 0.35;
+$slideScaleAmount: 0.25;
 
 .editBody {
     input, select {
@@ -86,6 +86,10 @@ form.clubEdit {
         height: 500px;
         box-sizing: border-box;
     }
+}
+
+.slideshowPreview {
+    margin-bottom: 50px;
 }
 
 .slideshowSelect {

@@ -50,6 +50,20 @@ const SlideshowEdit = (props) => {
                     </div>
                     <div className="spacer"></div>
                 </div>
+                <div className="slideshowPreview">
+                    {
+                        (function () {
+                            let slide = props.club.slides[0];
+                            if (slide.img) {
+                                return <div className="slideContain"> <ImageSlide key={slide.id} source={slide.img} caption={slide.text} /> </div>
+                            } else if (slide.video_url) {
+                                return <div className="slideContain"> <VideoSlide key={slide.id} videoURL={slide.video_url} caption={slide.text} /> </div>
+                            } else {
+                                return <div className="slideContain"> <TextSlide key={slide.id} title={slide.text} body={slide.text} color="lightblue" /> </div>
+                            }
+                        })()
+                    }
+                </div>
                 <form className="clubEdit">
                     <label for="title">Slide Template<br />
                         <select class="short" id="title" name="title">
