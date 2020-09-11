@@ -1,6 +1,7 @@
 import {Role} from './UserContext'
 import { Cookies } from "react-cookie";
 import { sendRequest, removeAuthCookies } from '../service/xroads-api';
+import { isInteger } from 'formik';
 
 
 const detailFromData = (data) => {
@@ -49,6 +50,10 @@ const editableClubs = (roles) => {
     return [];
 }
 
+const init = () => {
+    
+}
+
 const userReducer = (state, action) => {
     switch (action.type) {
         case 'logged in': 
@@ -59,10 +64,9 @@ const userReducer = (state, action) => {
             return {...state, ...login(action.payload)}
         case 'logout':
             return {...state, ...logout()}
-
         default:
             return state;
     }
 }
 
-export { loggedIn, userReducer, getUserDetail, editableClubs, logout};
+export { loggedIn, userReducer, detailFromData, editableClubs, logout};

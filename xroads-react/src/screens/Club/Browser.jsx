@@ -13,7 +13,6 @@ const ScreenClubBrowser = () => {
   const clubIds = allClubs.map(club => club.id);
   const [state, dispatch] = useStateValue();
 
-  console.log(state.user);
   function invisibleFilter(clubs) {
     let editableClubs = state.user.editableClubs(state.user.roles)
     let filteredClubs = [];
@@ -56,7 +55,7 @@ const ScreenClubBrowser = () => {
   useEffect(() => {
     console.log("ClubBrowser component did mount");
     loadClubs();
-  }, [])
+  }, [state.user])
 
   return (
     <div>
