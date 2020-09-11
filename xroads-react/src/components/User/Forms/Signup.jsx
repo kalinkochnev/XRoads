@@ -4,6 +4,7 @@ import * as Yup from "yup";
 import "./AuthForm.scss";
 import { signup } from "../../../service/xroads-api";
 import {showOneError, defaultFail, displayFormHelp} from "./helper"
+import { NavLink } from "react-router-dom";
 
 const SignupForm = ({ setAlert }) => {
 
@@ -92,9 +93,10 @@ const SignupForm = ({ setAlert }) => {
             </div>
             {showOneError(formik)}
           </form>
+          <NavLink to="/login" className="defaultLink">Let me log in!</NavLink>
         </div>
+        
       )}
-
     </Formik>
   );
 };

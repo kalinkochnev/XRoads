@@ -9,19 +9,18 @@ import { useStateValue } from '../../service/State';
 
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
 // This: { match: { params: { id }}} is the same as props.match.params.id and you can refer to id directly later
-const ScreenClubEdit = ({ match: { params: { clubId } } }) => {
-  console.log("The club id is ", clubId);
+const ScreenClubEdit = ({ match: { params: { id } } }) => {
 
   const [club, setClub] = useState();
   const [{ user }, dispatch] = useStateValue();
 
   useEffect(() => {
-    XroadsAPI.fetchClub(user.district, user.school, clubId).then(res => {
+    XroadsAPI.fetchClub(user.district, user.school, id).then(res => {
       return res.json().then(clubRes => {
         setClub(clubRes);
       });
     });
-  }, [clubId]);
+  }, [id, user]);
 
 
   console.log("The useState club is", club);

@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Navbar from "../../components/Common/Navbar/Navbar";
 import LoginForm from '../../components/User/Forms/Login';
 import { AlertBar, Message } from '../../components/Common/AlertBar/AlertBar';
+import { NavLink } from "react-router-dom";
+import "../../components/Common/Common.scss";
 
 
 const ScreenLogin = () => {

@@ -1,9 +1,12 @@
+
+
 import React, { useState } from "react";
 import Navbar from "../../components/Common/Navbar/Navbar";
 import SignupForm from "../../components/User/Forms/Signup";
-import { Switch, Route, useRouteMatch, } from "react-router-dom";
+import { Switch, Route, useRouteMatch, NavLink } from "react-router-dom";
 import { AlertBar } from '../../components/Common/AlertBar/AlertBar';
 import { Message } from '../../components/Common/AlertBar/AlertBar'
+import "../../components/Common/Common.scss";
 
 const ScreenSignupForm = () => {
   let [alert, setAlert] = useState(null);

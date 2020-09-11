@@ -22,6 +22,8 @@ $cardBorderSize: 2px;
 $errorBoxSidePadding: 40px;
 $errorBoxTopPadding: 6px;
 
+$formBottomMargin: 20px;
+
 .accountLayout {
   @extend .flex-center-col;
 
@@ -34,6 +36,8 @@ $errorBoxTopPadding: 6px;
 .accountForm {
   @include card($cardBorderWidth, $cardBorderSize);
   @extend .flex-center-col;
+
+  margin-bottom: $formBottomMargin;
 
   .fields {
     @extend .flex-center-col;

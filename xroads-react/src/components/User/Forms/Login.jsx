@@ -3,7 +3,7 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import "./AuthForm.scss";
 import { login } from "../../../service/xroads-api";
-import { useHistory } from 'react-router-dom';
+import { NavLink, useHistory } from 'react-router-dom';
 import { displayFormHelp, defaultFail} from '../../../components/User/Forms/helper';
 import { useStateValue } from "../../../service/State";
 
@@ -83,6 +83,7 @@ const LoginForm = ({ setAlert })  => {
             </div>
             {showOneError(formik)}
           </form>
+          <NavLink to="/signup" className="defaultLink">Sign me up!</NavLink>
         </div>
       )}
     </Formik>
