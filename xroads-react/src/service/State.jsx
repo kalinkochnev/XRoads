@@ -7,13 +7,16 @@ export const StateProvider = ({ reducer, initialState, children }) => {
     let [state, dispatch] = useReducer(reducer, initialState);
     useEffect( () => {
         const loadUser = async () => {
-            let response = await sendRequest('user_detail', {}, 'GET');
-            if (response.ok) {
-                let body = await response.json();
-                dispatch({type: 'load detail', payload: body})
-            } else if (response.status == 401) {
-                dispatch({type: 'logout'})
+            if (state.user.loggedIn()) {
+                let response = await sendRequest('user_detail', {}, 'GET');
+                if (response.ok) {
+                    let body = await response.json();
+                    dispatch({type: 'load detail', payload: body})
+                } else if (response.status == 401) {
+                    dispatch({type: 'logout'})
+                }
             }
+            
         }
         loadUser()
         

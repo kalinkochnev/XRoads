@@ -64,7 +64,18 @@ const ScreenClubBrowser = () => {
         <SearchBar key={clubIds} clubs={allClubs} filterClubs={searchFilter}></SearchBar>
         <div className="card-container">
           {
-            displayedClubs.map(club => <ClubCard key={club.id} id={club.id} title={club.name} imageURL={club.main_img} description={club.description} meetTimes={["M", "W", "S"]} />)
+            displayedClubs.map(club => 
+              <ClubCard 
+                key={club.id} 
+                id={club.id} 
+                title={club.name} 
+                imageURL={club.main_img} 
+                description={club.description}
+                favorited={club}
+                // If the club is invisible but still exists in the list means that person is editor
+                editable={!club.is_visible}
+              />
+            )
           }
         </div>
       </div>

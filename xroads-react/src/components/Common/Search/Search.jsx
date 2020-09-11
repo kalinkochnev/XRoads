@@ -26,7 +26,6 @@ class SearchBar extends React.Component {
       this.ref("id");
   
       props.clubs.forEach(function (club) {
-        console.log("Adding club to index", club);
         this.add(club)
       }, this)
     });

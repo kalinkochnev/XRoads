@@ -27,7 +27,7 @@ class ClubBrowserCard extends React.Component {
           <div className="info">
             <h1>
               {this.props.title}
-              <ClubIcons favorited={true} editable={true} id={this.props.id}/>
+              <ClubIcons favorited={this.props.favorited} editable={this.props.editable} id={this.props.id}/>
             </h1>
           </div>
         </div>
@@ -42,14 +42,14 @@ function ClubIcons(props) {
   var output = [];
 
   if (favorited) {
-    output.push(<IconButton icon={"faStar"} filled={true} color="goldenrod" customClickEvent={""/*Whatever*/} />);
+    output.push(<IconButton key={output.length+1} icon={"faStar"} filled={true} color="goldenrod" customClickEvent={""/*Whatever*/} />);
   }
   else {
-    output.push(<IconButton icon={"faStar"} customClickEvent={""/*Whatever*/} />);
+    output.push(<IconButton key={output.length+1} icon={"faStar"} customClickEvent={""/*Whatever*/} />);
   }
 
   if (editable) {
-    output.push(<IconButton icon={"faEdit"}link={`/clubs/${props.id}/edit`} />);
+    output.push(<IconButton key={output.length+1} icon={"faEdit"}link={`/clubs/${props.id}/edit`} />);
   }
 
   return output;
