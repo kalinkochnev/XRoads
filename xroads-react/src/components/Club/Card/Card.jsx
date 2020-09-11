@@ -3,8 +3,7 @@ import "./Card.scss";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar, faEdit } from '@fortawesome/free-regular-svg-icons'
-import { faStar as faStarFilled } from '@fortawesome/free-solid-svg-icons'
-
+import IconButton from '../../Common/IconButton/IconButton';
 
 class ClubBrowserCard extends React.Component {
   constructor(props) {
@@ -15,16 +14,20 @@ class ClubBrowserCard extends React.Component {
   }
 
   render() {
+    var clubStyle = { backgroundImage: `url(${this.props.imageURL})`};
+    if(this.props.hidden){
+      clubStyle = { backgroundImage: `url(${this.props.imageURL})`, filter: "grayscale()"}
+    }
     return (
       <Link to={`/clubs/${this.props.id}`}>
         <div
           className="card"
-          style={{ backgroundImage: `url(${this.props.imageURL})` }}
+          style={clubStyle}
         >
           <div className="info">
             <h1>
               {this.props.title}
-              <ClubIcons favorited={true} editable={true}/>
+              <ClubIcons favorited={true} editable={true} id={this.props.id}/>
             </h1>
           </div>
         </div>
@@ -39,14 +42,14 @@ function ClubIcons(props) {
   var output = [];
 
   if (favorited) {
-    output.push(<FontAwesomeIcon className="star filled" icon={faStarFilled} />);
+    output.push(<IconButton icon={"faStar"} filled={true} color="goldenrod" customClickEvent={""/*Whatever*/} />);
   }
   else {
-    output.push(<FontAwesomeIcon className="star" icon={faStar} />);
+    output.push(<IconButton icon={"faStar"} customClickEvent={""/*Whatever*/} />);
   }
 
   if (editable) {
-    output.push(<FontAwesomeIcon className="edit" icon={faEdit} />);
+    output.push(<IconButton icon={"faEdit"}link={`/clubs/${props.id}/edit`} />);
   }
 
   return output;
