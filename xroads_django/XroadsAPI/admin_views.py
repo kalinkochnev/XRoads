@@ -51,7 +51,7 @@ class SchoolViewset(api_mixins.ModifyAndReadViewset, api_mixins.AdminMixin):
         serializer = SchoolAdminSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
     # TODO test toggle hide
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinSchoolRole], hier_perms=['hide-school'])
@@ -90,12 +90,14 @@ class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins
     permission_classes = [IsAuthenticated, MinClubEditor]
     hier_perms = []
 
+    # TODO change the queryset to only include the clubs in the person's school
+
     # TODO create toggle_hide mixin
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinSchoolRole], hier_perms=['hide-club'])
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=['hide-club'])
     def toggle_hide(self, request):
         club = self.get_object()
         club.toggle_hide()
-        return Response(status=204)
+        return Response(status=202)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=['add_admin'])
     def add_club_editor(self, request):

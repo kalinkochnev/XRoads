@@ -72,7 +72,6 @@ const ScreenClubBrowser = () => {
                 imageURL={club.main_img} 
                 description={club.description}
                 favorited={club}
-                // If the club is invisible but still exists in the list means that person is editor
                 editable={state.user.editableClubs(state.user.roles).includes(club.id)}
               />
             )

@@ -218,6 +218,7 @@ class TestAdmin:
     class TestClubViewset:
         # GET and LIST cannot be easily tested because the img field screws things up
         retrieve_url_name = 'api:admin-club-detail'
+        toggle_hide_url_name = 'api:admin-club-toggle-hide'
 
         @pytest.fixture
         def prof_w_perm(self, setup_client_auth):
@@ -260,6 +261,17 @@ class TestAdmin:
             response = make_request(client, 'get', path=path, format='json')
             assert response.status_code == status.HTTP_404_NOT_FOUND
 
+        def test_toggle_hide(self, prof_w_perm, make_request, role_model_instances):
+            d1, s1, c1 = role_model_instances()
+            assert c1.is_visible is False
+
+            profile, client = prof_w_perm(c1)
+            path = reverse(self.toggle_hide_url_name, kwargs={'district_pk': c1.district.id, 'school_pk': c1.school.pk, 'pk': c1.pk})
+            response = make_request(client, 'post', path=path, format='json')
+
+            assert response.status_code == status.HTTP_202_ACCEPTED
+            assert c1.is_visible is True
+            
 
 class TestNoAuth:
     class TestClubViewset:

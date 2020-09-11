@@ -4,11 +4,11 @@ import * as Yup from "yup";
 import "./AuthForm.scss";
 import { login } from "../../../service/xroads-api";
 import { NavLink, useHistory } from 'react-router-dom';
-import { displayFormHelp, defaultFail} from '../../../components/User/Forms/helper';
+import { displayFormHelp, defaultFail } from '../../../components/User/Forms/helper';
 import { useStateValue } from "../../../service/State";
 
 
-const LoginForm = ({ setAlert })  => {
+const LoginForm = ({ setAlert }) => {
   let history = useHistory();
   const [state, dispatch] = useStateValue();
 
@@ -25,25 +25,25 @@ const LoginForm = ({ setAlert })  => {
 
   const onSubmit = (values, { setSubmitting, setFieldError }) => {
     console.log(values)
-      login(values).then(response => {
-        console.log(response);
-        let successCallback = (response, functions, data) => {
-          functions.setAlert("success", "You logged in successfully!", true);
-          response.json().then(body => {
-            dispatch({type: 'login', payload: body});
-            history.push('/clubs');
-          });
-        }
+    login(values).then(response => {
+      console.log(response);
+      let successCallback = (response, functions, data) => {
+        functions.setAlert("success", "You logged in successfully!", true);
+        response.json().then(body => {
+          dispatch({ type: 'login', payload: body });
+          history.push('/clubs');
+        });
+      }
 
-        let funcs = {
-          'setAlert': setAlert
-        }
+      let funcs = {
+        'setAlert': setAlert
+      }
 
-        displayFormHelp(response, { 'values': values }, funcs, successCallback, defaultFail)
-      })
-      setSubmitting(false);
-    }
-  
+      displayFormHelp(response, { 'values': values }, funcs, successCallback, defaultFail)
+    })
+    setSubmitting(false);
+  }
+
 
   return (
     <Formik
