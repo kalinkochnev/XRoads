@@ -4,12 +4,12 @@ import * as Yup from "yup";
 import "./AuthForm.scss";
 import { login } from "../../../service/xroads-api";
 import { useHistory } from 'react-router-dom';
-import { displayFormHelp, defaultFail} from '../../../components/User/Forms/helper';
+import { displayFormHelp, defaultFail } from '../../../components/User/Forms/helper';
 import { UserContext } from "../../../service/UserContext";
 import { useContext } from "react";
 
 
-const LoginForm = ({ setAlert })  => {
+const LoginForm = ({ setAlert }) => {
   let history = useHistory();
   let [user, setUser] = useContext(UserContext);
 
@@ -24,28 +24,28 @@ const LoginForm = ({ setAlert })  => {
   }
 
   const onSubmit = (values, { setSubmitting, setFieldError }) => {
-      login(values).then(response => {
-        let successCallback = (response, functions, data) => {
-          functions.setAlert("success", "You logged in successfully!", true);
-          
-          setUser(prevState => {
-            let user = Object.assign({}, prevState);
-            user.loggedIn = true;
-            return user;
-          });
+    login(values).then(response => {
+      let successCallback = (response, functions, data) => {
+        functions.setAlert("success", "You logged in successfully!", true);
 
-          history.push('/clubs');
-        }
+        setUser(prevState => {
+          let user = Object.assign({}, prevState);
+          user.loggedIn = true;
+          return user;
+        });
 
-        let funcs = {
-          'setAlert': setAlert
-        }
+        history.push('/clubs');
+      }
 
-        displayFormHelp(response, { 'values': values }, funcs, successCallback, defaultFail)
-      })
-      setSubmitting(false);
-    }
-  
+      let funcs = {
+        'setAlert': setAlert
+      }
+
+      displayFormHelp(response, { 'values': values }, funcs, successCallback, defaultFail)
+    })
+    setSubmitting(false);
+  }
+
 
   return (
     <Formik
@@ -78,6 +78,12 @@ const LoginForm = ({ setAlert })  => {
                 placeholder="Password"
                 {...formik.getFieldProps("password")}
               />
+
+              <label className="remember">
+                <input type="checkbox" id="remember" name="remember" value="remember" />
+                Remember me (does nothing rn)
+              </label>
+
 
               <button type="submit" id="account-submit">
                 Log in

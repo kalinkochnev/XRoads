@@ -40,7 +40,7 @@ $errorBoxTopPadding: 6px;
     margin: $authFormPadding;
     margin-bottom: 0;
 
-    input {
+    input:not([type=checkbox]) {
       padding: $paddingVertInput $paddingHorizInput $paddingVertInput $paddingHorizInput;
 
       /*Styles main input fields, not including submit*/
@@ -53,7 +53,7 @@ $errorBoxTopPadding: 6px;
     }
   }
 
-  input {
+  input:not([type=checkbox]) {
     /*Styling for all input fields*/
     box-sizing: border-box;
 
@@ -77,11 +77,12 @@ $errorBoxTopPadding: 6px;
   border-style: solid !important;
   border-bottom-left-radius: $authFormBorderRadius;
   border-bottom-right-radius: $authFormBorderRadius;
-  margin-bottom: $submitSpacing;
+  margin-bottom: 20px;
 }
 
 
 #account-submit {
+  margin-top: $submitSpacing;
   min-width: $minInputWidth;
   width: $inputWidth;
   height: 50px;
