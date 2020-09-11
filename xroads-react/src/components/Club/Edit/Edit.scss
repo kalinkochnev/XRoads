@@ -69,6 +69,9 @@ $slideScaleAmount: 0.35;
         border-left: solid 13px $redDefault;
         line-height: .8;
     }
+    h1 {
+        display: inline-block;
+    }
 }
 
 form.clubEdit {

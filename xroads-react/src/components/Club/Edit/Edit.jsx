@@ -5,7 +5,7 @@ import './Edit.scss';
 import RichEditor from '../../Common/RichEditor/RichEditor'
 import { TextSlide, ImageSlide, VideoSlide } from '../../Common/Slides/Slides';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFilm, faFont, faImage, faImages, faTextHeight, faVideo } from '@fortawesome/free-solid-svg-icons'
+import { faFilm, faFont, faImage, faImages, faQuestion, faTextHeight, faVideo } from '@fortawesome/free-solid-svg-icons'
 
 
 const GeneralEdit = (props) => {
@@ -13,10 +13,6 @@ const GeneralEdit = (props) => {
         <div className="centerContent">
             <div className="editBody">
                 <form className="clubEdit">
-                    <label for="title">Club Name<br />
-                        <input class="medium" type="text" id="title" name="title" value={props.club.name} />
-                    </label>
-
                     <label className="" for="join">How to join<br />
                         <input type="text" id="join" name="join" value={props.club.join_promo} />
                     </label>
@@ -77,4 +73,4 @@ const SlideshowEdit = (props) => {
     );
 }
 
-export {GeneralEdit, SlideshowEdit};
+export { GeneralEdit, SlideshowEdit };
