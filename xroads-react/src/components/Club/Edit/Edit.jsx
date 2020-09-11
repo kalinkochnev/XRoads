@@ -9,6 +9,8 @@ import { faFilm, faFont, faImage, faImages, faTextHeight, faVideo } from '@forta
 import { useState } from 'react'
 import { updateClub } from '../../../service/xroads-api'
 
+import ReactTooltip from 'react-tooltip';
+
 
 
 const GeneralEdit = (props) => {
@@ -29,7 +31,7 @@ const GeneralEdit = (props) => {
             description: clubDescriptionMd,
             name: clubName,
             join_promo: clubJoinPromo
-        }; 
+        };
         console.log("Updated club would be", updatedClub);
         const saveRes = updateClub(districtId, props.club.school, props.club.id, updatedClub);
         console.log("Save club result", saveRes);
@@ -39,12 +41,16 @@ const GeneralEdit = (props) => {
         <div className="centerContent">
             <div className="editBody">
                 <form className="clubEdit">
-                    <label htmlFor="title">Club Name<br />
-                        <input className="medium" type="text" id="title" name="title" value={clubName} onChange={(e) => setClubName(e.target.value)} />
+                    
+                    <label className="" htmlFor="join">Hide this club</label>
+                    <label class="switch">
+                        <input type="checkbox" />
+                        <span class="slider round"></span>
                     </label>
+                    <ReactTooltip place="right" effect="solid"/>
 
                     <label className="" htmlFor="join">How to join<br />
-                        <input type="text" id="join" name="join" value={clubJoinPromo}  onChange={(e) => setClubJoinPromo(e.target.value)}/>
+                        <input type="text" id="join" name="join" value={clubJoinPromo} onChange={(e) => setClubJoinPromo(e.target.value)} />
                     </label>
 
                     <label className="" htmlFor="description">Description<br />
@@ -81,6 +87,20 @@ const SlideshowEdit = (props) => {
                     </div>
                     <div className="spacer"></div>
                 </div>
+                <div className="slideshowPreview">
+                    {
+                        (function () {
+                            let slide = props.club.slides[0];
+                            if (slide.img) {
+                                return <div className="slideContain"> <ImageSlide key={slide.id} source={slide.img} caption={slide.text} /> </div>
+                            } else if (slide.video_url) {
+                                return <div className="slideContain"> <VideoSlide key={slide.id} videoURL={slide.video_url} caption={slide.text} /> </div>
+                            } else {
+                                return <div className="slideContain"> <TextSlide key={slide.id} title={slide.text} body={slide.text} color="lightblue" /> </div>
+                            }
+                        })()
+                    }
+                </div>
                 <form className="clubEdit">
                     <label for="title">Slide Template<br />
                         <select class="short" id="title" name="title">
@@ -104,4 +124,4 @@ const SlideshowEdit = (props) => {
     );
 }
 
-export {GeneralEdit, SlideshowEdit};
+export { GeneralEdit, SlideshowEdit };

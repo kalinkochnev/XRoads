@@ -1,9 +1,10 @@
 import React from "react";
 import "./Navbar.scss";
-import {removeAuthCookies} from '../../../service/xroads-api'
+import { removeAuthCookies } from '../../../service/xroads-api'
 import { useHistory } from "react-router-dom";
 import { AlertBar } from "../AlertBar/AlertBar";
 import { useStateValue } from "../../../service/State";
+import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
   const history = useHistory();
@@ -11,17 +12,19 @@ const Navbar = () => {
   let userLoggedIn = state.user.loggedIn();
   let logout = () => {
     removeAuthCookies();
-    dispatch({type: 'logout'})
+    dispatch({ type: 'logout' })
     return history.replace('/login')
   }
   return (
     <div>
       <div className="navbar-simple">
-        <div className="xroadsLogo">
-          <h1>xroads</h1>
-        </div>
+        <NavLink className="logoLink" to="/clubs">
+          <div className="xroadsLogo">
+            <h1>xroads</h1>
+          </div>
+        </NavLink>
         <div className="navbar-buttons">
-          { userLoggedIn ? 
+          {userLoggedIn ?
             <button onClick={logout}>Log Out</button> : <span></span>
           }
         </div>
@@ -29,7 +32,7 @@ const Navbar = () => {
       <AlertBar>
       </AlertBar>
     </div>
-    );
+  );
 
 }
 

@@ -77,6 +77,12 @@ const LoginForm = ({ setAlert }) => {
                 {...formik.getFieldProps("password")}
               />
 
+              <label className="remember">
+                <input type="checkbox" id="remember" name="remember" value="remember" />
+                Remember me (does nothing rn)
+              </label>
+
+
               <button type="submit" id="account-submit">
                 Log in
               </button>
