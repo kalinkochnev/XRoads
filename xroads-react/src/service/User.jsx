@@ -1,4 +1,4 @@
-import {Role} from './UserContext'
+import {Role} from './Roles'
 import { Cookies } from "react-cookie";
 import { sendRequest, removeAuthCookies } from '../service/xroads-api';
 import { isInteger } from 'formik';
@@ -23,17 +23,6 @@ const logout = () => {
     removeAuthCookies();
 }
 
-const getUserDetail = async () => {
-    sendRequest('user_detail', {}, 'GET').then(response => {
-        if (response.ok) {
-            response.json().then(body => {
-                return body
-            });
-        } else if (response.status == 401) {
-            return null;
-        }
-    });
-}
 
 const loggedIn = () => {
     let cookies = new Cookies();
@@ -48,10 +37,6 @@ const editableClubs = (roles) => {
         return clubRoles.map(role => Number(role.id));
     }
     return [];
-}
-
-const init = () => {
-    
 }
 
 const userReducer = (state, action) => {

@@ -8,6 +8,7 @@ import ScreenLogin from "./User/Login";
 import ScreenSignup from "./User/Signup";
 import ScreenNotFound from "./Generic/NotFound";
 import { AuthRoute } from "./Routes/AuthenticatedRoute";
+import { CanEditRoute } from "./Routes/UserCanEdit";
 
 const ScreensRoot = () => {  
   return (
@@ -16,9 +17,9 @@ const ScreensRoot = () => {
         <Route exact path="/signup" component={ScreenSignup} />
         <Route exact path="/login" component={ScreenLogin} />
 
-        <AuthRoute exact path="/clubs/:clubId" component={ScreenClubDetail} />
+        <AuthRoute exact path="/clubs/:id" component={ScreenClubDetail} />
         <AuthRoute exact path="/clubs" component={ScreenClubBrowser} />
-        <AuthRoute exact path="/clubs/:clubId/edit" component={ScreenClubEdit} />
+        <CanEditRoute exact path="/clubs/:id/edit" component={ScreenClubEdit} modelName="Club"/>
 
         <Route component={ScreenNotFound} />
       </Switch>

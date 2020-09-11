@@ -28,6 +28,18 @@ export class Role {
         return role;
     }
 
+    static canEditModel(user, modelName, instanceId) {
+        let roles = user.roles;
+        if (roles.length > 0 ) {
+            for (let role of roles) {
+                if (role.model.localeCompare(modelName) == 0 && role.id == instanceId) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }
 
 
