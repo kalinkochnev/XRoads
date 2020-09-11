@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar, faEdit } from '@fortawesome/free-regular-svg-icons'
 import IconButton from '../../Common/IconButton/IconButton';
 
+
 class ClubBrowserCard extends React.Component {
   constructor(props) {
     super(props);
