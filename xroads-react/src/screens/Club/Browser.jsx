@@ -1,82 +1,86 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import Navbar from '../../components/Common/Navbar/Navbar';
 import SearchBar from '../../components/Common/Search/Search';
 import ClubCard from '../../components/Club/Card/Card';
 
 import * as XroadsAPI from '../../service/xroads-api';
+import { useStateValue } from '../../service/State';
 
+const ScreenClubBrowser = () => {
+  const [allClubs, setAllClubs] = useState([]);
+  const [displayedClubs, setDisplayedClubs] = useState([]);
+  const clubIds = allClubs.map(club => club.id);
+  const [state, dispatch] = useStateValue();
 
+  function invisibleFilter(clubs) {
+    let editableClubs = state.user.editableClubs(state.user.roles)
+    let filteredClubs = [];
 
-class ScreenClubBrowser extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      allClubs: [],
-      clubs: [],
-      clubIds: "",
-    };
-
-    this.loadClubs = this.loadClubs.bind(this);
-    this.filterClubs = this.filterClubs.bind(this);
+    for (let i = 0; i < clubs.length; i++) {
+      if (!clubs[i].is_visible) {
+        if (editableClubs.includes(clubs[i].id)) {
+          filteredClubs.push(clubs[i]);
+        }
+      } else {
+        filteredClubs.push(clubs[i]);
+      }
+    }
+    return filteredClubs;
   }
 
-  componentDidMount() {
-    console.log("ClubBrowser component did mount");
-    this.loadClubs()
+  function loadClubs() {
+
+    XroadsAPI.fetchClubs(state.user.district, state.user.school).then(res => {
+      return res.json().then(clubs => {
+        clubs = invisibleFilter(clubs);
+        setAllClubs(clubs);
+        setDisplayedClubs(clubs);
+      });
+    });
+
   }
 
-  filterClubs(matchingClubIds) {
-    let matchingClubs = this.state.allClubs;
-    if (matchingClubIds.length > 0) {
-      matchingClubs = this.state.allClubs.filter( (c,i) => matchingClubIds.includes(c.id.toString()) );
+  function searchFilter(matchingIds) {
+    let matchingClubs = allClubs;
+    if (matchingIds.length > 0) {
+      matchingClubs = matchingClubs.filter((c, i) => matchingIds.includes(c.id.toString()));
     } else {
       matchingClubs = [];
     }
-
-    this.setState({
-      clubs: matchingClubs
-    });
-
+    setDisplayedClubs(matchingClubs);
   }
 
-  loadClubs() {
-    // FIXME : replace the hardcoded distictId = 1, schoolId below with the actual values
-    // FIXME : that should be coming in as parameters in the component
-    let districtId = 1;
-    let schoolId = 1;
-    XroadsAPI.fetchClubs(districtId,schoolId).then( res => {
-      console.log("Received res from club endpoint", res);
-      return res.json().then( clubs => {
-        console.log("Parsed out clubs from endpoint", clubs);
-        // clubIds - this concatenates all clubids that come back into a string
-        this.setState({
-          allClubs : clubs,
-          clubs: clubs, 
-          clubIds : ""// clubs.reduceRight( (c,a) => c.id + a, "")
-        });
-      });
-    });
-    
-  }
 
-  render() {
-    const clubs = this.state.clubs;
-    return (  //TODO: Change the URL to actually work.
-      
-      <div>
-        <Navbar>xroads</Navbar>
-        <div className="body">
-          <SearchBar key={this.state.clubIds} clubs={clubs} filterClubs={this.filterClubs}></SearchBar>
-           <div className="card-container">
-            {
-              clubs.map(club => <ClubCard key={club.id} id={club.id} title={club.name} imageURL={club.main_img} description={club.description} meetTimes={["M","W","S"]}/>)
-            } 
-            </div>
+  useEffect(() => {
+    console.log("ClubBrowser component did mount");
+    loadClubs();
+  }, [state.user])
+
+  return (
+    <div>
+      <Navbar>xroads</Navbar>
+      <div className="body">
+        <SearchBar key={clubIds} clubs={allClubs} filterClubs={searchFilter}></SearchBar>
+        <div className="card-container">
+          {
+            displayedClubs.map(club => 
+              <ClubCard 
+                key={club.id} 
+                id={club.id} 
+                title={club.name} 
+                imageURL={club.main_img} 
+                description={club.description}
+                favorited={club}
+                // If the club is invisible but still exists in the list means that person is editor
+                editable={!club.is_visible}
+              />
+            )
+          }
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default ScreenClubBrowser;

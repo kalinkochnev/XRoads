@@ -3,15 +3,15 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import "./AuthForm.scss";
 import { login } from "../../../service/xroads-api";
-import { useHistory } from 'react-router-dom';
+import { NavLink, useHistory } from 'react-router-dom';
 import { displayFormHelp, defaultFail } from '../../../components/User/Forms/helper';
-import { UserContext } from "../../../service/UserContext";
-import { useContext } from "react";
+import { useStateValue } from "../../../service/State";
 
 
 const LoginForm = ({ setAlert }) => {
   let history = useHistory();
-  let [user, setUser] = useContext(UserContext);
+  const [state, dispatch] = useStateValue();
+
 
   function showOneError(formik) {
     let touched = Object.keys(formik.touched);
@@ -24,17 +24,15 @@ const LoginForm = ({ setAlert }) => {
   }
 
   const onSubmit = (values, { setSubmitting, setFieldError }) => {
+    console.log(values)
     login(values).then(response => {
+      console.log(response);
       let successCallback = (response, functions, data) => {
         functions.setAlert("success", "You logged in successfully!", true);
-
-        setUser(prevState => {
-          let user = Object.assign({}, prevState);
-          user.loggedIn = true;
-          return user;
+        response.json().then(body => {
+          dispatch({ type: 'login', payload: body });
+          history.push('/clubs');
         });
-
-        history.push('/clubs');
       }
 
       let funcs = {
@@ -91,6 +89,7 @@ const LoginForm = ({ setAlert }) => {
             </div>
             {showOneError(formik)}
           </form>
+          <NavLink to="/signup" className="defaultLink">Sign me up!</NavLink>
         </div>
       )}
     </Formik>

@@ -5,33 +5,26 @@ import { Slideshow, SlideshowFiller, TextSlide, ImageSlide, VideoSlide } from '.
 import ClubBodyDetail from '../../components/Club/Body/Body';
 
 import * as XroadsAPI from '../../service/xroads-api';
+import { useStateValue } from '../../service/State';
 
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
 // This: { match: { params: { id }}} is the same as props.match.params.id and you can refer to id directly later
-const ScreenClubDetail = ({ match: { params: { clubId } } }) => {
-  console.log("The club id is ", clubId);
-
+const ScreenClubDetail = ({ match: { params: { id } } }) => {
   const [club, setClub] = useState();
-  useEffect(() => {
-    // FIXME : replace the hardcoded districtId and schoolId below
-    // with the information from the user's profile
-    let districtId = 1;
-    let schoolId = 1;
+  const [state, dispatch] = useStateValue();
+  let user = state.user;
 
-    XroadsAPI.fetchClub(districtId, schoolId, clubId).then(res => {
-      console.log("Received res from club endpoint", res);
+  useEffect(() => {
+    XroadsAPI.fetchClub(user.district, user.school, id).then(res => {
       return res.json().then(clubRes => {
         console.log("Parsed out club from endpoint", clubRes);
         setClub(clubRes);
       });
     });
-  }, [clubId]);
+  }, [id, state.user]);
 
-
-  console.log("The useState club is", club);
 
   if (club == undefined) {
-    console.log("Loading");
     return (
       <div>
         <Navbar>xroads</Navbar>

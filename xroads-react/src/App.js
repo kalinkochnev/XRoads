@@ -1,11 +1,11 @@
 import React from 'react';
 import ScreensRoot from "./screens/Root";
-import { UserProvider } from './service/UserContext';
+import AppState from './service/State';
 
 export default function App() {
     return (
-        <UserProvider>
+        <AppState>
             <ScreensRoot></ScreensRoot>
-        </UserProvider>
+        </AppState>
     );
 }

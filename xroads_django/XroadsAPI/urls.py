@@ -13,10 +13,10 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path, include, re_path
-from XroadsAPI import views, admin_views
 from rest_framework_nested import routers
+
+from XroadsAPI import views, admin_views
 
 app_name = "api"
 

@@ -1,48 +1,11 @@
-from XroadsAPI.models import *
 from rest_framework import serializers
 
-class DynamicFieldsModelSerializer(serializers.ModelSerializer):
-    """
-    A ModelSerializer that takes an additional `fields` argument that
-    controls which fields should be displayed.
-    """
-
-    def __init__(self, *args, **kwargs):
-        # Don't pass the 'fields' arg up to the superclass
-        fields = kwargs.pop('fields', None)
-
-        # Instantiate the superclass normally
-        super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
-
-        if fields is not None:
-            # Drop any fields that are not specified in the `fields` argument.
-            allowed = set(fields)
-            existing = set(self.fields)
-            for field_name in existing - allowed:
-                self.fields.pop(field_name)
-
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon']
-        allow_null = True
-
-class AnonProfileSerializer(DynamicFieldsModelSerializer):
-    class Meta:
-        model = Profile
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon']
-        allow_null = True
-
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-
-        # Removes all anonymous users information from serialization
-        if 'is_anon' in rep and rep['is_anon']:
-            return {'is_anon': True}
-        return rep
+from XroadsAPI.models import *
+import XroadsAuth.models as AuthModels
+import XroadsAuth.serializers as AuthSerializers
 
 
-class SlideSerializer(DynamicFieldsModelSerializer):
+class SlideSerializer(serializers.ModelSerializer):
     class Meta:
         model = Slide
         fields = '__all__'
@@ -55,7 +18,7 @@ class BasicClubInfoSerial(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'main_img', 'is_visible']
 
 class ClubDetailSerializer(serializers.ModelSerializer):
-    members = AnonProfileSerializer(many=True, fields=('first_name', 'last_name'))
+    members = AuthSerializers.AnonProfileSerializer(many=True, fields=('first_name', 'last_name'))
     slides = SlideSerializer(many=True)
     class Meta:
         model = Club
@@ -75,7 +38,7 @@ class DistrictSerializer(serializers.ModelSerializer):
 
 # ADMIN SERIALIZERS ---------------------
 class ClubEditorSerializer(serializers.ModelSerializer):
-    members = ProfileSerializer(many=True)
+    members = AuthSerializers.ProfileSerializer(many=True)
     slides = SlideSerializer(many=True)
     class Meta:
         model = Club
@@ -83,7 +46,7 @@ class ClubEditorSerializer(serializers.ModelSerializer):
 
 class SchoolAdminSerializer(serializers.ModelSerializer):
     clubs = BasicClubInfoSerial(many=True)
-    students = ProfileSerializer(many=True)
+    students = AuthSerializers.ProfileSerializer(many=True)
 
     class Meta:
         model = School

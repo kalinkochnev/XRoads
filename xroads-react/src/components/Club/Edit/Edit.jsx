@@ -5,22 +5,53 @@ import './Edit.scss';
 import RichEditor from '../../Common/RichEditor/RichEditor'
 import { TextSlide, ImageSlide, VideoSlide } from '../../Common/Slides/Slides';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFilm, faFont, faImage, faImages, faQuestion, faTextHeight, faVideo } from '@fortawesome/free-solid-svg-icons'
+import { faFilm, faFont, faImage, faImages, faTextHeight, faVideo } from '@fortawesome/free-solid-svg-icons'
+import { useState } from 'react'
+import { updateClub } from '../../../service/xroads-api'
+
 
 
 const GeneralEdit = (props) => {
+    let [clubDescriptionMd, setClubDescription] = useState(props.club.description);
+    let [clubName, setClubName] = useState(props.club.name)
+    let [clubJoinPromo, setClubJoinPromo] = useState(props.club.join_promo)
+
+    const handleClubDescription = (clubDescMd) => {
+        // console.log("Updated club description", clubDescMd);
+        setClubDescription(clubDescMd);
+    }
+
+    const saveClubDetails = () => {
+        // FIXME : pull the district ID from whereever it lives in the context
+        const districtId = 1;
+        const updatedClub = {
+            ...props.club,
+            description: clubDescriptionMd,
+            name: clubName,
+            join_promo: clubJoinPromo
+        }; 
+        console.log("Updated club would be", updatedClub);
+        const saveRes = updateClub(districtId, props.club.school, props.club.id, updatedClub);
+        console.log("Save club result", saveRes);
+    }
+
     return (
         <div className="centerContent">
             <div className="editBody">
                 <form className="clubEdit">
-                    <label className="" for="join">How to join<br />
-                        <input type="text" id="join" name="join" value={props.club.join_promo} />
+                    <label htmlFor="title">Club Name<br />
+                        <input className="medium" type="text" id="title" name="title" value={clubName} onChange={(e) => setClubName(e.target.value)} />
                     </label>
 
-                    <label className="" for="description">Description<br />
-                        <RichEditor />
+                    <label className="" htmlFor="join">How to join<br />
+                        <input type="text" id="join" name="join" value={clubJoinPromo}  onChange={(e) => setClubJoinPromo(e.target.value)}/>
+                    </label>
+
+                    <label className="" htmlFor="description">Description<br />
+                        <RichEditor mdContent={clubDescriptionMd} onChange={handleClubDescription} />
                     </label>
                 </form>
+                <button type="submit" id="club-submit" onClick={saveClubDetails}>Save</button>
             </div>
         </div>
     );

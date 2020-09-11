@@ -147,6 +147,24 @@ form.clubEdit {
 
 }
 
+#club-submit {
+    min-width: 125px;
+    height: 50px;
+  
+    margin-top: 18px; 
+    margin-bottom:40px;
+  
+    background-color: $redDefault;
+    border-style: none;
+    border-radius: 5px;
+  
+    /*Changes font of submit button*/
+    color: whitesmoke;
+    font-family: "Arial", sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+}
+
 :export {
     slideScaleAmount: $slideScaleAmount;
 }

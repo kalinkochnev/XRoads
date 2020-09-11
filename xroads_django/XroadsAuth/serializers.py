@@ -1,12 +1,32 @@
-from rest_framework import serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from dj_rest_auth.serializers import LoginSerializer
-from django.conf import settings
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework import exceptions
-from rest_framework.authentication import CSRFCheck
-from XroadsAPI.models import District
+from rest_framework import serializers
 
+from XroadsAPI.models import District
+from XroadsAuth.models import HierarchyPerms, Profile
+from XroadsAuth.utils import DynamicFieldsModelSerializer
+
+class ProfileSerializer(serializers.ModelSerializer):
+    permissions = serializers.ListField(child=serializers.CharField(), read_only=True, source='simple_perm_strs')
+    
+    class Meta:
+        model = Profile
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon', 'permissions', 'school', 'district']
+        allow_null = True
+
+class AnonProfileSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon']
+        allow_null = True
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+
+        # Removes all anonymous users information from serialization
+        if 'is_anon' in rep and rep['is_anon']:
+            return {'is_anon': True}
+        return rep
 
 
 class CustomRegister(RegisterSerializer):
@@ -19,7 +39,7 @@ class CustomRegister(RegisterSerializer):
     def validate(self, data):
         is_valid = super().validate(data)
 
-        if (District.match_district(data['email']) is None):
+        if District.match_district(data['email']) is None:
             raise serializers.ValidationError('Your district doesn\'t use xroads :(  Ask them to contact us!')
         
         return is_valid
@@ -33,5 +53,9 @@ class CustomRegister(RegisterSerializer):
         }
 
 
+
+
 class CustomLoginSerializer(LoginSerializer):
     pass
+
+    

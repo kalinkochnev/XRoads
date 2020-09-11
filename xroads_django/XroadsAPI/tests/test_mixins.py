@@ -1,7 +1,6 @@
-from XroadsAPI.mixins import *
-import pytest
 from rest_framework.test import APIRequestFactory
-from unittest.mock import MagicMock
+
+from XroadsAPI.mixins import *
 
 
 class RequestStub:

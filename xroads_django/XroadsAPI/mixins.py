@@ -1,13 +1,9 @@
 from rest_framework import mixins, viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
-import XroadsAPI.permisson_constants as PermConst
-from XroadsAPI.permissions import *
-from XroadsAPI.forms import *
-from XroadsAuth.models import Profile
-from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
+
+from XroadsAPI.forms import *
+from XroadsAuth.permissions import *
 
 
 class ModifyAndReadViewset(mixins.RetrieveModelMixin,

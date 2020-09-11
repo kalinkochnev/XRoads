@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Navbar from '../../components/Common/Navbar/Navbar';
 
 import Tabs from '../../components/Common/Tabs/Tabs';
@@ -10,27 +10,22 @@ import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
 import ReactTooltip from 'react-tooltip';
 
 import * as XroadsAPI from '../../service/xroads-api';
+import { useStateValue } from '../../service/State';
 
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
 // This: { match: { params: { id }}} is the same as props.match.params.id and you can refer to id directly later
-const ScreenClubEdit = ({ match: { params: { clubId } } }) => {
-  console.log("The club id is ", clubId);
+const ScreenClubEdit = ({ match: { params: { id } } }) => {
 
   const [club, setClub] = useState();
-  useEffect(() => {
-    // FIXME : replace the hardcoded districtId and schoolId below
-    // with the information from the user's profile
-    let districtId = 1;
-    let schoolId = 1;
+  const [{ user }, dispatch] = useStateValue();
 
-    XroadsAPI.fetchClub(districtId, schoolId, clubId).then(res => {
-      console.log("Received res from club endpoint", res);
+  useEffect(() => {
+    XroadsAPI.fetchClub(user.district, user.school, id).then(res => {
       return res.json().then(clubRes => {
-        console.log("Parsed out club from endpoint", clubRes);
         setClub(clubRes);
       });
     });
-  }, [clubId]);
+  }, [id, user]);
 
 
   console.log("The useState club is", club);

@@ -9,6 +9,8 @@ const endpoint_templates = {
     'signup': '/auth/registration/',
     'club_list': '/api/district/:districtId/school/:schoolId/club/',
     'club_detail': '/api/district/:districtId/school/:schoolId/club/:clubId',
+    'admin_club_detail': '/api/admin/district/:districtId/school/:schoolId/club/:clubId',
+    'user_detail': '/auth/user/'
 };
 
 function fillTemplate(urlName, urlArgs) {
@@ -45,11 +47,9 @@ function getUrl(urlName, urlArgs) {
  * @param  {object}            [body=null] payload for post/put
  * @return {object}                        config
  */
-function generateFetchConfig(method, body = null, authorize = true) {
+function generateFetchConfig(method, body = null) {
     const upCasedMethod = method.toUpperCase();
 
-
-    
     let config = {
         method: upCasedMethod,
         headers: {
@@ -59,21 +59,16 @@ function generateFetchConfig(method, body = null, authorize = true) {
         credentials: 'same-origin'
     };
 
-    // if (authorize) {
-    //     const cookies = new Cookies()    
-    //     // const token = process.env.REACT_APP_XROADS_TEMP_TOKEN;
-    //     const token = cookies.get("xroads-token").access_token;
-    //     config.headers['Authorization'] = `Bearer ${token}`;
-    // }
-
     if (['POST', 'PUT'].includes(upCasedMethod)) {
+        // Get the CSRF token from the cookies
+        // config.headers = new Cookies().get('')
         config.body = JSON.stringify(body);
     }
     return config;
 }
 
-async function sendRequest(urlName, urlArgs, method, body = null, authorize = true) {
-    return await fetch(getUrl(urlName, urlArgs), generateFetchConfig(method, body, authorize));
+export async function sendRequest(urlName, urlArgs, method, body = null) {
+    return await fetch(getUrl(urlName, urlArgs), generateFetchConfig(method, body));
 }
 
 export function fetchClubs(districtId, schoolId) {
@@ -92,17 +87,22 @@ export function signup(formData) {
     return sendRequest('signup', {}, 'POST', formData, false);
 }
 
+export function updateClub(districtId, schoolId, clubId, updatedClub) {
+    return sendRequest('admin_club_detail', { 'districtId': districtId, 'schoolId': schoolId, 'clubId': clubId }, 'PUT', updatedClub);
+}
+
 export function removeAuthCookies() {
     let cookies = new Cookies();
-    cookies.remove('JWT-SIGNATURE');
-    cookies.remove('JWT-HEADER-PAYLOAD');
+    cookies.remove('JWT-SIGNATURE', { path: '/' });
+    cookies.remove('JWT-HEADER-PAYLOAD', { path: '/' });
 }
 
 export function login(formData) {
     removeAuthCookies();
+    
     let requiredKeys = ['email', 'password']
     if (!isEqual(Object.keys(formData), requiredKeys)) {
         throw InvalidKeysProvided('The login form did not have the right values')
     }
-    return sendRequest('login', {}, 'POST', formData, false);
+    return sendRequest('login', {}, 'POST', formData);
 }

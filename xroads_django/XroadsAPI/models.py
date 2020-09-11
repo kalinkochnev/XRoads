@@ -1,13 +1,8 @@
 from django.db import models
-from django.db.models.signals import post_save
-from django.conf import settings
 
-from django.dispatch import receiver
-
-from XroadsAPI.exceptions import *
-from XroadsAuth.manager import CustomUserManager
-from XroadsAuth.models import Profile
 import XroadsAPI.slide as SlideTemp
+from XroadsAPI.exceptions import *
+import XroadsAuth.models as AuthModels
 
 
 class Slide(models.Model):
@@ -41,10 +36,10 @@ class Club(models.Model):
 
     school = models.ForeignKey('School', on_delete=models.CASCADE, null=True)
 
-    members = models.ManyToManyField(Profile, blank=True)
+    members = models.ManyToManyField('XroadsAuth.Profile', blank=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - id: {self.id}"
 
     def make_save(self, save):
         if save:
@@ -62,11 +57,11 @@ class Club(models.Model):
         self.slides.filter(position=position).delete()
         self.make_save(save)
 
-    def join(self, profile: Profile, save=True):
+    def join(self, profile, save=True):
         self.members.add(profile)
         self.make_save(save)
 
-    def leave(self, profile: Profile, save=True):
+    def leave(self, profile, save=True):
         self.members.remove(profile)
         self.make_save(save)
 
@@ -90,7 +85,7 @@ class School(models.Model):
         'District', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - id: {self.id}"
 
     def make_save(self, save):
         if save:
@@ -102,7 +97,7 @@ class School(models.Model):
 
     @property
     def students(self):
-        return Profile.objects.filter(school=self)
+        return AuthModels.Profile.objects.filter(school=self)
 
     @property
     def clubs(self):
@@ -118,7 +113,7 @@ class District(models.Model):
     name = models.CharField(max_length=40)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - id: {self.id}"
 
     def add_school(self, school: School):
         school.district = self

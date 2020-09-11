@@ -1,19 +1,21 @@
 from __future__ import annotations
 
 from typing import List, Set
-from XroadsAPI.models import *
-from XroadsAuth.models import Profile, HierarchyPerms
-from XroadsAPI import permisson_constants as PermConst
-from XroadsAPI.permisson_constants import Hierarchy
+
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import permissions
-from XroadsAPI.utils import get_parent_model
 
+from . import permisson_constants as PermConst
+from .models import Profile, HierarchyPerms
+from .exceptions import RoleNotComparable, InvalidRoleCreated
+from .utils import get_parent_model
+
+import XroadsAPI.models as APIModels
 
 class Permissions:
     def __init__(self, perm_strs: List[str], hierarchy):
         self.permissions: Set[str] = set()
-        self.hierarchy: Hierarchy = hierarchy
+        self.hierarchy: PermConst.Hierarchy = hierarchy
 
         self.add(*perm_strs)
 
@@ -70,7 +72,7 @@ class Permissions:
         self.permissions.difference_update(perms)
 
     def __str__(self):
-        perm_str = ', '.join(map(str, self.permissions))
+        perm_str = ', '.join(map(str, sorted(self.permissions)))
         return f'perms=[{perm_str}]'
 
 
@@ -79,7 +81,7 @@ class Role:
         self.model_instances = model_instances
 
         role = kwargs.get('role', self._role_matcher(model_instances))
-        self.hierarchy = Hierarchy.get_hierarchy(role)
+        self.hierarchy = PermConst.Hierarchy.get_hierarchy(role)
 
         perms = kwargs.get('permissions', [])
         self.permissions = Permissions(perms, self.hierarchy)
@@ -163,18 +165,15 @@ class Role:
             self.model_instances)-times]
 
         new_role = Role(model_instances=model_instances, permissions=perms)
-        self.model_instances = new_role.model_instances
-        self.hierarchy = new_role.hierarchy
-        self.permissions = new_role.permissions
 
-        del new_role
+        return new_role
 
     def reset_perms(self, perms=[]):
         self.permissions = Permissions(perms, self.hierarchy)
 
     def _role_matcher(self, model_instances):
         inst_names = [inst.__class__.__name__ for inst in model_instances]
-        role_name = Hierarchy.match_hierarchy(inst_names, PermConst.ROLES)
+        role_name = PermConst.Hierarchy.match_hierarchy(inst_names, PermConst.ROLES)
         assert role_name is not None, 'Role matcher could not find role with that hierarchy of models'
         return role_name
 
@@ -209,7 +208,7 @@ class Role:
     def give_role(self, user: Profile):
         perm, created = HierarchyPerms.objects.get_or_create(
             perm_name=str(self))
-        user.add_perm(perm)
+        user.add_perms(perm)
 
     def remove_role(self, user: Profile):
         try:
@@ -250,6 +249,12 @@ class Role:
         perm_str += str(self.permissions)
 
         return perm_str
+
+    @property
+    def highest_level_str(self):
+        model_name = self.hierarchy.highest_level.__name__
+        model_id = self.model_instances[-1].id
+        return f'{model_name}-{model_id}/{self.permissions}'
 
     def _comparison(self, other_inst):
         # THIS DOES NOT COMPARE PERMISSIONS
