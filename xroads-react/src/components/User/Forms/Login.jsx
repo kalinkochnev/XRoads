@@ -5,13 +5,13 @@ import "./AuthForm.scss";
 import { login } from "../../../service/xroads-api";
 import { useHistory } from 'react-router-dom';
 import { displayFormHelp, defaultFail} from '../../../components/User/Forms/helper';
-import { UserContext, User } from "../../../service/UserContext";
-import { useContext } from "react";
+import { useStateValue } from "../../../service/State";
 
 
 const LoginForm = ({ setAlert })  => {
   let history = useHistory();
-  let [user, setUser] = useContext(UserContext);
+  const [state, dispatch] = useStateValue();
+
 
   function showOneError(formik) {
     let touched = Object.keys(formik.touched);
@@ -29,16 +29,10 @@ const LoginForm = ({ setAlert })  => {
         console.log(response);
         let successCallback = (response, functions, data) => {
           functions.setAlert("success", "You logged in successfully!", true);
-          
-          setUser(prevState => {
-            let user = Object.assign({}, prevState);
-            Object.setPrototypeOf(user, User.prototype );
-            
-            user.logIn(response);
-            return user;
+          response.json().then(body => {
+            dispatch({type: 'login', payload: body});
+            history.push('/clubs');
           });
-
-          history.push('/clubs');
         }
 
         let funcs = {

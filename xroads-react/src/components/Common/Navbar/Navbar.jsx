@@ -2,22 +2,16 @@ import React from "react";
 import "./Navbar.scss";
 import {removeAuthCookies} from '../../../service/xroads-api'
 import { useHistory } from "react-router-dom";
-import { AlertBar, Message } from "../AlertBar/AlertBar";
-import { useContext } from "react";
-import { UserContext, User } from "../../../service/UserContext";
+import { AlertBar } from "../AlertBar/AlertBar";
+import { useStateValue } from "../../../service/State";
 
 const Navbar = () => {
   const history = useHistory();
-  let [user, setUser] = useContext(UserContext)
-
+  const [state, dispatch] = useStateValue();
+  let userLoggedIn = state.user.loggedIn();
   let logout = () => {
     removeAuthCookies();
-    setUser(prevState => {
-      let user = Object.assign({}, prevState);
-      Object.setPrototypeOf(user, User.prototype );
-      user.logout();
-      return user;
-    });
+    dispatch({type: 'logout'})
     return history.replace('/login')
   }
   return (
@@ -27,7 +21,7 @@ const Navbar = () => {
           <h1>xroads</h1>
         </div>
         <div className="navbar-buttons">
-          { user.loggedIn ? 
+          { userLoggedIn ? 
             <button onClick={logout}>Log Out</button> : <span></span>
           }
         </div>

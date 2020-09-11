@@ -5,17 +5,17 @@ import SearchBar from '../../components/Common/Search/Search';
 import ClubCard from '../../components/Club/Card/Card';
 
 import * as XroadsAPI from '../../service/xroads-api';
-import { UserContext } from '../../service/UserContext';
+import { useStateValue } from '../../service/State';
 
 const ScreenClubBrowser = () => {
   const [allClubs, setAllClubs] = useState([]);
   const [displayedClubs, setDisplayedClubs] = useState([]);
   const clubIds = allClubs.map(club => club.id);
-  let [user, setUser] = useContext(UserContext);
+  const [state, dispatch] = useStateValue();
 
-
+  console.log(state.user);
   function invisibleFilter(clubs) {
-    let editableClubs = user.editableClubs;
+    let editableClubs = state.user.editableClubs(state.user.roles)
     let filteredClubs = [];
 
     for (let i = 0; i < clubs.length; i++) {
@@ -31,11 +31,8 @@ const ScreenClubBrowser = () => {
   }
 
   function loadClubs() {
-    // FIXME : replace the hardcoded distictId = 1, schoolId below with the actual values
-    // FIXME : that should be coming in as parameters in the component
-    let districtId = 1;
-    let schoolId = 1;
-    XroadsAPI.fetchClubs(districtId, schoolId).then(res => {
+
+    XroadsAPI.fetchClubs(state.user.district, state.user.school).then(res => {
       return res.json().then(clubs => {
         clubs = invisibleFilter(clubs);
         setAllClubs(clubs);
