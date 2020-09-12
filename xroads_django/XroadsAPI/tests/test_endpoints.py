@@ -300,6 +300,8 @@ class TestAdmin:
 class TestNoAuth:
     class TestClubViewset:
         club_path_name = "api:club-list"
+        club_join_name = "api:club-join-club"
+        club_leave_path = "api:club-leave-club"
 
         def test_retrieves_club_list_no_auth(self, role_model_instances, make_request, setup_client_no_auth):
             d1, s1, c1 = role_model_instances()
@@ -327,3 +329,33 @@ class TestNoAuth:
             assert response.status_code == status.HTTP_200_OK
             assert response.data == BasicClubInfoSerial(
                 s1.clubs, many=True).data
+
+        def test_join_club_same_school(self, role_model_instances, make_request, setup_client_auth):
+            d1, s1, c1 = role_model_instances()
+            profile, client = setup_client_auth
+
+            profile.district = d1
+            profile.school = s1
+
+            path = reverse(self.club_join_name, kwargs={'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+            response: Response = make_request(client, 'post', path=path, format='json')
+
+            assert response.status_code == status.HTTP_202_ACCEPTED
+            profile.refresh_from_db()
+            assert c1 in list(profile.joined_clubs)
+
+        def test_leave_club(self, role_model_instances, make_request, setup_client_auth):
+            d1, s1, c1 = role_model_instances()
+            profile, client = setup_client_auth
+
+            profile.district = d1
+            profile.school = s1
+            c1.join(profile)
+
+            path = reverse(self.club_leave_path, kwargs={'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+            response: Response = make_request(client, 'post', path=path, format='json')
+
+            assert response.status_code == status.HTTP_202_ACCEPTED
+            profile.refresh_from_db()
+            assert c1 not in list(profile.joined_clubs)
+

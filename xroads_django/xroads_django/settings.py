@@ -204,6 +204,7 @@ JWT_SIGNATURE_COOKIE_NAME = 'JWT-SIGNATURE'
 
 from datetime import timedelta
 ACCESS_TOKEN_LIFETIME = timedelta(days=7)
+REFRESH_TOKEN_LIFETIME = timedelta(days=7)
 
 # Needed for dj-rest-auth
 REST_AUTH_REGISTER_SERIALIZERS = {

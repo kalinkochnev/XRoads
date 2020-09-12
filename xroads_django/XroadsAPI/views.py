@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -45,9 +45,13 @@ class ClubViewset(viewsets.ReadOnlyModelViewSet):
         return Response(BasicClubInfoSerial(queryset, many=True).data)
 
     @action(detail=True, methods=['post'])
-    def join_club(self, request):
-        pass
+    def join_club(self, request, *args, **kwargs):
+        club = self.get_object()
+        club.join(request.user)
+        return Response(status=status.HTTP_202_ACCEPTED)
 
     @action(detail=True, methods=['post'])
-    def leave_club(self, request):
-        pass
+    def leave_club(self, request, *args, **kwargs):
+        club = self.get_object()
+        club.leave(request.user)
+        return Response(status=status.HTTP_202_ACCEPTED)

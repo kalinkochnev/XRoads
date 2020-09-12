@@ -44,6 +44,11 @@ class Profile(AbstractUser):
 
     hierarchy_perms = models.ManyToManyField(HierarchyPerms, blank=True)
 
+    @property
+    def joined_clubs(self):
+        from XroadsAPI.models import Club
+        return Club.objects.filter(members__in=[self])
+
     def make_save(self, save):
         if save:
             self.save()

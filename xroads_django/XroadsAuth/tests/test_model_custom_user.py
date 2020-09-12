@@ -135,3 +135,15 @@ def test_create_test_prof(create_test_prof):
     test_email = 'hello@gmail.com'
     prof2 = create_test_prof(prof_num, email=test_email)
     assert prof2.email == test_email
+
+def test_joined_clubs(create_test_prof, create_club):
+    c1 = create_club()
+    c2 = create_club()
+
+    prof = create_test_prof(1)
+    c1.join(prof)
+    c2.join(prof)
+
+    joined_clubs = list(prof.joined_clubs)
+    assert c1 in joined_clubs
+    assert c2 in joined_clubs
