@@ -73,6 +73,7 @@ const ScreenClubBrowser = () => {
                 description={club.description}
                 favorited={club}
                 editable={state.user.editableClubs(state.user.roles).includes(club.id)}
+                hidden={!club.is_visible}
               />
             )
           }

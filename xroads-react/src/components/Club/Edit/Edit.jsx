@@ -7,8 +7,8 @@ import { TextSlide, ImageSlide, VideoSlide } from '../../Common/Slides/Slides';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFilm, faFont, faImage, faImages, faTextHeight, faVideo } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
-import { updateClub } from '../../../service/xroads-api'
-
+import { sendRequest, updateClub } from '../../../service/xroads-api'
+import { useStateValue } from '../../../service/State'
 import ReactTooltip from 'react-tooltip';
 
 
@@ -17,9 +17,12 @@ const GeneralEdit = (props) => {
     let [clubDescriptionMd, setClubDescription] = useState(props.club.description);
     let [clubName, setClubName] = useState(props.club.name)
     let [clubJoinPromo, setClubJoinPromo] = useState(props.club.join_promo)
+    const [state, dispatch] = useStateValue();
+    const [isVisible, setVisibility] = useState(props.club.is_visible);
+
+    
 
     const handleClubDescription = (clubDescMd) => {
-        // console.log("Updated club description", clubDescMd);
         setClubDescription(clubDescMd);
     }
 
@@ -37,17 +40,33 @@ const GeneralEdit = (props) => {
         console.log("Save club result", saveRes);
     }
 
+    // FIXME this will not work if someone has edit access but has a different school
+    const toggleHide = () => {
+        let user = state.user;
+        let urlArgs = {
+            'districtId': user.district, 
+            'schoolId': user.school, 
+            'clubId': props.club.id
+        }
+        sendRequest("toggle_hide_club", urlArgs, 'POST', {}).then(response => {
+            if (response.ok) {
+                setVisibility(!isVisible)
+                console.log('The club is now ' + isVisible.toString())
+            }
+        })
+    }
+
     return (
         <div className="centerContent">
             <div className="editBody">
                 <form className="clubEdit">
-                    
-                    <label className="" htmlFor="join">Hide this club</label>
+
+                    <label className="" htmlFor="join">Hide club</label>
                     <label class="switch">
-                        <input type="checkbox" />
+                        <input type="checkbox" onClick={toggleHide} checked={!isVisible}/>
                         <span class="slider round"></span>
                     </label>
-                    <ReactTooltip place="right" effect="solid"/>
+                    <ReactTooltip place="right" effect="solid" />
 
                     <label className="" htmlFor="join">How to join<br />
                         <input type="text" id="join" name="join" value={clubJoinPromo} onChange={(e) => setClubJoinPromo(e.target.value)} />
