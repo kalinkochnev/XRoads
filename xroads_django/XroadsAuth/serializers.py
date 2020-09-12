@@ -11,7 +11,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Profile
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon', 'permissions', 'school', 'district']
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_anon', 'permissions', 'school', 'district', 'joined_clubs']
         allow_null = True
 
 class AnonProfileSerializer(DynamicFieldsModelSerializer):

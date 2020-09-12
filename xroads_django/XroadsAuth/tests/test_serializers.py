@@ -18,7 +18,7 @@ class TestProfileSerializers:
             'school': None,
             'district': None,
             'permissions': [],
-            
+            'joined_clubs': [],  
         }
 
         assert expected == ProfileSerializer(user_obj).data
@@ -36,6 +36,7 @@ class TestProfileSerializers:
             'school': None,
             'district': None,
             'permissions': [],
+            'joined_clubs': [],
         }
 
         assert expected == ProfileSerializer(user_obj).data
@@ -83,7 +84,8 @@ class TestProfileSerializers:
             'permissions': [
                 f'Club-{c1.id}/perms=[add-admin, modify-club]',
                 f'School-{s1.id}/perms=[__all__]',
-            ]
+            ],
+            'joined_clubs': [],
         }
 
         assert ProfileSerializer(prof).data == expected
@@ -104,9 +106,29 @@ class TestProfileSerializers:
             'school': s1.id,
             'district': d1.id,
             'is_anon': prof.is_anon,
-            'permissions': []
+            'permissions': [],
+            'joined_clubs': [],
         }
 
+    def test_joined_clubs(self, role_model_instances, create_test_prof, create_club):
+        d1, s1, c1 = role_model_instances()
+        c2 = create_club()
+        prof = create_test_prof(1)
+
+        c1.join(prof)
+        c2.join(prof)
+
+        expected = {
+            'id': prof.id,
+            'email': prof.email,
+            'first_name': prof.first_name,
+            'last_name': prof.last_name,
+            'school': None,
+            'district': None,
+            'is_anon': prof.is_anon,
+            'permissions': [],
+            'joined_clubs': [c1.id, c2.id],
+        }
 
 
 
