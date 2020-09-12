@@ -110,6 +110,8 @@ class TestProfileSerializers:
             'joined_clubs': [],
         }
 
+        assert ProfileSerializer(prof).data == expected
+
     def test_joined_clubs(self, role_model_instances, create_test_prof, create_club):
         d1, s1, c1 = role_model_instances()
         c2 = create_club()
@@ -129,6 +131,8 @@ class TestProfileSerializers:
             'permissions': [],
             'joined_clubs': [c1.id, c2.id],
         }
+
+        assert ProfileSerializer(prof).data == expected
 
 
 

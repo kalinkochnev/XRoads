@@ -205,6 +205,18 @@ JWT_SIGNATURE_COOKIE_NAME = 'JWT-SIGNATURE'
 from datetime import timedelta
 ACCESS_TOKEN_LIFETIME = timedelta(days=7)
 REFRESH_TOKEN_LIFETIME = timedelta(days=7)
+JWT_AUTH = {
+    # how long the original token is valid for
+    'JWT_EXPIRATION_DELTA': ACCESS_TOKEN_LIFETIME,
+
+    # allow refreshing of tokens
+    'JWT_ALLOW_REFRESH': True,
+
+    # this is the maximum time AFTER the token was issued that
+    # it can be refreshed.  exprired tokens can't be refreshed.
+    'JWT_REFRESH_EXPIRATION_DELTA': REFRESH_TOKEN_LIFETIME,
+}
+
 
 # Needed for dj-rest-auth
 REST_AUTH_REGISTER_SERIALIZERS = {

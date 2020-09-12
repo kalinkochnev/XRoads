@@ -2,13 +2,13 @@ from dj_rest_auth.registration.serializers import RegisterSerializer
 from dj_rest_auth.serializers import LoginSerializer
 from rest_framework import serializers
 
-from XroadsAPI.models import District
+from XroadsAPI.models import District, Club
 from XroadsAuth.models import HierarchyPerms, Profile
 from XroadsAuth.utils import DynamicFieldsModelSerializer
 
 class ProfileSerializer(serializers.ModelSerializer):
     permissions = serializers.ListField(child=serializers.CharField(), read_only=True, source='simple_perm_strs')
-    
+    joined_clubs = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     class Meta:
         model = Profile
         fields = ['id', 'email', 'first_name', 'last_name', 'is_anon', 'permissions', 'school', 'district', 'joined_clubs']

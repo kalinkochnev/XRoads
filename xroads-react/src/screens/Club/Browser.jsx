@@ -56,7 +56,7 @@ const ScreenClubBrowser = () => {
     console.log("ClubBrowser component did mount");
     loadClubs();
   }, [state.user])
-
+  
   return (
     <div>
       <Navbar>xroads</Navbar>
@@ -64,19 +64,19 @@ const ScreenClubBrowser = () => {
         <SearchBar key={clubIds} clubs={allClubs} filterClubs={searchFilter}></SearchBar>
         <div className="card-container">
           {
-            displayedClubs.map(club => 
-              <ClubCard 
-                key={club.id} 
-                id={club.id} 
-                title={club.name} 
-                imageURL={club.main_img} 
-                description={club.description}
-                favorited={club}
-                editable={state.user.editableClubs(state.user.roles).includes(club.id)}
-                hidden={!club.is_visible}
-              />
-            )
+            displayedClubs.length == 0 ? (<h1>Loading...</h1>) : 
+            displayedClubs.map(club => <ClubCard
+              key={club.id}
+              id={club.id}
+              title={club.name}
+              imageURL={club.main_img}
+              description={club.description}
+              favorited={state.user.joinedClubs.includes(club.id)}
+              editable={state.user.editableClubs(state.user.roles).includes(club.id)}
+              hidden={!club.is_visible}
+            />)
           }
+          
         </div>
       </div>
     </div>

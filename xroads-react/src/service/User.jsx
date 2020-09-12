@@ -12,6 +12,7 @@ const detailFromData = (data) => {
         firstName: data.first_name,
         lastName: data.last_name,
         email: data.email,
+        joinedClubs: data.joined_clubs
     }
 }
 
@@ -39,6 +40,15 @@ const editableClubs = (roles) => {
     return [];
 }
 
+const joinClub = (joinedClubs, clubId) => {
+    joinedClubs.push(clubId)
+    return {joinedClubs: joinedClubs};
+}
+
+const leaveClub = (joinedClubs, clubId) => {
+    return {joinedClubs: joinedClubs.filter(item => item !== clubId)};
+}
+
 const userReducer = (state, action) => {
     switch (action.type) {
         case 'logged in': 
@@ -49,6 +59,10 @@ const userReducer = (state, action) => {
             return {...state, ...login(action.payload)}
         case 'logout':
             return {...state, ...logout()}
+        case 'join club': 
+            return {...state, ...joinClub(state.joinedClubs, action.payload)};
+        case 'leave club':
+            return {...state, ...leaveClub(state.joinedClubs, action.payload)};
         default:
             return state;
     }

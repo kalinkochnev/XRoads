@@ -13,28 +13,22 @@ class IconButton extends React.Component {
         };
     }
 
+    static defaultProps = {
+        link: "#",
+    };
+
     render() {
         var IconRef = Icons;
-        if(this.props.filled){
-            IconRef=IconsFilled;
+        if (this.props.filled) {
+            IconRef = IconsFilled;
         }
-        if (this.props.link != undefined) {
-            return (
-                <Link to={this.props.link}>
-                    <div className="iconButton" style={{color: this.props.color}}>
-                        <FontAwesomeIcon icon={IconRef[this.props.icon]} />
-                    </div>
-                </Link>
-            );
-        }
-
-        else {
-            return (
-                <div className="iconButton" style={{color: this.props.color}}>
+        return (
+            <Link to={this.props.link}>
+                <div className="iconButton" style={{ color: this.props.color }} onClick={this.props.customClickEvent}>
                     <FontAwesomeIcon icon={IconRef[this.props.icon]} />
                 </div>
-            );
-        }
+            </Link>
+        );
 
     }
 }

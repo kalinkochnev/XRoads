@@ -43,6 +43,7 @@ const AppState = ({children}) => {
             firstName: '',
             lastName: '',
             email: '',
+            joinedClubs: [],
             editableClubs: (roles) => editableClubs(roles)
         }
     });

@@ -11,7 +11,10 @@ const endpoint_templates = {
     'club_detail': '/api/district/:districtId/school/:schoolId/club/:clubId',
     'admin_club_detail': '/api/admin/district/:districtId/school/:schoolId/club/:clubId',
     'user_detail': '/auth/user/',
-    'toggle_hide_club': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/toggle_hide/'
+    'toggle_hide_club': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/toggle_hide/',
+    'join_club': '/api/district/:districtId/school/:schoolId/club/:clubId/join_club/',
+    'leave_club': '/api/district/:districtId/school/:schoolId/club/:clubId/leave_club/'
+
 };
 
 function fillTemplate(urlName, urlArgs) {
