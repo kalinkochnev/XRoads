@@ -56,6 +56,11 @@ class CustomRegister(RegisterSerializer):
 
 
 class CustomLoginSerializer(LoginSerializer):
-    pass
+    remember_me = serializers.BooleanField(write_only=True, default=False)
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        attrs['remember_me'] = attrs.get('remember_me')
+        return attrs
 
     

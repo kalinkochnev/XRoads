@@ -53,7 +53,7 @@ def setup_auth_cookies(create_test_prof):
         cookies[PAYLOAD_COOKIE_NAME]['Secure'] = False
         cookies[PAYLOAD_COOKIE_NAME]['SameSite'] = "Strict"
         expire_time = (datetime.now(tz=timezone.utc) + settings.ACCESS_TOKEN_LIFETIME)
-        cookies[PAYLOAD_COOKIE_NAME]['Expires'] = expire_time.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        cookies[PAYLOAD_COOKIE_NAME]['expires'] = expire_time.strftime("%a, %d %b %Y %H:%M:%S GMT")
         cookies[PAYLOAD_COOKIE_NAME]['Max-Age'] = int(settings.ACCESS_TOKEN_LIFETIME.total_seconds())
         cookies[PAYLOAD_COOKIE_NAME]['Path'] = '/'
 
@@ -61,6 +61,16 @@ def setup_auth_cookies(create_test_prof):
         return prof, cookies
     return func
 
+@pytest.fixture
+@override_settings(ACCESS_TOKEN_LIFETIME=timedelta(days=7))
+def setup_remember_me_cookies(create_test_prof, setup_auth_cookies):
+    @override_settings(ACCESS_TOKEN_LIFETIME=timedelta(days=7))
+    def func(prof_id=None, prof=None, expire_date=settings.ACCESS_TOKEN_LIFETIME):
+        prof, cookies = setup_auth_cookies(prof_id=prof_id, prof=prof, expire_date=expire_date)
+        cookies[SIGNATURE_COOKIE_NAME]['expires'] = cookies[PAYLOAD_COOKIE_NAME]['expires']
+        return prof, cookies
+    return func
+    
 class TestRegistration:
     url = "/auth/registration/"
     def test_valid(self, role_model_instances, setup_client_no_auth, make_request):
@@ -195,6 +205,8 @@ class TestLoginView:
         assert cookies[PAYLOAD_COOKIE_NAME]._flags == response.cookies[PAYLOAD_COOKIE_NAME]._flags
         
         assert cookies[SIGNATURE_COOKIE_NAME]._flags == response.cookies[SIGNATURE_COOKIE_NAME]._flags
+        assert 'expires' not in str(response.cookies[SIGNATURE_COOKIE_NAME])
+
         assert 'xroads-auth' not in response.cookies.keys()
 
     def test_invalid_data_no_cookies(self, make_request, role_model_instances, setup_client_no_auth):
@@ -239,3 +251,24 @@ class TestLoginView:
         response = make_request(client, 'post', path=path, data=data, format='json')
         
         assert response.data['user'] == ProfileSerializer(prof).data
+
+    def test_remember_login(self, role_model_instances, setup_client_no_auth, make_request, setup_remember_me_cookies):
+        prof = Profile.create_profile("test@niskyschools.org", "password123", 'a', 'b', verified=True)
+        prof, cookies = setup_remember_me_cookies(prof=prof)
+
+        d1, s1, c1 = role_model_instances()
+        d1.add_email_domain('niskyschools.org')
+        client = setup_client_no_auth
+
+        data = {
+            'email': 'test@niskyschools.org',
+            'password': 'password123',
+            'remember_me': True,
+        }
+
+        path = reverse('cookie_login')
+        response = make_request(client, 'post', path=path, data=data, format='json')
+
+        assert response.status_code == status.HTTP_200_OK
+        assert 'expires' in str(response.cookies[SIGNATURE_COOKIE_NAME])
+    

@@ -3,6 +3,7 @@ from django.conf import settings
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response
+from XroadsAuth.serializers import CustomLoginSerializer
 
 
 # Create your views here.
@@ -11,6 +12,8 @@ def email_confirm_success(request):
 
 
 class CustomLoginView(LoginView):
+    serializer_class = CustomLoginSerializer
+
     def bake_cookies(self, response):
         # This creates the cookies to be sent back to the client 
         payload_cookie_name = settings.JWT_PAYLOAD_COOKIE_NAME
@@ -33,15 +36,21 @@ class CustomLoginView(LoginView):
         )
         # FIXME make secure = to TRUE in production
 
-        # Creates Signature cookie name (permanent cookie)
+        # Creates Signature cookie name (normally session cookie, unless remember login)
+        signature_kwargs = {
+            'secure': False,
+            'httponly': True,
+            'samesite': 'Strict',
+        }
+        if self.serializer.validated_data['remember_me']:
+            signature_kwargs['expires'] = expiration
+
         response.set_cookie(
             signature_cookie_name,
             signature_key,
-            secure=False,
-            httponly=True,
-            samesite='Strict'
+            **signature_kwargs
         )
-                # FIXME make secure = to TRUE in production
+        # FIXME make secure = to TRUE in production
 
 
     def get_response(self):
