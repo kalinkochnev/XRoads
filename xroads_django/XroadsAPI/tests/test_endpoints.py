@@ -359,3 +359,20 @@ class TestNoAuth:
             profile.refresh_from_db()
             assert c1 not in list(profile.joined_clubs)
 
+    class TestSchoolViewset:
+        join_school_path = "api:school-join-school"
+
+        def test_join_school(self, role_model_instances, setup_client_auth, make_request):
+            d1, s1, c1 = role_model_instances()
+            profile, client = setup_client_auth
+
+            profile.district = d1
+
+            path = reverse(self.join_school_path, kwargs={'district_pk': d1.id, 'pk': s1.id})
+            response: Response = make_request(client, 'post', path=path, format='json')
+
+            assert response.status_code == status.HTTP_202_ACCEPTED
+            profile.refresh_from_db()
+            assert s1 == profile.school
+
+        

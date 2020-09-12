@@ -25,12 +25,9 @@ class SchoolViewset(viewsets.ReadOnlyModelViewSet):
 
     # TODO make permission that checks the request user belongs to the object
     @action(detail=True, methods=['post'])
-    def join_school(self, request):
-        pass
-
-    @action(detail=True, methods=['post'])
-    def leave_school(self, request):
-        pass
+    def join_school(self, request, *args, **kwargs):
+        self.request.user.join_school(self.get_object())
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 class ClubViewset(viewsets.ReadOnlyModelViewSet):
