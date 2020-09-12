@@ -104,9 +104,9 @@ export function removeAuthCookies() {
 export function login(formData) {
     removeAuthCookies();
     
-    let requiredKeys = ['email', 'password']
+    let requiredKeys = ['email', 'password', 'remember_me']
     if (!isEqual(Object.keys(formData), requiredKeys)) {
-        throw InvalidKeysProvided('The login form did not have the right values')
+        throw InvalidKeysProvided('The login form did not have the right keys')
     }
     return sendRequest('login', {}, 'POST', formData);
 }

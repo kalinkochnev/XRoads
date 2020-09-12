@@ -50,12 +50,14 @@ const LoginForm = ({ setAlert }) => {
       initialValues={{
         email: "",
         password: "",
+        remember_me: false,
       }}
       validationSchema={Yup.object({
         email: Yup.string()
           .required("Email required")
           .email("Please provide a valid email"),
         password: Yup.string().required("Password required"),
+        remember_me: Yup.boolean()
       })}
       onSubmit={onSubmit}
     >
@@ -78,7 +80,7 @@ const LoginForm = ({ setAlert }) => {
               />
 
               <label className="remember">
-                <input type="checkbox" id="remember" name="remember" value="remember" />
+                <input type="checkbox" {...formik.getFieldProps("remember_me")} />
                 Remember me (does nothing rn)
               </label>
 
