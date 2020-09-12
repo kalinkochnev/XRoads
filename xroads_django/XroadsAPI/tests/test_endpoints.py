@@ -222,9 +222,10 @@ class TestAdmin:
 
         @pytest.fixture
         def prof_w_perm(self, setup_client_auth):
-            def setup(club):
+            def setup(club, perms=[]):
                 prof, client = setup_client_auth
                 role = Role.from_start_model(club)
+                role.permissions.add(*perms)
                 role.give_role(prof)
                 return prof, client
             return setup
@@ -251,7 +252,7 @@ class TestAdmin:
 
             assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
-        def test_does_not_exist(self, setup_client_auth, make_request, role_model_instances):
+        def test_does_not_exist(self, perm_const_override, setup_client_auth, make_request, role_model_instances):
             d1, s1, c1 = role_model_instances()
             c1.delete()
 
@@ -261,17 +262,40 @@ class TestAdmin:
             response = make_request(client, 'get', path=path, format='json')
             assert response.status_code == status.HTTP_404_NOT_FOUND
 
-        def test_toggle_hide(self, prof_w_perm, make_request, role_model_instances):
+        def test_toggle_hide_w_perm(self, perm_const_override, prof_w_perm, make_request, role_model_instances):
             d1, s1, c1 = role_model_instances()
             assert c1.is_visible is False
 
-            profile, client = prof_w_perm(c1)
+            profile, client = prof_w_perm(c1, ['hide-club'])
             path = reverse(self.toggle_hide_url_name, kwargs={'district_pk': c1.district.id, 'school_pk': c1.school.pk, 'pk': c1.pk})
             response = make_request(client, 'post', path=path, format='json')
 
             assert response.status_code == status.HTTP_202_ACCEPTED
+
+            c1.refresh_from_db()
             assert c1.is_visible is True
-            
+
+        def test_toggle_hide_without_perm(self, setup_client_auth, prof_w_perm, make_request, role_model_instances):
+            d1, s1, c1 = role_model_instances()
+            assert c1.is_visible is False
+
+            path = reverse(self.toggle_hide_url_name, kwargs={'district_pk': c1.district.id, 'school_pk': c1.school.pk, 'pk': c1.pk})
+
+            # User without any permissions
+            prof1, client1 = setup_client_auth
+            response = make_request(client1, 'post', path=path, format='json')
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+
+            c1.refresh_from_db()
+            assert c1.is_visible is False   
+
+            # This is a different admin permission that shouldn't work
+            prof2, client2 = prof_w_perm(c1, ['add-admin'])
+            response = make_request(client2, 'post', path=path, format='json')
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+
+            c1.refresh_from_db()
+            assert c1.is_visible is False            
 
 class TestNoAuth:
     class TestClubViewset:

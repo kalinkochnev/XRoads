@@ -31,11 +31,11 @@ class DistrictViewset(api_mixins.ModifyAndReadViewset, api_mixins.AdminMixin):
     permission_classes = [IsAuthenticated, MinDistrictRole]
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser], hier_perms=['add_admin'])
-    def add_admin(self, request):
+    def add_admin(self, request, *args, **kwargs):
         return self.add_admins(request, hier_role=PermConst.SCHOOL_ADMIN)
         
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser], hier_perms=['remove_admin'])
-    def remove_admin(self, request):
+    def remove_admin(self, request, *args, **kwargs):
         return self.remove_admins(request)
 
 
@@ -47,7 +47,7 @@ class SchoolViewset(api_mixins.ModifyAndReadViewset, api_mixins.AdminMixin):
 
     # TODO test create_school
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinDistrictRole], hier_perms=['create-school'])
-    def create_school(self, request):
+    def create_school(self, request, *args, **kwargs):
         serializer = SchoolAdminSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -55,26 +55,26 @@ class SchoolViewset(api_mixins.ModifyAndReadViewset, api_mixins.AdminMixin):
 
     # TODO test toggle hide
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinSchoolRole], hier_perms=['hide-school'])
-    def toggle_hide(self, request):
+    def toggle_hide(self, request, *args, **kwargs):
         school = self.get_object()
         school.toggle_hide()
         return Response(status=204)
 
     @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated, MinSchoolRole], hier_perms=['add_admin'])
-    def clubs(self, request):
+    def clubs(self, request, *args, **kwargs):
         return self.add_admins(request, hier_role=PermConst.SCHOOL_ADMIN)
         
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinDistrictRole], hier_perms=['add_admin'])
-    def add_admin(self, request):
+    def add_admin(self, request, *args, **kwargs):
         return self.add_admins(request, hier_role=PermConst.SCHOOL_ADMIN)
         
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinDistrictRole], hier_perms=['remove_admin'])
-    def remove_admin(self, request):
+    def remove_admin(self, request, *args, **kwargs):
         return self.remove_admins(request)
     
     # TODO test create_club
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinSchoolRole], hier_perms=['create-club'])
-    def create_club(self, request):
+    def create_club(self, request, *args, **kwargs):
         club_serializer = CreateClubForm(data=request.data)
         if club_serializer.is_valid():
             club_serializer.save()
@@ -94,20 +94,20 @@ class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins
 
     # TODO create toggle_hide mixin
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=['hide-club'])
-    def toggle_hide(self, request):
+    def toggle_hide(self, request, *args, **kwargs):
         club = self.get_object()
         club.toggle_hide()
         return Response(status=202)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=['add_admin'])
-    def add_club_editor(self, request):
+    def add_club_editor(self, request, *args, **kwargs):
         return self.add_admins(request, hier_role=PermConst.CLUB_EDITOR)
     
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinSchoolRole], hier_perms=['remove_admin'])
-    def remove_club_editor(self, request):
+    def remove_club_editor(self, request, *args, **kwargs):
         return self.remove_admins(request)
     
     # TODO create slide views
     @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=['remove_admin'])
-    def slides(self, request):
+    def slides(self, request, *args, **kwargs):
         pass
