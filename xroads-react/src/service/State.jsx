@@ -34,7 +34,7 @@ export const useStateValue = () => useContext(StateContext);
 
 const AppState = ({children}) => {
 
-    let [initialState, setState] = useState({
+    let initialState = {
         user: {
             loggedIn: () => loggedIn(),
             roles: [],
@@ -46,7 +46,7 @@ const AppState = ({children}) => {
             joinedClubs: [],
             editableClubs: (roles) => editableClubs(roles)
         }
-    });
+    };
 
     const mainReducer = ({user}, action) => ({
         user: userReducer(user, action),

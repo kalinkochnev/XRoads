@@ -29,6 +29,7 @@ const checkConditions = (conditions, args) => {
                 return [reason, false];
             }
         }
+        return ['', true]
     } catch (Error) {
         return [UNEXPECTED_ERROR,];
     }
@@ -47,12 +48,12 @@ const userHasSchool = ({state}) => {
     return [SCHOOL_NOT_SELECTED, allowed]
 }
 
-const userCanEditClub = ({state, modelName, clubId}) => {
-    let allowed = Role.canEditModel(state.user, modelName, clubId);
+const userCanEdit = ({state, modelName, id}) => {
+    let allowed = Role.canEditModel(state.user, modelName, id);
     return [NOT_PERMITTED_EDIT, allowed]
 }
 
-// Required args included: global state (included by default)
+// Required args include: global state (included by default)
 const userConditions = (args) => {
     const conditions = [
         isLoggedIn,
@@ -62,4 +63,17 @@ const userConditions = (args) => {
     return checkConditions(conditions, args)
 }
 
-export {userConditions, checkConditions, getCondRedirect}
+// Required args include: global state
+const clubAdminConditions = (args) => {
+    const conditions = [
+        isLoggedIn,
+        userHasSchool,
+        userCanEdit
+    ]
+    args.modelName = "Club";
+    args.id = args.computedMatch.params.id;
+    
+    return checkConditions(conditions, args)
+}
+
+export {userConditions, checkConditions, getCondRedirect, clubAdminConditions}
