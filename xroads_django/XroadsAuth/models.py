@@ -29,7 +29,7 @@ class Profile(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     username = None
 
-    school = models.ForeignKey('XroadsAPI.School', on_delete=models.SET_NULL, null=True)
+    school = models.ForeignKey('XroadsAPI.School', on_delete=models.SET_NULL, null=True, blank=True)
     district = models.ForeignKey('XroadsAPI.District', on_delete=models.SET_NULL, null=True)
 
     # used for making sure the admin login and signup page works correctly

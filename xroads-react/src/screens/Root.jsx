@@ -8,8 +8,10 @@ import ScreenLogin from "./User/Login";
 import ScreenSignup from "./User/Signup";
 import ScreenNotFound from "./Generic/NotFound";
 import { ConditionalRoute } from "./Routes/ConditionalRoute";
-import { clubAdminConditions, userConditions } from "./Routes/SharedConditions";
+import { clubAdminConditions, registrationConditions, userConditions } from "./Routes/SharedConditions";
 import ErrorOcurred from "./Generic/Error";
+import SchoolSelectForm from "../components/User/Forms/SchoolSelect";
+import SchoolSelectScreen from "./User/SchoolSelect";
 
 const ScreensRoot = () => {  
   return (
@@ -21,7 +23,7 @@ const ScreensRoot = () => {
         <ConditionalRoute exact path="/clubs/:id/edit" component={ScreenClubEdit} condition={clubAdminConditions} conditionArgs={{modelName: "Club"}}/>
         <ConditionalRoute exact path="/clubs/:id" component={ScreenClubDetail} condition={userConditions}/>
         <ConditionalRoute exact path="/clubs" component={ScreenClubBrowser} condition={userConditions}/>
-        <Route exact path="/login/school-select" component={ScreenSignup} />
+        <ConditionalRoute exact path="/login/school-select" component={SchoolSelectScreen} condition={registrationConditions} />
 
 
         <Route exact path="/error" component={ErrorOcurred} />

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import "./AuthForm.scss";
@@ -23,6 +23,10 @@ const LoginForm = ({ setAlert }) => {
     }
   }
 
+  useEffect(() => {
+
+  }, [state.user])
+
   const onSubmit = (values, { setSubmitting, setFieldError }) => {
     console.log(values)
     login(values).then(response => {
@@ -30,7 +34,9 @@ const LoginForm = ({ setAlert }) => {
       let successCallback = (response, functions, data) => {
         functions.setAlert("success", "You logged in successfully!", true);
         response.json().then(body => {
+          console.log(state.user)
           dispatch({ type: 'login', payload: body });
+          console.log(state.user)
           history.push('/clubs');
         });
       }

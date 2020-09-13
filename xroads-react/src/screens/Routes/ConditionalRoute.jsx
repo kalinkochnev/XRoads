@@ -35,7 +35,7 @@ const ConditionalRoute = ({ component: Component, condition, conditionArgs = {},
                 if (isAllowed) {
                     return <Component {...props} />;
 
-                } else if (state != originalState || !state.user.loggedIn()) {
+                } else if (state.user.email != "" || !state.user.loggedIn()) {
                     return <Redirect to={getCondRedirect(reason)}/>;
                 }
             }}

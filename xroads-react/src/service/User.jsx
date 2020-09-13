@@ -63,6 +63,8 @@ const userReducer = (state, action) => {
             return {...state, ...joinClub(state.joinedClubs, action.payload)};
         case 'leave club':
             return {...state, ...leaveClub(state.joinedClubs, action.payload)};
+        case 'join school':
+            return {...state, school: action.payload}
         default:
             return state;
     }

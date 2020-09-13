@@ -11,7 +11,7 @@ const getCondRedirect = (reason) => {
         case NOT_AUTHENTICATED:
             return '/login';
         case SCHOOL_NOT_SELECTED:
-            return '/signup/school-select';
+            return '/login/school-select';
         case NOT_PERMITTED_EDIT:
             return '/clubs';
         case UNEXPECTED_ERROR:
@@ -54,6 +54,11 @@ const userCanEdit = ({state, modelName, id}) => {
 }
 
 // Required args include: global state (included by default)
+const registrationConditions = (args) => {
+    const conditions = [isLoggedIn]
+    return checkConditions(conditions, args)
+}
+
 const userConditions = (args) => {
     const conditions = [
         isLoggedIn,
@@ -76,4 +81,4 @@ const clubAdminConditions = (args) => {
     return checkConditions(conditions, args)
 }
 
-export {userConditions, checkConditions, getCondRedirect, clubAdminConditions}
+export {userConditions, checkConditions, getCondRedirect, clubAdminConditions, registrationConditions}
