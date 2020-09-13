@@ -9,18 +9,23 @@ import ScreenSignup from "./User/Signup";
 import ScreenNotFound from "./Generic/NotFound";
 import { AuthRoute } from "./Routes/AuthenticatedRoute";
 import { CanEditRoute } from "./Routes/UserCanEdit";
+import { ConditionalRoute } from "./Routes/ConditionalRoute";
+import { userConditions } from "./Routes/SharedConditions";
+import ErrorOcurred from "./Generic/Error";
 
 const ScreensRoot = () => {  
   return (
     <Router>
       <Switch>
         <Route exact path="/signup" component={ScreenSignup} />
+        <Route exact path="/signup/school-select" component={ScreenSignup} />
         <Route exact path="/login" component={ScreenLogin} />
 
-        <AuthRoute exact path="/clubs/:id" component={ScreenClubDetail} />
-        <AuthRoute exact path="/clubs" component={ScreenClubBrowser} />
+        <ConditionalRoute exact path="/clubs/:id" component={ScreenClubDetail} condition={userConditions}/>
+        <ConditionalRoute exact path="/clubs" component={ScreenClubBrowser} condition={userConditions}/>
         <CanEditRoute exact path="/clubs/:id/edit" component={ScreenClubEdit} modelName="Club"/>
-
+        
+        <Route exact path="/error" component={ErrorOcurred} />
         <Route component={ScreenNotFound} />
       </Switch>
     </Router>
