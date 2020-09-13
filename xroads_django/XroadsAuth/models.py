@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from XroadsAuth.manager import CustomUserManager
-import XroadsAPI.models as AuthModels
+import XroadsAPI.models as APIModels
 
 # Create your models here
 class HierarchyPerms(models.Model):
@@ -79,5 +79,5 @@ class Profile(AbstractUser):
         return [i.highest_level_str for i in self.permissions]
 
     def match_district(self, save=True):
-        self.district = AuthModels.District.match_district(self.email)
+        self.district = APIModels.District.match_district(self.email)
         self.make_save(save)
