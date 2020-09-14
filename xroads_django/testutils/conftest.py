@@ -62,15 +62,22 @@ def create_test_prof(db):
 
 
 @pytest.fixture
-def create_test_slide(db, temp_img):
-    def create_test_slide():
-        # Sets the class variable equal to this template to avoid conflicts with real code
-        template_args = ['video_url', 'text', 'img']
-        SlideTemplates.templates = [
-            SlideTemplates.Template(
-                temp_id=1, name="test", required=template_args)
-        ]
+def template_setup():
+    temp_id = 9999
+    template_args = ['video_url', 'text', 'img']
 
+    SlideTemplates.templates = [
+        SlideTemplates.Template(
+            temp_id=temp_id, name="test", required=template_args)
+    ]
+
+    template = SlideTemplates.templates[0]
+    return template
+
+@pytest.fixture
+def create_test_slide(db, temp_img, template_setup):
+    def create_test_slide():
+        template = template_setup
         # This creates a temporary image file to use for testing!!! The decorator overrides the django settings
         temp_file = tempfile.NamedTemporaryFile()
         test_image = temp_img(temp_file)
@@ -79,8 +86,9 @@ def create_test_slide(db, temp_img):
         slide_text = "this is a test"
         video_url = 'youtube.com/testing-video'
         args = [video_url, slide_text, test_image.name]
+        template_args = template.required_args
 
-        return SlideTemplates.templates[0], dict(zip(template_args, args))
+        return template, dict(zip(template_args, args))
     return create_test_slide
 
 @pytest.fixture

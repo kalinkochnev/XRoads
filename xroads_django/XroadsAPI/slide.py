@@ -1,5 +1,5 @@
 import XroadsAPI.models as Models
-from XroadsAPI.exceptions import SlideParamError
+from XroadsAPI.exceptions import InvalidSlideTemplate, SlideParamError
 
 class SlideTemplates:
     class Template:
