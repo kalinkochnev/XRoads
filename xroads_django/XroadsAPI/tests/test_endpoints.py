@@ -297,11 +297,12 @@ class TestAdmin:
             c1.refresh_from_db()
             assert c1.is_visible is False            
 
-class TestNoAuth:
+class TestNotAdmin:
     class TestClubViewset:
         club_path_name = "api:club-list"
         club_join_name = "api:club-join-club"
         club_leave_path = "api:club-leave-club"
+        ask_question_path = "api:club-ask-question"
 
         def test_retrieves_club_list_no_auth(self, role_model_instances, make_request, setup_client_no_auth):
             d1, s1, c1 = role_model_instances()
@@ -358,6 +359,40 @@ class TestNoAuth:
             assert response.status_code == status.HTTP_202_ACCEPTED
             profile.refresh_from_db()
             assert c1 not in list(profile.joined_clubs)
+
+        def test_ask_question(self, role_model_instances, make_request, setup_client_auth):
+            d1, s1, c1 = role_model_instances()
+            profile, client = setup_client_auth
+            c1.join(profile)
+
+            path = reverse(self.ask_question_path, kwargs={'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+            
+            data = {
+                'question': 'What does this club do?'
+            }
+            response: Response = make_request(client, 'post', data=data, path=path, format='json')
+            assert response.status_code == status.HTTP_201_CREATED
+
+            question = Question.objects.get(id=1)
+            assert question.asker == profile
+            assert question.question == data['question']
+            assert question.answer == None
+            assert question.club == c1
+
+        def test_ask_question_invalid(self, role_model_instances, make_request, setup_client_auth):
+            d1, s1, c1 = role_model_instances()
+            profile, client = setup_client_auth
+            c1.join(profile)
+
+            path = reverse(self.ask_question_path, kwargs={'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+            
+            data = {
+                'question': None
+            }
+            response: Response = make_request(client, 'post', data=data, path=path, format='json')
+            assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
 
     class TestSchoolViewset:
         join_school_path = "api:school-join-school"

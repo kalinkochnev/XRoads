@@ -53,4 +53,15 @@ class SchoolAdminSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-    
+class QuestionSerializer(serializers.ModelSerializer):
+    asker = AuthSerializers.AnonProfileSerializer(read_only=True)
+    club = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Question
+        fields = '__all__'
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        club = self.context.get('club')
+        return Question.objects.create(asker=request.user, club=club, question=validated_data.get('question'), answer=validated_data.get('answer'))

@@ -52,3 +52,13 @@ class ClubViewset(viewsets.ReadOnlyModelViewSet):
         club = self.get_object()
         club.leave(request.user)
         return Response(status=status.HTTP_202_ACCEPTED)
+
+    @action(detail=True, methods=['post'])
+    def ask_question(self, request, *args, **kwargs):
+        club = self.get_object()
+        question = QuestionSerializer(data=request.data, context={'request': request, 'club': club})
+        if question.is_valid():
+            question.save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(question.errors, status=status.HTTP_400_BAD_REQUEST)
+

@@ -144,3 +144,10 @@ class District(models.Model):
             return DistrictDomain.objects.get(domain=domain).district
         except DistrictDomain.DoesNotExist:
             return None
+
+class Question(models.Model):
+    asker = models.ForeignKey('XroadsAuth.Profile', on_delete=models.CASCADE)
+    club = models.ForeignKey(Club, on_delete=models.CASCADE)
+
+    question = models.TextField()
+    answer = models.TextField(null=True)
