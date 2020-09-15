@@ -55,7 +55,7 @@ const ScreenClubBrowser = () => {
   useEffect(() => {
     console.log("ClubBrowser component did mount");
     loadClubs();
-  }, [state.user])
+  }, [state.user.district, state.user.school])
   
   return (
     <div>

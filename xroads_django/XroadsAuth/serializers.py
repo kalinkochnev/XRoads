@@ -34,7 +34,7 @@ class CustomRegister(RegisterSerializer):
     last_name = serializers.CharField(write_only=True)
 
     def custom_signup(self, request, user):
-        pass
+        user.match_district()
 
     def validate(self, data):
         is_valid = super().validate(data)

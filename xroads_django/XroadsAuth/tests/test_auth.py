@@ -130,7 +130,25 @@ class TestRegistration:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert 'non_field_errors' in response.data
 
+    def test_user_assigned_district(self, role_model_instances, setup_client_no_auth, make_request):
+        d1, s1, c1 = role_model_instances()
+        d1.add_email_domain('niskyschools.org')
+        
+        client = setup_client_no_auth
 
+        data = {
+            'email': "test@niskyschools.org",
+            'first_name': 'test_first',
+            'last_name': 'test_last',
+            'password1': '32984kjwdss',
+            'password2': '32984kjwdss',
+        }
+
+        response = make_request(client, 'post', path=self.url, data=data, format='json')
+        assert response.status_code == status.HTTP_201_CREATED
+        prof = Profile.objects.get(email=data['email'])
+
+        assert prof.district == d1
 
 class TestAuthenticatedRequest:
     auth_required_url_name = "api:district-list"

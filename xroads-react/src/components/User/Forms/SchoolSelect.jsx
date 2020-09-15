@@ -1,10 +1,50 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Field, Formik } from "formik";
 import * as Yup from "yup";
 import "./SchoolSelect.scss";
-import { signup } from "../../../service/xroads-api";
+import { sendRequest, signup } from "../../../service/xroads-api";
+import { useStateValue } from "../../../service/State";
+import { displayFormHelp, defaultFail } from '../../../components/User/Forms/helper';
+import { useHistory } from "react-router-dom";
 
-const SchoolSelectForm = ({ addAlert }) => {
+const SchoolSelectForm = ({ setAlert }) => {
+  const [schools, setSchools] = useState([])
+  const [state, dispatch] = useStateValue();
+  let history = useHistory();
+
+  useEffect(() => {
+    sendRequest('school_list', {'districtId': state.user.district}, 'GET').then(response => {
+      if (response.ok) {
+        response.json().then(body => {
+          setSchools(body);
+        })
+      } else {
+        setAlert('warning', 'An error occurred while getting the schools')
+      }
+    })
+  }, [state.user.district])
+
+  const onSubmit = (values, { setSubmitting, setFieldError }) => {
+    console.log(values)
+    sendRequest('join_school', {'districtId': state.user.district, 'schoolId': values.school}, 'POST').then(response => {
+      console.log(response);
+      let successCallback = (response, functions, data) => {
+        functions.setAlert("success", "You selected a school successfully!", true);
+        console.log(state.user)
+        dispatch({ type: 'join school', payload: Number(values.school) });
+        console.log(state.user)
+        history.push('/clubs');
+      }
+
+      let funcs = {
+        'setAlert': setAlert
+      }
+
+      displayFormHelp(response, { 'values': values }, funcs, successCallback, defaultFail)
+    })
+    setSubmitting(false);
+  }
+
 
   function showOneError(formik) {
     let touched = Object.keys(formik.touched);
@@ -26,9 +66,7 @@ const SchoolSelectForm = ({ addAlert }) => {
         school: Yup.string()
           .required("Select your school")
       })}
-      onSubmit={async (values, {}) => {
-        //TODO: onsubmit for school selector
-      }}
+      onSubmit={onSubmit}
     >
       {(formik) => (
         <div class="accountLayout">
@@ -38,10 +76,7 @@ const SchoolSelectForm = ({ addAlert }) => {
                 class="school-select first-field last-field"
                 {...formik.getFieldProps("school")}
               >
-
-                <SchoolOption ID="1" name="Niskayuna HS" image="https://www.niskayunaschools.org/wp-content/uploads/2017/10/Niskayuna-HS-800x571.jpg"/>
-                <SchoolOption ID="2" name="Iroquois MS" image="https://www.niskayunaschools.org/wp-content/uploads/2017/04/Iroquois-800x571.jpg"/>
-                <SchoolOption ID="3" name="Van Antwerp MS" image="https://www.niskayunaschools.org/wp-content/uploads/2017/10/VanAntwerp-800x571.jpg"/>
+                { schools.map(school => <SchoolOption key={school.id} ID={school.id} name={school.name} image={school.img} />)}
 
               </fieldset>
 
@@ -66,7 +101,7 @@ class SchoolOption extends React.Component {
         <input name="school" type="radio" value={this.props.ID}/>
         <div class="option-content">
           <img src={this.props.image}/>
-          {this.props.name}
+          <h3>{this.props.name}</h3>
         </div>
       </label>
     );

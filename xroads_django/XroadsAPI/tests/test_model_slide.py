@@ -6,20 +6,6 @@ from XroadsAPI.models import *
 from XroadsAPI.slide import SlideTemplates
 
 
-@pytest.fixture
-def template_setup():
-    temp_id = 9999
-    template_args = ['video_url', 'text', 'img']
-
-    SlideTemplates.templates = [
-        SlideTemplates.Template(
-            temp_id=temp_id, name="test", required=template_args)
-    ]
-
-    template = SlideTemplates.templates[0]
-    return template
-
-
 def test_template_match_args_valid(template_setup):
     test_args = ['text', 'video_url', 'img', 'position']
     assert template_setup.args_match(test_args) is True
@@ -64,3 +50,17 @@ def test_create_invalid_slide(template_setup, create_club):
     club = create_club()
     with pytest.raises(SlideParamError) as e:
         assert SlideTemplates.new_slide(template_setup.temp_id, club=club, position=1)
+
+def test_slide_ordered_by_pos(create_test_slide, role_model_instances):
+    d1, s1, c1 = role_model_instances()
+    slides_data = [create_test_slide() for i in range(3)]
+    slides = []
+    for template, args in slides_data:
+        slide = c1.add_slide(template.temp_id, **args, save=False)
+        slides.append(slide)
+    c1.make_save(True)
+
+    club_slides = c1.slides
+    assert club_slides[0] == slides[0]
+    assert club_slides[1] == slides[1]
+    assert club_slides[2] == slides[2]
