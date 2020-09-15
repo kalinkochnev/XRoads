@@ -67,7 +67,7 @@ const ScreenClubBrowser = () => {
             displayedClubs.length == 0 ? (<h1>Loading...</h1>) : 
             displayedClubs.map(club => <ClubCard
               key={club.id}
-              id={3}
+              id={club.id}
               title={club.name}
               imageURL={club.main_img}
               description={club.description}

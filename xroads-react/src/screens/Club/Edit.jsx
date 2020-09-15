@@ -12,6 +12,11 @@ import ReactTooltip from 'react-tooltip';
 import * as XroadsAPI from '../../service/xroads-api';
 import { useStateValue } from '../../service/State';
 
+import ReactNotification from 'react-notifications-component'
+import 'react-notifications-component/dist/theme.css'
+import { store } from 'react-notifications-component';
+
+
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
 // This: { match: { params: { id }}} is the same as props.match.params.id and you can refer to id directly later
 const ScreenClubEdit = ({ match: { params: { id } } }) => {
@@ -44,6 +49,7 @@ const ScreenClubEdit = ({ match: { params: { id } } }) => {
 
 
         <Navbar>xroads</Navbar>
+        <ReactNotification />
         <div className="centerContent">
           <div className="clubHeading">
             <h2>Now Editing</h2>

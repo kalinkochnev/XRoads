@@ -11,6 +11,8 @@ import { sendRequest, updateClub } from '../../../service/xroads-api'
 import { useStateValue } from '../../../service/State'
 import ReactTooltip from 'react-tooltip';
 
+import { store } from 'react-notifications-component';
+
 
 
 const GeneralEdit = (props) => {
@@ -36,8 +38,22 @@ const GeneralEdit = (props) => {
             join_promo: clubJoinPromo
         };
         console.log("Updated club would be", updatedClub);
-        const saveRes = updateClub(districtId, props.club.school, props.club.id, updatedClub);
-        console.log("Save club result", saveRes);
+        updateClub(districtId, props.club.school, props.club.id, updatedClub).then( res => {
+            res.json().then( updatedClub => {
+                console.log("Updated club", updateClub);
+                store.addNotification({
+                    title: "Saved",
+                    message: "Club details successfully saved",
+                    type: "success",
+                    insert: "top",
+                    container: "top-right",
+                    dismiss: {
+                        duration: 5000,
+                        onScreen: true
+                    }
+                });
+            });
+        });
     }
 
     // FIXME this will not work if someone has edit access but has a different school
@@ -52,6 +68,17 @@ const GeneralEdit = (props) => {
             if (response.ok) {
                 setVisibility(!isVisible)
                 console.log('The club is now ' + isVisible.toString())
+                store.addNotification({
+                    title: "Club " + (isVisible?"Visible":"Hidden"),
+                    message: "The club is now visible to " + (isVisible?"all users":"club editors only"),
+                    type: "success",
+                    insert: "top",
+                    container: "top-right",
+                    dismiss: {
+                        duration: 5000,
+                        onScreen: true
+                    }
+                });
             }
         })
     }
