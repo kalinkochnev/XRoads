@@ -8,6 +8,7 @@ from XroadsAPI.forms import *
 from XroadsAuth.permissions import *
 from XroadsAPI.serializers import *
 from XroadsAuth.serializers import ProfileSerializer
+from django.shortcuts import get_object_or_404
 
 # TODO make sure that you set read_only=True on nested fields so then .update() works
 
@@ -111,3 +112,13 @@ class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins
     @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=['remove_admin'])
     def slides(self, request, *args, **kwargs):
         pass
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=['answer-questions'])
+    def answer_question(self, request, *args, **kwargs):
+        question = AnswerQuestionSerializer(data=request.data, context={'request': request})
+        if question.is_valid():
+            question.save()
+            
+            return Response(status=status.HTTP_200_OK)
+        return Response(question.errors, status=status.HTTP_400_BAD_REQUEST)
+

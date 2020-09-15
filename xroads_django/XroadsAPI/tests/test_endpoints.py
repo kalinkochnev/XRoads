@@ -219,6 +219,7 @@ class TestAdmin:
         # GET and LIST cannot be easily tested because the img field screws things up
         retrieve_url_name = 'api:admin-club-detail'
         toggle_hide_url_name = 'api:admin-club-toggle-hide'
+        answer_question_path = 'api:admin-club-answer-question'
 
         @pytest.fixture
         def prof_w_perm(self, setup_client_auth):
@@ -296,6 +297,43 @@ class TestAdmin:
 
             c1.refresh_from_db()
             assert c1.is_visible is False            
+
+        def test_answer_question(self, setup_client_auth, prof_w_perm, make_request, role_model_instances, create_test_prof, perm_const_override):
+            d1, s1, c1 = role_model_instances()
+            profile, client = prof_w_perm(c1, perms=['answer-questions'])
+            prof2 = create_test_prof(2)
+
+            path = reverse(self.answer_question_path, kwargs={'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+            question = Question.objects.create(question='', asker=prof2, club=c1)
+
+            data = {
+                'question': question.id,
+                'answer': 'This is the answer'
+            }
+            response: Response = make_request(client, 'post', data=data, path=path, format='json')
+            
+            assert response.status_code == status.HTTP_200_OK
+            
+            question.refresh_from_db()
+
+            assert question.answer == data['answer']
+            assert question.id == data['question']
+
+        def test_answer_question_invalid(self, setup_client_auth, prof_w_perm, make_request, role_model_instances, create_test_prof, perm_const_override):
+            d1, s1, c1 = role_model_instances()
+            profile, client = prof_w_perm(c1, perms=['answer-questions'])
+            prof2 = create_test_prof(2)
+
+            path = reverse(self.answer_question_path, kwargs={'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+            question = Question.objects.create(question='', asker=prof2, club=c1)
+
+            data = {
+                'question': 'blah',
+                'answer': 'This is the answer'
+            }
+            response: Response = make_request(client, 'post', data=data, path=path, format='json')
+            
+            assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 class TestNotAdmin:
     class TestClubViewset:
@@ -391,8 +429,6 @@ class TestNotAdmin:
             }
             response: Response = make_request(client, 'post', data=data, path=path, format='json')
             assert response.status_code == status.HTTP_400_BAD_REQUEST
-
-
 
     class TestSchoolViewset:
         join_school_path = "api:school-join-school"
