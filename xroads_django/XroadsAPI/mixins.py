@@ -48,10 +48,7 @@ class RemoveAdminMixin(BaseAdminMixin):
             for prof in profiles:
                 role = Role.from_start_model(self.get_object())
                 # TODO come up with a better solution using permission model
-                for perm in prof.hierarchy_perms.all():
-                    if Role.from_str(perm.perm_name) == role:
-                        prof.hierarchy_perms.remove(perm)
-                        break
+                role.remove_role(prof)
             return Response(status=status.HTTP_202_ACCEPTED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=email_serializer.errors)

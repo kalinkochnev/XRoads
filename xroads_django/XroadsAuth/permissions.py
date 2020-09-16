@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from rest_framework import permissions
 
 from . import permisson_constants as PermConst
-from .models import Profile, HierarchyPerms
+from .models import Profile, RoleModel
 from .exceptions import RoleNotComparable, InvalidRoleCreated
 from .utils import get_parent_model
 
@@ -121,7 +121,7 @@ class Role:
         return Role.create(*model_instances)
 
     @classmethod
-    def from_str(cls, perm_ident: str) -> Role:
+    def from_str(cls, perm_ident: str, perms=[]) -> Role:
         def parse_perms(chunk):
             permissions_str = chunk.split('=')[1]
             removed_brackets = permissions_str.replace(
@@ -144,10 +144,11 @@ class Role:
 
         split_str = perm_ident.split('/')
 
-        permissions = []
+        permissions = perms
         model_instances = []
         for chunk in split_str:
-            if 'perms=' in chunk:
+
+            if 'perms=' in chunk and perms == []:
                 permissions = parse_perms(chunk)
             else:
                 model_instances.append(parse_model_inst(chunk))
@@ -188,8 +189,8 @@ class Role:
             return self._is_allowed_role(kwargs['role'])
 
     def _is_allowed_user(self, user: Profile):
-        for hier_perm in user.hierarchy_perms.all():
-            role = Role.from_str(hier_perm.perm_name)
+        for role_model in user.roles.all():
+            role = role_model.role
             if self._is_allowed_role(role):
                 return True
         return False
@@ -206,15 +207,13 @@ class Role:
             return False
 
     def give_role(self, user: Profile):
-        perm, created = HierarchyPerms.objects.get_or_create(
-            perm_name=str(self))
-        user.add_perms(perm)
+        role_model = RoleModel.from_role(self)
+        user.add_roles(role_model)
 
     def remove_role(self, user: Profile):
         try:
-            perm = HierarchyPerms.objects.get(perm_name=str(self))
-            user.hierarchy_perms.remove(perm)
-        except HierarchyPerms.DoesNotExist:
+            user.roles.remove(*list(user.roles.filter(role_name=self.role_str)))
+        except RoleModel.DoesNotExist:
             pass
     
     def __eq__(self, other_inst: Role):
@@ -235,6 +234,10 @@ class Role:
         return comparison == 1 or comparison == 0
 
     def __str__(self):
+        return self.role_str + '/' + str(self.permissions)
+    
+    @property
+    def role_str(self):
         def key_val_format(key, val):
             return f'{key}-{val}/'
 
@@ -242,13 +245,13 @@ class Role:
         model_ids = [m.id for m in self.model_instances]
         model_info = dict(zip(self.hierarchy.level_names, model_ids))
 
-        perm_str = ""
+        role_str = ""
         for model_name, model_id in model_info.items():
-            perm_str += key_val_format(model_name, model_id)
+            role_str += key_val_format(model_name, model_id)
+        
+        # Remove the last forward slash
+        return role_str[:-1]
 
-        perm_str += str(self.permissions)
-
-        return perm_str
 
     @property
     def highest_level_str(self):

@@ -77,6 +77,9 @@ class Club(models.Model):
     def district(self):
         return self.school.district
 
+    @property
+    def editors(self):
+        raise NotImplementedError
 
 class School(models.Model):
     name = models.CharField(max_length=40)

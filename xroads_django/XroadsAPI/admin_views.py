@@ -2,13 +2,18 @@ from rest_framework import generics, viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from django.core.mail import EmailMultiAlternatives
+from django.conf import settings
 
 from XroadsAPI import mixins as api_mixins
 from XroadsAPI.forms import *
 from XroadsAuth.permissions import *
 from XroadsAPI.serializers import *
 from XroadsAuth.serializers import ProfileSerializer
-from django.shortcuts import get_object_or_404
+from django.template.loader import get_template
+from django.template import Context
+
 
 # TODO make sure that you set read_only=True on nested fields so then .update() works
 
@@ -118,7 +123,18 @@ class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins
         question = AnswerQuestionSerializer(data=request.data, context={'request': request})
         if question.is_valid():
             question.save()
+
+            club_editors = self.get_object().editors
+            subject, from_email, to = f'Your question about {question.club.name} was answered!', settings.DJANGO_NO_REPLY, list(club_editors)
+            plain_text = get_template('templates/email/question/EditorEmail.txt')
             
+            data = Context({'editor': request.user, 'asker': question.asker, 'question': question.question})
+            text_content = plain_text.render(data)
+
+            # FIXME get all club editors
+            msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+            msg.send()
+
             return Response(status=status.HTTP_200_OK)
         return Response(question.errors, status=status.HTTP_400_BAD_REQUEST)
 

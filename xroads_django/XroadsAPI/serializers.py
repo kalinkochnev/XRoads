@@ -65,7 +65,7 @@ class QuestionSerializer(serializers.Serializer):
     
 class AnswerQuestionSerializer(serializers.Serializer):
     question = serializers.PrimaryKeyRelatedField(queryset=Question.objects.all())
-    answer =serializers.CharField()
+    answer = serializers.CharField()
 
     def create(self, validated_data):
         question = validated_data.get('question')

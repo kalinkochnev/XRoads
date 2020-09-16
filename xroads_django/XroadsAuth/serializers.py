@@ -3,7 +3,7 @@ from dj_rest_auth.serializers import LoginSerializer
 from rest_framework import serializers
 
 from XroadsAPI.models import District, Club
-from XroadsAuth.models import HierarchyPerms, Profile
+from XroadsAuth.models import Profile
 from XroadsAuth.utils import DynamicFieldsModelSerializer
 
 class ProfileSerializer(serializers.ModelSerializer):

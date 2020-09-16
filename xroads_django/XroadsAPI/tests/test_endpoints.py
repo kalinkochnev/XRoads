@@ -411,7 +411,7 @@ class TestNotAdmin:
             response: Response = make_request(client, 'post', data=data, path=path, format='json')
             assert response.status_code == status.HTTP_201_CREATED
 
-            question = Question.objects.get(id=1)
+            question = Question.objects.get(question=data['question'])
             assert question.asker == profile
             assert question.question == data['question']
             assert question.answer == None

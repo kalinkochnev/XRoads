@@ -5,6 +5,7 @@ from XroadsAPI.models import *
 from XroadsAuth.permissions import Role, Permissions
 import XroadsAuth.permisson_constants as PermConst
 from XroadsAuth.exceptions import RoleNotComparable, InvalidRoleCreated
+from XroadsAuth.models import RoleModel
 
 
 @pytest.mark.usefixtures("db")
@@ -171,6 +172,20 @@ class TestRole:
         role_test = Role.from_str(perm_str)
         assert role_test.permissions.permissions == set()
 
+    def test_role_from_str_given_perms(self, role_model_instances):
+        d1, s1, c1 = role_model_instances()
+
+        # The possible perms for School Admins are 'create-club', 'modify-school', 'hide-school'
+        role_expected = Role.create(d1, s1)
+
+        role_expected.permissions.add('modify-school', 'hide-school')
+
+        given_str = f'District-{d1.id}/School-{s1.id}'
+        role_test = Role.from_str(given_str, perms=['modify-school', 'hide-school'])
+
+        assert str(role_expected) == str(role_test)
+        
+
     # TODO make a test that checks that the role is valid
     def test_check_role_valid(self):
         pass
@@ -332,11 +347,12 @@ class TestRole:
         role.permissions.add('modify-club')
         role.give_role(prof)
 
-        assert str(role) in [p.perm_name for p in prof.hierarchy_perms.all()]
+        role_model = RoleModel.get_role(role)
+        assert role_model in list(prof.roles.all())
 
         role2 = Role.create(district1, school1, club1)
-        assert str(role2) not in [
-            p.perm_name for p in prof.hierarchy_perms.all()]
+        role_model2 = RoleModel.from_role(role2)
+        assert role_model2 not in list(prof.roles.all())
 
     def test_from_start_model(self, role_model_instances):
         d1, s1, c1 = role_model_instances()
