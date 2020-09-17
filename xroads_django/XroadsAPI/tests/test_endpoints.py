@@ -205,7 +205,7 @@ class TestAdmin:
         retrieve_url_name = 'api:admin-club-detail'
         toggle_hide_url_name = 'api:admin-club-toggle-hide'
         answer_question_path = 'api:admin-club-answer-question'
-
+        get_questions_path = 'api:admin-club-questions'
         
 
         def valid_retrieve(self, client, club):
@@ -327,6 +327,19 @@ class TestAdmin:
 
             assert response.status_code == status.HTTP_400_BAD_REQUEST
 
+        def test_get_questions(self, setup_client_auth, prof_w_perm, make_request, role_model_instances):
+            d1, s1, c1 = role_model_instances()
+            profile, client = prof_w_perm(c1, perms=[])
+
+            path = reverse(self.get_questions_path, kwargs={'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+
+            question1 = Question.objects.create(question='yo yo', asker=profile, club=c1)
+            question2 = Question.objects.create(question='yo yo2', asker=profile, club=c1)
+
+            response: Response = make_request(client, 'get', path=path, format='json')
+
+            assert response.status_code == status.HTTP_200_OK
+            assert response.data == AnswerQuestionSerializer([question1, question2], many=True).data
 
 class TestNotAdmin:
     class TestClubViewset:

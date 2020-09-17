@@ -136,3 +136,8 @@ class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins
             return Response(status=status.HTTP_200_OK)
         return Response(question.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=[])
+    def questions(self, request, *args, **kwargs):
+        club = self.get_object()
+        questions = Question.objects.filter(club=club)
+        return Response(AnswerQuestionSerializer(questions, many=True).data, status=status.HTTP_200_OK)
