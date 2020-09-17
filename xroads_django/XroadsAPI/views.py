@@ -68,7 +68,7 @@ class ClubViewset(viewsets.ReadOnlyModelViewSet):
             subject, from_email, to = f'Somebody asked a question about {club.name}!', settings.DJANGO_NO_REPLY, [prof.email for prof in club_editors]
             plain_text = get_template('email/question/EditorEmail.txt')
             
-            text_content = plain_text.render({'club': club, 'question': question.question})
+            text_content = plain_text.render({'club': club, 'question': question})
 
             msg = EmailMultiAlternatives(subject, text_content, from_email, to)
             msg.send()
