@@ -69,8 +69,8 @@ const GeneralEdit = (props) => {
                 setVisibility(!isVisible)
                 console.log('The club is now ' + isVisible.toString())
                 store.addNotification({
-                    title: "Club " + (isVisible?"Visible":"Hidden"),
-                    message: "The club is now visible to " + (isVisible?"all users":"club editors only"),
+                    title: "Club " + (isVisible?"Hidden":"Visible"),
+                    message: "The club is now visible to " + (isVisible?"club editors only":"all users"),
                     type: "success",
                     insert: "top",
                     container: "top-right",
