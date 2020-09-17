@@ -265,7 +265,7 @@ const SlideshowEdit = (props) => {
 };
 
 const Question = (props) => {
-  const [answer, setAnswer] = useState(props.answer)
+  const [answer, setAnswer] = useState(props.answer);
   const [display, setDisplay] = useState(false);
   let user = props.user;
 
@@ -287,8 +287,8 @@ const Question = (props) => {
       sendRequest("answer_question", urlArgs, "POST", body).then((response) => {
         if (response.ok) {
           setDisplay(false);
-          console.log(values.answer)
-          setAnswer(values.answer)
+          console.log(values.answer);
+          setAnswer(values.answer);
           store.addNotification({
             title: "Success!",
             message: "Your answer should be delivered shortly!",
@@ -346,7 +346,7 @@ const Question = (props) => {
         ></IconButton>
       ) : (
         <p>
-          <i>Somebody responded with:</i> {answer}
+          <i>Answer: </i> {answer}
         </p>
       )}
       {display ? replyForm(props.id) : null}
@@ -358,6 +358,18 @@ const ManageQuestions = (props) => {
   let [{ user }, dispatch] = props.stateValue;
   let [questions, setQuestions] = useState([]);
 
+  let showUnansweredFirst = (questions) => {
+    let newOrder = [];
+    for (let question of questions) {
+      if (question.answer == null) {
+        newOrder.splice(0, 0, question)
+      } else {
+        newOrder.push(question)
+      }
+    }
+    return newOrder;
+  }
+
   useEffect(() => {
     let urlArgs = {
       districtId: user.district,
@@ -367,7 +379,7 @@ const ManageQuestions = (props) => {
     sendRequest("get_questions", urlArgs, "get").then((response) => {
       if (response.ok) {
         response.json().then((body) => {
-          setQuestions(body);
+          setQuestions(showUnansweredFirst(body));
         });
       }
     });
@@ -375,6 +387,9 @@ const ManageQuestions = (props) => {
 
   return (
     <div className="centerContent">
+      <label class="switch">
+        <span class="slider round"></span>
+      </label>
       <div className="editBody">
         {questions.map((question) => {
           return (
