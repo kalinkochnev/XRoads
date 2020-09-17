@@ -39,11 +39,13 @@ class DistrictSerializer(serializers.ModelSerializer):
 
 # ADMIN SERIALIZERS ---------------------
 class ClubEditorSerializer(serializers.ModelSerializer):
-    members = AuthSerializers.ProfileSerializer(many=True)
-    slides = SlideSerializer(many=True)
+    members = AuthSerializers.ProfileSerializer(many=True, read_only=True)
+    slides = SlideSerializer(many=True, read_only=True)
     class Meta:
         model = Club
         fields = '__all__'
+        read_only_fields = ['main_img']
+
 
 class SchoolAdminSerializer(serializers.ModelSerializer):
     clubs = BasicClubInfoSerial(many=True)
