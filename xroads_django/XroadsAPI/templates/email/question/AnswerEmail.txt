@@ -1,0 +1,15 @@
+Yay! Your question about {{ club.name }} was answered by a club editor!
+
+
+In case you don't remember, you asked: 
+    
+    {{ question.question }}
+
+-----------------------------------
+
+The editor responded with:
+    
+    {{ question.answer }}
+
+
+If you have any other comments or concerns, feel free to send more questions!

@@ -7,6 +7,7 @@ import tempfile
 from PIL import Image
 from XroadsAPI.slide import SlideTemplates
 from rest_framework.test import APIClient
+from XroadsAuth.permissions import Role
 
 
 @pytest.fixture
@@ -146,3 +147,14 @@ def make_request():
         }
         return method_map[method](*args, **kwargs)
     return make
+
+
+@pytest.fixture
+def prof_w_perm(setup_client_auth):
+    def setup(model, perms=[]):
+        prof, client = setup_client_auth
+        role = Role.from_start_model(model)
+        role.permissions.add(*perms)
+        role.give_role(prof)
+        return prof, client
+    return setup

@@ -1,13 +1,10 @@
-Hi {{ editor.first_name }},
+Hello from xroads,
 
-You're receiving this email because you're an editor for {{ club_name }}.
+You're receiving this email because you're an editor for {{ club.name }}.
 
-{% if asker.is_anon %}
-    Anonymous asked:
-{% else %}
-    {{ asker.name }} asked:
-    
-    {{question}}
+Somebody asked: 
+   
+    {{ question.question }}
 
 
 Help a prospective member out! Answer this question by going to your club edit page!

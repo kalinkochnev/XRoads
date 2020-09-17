@@ -5,14 +5,14 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
+from django.template.loader import get_template
 
 from XroadsAPI import mixins as api_mixins
 from XroadsAPI.forms import *
 from XroadsAuth.permissions import *
 from XroadsAPI.serializers import *
 from XroadsAuth.serializers import ProfileSerializer
-from django.template.loader import get_template
-from django.template import Context
+
 
 
 # TODO make sure that you set read_only=True on nested fields so then .update() works
@@ -122,17 +122,15 @@ class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins
     def answer_question(self, request, *args, **kwargs):
         question = AnswerQuestionSerializer(data=request.data, context={'request': request})
         if question.is_valid():
-            question.save()
+            question = question.save()
 
-            club_editors = self.get_object().editors
-            subject, from_email, to = f'Your question about {question.club.name} was answered!', settings.DJANGO_NO_REPLY, list(club_editors)
-            plain_text = get_template('templates/email/question/EditorEmail.txt')
+            club = self.get_object()
+            subject, from_email, to = f'Your question about {club.name} was answered!', settings.DJANGO_NO_REPLY, [question.asker.email]
+            plain_text = get_template('email/question/AnswerEmail.txt')
             
-            data = Context({'editor': request.user, 'asker': question.asker, 'question': question.question})
-            text_content = plain_text.render(data)
+            text_content = plain_text.render({'question': question.question, 'club': club})
 
-            # FIXME get all club editors
-            msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+            msg = EmailMultiAlternatives(subject, text_content, from_email, to)
             msg.send()
 
             return Response(status=status.HTTP_200_OK)

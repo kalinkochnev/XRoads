@@ -1,8 +1,11 @@
 import pytest
 from django.urls import reverse
+from django.core import mail
+from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.test import APIClient
+
 
 from XroadsAuth.permissions import Role
 from XroadsAPI.serializers import *
@@ -86,15 +89,6 @@ class TestAdmin:
         retrieve_url_name = 'api:admin-district-detail'
         list_url_name = 'api:admin-district-list'
 
-        @pytest.fixture
-        def prof_w_perm(self, setup_client_auth):
-            def setup(district):
-                prof, client = setup_client_auth
-                role = Role.from_start_model(district)
-                role.give_role(prof)
-                return prof, client
-            return setup
-
         def valid_retrieve(self, client, district):
             path = reverse(self.retrieve_url_name, kwargs={'pk': district.pk})
             return client.get(path, format='json')
@@ -160,15 +154,6 @@ class TestAdmin:
         retrieve_url_name = 'api:admin-school-detail'
         list_url_name = 'api:admin-school-list'
 
-        @pytest.fixture
-        def prof_w_perm(self, setup_client_auth):
-            def setup(school):
-                prof, client = setup_client_auth
-                role = Role.from_start_model(school)
-                role.give_role(prof)
-                return prof, client
-            return setup
-
         def valid_retrieve(self, client, school):
             path = reverse(self.retrieve_url_name, kwargs={
                            'district_pk': school.district.id, 'pk': school.pk})
@@ -221,15 +206,7 @@ class TestAdmin:
         toggle_hide_url_name = 'api:admin-club-toggle-hide'
         answer_question_path = 'api:admin-club-answer-question'
 
-        @pytest.fixture
-        def prof_w_perm(self, setup_client_auth):
-            def setup(club, perms=[]):
-                prof, client = setup_client_auth
-                role = Role.from_start_model(club)
-                role.permissions.add(*perms)
-                role.give_role(prof)
-                return prof, client
-            return setup
+        
 
         def valid_retrieve(self, client, club):
             path = reverse(self.retrieve_url_name, kwargs={
@@ -268,7 +245,8 @@ class TestAdmin:
             assert c1.is_visible is False
 
             profile, client = prof_w_perm(c1, ['hide-club'])
-            path = reverse(self.toggle_hide_url_name, kwargs={'district_pk': c1.district.id, 'school_pk': c1.school.pk, 'pk': c1.pk})
+            path = reverse(self.toggle_hide_url_name, kwargs={
+                           'district_pk': c1.district.id, 'school_pk': c1.school.pk, 'pk': c1.pk})
             response = make_request(client, 'post', path=path, format='json')
 
             assert response.status_code == status.HTTP_202_ACCEPTED
@@ -280,7 +258,8 @@ class TestAdmin:
             d1, s1, c1 = role_model_instances()
             assert c1.is_visible is False
 
-            path = reverse(self.toggle_hide_url_name, kwargs={'district_pk': c1.district.id, 'school_pk': c1.school.pk, 'pk': c1.pk})
+            path = reverse(self.toggle_hide_url_name, kwargs={
+                           'district_pk': c1.district.id, 'school_pk': c1.school.pk, 'pk': c1.pk})
 
             # User without any permissions
             prof1, client1 = setup_client_auth
@@ -288,7 +267,7 @@ class TestAdmin:
             assert response.status_code == status.HTTP_403_FORBIDDEN
 
             c1.refresh_from_db()
-            assert c1.is_visible is False   
+            assert c1.is_visible is False
 
             # This is a different admin permission that shouldn't work
             prof2, client2 = prof_w_perm(c1, ['add-admin'])
@@ -296,44 +275,58 @@ class TestAdmin:
             assert response.status_code == status.HTTP_403_FORBIDDEN
 
             c1.refresh_from_db()
-            assert c1.is_visible is False            
+            assert c1.is_visible is False
 
         def test_answer_question(self, setup_client_auth, prof_w_perm, make_request, role_model_instances, create_test_prof, perm_const_override):
             d1, s1, c1 = role_model_instances()
             profile, client = prof_w_perm(c1, perms=['answer-questions'])
+
             prof2 = create_test_prof(2)
 
-            path = reverse(self.answer_question_path, kwargs={'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
-            question = Question.objects.create(question='', asker=prof2, club=c1)
+            path = reverse(self.answer_question_path, kwargs={
+                           'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+            question = Question.objects.create(
+                question='', asker=prof2, club=c1)
 
             data = {
                 'question': question.id,
                 'answer': 'This is the answer'
             }
-            response: Response = make_request(client, 'post', data=data, path=path, format='json')
-            
+            response: Response = make_request(
+                client, 'post', data=data, path=path, format='json')
+
             assert response.status_code == status.HTTP_200_OK
-            
+
             question.refresh_from_db()
 
             assert question.answer == data['answer']
             assert question.id == data['question']
+
+            # test that emails are sent to admins
+            assert len(mail.outbox) == 1, "Email not sent"
+            assert mail.outbox[0].subject == f'Your question about {c1.name} was answered!'
+            assert mail.outbox[0].from_email == settings.DJANGO_NO_REPLY
+            assert mail.outbox[0].to == [prof2.email], 'Email not sent to asker'
 
         def test_answer_question_invalid(self, setup_client_auth, prof_w_perm, make_request, role_model_instances, create_test_prof, perm_const_override):
             d1, s1, c1 = role_model_instances()
             profile, client = prof_w_perm(c1, perms=['answer-questions'])
             prof2 = create_test_prof(2)
 
-            path = reverse(self.answer_question_path, kwargs={'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
-            question = Question.objects.create(question='', asker=prof2, club=c1)
+            path = reverse(self.answer_question_path, kwargs={
+                           'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+            question = Question.objects.create(
+                question='', asker=prof2, club=c1)
 
             data = {
                 'question': 'blah',
                 'answer': 'This is the answer'
             }
-            response: Response = make_request(client, 'post', data=data, path=path, format='json')
-            
+            response: Response = make_request(
+                client, 'post', data=data, path=path, format='json')
+
             assert response.status_code == status.HTTP_400_BAD_REQUEST
+
 
 class TestNotAdmin:
     class TestClubViewset:
@@ -376,14 +369,16 @@ class TestNotAdmin:
             profile.district = d1
             profile.school = s1
 
-            path = reverse(self.club_join_name, kwargs={'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
-            response: Response = make_request(client, 'post', path=path, format='json')
+            path = reverse(self.club_join_name, kwargs={
+                           'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+            response: Response = make_request(
+                client, 'post', path=path, format='json')
 
             assert response.status_code == status.HTTP_202_ACCEPTED
             profile.refresh_from_db()
             assert c1 in list(profile.joined_clubs)
 
-        def test_leave_club(self, role_model_instances, make_request, setup_client_auth):
+        def test_leave_club(self, role_model_instances, make_request, setup_client_auth, prof_w_perm, perm_const_override):
             d1, s1, c1 = role_model_instances()
             profile, client = setup_client_auth
 
@@ -391,24 +386,33 @@ class TestNotAdmin:
             profile.school = s1
             c1.join(profile)
 
-            path = reverse(self.club_leave_path, kwargs={'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
-            response: Response = make_request(client, 'post', path=path, format='json')
+            path = reverse(self.club_leave_path, kwargs={
+                           'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+            response: Response = make_request(
+                client, 'post', path=path, format='json')
 
             assert response.status_code == status.HTTP_202_ACCEPTED
             profile.refresh_from_db()
             assert c1 not in list(profile.joined_clubs)
 
-        def test_ask_question(self, role_model_instances, make_request, setup_client_auth):
+            club_editor, editor_client = prof_w_perm(c1, perms=['answer-questions'])
+        
+        def test_ask_question(self, role_model_instances, make_request, setup_client_auth, prof_w_perm, perm_const_override):
             d1, s1, c1 = role_model_instances()
             profile, client = setup_client_auth
             c1.join(profile)
 
-            path = reverse(self.ask_question_path, kwargs={'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
-            
+            club_editor, editor_client = prof_w_perm(c1)
+            assert club_editor in list(c1.editors)
+
+            path = reverse(self.ask_question_path, kwargs={
+                           'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+
             data = {
                 'question': 'What does this club do?'
             }
-            response: Response = make_request(client, 'post', data=data, path=path, format='json')
+            response: Response = make_request(
+                client, 'post', data=data, path=path, format='json')
             assert response.status_code == status.HTTP_201_CREATED
 
             question = Question.objects.get(question=data['question'])
@@ -417,17 +421,25 @@ class TestNotAdmin:
             assert question.answer == None
             assert question.club == c1
 
+            # test that emails are sent to admins
+            assert len(mail.outbox) == 1, "Email not sent"
+            assert mail.outbox[0].subject == f'Somebody asked a question about {question.club.name}!'
+            assert mail.outbox[0].from_email == settings.DJANGO_NO_REPLY
+            assert mail.outbox[0].to == [club_editor.email], 'Email not sent to editor'
+
         def test_ask_question_invalid(self, role_model_instances, make_request, setup_client_auth):
             d1, s1, c1 = role_model_instances()
             profile, client = setup_client_auth
             c1.join(profile)
 
-            path = reverse(self.ask_question_path, kwargs={'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
-            
+            path = reverse(self.ask_question_path, kwargs={
+                           'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+
             data = {
                 'question': None
             }
-            response: Response = make_request(client, 'post', data=data, path=path, format='json')
+            response: Response = make_request(
+                client, 'post', data=data, path=path, format='json')
             assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     class TestSchoolViewset:
@@ -439,11 +451,11 @@ class TestNotAdmin:
 
             profile.district = d1
 
-            path = reverse(self.join_school_path, kwargs={'district_pk': d1.id, 'pk': s1.id})
-            response: Response = make_request(client, 'post', path=path, format='json')
+            path = reverse(self.join_school_path, kwargs={
+                           'district_pk': d1.id, 'pk': s1.id})
+            response: Response = make_request(
+                client, 'post', path=path, format='json')
 
             assert response.status_code == status.HTTP_202_ACCEPTED
             profile.refresh_from_db()
             assert s1 == profile.school
-
-        

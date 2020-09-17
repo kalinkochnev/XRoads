@@ -79,7 +79,9 @@ class Club(models.Model):
 
     @property
     def editors(self):
-        raise NotImplementedError
+        import XroadsAuth.permissions as AuthPerms
+        club_role = AuthPerms.Role.from_start_model(self)
+        return AuthModels.Profile.objects.filter(roles__in=[AuthModels.RoleModel.objects.get(role_name=club_role.role_str)])
 
 class School(models.Model):
     name = models.CharField(max_length=40)
