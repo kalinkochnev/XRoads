@@ -32,8 +32,9 @@ const ClubBodyDetail = (props) => {
         </div>
 
         <Markdown source={props.club.description} />
+        <AskQuestion club={props.club}></AskQuestion>
+
       </div>
-      <AskQuestion club={props.club}></AskQuestion>
     </div>
   );
 };
@@ -81,8 +82,10 @@ const AskQuestion = (props) => {
     >
       {(formik) => (
         <form onSubmit={formik.handleSubmit}>
-            <div className="editBody">
-              <textarea {...formik.getFieldProps("question")}></textarea>
+            <h2> Ask a question!</h2>
+
+            <div className="editBody" style={{marginTop: "20px"}}>
+              <textarea placeholder="A very intelligent question waiting to be asked..." {...formik.getFieldProps("question")}></textarea>
             </div>
             <button type="submit" id="account-submit">
               Ask away!
