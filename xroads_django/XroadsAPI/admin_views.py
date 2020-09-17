@@ -118,7 +118,7 @@ class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins
     def slides(self, request, *args, **kwargs):
         pass
 
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=['answer-questions'])
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=[])
     def answer_question(self, request, *args, **kwargs):
         question = AnswerQuestionSerializer(data=request.data, context={'request': request})
         if question.is_valid():
@@ -128,7 +128,7 @@ class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins
             subject, from_email, to = f'Your question about {club.name} was answered!', settings.DJANGO_NO_REPLY, [question.asker.email]
             plain_text = get_template('email/question/AnswerEmail.txt')
             
-            text_content = plain_text.render({'question': question.question, 'club': club})
+            text_content = plain_text.render({'question': question, 'club': club})
 
             msg = EmailMultiAlternatives(subject, text_content, from_email, to)
             msg.send()
@@ -140,4 +140,4 @@ class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins
     def questions(self, request, *args, **kwargs):
         club = self.get_object()
         questions = Question.objects.filter(club=club)
-        return Response(AnswerQuestionSerializer(questions, many=True).data, status=status.HTTP_200_OK)
+        return Response(GetQuestionSerializer(questions, many=True).data, status=status.HTTP_200_OK)

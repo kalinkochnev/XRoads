@@ -64,7 +64,11 @@ class QuestionSerializer(serializers.Serializer):
         club = self.context.get('club')
         return Question.objects.create(asker=request.user, club=club, question=validated_data.get('question'))
 
-    
+class GetQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ['question', 'answer', 'id']
+        model = Question
+
 class AnswerQuestionSerializer(serializers.Serializer):
     question = serializers.PrimaryKeyRelatedField(queryset=Question.objects.all())
     answer = serializers.CharField()

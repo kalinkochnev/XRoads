@@ -339,7 +339,7 @@ class TestAdmin:
             response: Response = make_request(client, 'get', path=path, format='json')
 
             assert response.status_code == status.HTTP_200_OK
-            assert response.data == AnswerQuestionSerializer([question1, question2], many=True).data
+            assert response.data == GetQuestionSerializer([question1, question2], many=True).data
 
 class TestNotAdmin:
     class TestClubViewset:

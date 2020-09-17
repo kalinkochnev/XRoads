@@ -8,7 +8,6 @@ import * as Yup from "yup";
 
 import "./Body.scss";
 import "./../Edit/Edit.scss";
-import { displayFormHelp, defaultFail } from "../../User/Forms/helper";
 
 
 import { store } from 'react-notifications-component';

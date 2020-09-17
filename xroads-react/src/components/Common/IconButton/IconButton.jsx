@@ -15,6 +15,7 @@ class IconButton extends React.Component {
 
     static defaultProps = {
         link: "#",
+        size: 'md',
     };
 
     render() {
@@ -25,7 +26,7 @@ class IconButton extends React.Component {
         return (
             <Link to={this.props.link}>
                 <div className="iconButton" style={{ color: this.props.color }} onClick={this.props.customClickEvent}>
-                    <FontAwesomeIcon icon={IconRef[this.props.icon]} />
+                    <FontAwesomeIcon icon={IconRef[this.props.icon]} size={this.props.size} />
                 </div>
             </Link>
         );

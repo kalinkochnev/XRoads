@@ -18,7 +18,8 @@ const endpoint_templates = {
 
     'answer_question': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/answer_question/',
     'toggle_hide_club': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/toggle_hide/',
-    'admin_club_detail': '/api/admin/district/:districtId/school/:schoolId/club/:clubId'
+    'admin_club_detail': '/api/admin/district/:districtId/school/:schoolId/club/:clubId',
+    'get_questions': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/questions/',
 };
 
 function fillTemplate(urlName, urlArgs) {

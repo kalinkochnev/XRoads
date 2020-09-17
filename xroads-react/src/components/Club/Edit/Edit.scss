@@ -4,6 +4,7 @@
 
 $slideScaleAmount: 0.25;
 
+
 .editBody {
 
     input,
@@ -231,6 +232,24 @@ form.clubEdit {
     font-family: "Arial", sans-serif;
     font-weight: 700;
     font-size: 20px;
+}
+
+.questionCard {
+    $cardBorderWidth: 2px;
+    $borderRadius: 10px;
+    @include card($borderRadius, $cardBorderWidth);
+
+    margin-bottom: 20px;
+    padding: 20px;
+    
+    .icon {
+        position: relative;
+        margin-bottom: 100px;
+    }
+
+    h3 {
+        display: inline;
+    }
 }
 
 :export {

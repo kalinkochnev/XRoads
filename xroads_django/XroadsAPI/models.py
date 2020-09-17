@@ -155,4 +155,7 @@ class Question(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
 
     question = models.TextField()
-    answer = models.TextField(null=True)
+    answer = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.question

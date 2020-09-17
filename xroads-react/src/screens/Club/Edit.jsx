@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import Navbar from '../../components/Common/Navbar/Navbar';
 
 import Tabs from '../../components/Common/Tabs/Tabs';
-import { GeneralEdit, SlideshowEdit } from '../../components/Club/Edit/Edit';
+import { GeneralEdit, ManageQuestions, SlideshowEdit } from '../../components/Club/Edit/Edit';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
@@ -22,7 +22,8 @@ import { store } from 'react-notifications-component';
 const ScreenClubEdit = ({ match: { params: { id } } }) => {
 
   const [club, setClub] = useState();
-  const [{ user }, dispatch] = useStateValue();
+  const [state, dispatch] = useStateValue();
+  let user = state.user;
 
   useEffect(() => {
     XroadsAPI.fetchClub(user.district, user.school, id).then(res => {
@@ -46,8 +47,6 @@ const ScreenClubEdit = ({ match: { params: { id } } }) => {
   else {
     return (
       <div>
-
-
         <Navbar>xroads</Navbar>
         <ReactNotification />
         <div className="centerContent">
@@ -63,6 +62,10 @@ const ScreenClubEdit = ({ match: { params: { id } } }) => {
 
             <div label="Slideshow">
               <SlideshowEdit label="Slideshow" club={club}></SlideshowEdit>
+            </div>
+
+            <div label="Questions">
+              <ManageQuestions label="Questions" stateValue={[state, dispatch]} club={club}></ManageQuestions>
             </div>
 
             <div label="Editors">
