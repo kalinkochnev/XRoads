@@ -198,6 +198,7 @@ class TestEditorSerializer:
         
         expected_data = {
             'profile': {
+                'id': prof.id,
                 'email': prof.email,
                 'first_name': prof.first_name,
                 'last_name': prof.last_name,

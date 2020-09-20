@@ -40,8 +40,12 @@ class TestAddAdminMixin:
         response = add_mixin.add_admin(RequestStub(
             data), hier_role=PermConst.DISTRICT_ADMIN)
 
+        expected_response = EditorSerializer(prof, context={'role': role}).data
+
         assert response.status_code == status.HTTP_202_ACCEPTED
+        assert response.data == expected_response
         assert role.is_allowed(user=prof) is True
+
 
     def test_send_invalid_data(self, create_test_prof, perm_const_override):
         factory = APIRequestFactory()
@@ -137,6 +141,7 @@ class TestListAdminMixin:
         expected_data = [
             {
                 'profile': {
+                    'id': profs[0].id,
                     'email': profs[0].email,
                     'first_name': profs[0].first_name,
                     'last_name': profs[0].last_name
@@ -145,6 +150,7 @@ class TestListAdminMixin:
             },
             {
                 'profile': {
+                    'id': profs[1].id,
                     'email': profs[1].email,
                     'first_name': profs[1].first_name,
                     'last_name': profs[1].last_name

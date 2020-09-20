@@ -36,7 +36,9 @@ class AddAdminMixin(BaseAdminMixin):
             role.permissions.add(*permissions)
             role.give_role(prof)
 
-            return Response(status=status.HTTP_202_ACCEPTED)
+            data = EditorSerializer(prof, context={'role': role}).data
+
+            return Response(data, status=status.HTTP_202_ACCEPTED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=add_admin_form.errors)
 
