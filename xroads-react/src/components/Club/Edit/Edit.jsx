@@ -482,17 +482,21 @@ const EditAccess = (props) => {
     };
     sendRequest("add_editor", urlArgs, "POST", {email: values.email, permissions: []}).then((response) => {
       if (response.ok) {
-        store.addNotification({
-          title: "Success!",
-          message: `Your added ${values.email} as an editor!`,
-          type: "success",
-          insert: "top",
-          container: "top-right",
-          dismiss: {
-            duration: 5000,
-            onScreen: true,
-          },
-        });
+        response.json().then(body => {
+          setEditors(editors.concat(body))
+          store.addNotification({
+            title: "Success!",
+            message: `Your added ${values.email} as an editor!`,
+            type: "success",
+            insert: "top",
+            container: "top-right",
+            dismiss: {
+              duration: 5000,
+              onScreen: true,
+            },
+          });
+        })
+        
       };
     });
 
