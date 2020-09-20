@@ -46,7 +46,6 @@ class TestAddAdminMixin:
         assert response.data == expected_response
         assert role.is_allowed(user=prof) is True
 
-
     def test_send_invalid_data(self, create_test_prof, perm_const_override):
         factory = APIRequestFactory()
 
@@ -121,6 +120,7 @@ class DummyListAdmin(ListAdminMixin):
     def get_object(self):
         return self.object
 
+
 class TestListAdminMixin:
     def test_get_admins(self, role_model_instances, perm_const_override, create_test_prof):
         d1, s1, c1 = role_model_instances()
@@ -138,26 +138,29 @@ class TestListAdminMixin:
         unrelated_role = Role.from_start_model(s1)
         unrelated_role.give_role(profs[2])
 
-        expected_data = [
-            {
-                'profile': {
-                    'id': profs[0].id,
-                    'email': profs[0].email,
-                    'first_name': profs[0].first_name,
-                    'last_name': profs[0].last_name
+        expected_data = {
+            'poss_perms': r1.hierarchy.poss_perms,
+            'admins': [
+                {
+                    'profile': {
+                        'id': profs[0].id,
+                        'email': profs[0].email,
+                        'first_name': profs[0].first_name,
+                        'last_name': profs[0].last_name
+                    },
+                    'perms': ['hide-club']
                 },
-                'perms': ['hide-club']
-            },
-            {
-                'profile': {
-                    'id': profs[1].id,
-                    'email': profs[1].email,
-                    'first_name': profs[1].first_name,
-                    'last_name': profs[1].last_name
+                {
+                    'profile': {
+                        'id': profs[1].id,
+                        'email': profs[1].email,
+                        'first_name': profs[1].first_name,
+                        'last_name': profs[1].last_name
+                    },
+                    'perms': ['add-admin']
                 },
-                'perms': ['add-admin']
-            },
-        ]
+            ]
+        }
 
         response = dummy_list.list_admins(RequestStub({}))
         assert response.data == expected_data

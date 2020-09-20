@@ -4,7 +4,7 @@ from rest_framework.response import Response
 
 from XroadsAPI.forms import *
 from XroadsAuth.permissions import *
-from XroadsAuth.serializers import EditorSerializer
+from XroadsAuth.serializers import EditorSerializer, ListEditorSerializer
 
 
 class ModifyAndReadViewset(mixins.RetrieveModelMixin,
@@ -60,7 +60,7 @@ class ListAdminMixin(BaseAdminMixin):
         role = Role.from_start_model(self.get_object())
         admins = role.get_admins(perms=['__any__'])
 
-        data = EditorSerializer(list(admins), context={'role': role}, many=True).data
+        data = ListEditorSerializer(list(admins), context={'role': role}).data
         return Response(data, status=status.HTTP_200_OK)
 
 

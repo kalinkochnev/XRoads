@@ -267,6 +267,12 @@ form.clubEdit {
             justify-content: space-between;
             flex-direction: row;
             align-items: center;
+
+            select {
+                max-width: 125px;
+                margin: 0px 30px 0px 0px;
+
+            }
         }
         .addEditorButton {
             @include defaultButton(150px);

@@ -80,3 +80,12 @@ class EditorSerializer(serializers.Serializer):
                     'profile': ProfileSerializer(profile, fields=['email', 'first_name', 'last_name', 'id']).data,
                     'perms': list(role.permissions.permissions)
                 }
+
+class ListEditorSerializer(serializers.Serializer):
+
+    def to_representation(self, profiles):
+        expected_role = self.context.get('role')
+        return {
+            'poss_perms': expected_role.hierarchy.poss_perms,
+            'admins': EditorSerializer(profiles, context={'role': expected_role}, many=True).data,
+        }

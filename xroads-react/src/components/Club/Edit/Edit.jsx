@@ -473,6 +473,7 @@ const EditAccess = (props) => {
   let club = props.club;
   const [editors, setEditors] = useState([]);
   const [displayAdd, setDisplay] = useState(false);
+  const [possPerms, setPerms] = useState([]);
 
   const onSubmit = (values, { setSubmitting, setFieldError }) => {
     let urlArgs = {
@@ -480,7 +481,7 @@ const EditAccess = (props) => {
       schoolId: user.school,
       clubId: props.club.id,
     };
-    sendRequest("add_editor", urlArgs, "POST", {email: values.email, permissions: []}).then((response) => {
+    sendRequest("add_editor", urlArgs, "POST", {...values, permissions: [values.permissions]}).then((response) => {
       if (response.ok) {
         response.json().then(body => {
           setEditors(editors.concat(body))
@@ -513,8 +514,8 @@ const EditAccess = (props) => {
     sendRequest("list_editors", urlArgs, "GET").then((response) => {
       if (response.ok) {
         response.json().then((body) => {
-          console.log(body);
-          setEditors(body);
+          setPerms(body.poss_perms);
+          setEditors(body.admins);
         });
       }
     });
@@ -527,10 +528,10 @@ const EditAccess = (props) => {
       ))}
       <div className="editorCard">
         <Formik
-          initialValues={{ email: "", permission: "" }}
+          initialValues={{ email: "", permissions: "" }}
           validationSchema={Yup.object({
             email: Yup.string().email().required('Email must be provided'),
-            permission: Yup.string()
+            permissions: Yup.string()
           })}
           onSubmit={onSubmit}
         >
@@ -538,9 +539,15 @@ const EditAccess = (props) => {
             <form onSubmit={formik.handleSubmit} className="addEditor">
               <div className="addForm editBody">
               <input placeholder="User email address" {...formik.getFieldProps("email")}></input>
+        
+              <select {...formik.getFieldProps("permissions")}>
+                {possPerms.map(perm => <option value={perm}>{perm}</option>)}
+              </select>
               <button type="submit" className="addEditorButton">
                 Add editor
               </button>
+              
+              
               </div>
               
             </form>
