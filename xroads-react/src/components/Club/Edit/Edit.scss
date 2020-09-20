@@ -241,15 +241,43 @@ form.clubEdit {
 
     margin-bottom: 20px;
     padding: 20px;
-    
-    .icon {
-        position: relative;
-        margin-bottom: 100px;
-    }
 
     h3 {
         display: inline;
     }
+}
+
+.editorCard {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    @extend .questionCard;
+
+    p {
+        margin: 0px;
+    }
+
+    h2 {
+        margin: 0px;
+    }
+
+    .modify {
+        float: right;
+        margin: 0px;
+        p {
+            display: inline;
+        }
+
+        * {
+            margin-left: 10px;
+        }
+    }
+
+    .editorInfo {
+        float: left;
+    }
+
 }
 
 :export {

@@ -20,6 +20,8 @@ const endpoint_templates = {
     'toggle_hide_club': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/toggle_hide/',
     'admin_club_detail': '/api/admin/district/:districtId/school/:schoolId/club/:clubId',
     'get_questions': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/questions/',
+
+    'list_editors': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/list_editors/'
 };
 
 function fillTemplate(urlName, urlArgs) {

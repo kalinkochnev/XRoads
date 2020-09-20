@@ -62,5 +62,5 @@ class ListAdminMixin(BaseAdminMixin):
         return Response(data, status=status.HTTP_200_OK)
 
 
-class AdminMixin(AddAdminMixin, RemoveAdminMixin):
+class AdminMixin(AddAdminMixin, RemoveAdminMixin, ListAdminMixin):
     pass

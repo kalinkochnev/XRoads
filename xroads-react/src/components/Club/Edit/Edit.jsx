@@ -264,7 +264,7 @@ const SlideshowEdit = (props) => {
   );
 };
 
-const Question = (props) => {
+const QuestionCard = (props) => {
   const [answer, setAnswer] = useState(props.answer);
   const [display, setDisplay] = useState(false);
   let user = props.user;
@@ -393,7 +393,7 @@ const ManageQuestions = (props) => {
       <div className="editBody">
         {questions.map((question) => {
           return (
-            <Question
+            <QuestionCard
               user={user}
               club={props.club}
               id={question.id}
@@ -407,4 +407,50 @@ const ManageQuestions = (props) => {
   );
 };
 
-export { GeneralEdit, SlideshowEdit, ManageQuestions };
+const EditorCard = (props) => {
+  let editor = props.editor.profile;
+  let name = editor.first_name + " " + editor.last_name;
+
+  return (
+    <div className="editorCard">
+      <div className="editorInfo">
+        <h2>{name}</h2>
+        <p>{editor.email}</p>
+      </div>
+      <div className="modify">
+        <p>{props.editor.perms}</p>
+        <IconButton
+          icon={"faTimes"}
+          filled={true}
+          color="gray"
+          size="2x"
+        />
+      </div>
+    </div>
+  );
+}
+const EditAccess = (props) => {
+  const [state, dispatch] = props.stateValue
+  let user = state.user;
+  let club = props.club;
+  const [editors, setEditors] = useState([])
+
+  useEffect(() => {
+    let urlArgs = {'districtId': user.district, 'schoolId': user.school, 'clubId': club.id}
+    sendRequest('list_editors', urlArgs, 'GET').then(response => {
+      if (response.ok) {
+        response.json().then(body => {
+          console.log(body);
+          setEditors(body)
+        })
+      }
+    })
+  }, [state.user])
+  return (
+    <div>
+      {editors.map(editor => <EditorCard editor={editor} />)}
+    </div>
+  );
+}
+
+export { GeneralEdit, SlideshowEdit, ManageQuestions, EditAccess };

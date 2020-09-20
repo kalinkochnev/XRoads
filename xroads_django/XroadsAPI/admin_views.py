@@ -105,14 +105,18 @@ class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins
         club.toggle_hide()
         return Response(status=202)
 
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=['add_admin'])
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=[])
     def add_club_editor(self, request, *args, **kwargs):
         return self.add_admin(request, hier_role=PermConst.CLUB_EDITOR)
     
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinSchoolRole], hier_perms=['remove_admin'])
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=[])
     def remove_club_editor(self, request, *args, **kwargs):
         return self.remove_admin(request)
     
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=[])
+    def list_editors(self, request, *args, **kwargs):
+        return self.list_admins(request)
+
     # TODO create slide views
     @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=['remove_admin'])
     def slides(self, request, *args, **kwargs):
