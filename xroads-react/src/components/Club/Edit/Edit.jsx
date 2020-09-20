@@ -24,6 +24,10 @@ import ReactTooltip from "react-tooltip";
 import { store } from "react-notifications-component";
 import IconButton from "../../Common/IconButton/IconButton";
 
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css for alert
+
+
 const GeneralEdit = (props) => {
   let [clubDescriptionMd, setClubDescription] = useState(
     props.club.description
@@ -416,12 +420,25 @@ const EditorCard = (props) => {
   // TODO If you are a club advisor remove the x from yourself
 
   const removeEditor = () => {
-    let urlArgs = {'districtId': user.district, 'schoolId': user.school, 'clubId': props.club.id}
-    sendRequest('remove_editor', urlArgs, 'POST', {'email': editor.email}).then(response => {
-      if (response.ok) {
-        setDisplay(false);
-      }
-    })
+    const sendRemove = () => {
+      let urlArgs = {'districtId': user.district, 'schoolId': user.school, 'clubId': props.club.id}
+      sendRequest('remove_editor', urlArgs, 'POST', {'email': editor.email}).then(response => {
+        if (response.ok) {
+          setDisplay(false);
+        }
+      })
+    }
+
+    confirmAlert({
+      title: 'Confirm removal',
+      message: `Are you sure you want to remove ${editor.email}?`,
+      buttons: [
+        {label: 'Yes', onClick: sendRemove},
+        {label: 'No', onClick: () => null}
+      ]
+    }) 
+
+    
   }
 
   if (!display) {
