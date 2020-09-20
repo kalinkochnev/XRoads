@@ -76,6 +76,10 @@ class Profile(AbstractUser):
         self.roles.add(*roles)
         self.make_save(save) 
 
+    def remove_roles(self, *roles, save=True):
+        self.roels.remove(*roles)
+        self.make_save(save)
+
     @property
     def permissions(self):
         from .permissions import Role

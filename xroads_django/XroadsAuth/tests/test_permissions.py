@@ -354,6 +354,24 @@ class TestRole:
         role_model2 = RoleModel.from_role(role2)
         assert role_model2 not in list(prof.roles.all())
 
+    def test_give_role_same_obj_twice(self, create_test_prof, role_model_instances):
+        # Check that a new RoleModel is not created each time a prof is given a role. It should just be appended
+        # Added to test found bug 
+
+        prof = create_test_prof(1)
+        district1, school1, club1 = role_model_instances()
+
+        role = Role.create(district1, school1, club1)
+        role.permissions.add('modify-club')
+        role.give_role(prof)
+
+        role.permissions.add('hide-club')
+        role.give_role(prof)
+
+        prof.refresh_from_db()
+
+        assert prof.roles.filter(role_name=role.role_str).count() == 1
+
     def test_from_start_model(self, role_model_instances):
         d1, s1, c1 = role_model_instances()
 
@@ -473,9 +491,6 @@ class TestRole:
         assert list(role.get_admins()) == profiles
         assert list(role.get_admins(perms=['create-club'])) == []
         assert set(role.get_admins(perms=['__any__'])) == set([other_prof, *profiles])
-
-
-
 
 @pytest.fixture
 def role_test_data():

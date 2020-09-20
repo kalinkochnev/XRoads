@@ -24,6 +24,12 @@ class BaseAdminMixin(viewsets.GenericViewSet):
 
 class AddAdminMixin(BaseAdminMixin):
     # There is no easy way to require to require an add
+    def update_admin(self, request, hier_role):
+        add_admin_form = AddAdminForm(data=request.data, hier_role=hier_role)
+        if add_admin_form.is_valid():
+            email = add_admin_form.validated_data['email']
+            prof = Profile.objects.get(email=email)
+    
     def add_admin(self, request, hier_role):
         add_admin_form = AddAdminForm(
             data=request.data, hier_role=hier_role)
@@ -31,6 +37,7 @@ class AddAdminMixin(BaseAdminMixin):
             email = add_admin_form.validated_data['email']
             
             prof = Profile.objects.get(email=email)
+
             role = Role.from_start_model(self.get_object())
             permissions = add_admin_form.validated_data['permissions']
             role.permissions.add(*permissions)
@@ -41,7 +48,6 @@ class AddAdminMixin(BaseAdminMixin):
             return Response(data, status=status.HTTP_202_ACCEPTED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=add_admin_form.errors)
-
 
 class RemoveAdminMixin(BaseAdminMixin):
     def remove_admin(self, request):

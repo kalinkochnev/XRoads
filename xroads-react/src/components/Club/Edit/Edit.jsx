@@ -455,7 +455,7 @@ const EditorCard = (props) => {
         <p>{editor.email}</p>
       </div>
       <div className="modify">
-        <p>{props.editor.perms}</p>
+        <p>{props.editor.perms.join(", ")}</p>
         <IconButton
           icon={"faTimes"}
           filled={true}

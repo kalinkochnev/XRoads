@@ -210,6 +210,7 @@ class Role:
 
     def give_role(self, user: Profile):
         role_model = RoleModel.from_role(self)
+        self.remove_role(user)
         user.add_roles(role_model)
 
     def remove_role(self, user: Profile):
