@@ -455,6 +455,28 @@ class TestRole:
         role.permissions.add('add-admin')
         assert role.highest_level_str == f"Club-{club1.id}/perms=[add-admin]"
 
+    def test_get_admins(self, role_model_instances, create_test_prof):
+        d1, s1, c1 = role_model_instances()
+        profiles = [create_test_prof(i) for i in range(2)]
+
+        role = Role.from_start_model(s1)
+        role.permissions.add('modify-school')
+        for prof in profiles:
+            role.give_role(prof)
+
+        role2 = Role.from_start_model(s1)
+        role2.permissions.add('hide-club')
+        other_prof = create_test_prof(3)
+        role2.give_role(other_prof)
+        
+
+        assert list(role.get_admins()) == profiles
+        assert list(role.get_admins(perms=['create-club'])) == []
+        assert set(role.get_admins(perms=['__any__'])) == set([other_prof, *profiles])
+
+
+
+
 @pytest.fixture
 def role_test_data():
     min_hier = PermConst.Hierarchy.get_hierarchy(PermConst.SCHOOL_ADMIN)

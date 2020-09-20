@@ -12,6 +12,7 @@ from .utils import get_parent_model
 
 import XroadsAPI.models as APIModels
 
+
 class Permissions:
     def __init__(self, perm_strs: List[str], hierarchy):
         self.permissions: Set[str] = set()
@@ -174,7 +175,8 @@ class Role:
 
     def _role_matcher(self, model_instances):
         inst_names = [inst.__class__.__name__ for inst in model_instances]
-        role_name = PermConst.Hierarchy.match_hierarchy(inst_names, PermConst.ROLES)
+        role_name = PermConst.Hierarchy.match_hierarchy(
+            inst_names, PermConst.ROLES)
         assert role_name is not None, 'Role matcher could not find role with that hierarchy of models'
         return role_name
 
@@ -212,10 +214,11 @@ class Role:
 
     def remove_role(self, user: Profile):
         try:
-            user.roles.remove(*list(user.roles.filter(role_name=self.role_str)))
+            user.roles.remove(
+                *list(user.roles.filter(role_name=self.role_str)))
         except RoleModel.DoesNotExist:
             pass
-    
+
     def __eq__(self, other_inst: Role):
         return self._comparison(other_inst) == 0
 
@@ -235,7 +238,7 @@ class Role:
 
     def __str__(self):
         return self.role_str + '/' + str(self.permissions)
-    
+
     @property
     def role_str(self):
         def key_val_format(key, val):
@@ -248,10 +251,9 @@ class Role:
         role_str = ""
         for model_name, model_id in model_info.items():
             role_str += key_val_format(model_name, model_id)
-        
+
         # Remove the last forward slash
         return role_str[:-1]
-
 
     @property
     def highest_level_str(self):
@@ -307,6 +309,18 @@ class Role:
             return 1
         return -1
 
+    def get_admins(self, perms=[]):
+        try:
+            if '__any__' in perms:
+                return Profile.objects.filter(roles__role_name=self.role_str)
+            else:
+                query_perms = perms if perms != [] else list(self.permissions.permissions)
+                role = RoleModel.objects.get(role_name=self.role_str, perms=query_perms)
+                return Profile.objects.filter(roles__in=[role])
+
+        except RoleModel.DoesNotExist:
+            return []
+        
 
 class BaseMinRole(permissions.BasePermission):
 
