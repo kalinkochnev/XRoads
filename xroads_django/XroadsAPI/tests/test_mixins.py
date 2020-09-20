@@ -40,7 +40,6 @@ class TestAddAdminMixin:
         response = add_mixin.add_admin(RequestStub(
             data), hier_role=PermConst.DISTRICT_ADMIN)
 
-
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert role.is_allowed(user=prof) is True
 
@@ -108,3 +107,51 @@ class TestRemoveAdminMixin:
         response = add_mixin.remove_admin(RequestStub(data))
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+class DummyListAdmin(ListAdminMixin):
+    def __init__(self, object):
+        self.object = object
+        super().__init__()
+
+    def get_object(self):
+        return self.object
+
+class TestListAdminMixin:
+    def test_get_admins(self, role_model_instances, perm_const_override, create_test_prof):
+        d1, s1, c1 = role_model_instances()
+        profs = [create_test_prof(i) for i in range(3)]
+        dummy_list = DummyListAdmin(c1)
+
+        r1 = Role.from_start_model(c1)
+        r1.permissions.add('hide-club')
+        r1.give_role(profs[0])
+
+        r2 = Role.from_start_model(c1)
+        r2.permissions.add('add-admin')
+        r2.give_role(profs[1])
+
+        unrelated_role = Role.from_start_model(s1)
+        unrelated_role.give_role(profs[2])
+
+        expected_data = [
+            {
+                'profile': {
+                    'email': profs[0].email,
+                    'first_name': profs[0].first_name,
+                    'last_name': profs[0].last_name
+                },
+                'perms': ['hide-club']
+            },
+            {
+                'profile': {
+                    'email': profs[1].email,
+                    'first_name': profs[1].first_name,
+                    'last_name': profs[1].last_name
+                },
+                'perms': ['add-admin']
+            },
+        ]
+
+        response = dummy_list.list_admins(RequestStub({}))
+        assert response.data == expected_data

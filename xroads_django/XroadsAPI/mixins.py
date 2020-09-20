@@ -4,6 +4,7 @@ from rest_framework.response import Response
 
 from XroadsAPI.forms import *
 from XroadsAuth.permissions import *
+from XroadsAuth.serializers import EditorSerializer
 
 
 class ModifyAndReadViewset(mixins.RetrieveModelMixin,
@@ -51,6 +52,14 @@ class RemoveAdminMixin(BaseAdminMixin):
             return Response(status=status.HTTP_202_ACCEPTED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=email_form.errors)
+
+class ListAdminMixin(BaseAdminMixin):
+    def list_admins(self, request):
+        role = Role.from_start_model(self.get_object())
+        admins = role.get_admins(perms=['__any__'])
+
+        data = EditorSerializer(list(admins), context={'role': role}, many=True).data
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class AdminMixin(AddAdminMixin, RemoveAdminMixin):

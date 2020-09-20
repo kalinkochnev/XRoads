@@ -184,3 +184,25 @@ class TestPermissionSerializer:
 
         hier_perm = RoleModel.get_role(role)
         assert hier_perm.highest_level_str == f'School-{school1.id}/perms=[create-club]'
+
+class TestEditorSerializer:
+    def test_valid_data(self, perm_const_override, create_test_prof, role_model_instances):
+        d1, s1, c1 = role_model_instances()
+        
+        role = Role.from_start_model(c1)
+        role.permissions.add('hide-club')
+
+        prof = create_test_prof(1)
+        role.give_role(prof)
+        serializer = EditorSerializer(prof, context={'role': role})
+        
+        expected_data = {
+            'profile': {
+                'email': prof.email,
+                'first_name': prof.first_name,
+                'last_name': prof.last_name,
+            },
+            'perms': ['hide-club']
+        }
+
+        assert serializer.data == expected_data
