@@ -77,6 +77,6 @@ class EditorSerializer(serializers.Serializer):
         for role in prof_roles:
             if role == expected_role:
                 return {
-                    'profile': ProfileSerializer(profile, fields=['email', 'first_name', 'last_name']).data,
+                    'profile': ProfileSerializer(profile, fields=['email', 'first_name', 'last_name', 'id']).data,
                     'perms': list(role.permissions.permissions)
                 }

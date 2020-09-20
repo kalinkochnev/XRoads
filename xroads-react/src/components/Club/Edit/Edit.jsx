@@ -410,6 +410,23 @@ const ManageQuestions = (props) => {
 const EditorCard = (props) => {
   let editor = props.editor.profile;
   let name = editor.first_name + " " + editor.last_name;
+  let user = props.user
+  const [display, setDisplay] = useState(true);
+
+  // TODO If you are a club advisor remove the x from yourself
+
+  const removeEditor = () => {
+    let urlArgs = {'districtId': user.district, 'schoolId': user.school, 'clubId': props.club.id}
+    sendRequest('remove_editor', urlArgs, 'POST', {'email': editor.email}).then(response => {
+      if (response.ok) {
+        setDisplay(false);
+      }
+    })
+  }
+
+  if (!display) {
+    return null;
+  }
 
   return (
     <div className="editorCard">
@@ -424,6 +441,7 @@ const EditorCard = (props) => {
           filled={true}
           color="gray"
           size="2x"
+          customClickEvent={removeEditor}
         />
       </div>
     </div>
@@ -434,6 +452,8 @@ const EditAccess = (props) => {
   let user = state.user;
   let club = props.club;
   const [editors, setEditors] = useState([])
+
+  
 
   useEffect(() => {
     let urlArgs = {'districtId': user.district, 'schoolId': user.school, 'clubId': club.id}
@@ -446,9 +466,11 @@ const EditAccess = (props) => {
       }
     })
   }, [state.user])
+
+
   return (
     <div>
-      {editors.map(editor => <EditorCard editor={editor} />)}
+      {editors.map(editor => <EditorCard user={user} editor={editor} club={club} />)}
     </div>
   );
 }

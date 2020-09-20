@@ -106,11 +106,11 @@ class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins
         return Response(status=202)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=[])
-    def add_club_editor(self, request, *args, **kwargs):
+    def add_editor(self, request, *args, **kwargs):
         return self.add_admin(request, hier_role=PermConst.CLUB_EDITOR)
     
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=[])
-    def remove_club_editor(self, request, *args, **kwargs):
+    def remove_editor(self, request, *args, **kwargs):
         return self.remove_admin(request)
     
     @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=[])
