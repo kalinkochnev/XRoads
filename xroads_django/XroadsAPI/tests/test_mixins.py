@@ -22,7 +22,7 @@ class TestAddAdminMixin:
         factory = APIRequestFactory()
 
         d1 = District.objects.create(name='d1')
-        profiles = [create_test_prof(i) for i in range(5)]
+        prof = create_test_prof(1)
         add_mixin = DummyAddAdmin(d1)
         permissions = ['modify-district']
 
@@ -30,21 +30,19 @@ class TestAddAdminMixin:
         role = Role.from_start_model(d1)
         role.permissions.add(*permissions)
 
-        for prof in profiles:
-            assert role.is_allowed(user=prof) is False
+        assert role.is_allowed(user=prof) is False
 
         data = {
-            'emails': [p.email for p in profiles],
+            'email': prof.email,
             'permissions': permissions,
         }
 
-        response = add_mixin.add_admins(RequestStub(
+        response = add_mixin.add_admin(RequestStub(
             data), hier_role=PermConst.DISTRICT_ADMIN)
 
-        for prof in profiles:
-            assert role.is_allowed(user=prof) is True
 
         assert response.status_code == status.HTTP_202_ACCEPTED
+        assert role.is_allowed(user=prof) is True
 
     def test_send_invalid_data(self, create_test_prof, perm_const_override):
         factory = APIRequestFactory()
@@ -53,11 +51,11 @@ class TestAddAdminMixin:
         add_mixin = DummyAddAdmin(d1)
 
         data = {
-            'emails': ['asdfasdf', 'asdfsadf', 'asdfasdfsdaf'],
+            'emails': 'asdfasdf',
             'permissions': permissions,
         }
 
-        response = add_mixin.add_admins(RequestStub(
+        response = add_mixin.add_admin(RequestStub(
             data), hier_role=PermConst.DISTRICT_ADMIN)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
@@ -76,27 +74,24 @@ class TestRemoveAdminMixin:
         factory = APIRequestFactory()
 
         d1 = District.objects.create(name='d1')
-        profiles = [create_test_prof(i) for i in range(5)]
+        prof = create_test_prof(1)
         add_mixin = DummyRemoveAdmin(d1)
         permissions = ['modify-district']
 
         # Expected allowed access
         role = Role.from_start_model(d1)
         role.permissions.add(*permissions)
-        for prof in profiles:
-            role.give_role(prof)
+        role.give_role(prof)
 
-        for prof in profiles:
-            assert role.is_allowed(user=prof) is True
+        assert role.is_allowed(user=prof) is True
 
         data = {
-            'emails': [p.email for p in profiles],
+            'email': prof.email,
         }
 
-        response = add_mixin.remove_admins(RequestStub(data))
+        response = add_mixin.remove_admin(RequestStub(data))
 
-        for prof in profiles:
-            assert role.is_allowed(user=prof) is False
+        assert role.is_allowed(user=prof) is False
 
         assert response.status_code == status.HTTP_202_ACCEPTED
 
@@ -107,9 +102,9 @@ class TestRemoveAdminMixin:
         add_mixin = DummyRemoveAdmin(d1)
 
         data = {
-            'emails': ['asdfasdf', 'adsfsadf', 'dsafsda', 'sdaf'],
+            'emails': 'blahalksdjf',
         }
 
-        response = add_mixin.remove_admins(RequestStub(data))
+        response = add_mixin.remove_admin(RequestStub(data))
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST

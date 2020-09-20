@@ -23,35 +23,34 @@ class BaseAdminMixin(viewsets.GenericViewSet):
 
 class AddAdminMixin(BaseAdminMixin):
     # There is no easy way to require to require an add
-    def add_admins(self, request, hier_role):
-        admin_role_serializer = AdminRoleForm(
+    def add_admin(self, request, hier_role):
+        add_admin_form = AddAdminForm(
             data=request.data, hier_role=hier_role)
-        if admin_role_serializer.is_valid():
-            profiles, non_existant_emails = admin_role_serializer.profiles
+        if add_admin_form.is_valid():
+            email = add_admin_form.validated_data['email']
+            
+            prof = Profile.objects.get(email=email)
+            role = Role.from_start_model(self.get_object())
+            permissions = add_admin_form.validated_data['permissions']
+            role.permissions.add(*permissions)
+            role.give_role(prof)
 
-            for prof in profiles:
-                role = Role.from_start_model(self.get_object())
-                permissions = admin_role_serializer.validated_data['permissions']
-                role.permissions.add(*permissions)
-
-                role.give_role(prof)
             return Response(status=status.HTTP_202_ACCEPTED)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=admin_role_serializer.errors)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=add_admin_form.errors)
 
 
 class RemoveAdminMixin(BaseAdminMixin):
-    def remove_admins(self, request):
-        email_serializer = UserEmailForm(data=request.data)
-        if email_serializer.is_valid():
-            profiles, non_existant_emails = email_serializer.profiles
-            for prof in profiles:
-                role = Role.from_start_model(self.get_object())
-                # TODO come up with a better solution using permission model
-                role.remove_role(prof)
+    def remove_admin(self, request):
+        email_form = RemoveAdminForm(data=request.data)
+        if email_form.is_valid():
+            prof = Profile.objects.get(email=email_form.validated_data['email'])
+            role = Role.from_start_model(self.get_object())
+            role.remove_role(prof)
+
             return Response(status=status.HTTP_202_ACCEPTED)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=email_serializer.errors)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=email_form.errors)
 
 
 class AdminMixin(AddAdminMixin, RemoveAdminMixin):

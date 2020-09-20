@@ -38,11 +38,11 @@ class DistrictViewset(api_mixins.ModifyAndReadViewset, api_mixins.AdminMixin):
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser], hier_perms=['add_admin'])
     def add_admin(self, request, *args, **kwargs):
-        return self.add_admins(request, hier_role=PermConst.SCHOOL_ADMIN)
+        return self.add_admin(request, hier_role=PermConst.SCHOOL_ADMIN)
         
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser], hier_perms=['remove_admin'])
     def remove_admin(self, request, *args, **kwargs):
-        return self.remove_admins(request)
+        return self.remove_admin(request)
 
 
 class SchoolViewset(api_mixins.ModifyAndReadViewset, api_mixins.AdminMixin):
@@ -68,15 +68,15 @@ class SchoolViewset(api_mixins.ModifyAndReadViewset, api_mixins.AdminMixin):
 
     @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated, MinSchoolRole], hier_perms=['add_admin'])
     def clubs(self, request, *args, **kwargs):
-        return self.add_admins(request, hier_role=PermConst.SCHOOL_ADMIN)
+        return self.add_admin(request, hier_role=PermConst.SCHOOL_ADMIN)
         
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinDistrictRole], hier_perms=['add_admin'])
     def add_admin(self, request, *args, **kwargs):
-        return self.add_admins(request, hier_role=PermConst.SCHOOL_ADMIN)
+        return self.add_admin(request, hier_role=PermConst.SCHOOL_ADMIN)
         
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinDistrictRole], hier_perms=['remove_admin'])
     def remove_admin(self, request, *args, **kwargs):
-        return self.remove_admins(request)
+        return self.remove_admin(request)
     
     # TODO test create_club
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinSchoolRole], hier_perms=['create-club'])
@@ -107,11 +107,11 @@ class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=['add_admin'])
     def add_club_editor(self, request, *args, **kwargs):
-        return self.add_admins(request, hier_role=PermConst.CLUB_EDITOR)
+        return self.add_admin(request, hier_role=PermConst.CLUB_EDITOR)
     
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinSchoolRole], hier_perms=['remove_admin'])
     def remove_club_editor(self, request, *args, **kwargs):
-        return self.remove_admins(request)
+        return self.remove_admin(request)
     
     # TODO create slide views
     @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=['remove_admin'])
