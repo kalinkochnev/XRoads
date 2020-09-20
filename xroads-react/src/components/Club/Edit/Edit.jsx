@@ -24,9 +24,8 @@ import ReactTooltip from "react-tooltip";
 import { store } from "react-notifications-component";
 import IconButton from "../../Common/IconButton/IconButton";
 
-import { confirmAlert } from 'react-confirm-alert';
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css for alert
-
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css"; // Import css for alert
 
 const GeneralEdit = (props) => {
   let [clubDescriptionMd, setClubDescription] = useState(
@@ -349,10 +348,10 @@ const QuestionCard = (props) => {
           customClickEvent={replyClick}
         ></IconButton>
       ) : (
-        <p>
-          <i>Answer: </i> {answer}
-        </p>
-      )}
+          <p>
+            <i>Answer: </i> {answer}
+          </p>
+        )}
       {display ? replyForm(props.id) : null}
     </div>
   );
@@ -366,13 +365,13 @@ const ManageQuestions = (props) => {
     let newOrder = [];
     for (let question of questions) {
       if (question.answer == null) {
-        newOrder.splice(0, 0, question)
+        newOrder.splice(0, 0, question);
       } else {
-        newOrder.push(question)
+        newOrder.push(question);
       }
     }
     return newOrder;
-  }
+  };
 
   useEffect(() => {
     let urlArgs = {
@@ -414,32 +413,36 @@ const ManageQuestions = (props) => {
 const EditorCard = (props) => {
   let editor = props.editor.profile;
   let name = editor.first_name + " " + editor.last_name;
-  let user = props.user
+  let user = props.user;
   const [display, setDisplay] = useState(true);
 
   // TODO If you are a club advisor remove the x from yourself
 
   const removeEditor = () => {
     const sendRemove = () => {
-      let urlArgs = {'districtId': user.district, 'schoolId': user.school, 'clubId': props.club.id}
-      sendRequest('remove_editor', urlArgs, 'POST', {'email': editor.email}).then(response => {
+      let urlArgs = {
+        districtId: user.district,
+        schoolId: user.school,
+        clubId: props.club.id,
+      };
+      sendRequest("remove_editor", urlArgs, "POST", {
+        email: editor.email,
+      }).then((response) => {
         if (response.ok) {
           setDisplay(false);
         }
-      })
-    }
+      });
+    };
 
     confirmAlert({
-      title: 'Confirm removal',
+      title: "Confirm removal",
       message: `Are you sure you want to remove ${editor.email}?`,
       buttons: [
-        {label: 'Yes', onClick: sendRemove},
-        {label: 'No', onClick: () => null}
-      ]
-    }) 
-
-    
-  }
+        { label: "Yes", onClick: sendRemove },
+        { label: "No", onClick: () => null },
+      ],
+    });
+  };
 
   if (!display) {
     return null;
@@ -463,33 +466,85 @@ const EditorCard = (props) => {
       </div>
     </div>
   );
-}
+};
 const EditAccess = (props) => {
-  const [state, dispatch] = props.stateValue
+  const [state, dispatch] = props.stateValue;
   let user = state.user;
   let club = props.club;
-  const [editors, setEditors] = useState([])
+  const [editors, setEditors] = useState([]);
+  const [displayAdd, setDisplay] = useState(false);
 
-  
+  const onSubmit = (values, { setSubmitting, setFieldError }) => {
+    let urlArgs = {
+      districtId: user.district,
+      schoolId: user.school,
+      clubId: props.club.id,
+    };
+    sendRequest("add_editor", urlArgs, "POST", {email: values.email, permissions: []}).then((response) => {
+      if (response.ok) {
+        store.addNotification({
+          title: "Success!",
+          message: `Your added ${values.email} as an editor!`,
+          type: "success",
+          insert: "top",
+          container: "top-right",
+          dismiss: {
+            duration: 5000,
+            onScreen: true,
+          },
+        });
+      };
+    });
+
+    setSubmitting(false);
+
+  };
 
   useEffect(() => {
-    let urlArgs = {'districtId': user.district, 'schoolId': user.school, 'clubId': club.id}
-    sendRequest('list_editors', urlArgs, 'GET').then(response => {
+    let urlArgs = {
+      districtId: user.district,
+      schoolId: user.school,
+      clubId: club.id,
+    };
+    sendRequest("list_editors", urlArgs, "GET").then((response) => {
       if (response.ok) {
-        response.json().then(body => {
+        response.json().then((body) => {
           console.log(body);
-          setEditors(body)
-        })
+          setEditors(body);
+        });
       }
-    })
-  }, [state.user])
-
+    });
+  }, [state.user]);
 
   return (
-    <div>
-      {editors.map(editor => <EditorCard user={user} editor={editor} club={club} />)}
+    <div className="editorManager">
+      {editors.map((editor) => (
+        <EditorCard user={user} editor={editor} club={club} />
+      ))}
+      <div className="editorCard">
+        <Formik
+          initialValues={{ email: "", permission: "" }}
+          validationSchema={Yup.object({
+            email: Yup.string().email().required('Email must be provided'),
+            permission: Yup.string()
+          })}
+          onSubmit={onSubmit}
+        >
+          {(formik) => (
+            <form onSubmit={formik.handleSubmit} className="addEditor">
+              <div className="addForm editBody">
+              <input placeholder="User email address" {...formik.getFieldProps("email")}></input>
+              <button type="submit" className="addEditorButton">
+                Add editor
+              </button>
+              </div>
+              
+            </form>
+          )}
+        </Formik>
+      </div>
     </div>
   );
-}
+};
 
 export { GeneralEdit, SlideshowEdit, ManageQuestions, EditAccess };

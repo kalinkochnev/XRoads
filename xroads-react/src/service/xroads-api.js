@@ -22,7 +22,9 @@ const endpoint_templates = {
     'get_questions': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/questions/',
 
     'list_editors': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/list_editors/',
-    'remove_editor': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/remove_editor/'
+    'remove_editor': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/remove_editor/',
+    'add_editor': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/add_editor/'
+
 };
 
 function fillTemplate(urlName, urlArgs) {
