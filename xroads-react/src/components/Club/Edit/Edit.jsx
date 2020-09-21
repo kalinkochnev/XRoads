@@ -22,7 +22,7 @@ const GeneralEdit = (props) => {
     const [state, dispatch] = useStateValue();
     const [isVisible, setVisibility] = useState(props.club.is_visible);
 
-    
+
 
     const handleClubDescription = (clubDescMd) => {
         setClubDescription(clubDescMd);
@@ -38,8 +38,8 @@ const GeneralEdit = (props) => {
             join_promo: clubJoinPromo
         };
         console.log("Updated club would be", updatedClub);
-        updateClub(districtId, props.club.school, props.club.id, updatedClub).then( res => {
-            res.json().then( updatedClub => {
+        updateClub(districtId, props.club.school, props.club.id, updatedClub).then(res => {
+            res.json().then(updatedClub => {
                 console.log("Updated club", updateClub);
                 store.addNotification({
                     title: "Saved",
@@ -60,8 +60,8 @@ const GeneralEdit = (props) => {
     const toggleHide = () => {
         let user = state.user;
         let urlArgs = {
-            'districtId': user.district, 
-            'schoolId': user.school, 
+            'districtId': user.district,
+            'schoolId': user.school,
             'clubId': props.club.id
         }
         sendRequest("toggle_hide_club", urlArgs, 'POST', {}).then(response => {
@@ -69,8 +69,8 @@ const GeneralEdit = (props) => {
                 setVisibility(!isVisible)
                 console.log('The club is now ' + isVisible.toString())
                 store.addNotification({
-                    title: "Club " + (isVisible?"Visible":"Hidden"),
-                    message: "The club is now visible to " + (isVisible?"all users":"club editors only"),
+                    title: "Club " + (isVisible ? "Visible" : "Hidden"),
+                    message: "The club is now visible to " + (isVisible ? "all users" : "club editors only"),
                     type: "success",
                     insert: "top",
                     container: "top-right",
@@ -90,7 +90,7 @@ const GeneralEdit = (props) => {
 
                     <label className="" htmlFor="join">Hide club</label>
                     <label class="switch">
-                        <input type="checkbox" onClick={toggleHide} checked={!isVisible}/>
+                        <input type="checkbox" onClick={toggleHide} checked={!isVisible} />
                         <span class="slider round"></span>
                     </label>
                     <ReactTooltip place="right" effect="solid" />
@@ -109,65 +109,117 @@ const GeneralEdit = (props) => {
     );
 }
 
-const SlideshowEdit = (props) => {
-    return (
-        <div className="centerContent">
-            <div className="editBody">
-                <div className="slideshowSelect">
-                    {
-                        props.club.slides.map(slide => {
-                            if (slide.img) {
-                                return <div className="slideContain"> <ImageSlide key={slide.id} source={slide.img} caption={slide.text} /> </div>
-                            } else if (slide.video_url) {
-                                return <div className="slideContain"> <VideoSlide key={slide.id} videoURL={slide.video_url} caption={slide.text} /> </div>
-                            } else {
-                                return <div className="slideContain"> <TextSlide key={slide.id} title={slide.text} body={slide.text} color="lightblue" /> </div>
-                            }
-                        })
+class SlideshowEdit extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            slides: this.props.club.slides,
+            activeKey: 0
+        };
+    }
 
-                    }
-                    <div className="slideContain addSlide">
-                        <div className="add"><FontAwesomeIcon icon={faFont} />Add a text slide</div>
-                        <div className="add middle"><FontAwesomeIcon icon={faImage} />Add an image slide</div>
-                        <div className="add"><FontAwesomeIcon icon={faFilm} />Add a video slide</div>
+    slideClick = (pos) => {
+        this.setState({ activeKey: pos - 1 });
+    }
+
+    addSlide = (type) => {
+        let length = this.props.state.length;        
+        this.state.slides.push({
+            club: this.props.club.id,
+            img: null,
+            position: length+1,
+            template_type: type,
+            text: null,
+            video_url: null
+        });
+    }
+
+
+
+    render() {
+        console.log(this.props.club.slides)
+        return (
+            <div className="centerContent">
+                <div className="editBody">
+                    <div className="slideshowSelect">
+                        {
+                            this.state.slides.map(slide => {
+                                if (slide.template_type == 1 || slide.template_type == 2) {
+                                    return <div className="slideContain" onClick={() => { this.slideClick(slide.position) }}> <ImageSlide key={slide.id} source={slide.img} caption={slide.text} /> </div>
+                                } else if (slide.template_type == 3) {
+                                    return <div className="slideContain" onClick={() => { this.slideClick(slide.position) }}> <VideoSlide key={slide.id} videoURL={slide.video_url} caption={slide.text} /> </div>
+                                } else {
+                                    return <div className="slideContain" onClick={() => { this.slideClick(slide.position) }}> <TextSlide key={slide.id} title={slide.text} body={slide.text} color="lightblue" /> </div>
+                                }
+                            })
+
+                        }
+                        <div className="slideContain addSlide">
+                            <div className="add"><FontAwesomeIcon icon={faFont} />Add text</div>
+                            <div className="add middle"><FontAwesomeIcon icon={faImage} />Add an image</div>
+                            <div className="add"><FontAwesomeIcon icon={faFilm} />Add a video</div>
+                        </div>
+                        <div className="spacer"></div>
                     </div>
-                    <div className="spacer"></div>
+                    <div className="slideshowPreview">
+                        {
+                            (() => {
+                                let slide = this.state.slides[this.state.activeKey];
+                                if (slide.template_type == 1 || slide.template_type == 2) {
+                                    return <ImageSlide key={slide.id} source={slide.img} caption={slide.text} />
+                                } else if (slide.template_type == 3) {
+                                    return <VideoSlide key={slide.id} videoURL={slide.video_url} caption={slide.text} />
+                                } else {
+                                    return <TextSlide key={slide.id} title={slide.text} body={slide.text} color="lightblue" />
+                                }
+                            })()
+                        }
+                    </div>
+                    <form className="clubEdit">
+                        {
+                            (() => {
+                                let slide = this.state.slides[this.state.activeKey];
+                                if (slide.template_type == 1 || slide.template_type == 2) {
+                                    return (
+                                        <div>
+                                            <label className="" for="image">Image Url<br />
+                                                <input class="medium" type="text" id="title" name="image" value={slide.img} onChange={(e) => { slide.img = e.target.value; this.forceUpdate() }} />
+                                            </label>
+
+                                            <label className="" for="caption">Caption<br />
+                                                <input class="long" type="text" id="body" name="caption" value={slide.text} onChange={(e) => { slide.text = e.target.value; this.forceUpdate() }} />
+                                            </label>
+                                        </div>
+                                    )
+
+                                } else if (slide.template_type == 3) {
+                                    return (
+                                        <div>
+                                            <label className="" for="video_url">YouTube or Vimeo Link<br />
+                                                <input class="medium" type="text" id="title" name="video_url" value={slide.video_url} onChange={(e) => { slide.video_url = e.target.value; this.forceUpdate() }} />
+                                            </label>
+                                        </div>
+                                    )
+                                } else {
+                                    return (
+                                        <div>
+                                            <label className="" for="title">Title<br />
+                                                <input class="medium" type="text" id="title" name="title" value={slide.text} onChange={(e) => { slide.text = e.target.value; this.forceUpdate() }} />
+                                            </label>
+
+                                            <label className="" for="body">Body<br />
+                                                <input class="long" type="text" id="body" name="body" value={slide.text} onChange={(e) => { slide.text = e.target.value; this.forceUpdate() }} />
+                                            </label>
+                                        </div>
+                                    )
+                                }
+                            })()
+                        }
+                    </form>
                 </div>
-                <div className="slideshowPreview">
-                    {
-                        (function () {
-                            let slide = props.club.slides[0];
-                            if (slide.img) {
-                                return <div className="slideContain"> <ImageSlide key={slide.id} source={slide.img} caption={slide.text} /> </div>
-                            } else if (slide.video_url) {
-                                return <div className="slideContain"> <VideoSlide key={slide.id} videoURL={slide.video_url} caption={slide.text} /> </div>
-                            } else {
-                                return <div className="slideContain"> <TextSlide key={slide.id} title={slide.text} body={slide.text} color="lightblue" /> </div>
-                            }
-                        })()
-                    }
-                </div>
-                <form className="clubEdit">
-                    <label for="title">Slide Template<br />
-                        <select class="short" id="title" name="title">
-                            <option>Text</option>
-                            <option>Image</option>
-                            <option>Video</option>
-                        </select>
-                    </label>
-
-                    <label className="" for="title">Title<br />
-                        <input class="medium" type="text" id="title" name="title" />
-                    </label>
-
-                    <label className="" for="body">Body<br />
-                        <input class="long" type="text" id="body" name="body"></input>
-                    </label>
-
-                </form>
             </div>
-        </div>
-    );
+        );
+    }
 }
 
 export { GeneralEdit, SlideshowEdit };

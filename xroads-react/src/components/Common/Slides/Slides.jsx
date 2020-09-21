@@ -68,7 +68,6 @@ class SlideshowFiller extends React.Component {
             <div className="slideshow" style={{ height: slideshowHeight }}>
                 <div className="haze left-haze"></div>
                 <div className="haze right-haze"></div>
-
             </div>
         );
     }
@@ -85,7 +84,6 @@ class TextSlide extends React.Component {
 
     componentDidMount() {
         var height = this.slideContainer.current.offsetHeight;
-        console.log("Slidewidth is: " + height);
         this.setState({
             scaleAmount: height / (variables.maxPageWidth.replace('px', '') / variables.slideAspectRatio)
         });
@@ -117,7 +115,6 @@ class ImageSlide extends React.Component {
 
     componentDidMount() {
         var height = this.slideContainer.current.offsetHeight;
-        console.log("Slidewidth is: " + height);
         this.setState({
             scaleAmount: height / (variables.maxPageWidth.replace('px', '') / variables.slideAspectRatio)
         });
@@ -146,7 +143,6 @@ class VideoSlide extends React.Component {
 
     componentDidMount() {
         var height = this.slideContainer.current.offsetHeight;
-        console.log("Slidewidth is: " + height);
         this.setState({
             scaleAmount: height / (variables.maxPageWidth.replace('px', '') / variables.slideAspectRatio)
         });
@@ -176,7 +172,7 @@ class VideoSlide extends React.Component {
 
         return (
             <div ref={this.slideContainer} className="slide video-slide">
-                <iframe title="slideshow-iframe" width={"100%"} height={"100%"} src={getEmbed(this.props.videoURL)} frameBorder="0" allow="encrypted-media; fullscreen;" allowFullScreen></iframe>
+                <iframe title="slideshow-iframe" src={getEmbed(this.props.videoURL)} frameBorder="0" allow="encrypted-media; fullscreen;" allowFullScreen></iframe>
             </div>
         );
     }

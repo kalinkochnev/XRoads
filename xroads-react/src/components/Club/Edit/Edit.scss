@@ -156,7 +156,12 @@ form.clubEdit {
 }
 
 .slideshowPreview {
+    width: 100%;
+    height: 10%;
     margin-bottom: 50px;
+    .video-slide {
+        height: 562px;
+    }
 }
 
 .slideshowSelect {
@@ -186,7 +191,7 @@ form.clubEdit {
         font-family: Raleway;
 
         .add {
-            padding-left: 60px;
+            padding-left: 30px;
             box-sizing: border-box;
 
             .svg-inline--fa {
