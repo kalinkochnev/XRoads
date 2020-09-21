@@ -5,7 +5,7 @@ import "./Edit.scss";
 import RichEditor from "../../Common/RichEditor/RichEditor";
 import { TextSlide, ImageSlide, VideoSlide } from "../../Common/Slides/Slides";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Formik } from "formik";
+import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 
 import {
@@ -481,13 +481,21 @@ const EditAccess = (props) => {
       schoolId: user.school,
       clubId: props.club.id,
     };
-    sendRequest("add_editor", urlArgs, "POST", {...values, permissions: [values.permissions]}).then((response) => {
+    sendRequest("add_editor", urlArgs, "POST", { ...values, permissions: [values.permissions] }).then((response) => {
       if (response.ok) {
         response.json().then(body => {
-          setEditors(editors.concat(body))
+          let prevLength = editors.length;
+          setEditors(editors.filter(editor => editor.profile.email != values.email).concat(body))
+
+          // If the length is the same, that means it was updated instead
+          let successMessage = `Your added ${values.email} as an editor!`;
+          if (prevLength == editors.length) {
+            successMessage = `You updated ${values.email}!`
+          }
+
           store.addNotification({
             title: "Success!",
-            message: `Your added ${values.email} as an editor!`,
+            message: successMessage,
             type: "success",
             insert: "top",
             container: "top-right",
@@ -497,7 +505,7 @@ const EditAccess = (props) => {
             },
           });
         })
-        
+
       };
     });
 
@@ -528,30 +536,25 @@ const EditAccess = (props) => {
       ))}
       <div className="editorCard">
         <Formik
-          initialValues={{ email: "", permissions: "" }}
+          initialValues={{ email: "", permissions: possPerms[0] }}
           validationSchema={Yup.object({
             email: Yup.string().email().required('Email must be provided'),
             permissions: Yup.string()
           })}
           onSubmit={onSubmit}
         >
-          {(formik) => (
-            <form onSubmit={formik.handleSubmit} className="addEditor">
-              <div className="addForm editBody">
-              <input placeholder="User email address" {...formik.getFieldProps("email")}></input>
-        
-              <select {...formik.getFieldProps("permissions")}>
-                {possPerms.map(perm => <option value={perm}>{perm}</option>)}
-              </select>
+            <Form className="addEditor">
+            <div className="addForm editBody">
+              <Field name="email" type="email" placeholder="User email"></Field>
+              <Field name="permissions" as="select" >
+                <option selected disabled default>Select one</option>
+                {possPerms.map((perm) => <option value={perm}>{perm}</option>)}
+              </Field>
               <button type="submit" className="addEditorButton">
                 Add editor
               </button>
-              
-              
               </div>
-              
-            </form>
-          )}
+            </Form>
         </Formik>
       </div>
     </div>
