@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch} from "react-router-dom";
 
 import ScreenClubBrowser from "./Club/Browser";
 import ScreenClubDetail from "./Club/Page";
@@ -12,11 +12,13 @@ import { clubAdminConditions, registrationConditions, userConditions } from "./R
 import ErrorOcurred from "./Generic/Error";
 import SchoolSelectForm from "../components/User/Forms/SchoolSelect";
 import SchoolSelectScreen from "./User/SchoolSelect";
+import ScreensHome from "./Home";
 
 const ScreensRoot = () => {  
   return (
     <Router>
-      <Switch>
+
+        <Route exact path="/" component={ScreensHome} />
         <Route exact path="/signup" component={ScreenSignup} />
         <Route exact path="/login" component={ScreenLogin} />
 
@@ -27,8 +29,8 @@ const ScreensRoot = () => {
 
 
         <Route exact path="/error" component={ErrorOcurred} />
-        <Route component={ScreenNotFound} />
-      </Switch>
+        {/* <Route component={ScreenNotFound} /> */}
+
     </Router>
   );
 };

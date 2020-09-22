@@ -27,7 +27,7 @@ SECRET_KEY = 'lp8q0qf++*#9oay4+15to5!=an!zn#6u-u8&amq&2y*r%=et3q'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost","192.168.99.243"]
 
 
 # Application definition
@@ -162,7 +162,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/djstatic/'
 
 # User substitution
 # https://docs.djangoproject.com/en/1.11/topics/auth/customizing/#auth-custom-user
@@ -233,3 +233,6 @@ SWAGGER_SETTINGS = {
 
 # These are the settings involving emails
 DJANGO_NO_REPLY = "no-reply@xroads.club"
+
+#The root directory to collect static files
+STATIC_ROOT="/home/polrtex/projects/XRoads/deploy/staticfiles"

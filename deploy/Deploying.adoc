@@ -1,0 +1,14 @@
+Add "STATIC_ROOT" to settings
+
+Collect static files from django: python3 manage.py collectstatic
+
+
+Running Gunicorn : gunicorn xroads_django.wsgi:application --log-file -
+
+
+Build nginx (in deploy/nginx): 
+podman build . -t django_nginx
+
+
+Running gninx : 
+./run_nginx.sh

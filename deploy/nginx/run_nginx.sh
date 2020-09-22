@@ -1,0 +1,1 @@
+podman run --add-host=web:192.168.99.243 --volume=/home/polrtex/projects/XRoads/deploy/staticfiles:/usr/src/app/static:Z --volume=/home/polrtex/projects/XRoads/xroads-react/build:/usr/src/app/reactapp:Z --volume=/home/polrtex/projects/XRoads/xroads_django/media:/usr/src/app/media:Z -p 9999:80 localhost/django_nginx 

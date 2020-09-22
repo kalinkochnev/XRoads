@@ -12,3 +12,4 @@ accounts/migrations/__pycache__/
 forum/__pycache__/
 forum/migrations/__pycache__/
 xroads_django/env/*
+deploy/staticfiles/*
