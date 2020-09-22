@@ -76,6 +76,8 @@ class Permissions:
         perm_str = ', '.join(map(str, sorted(self.permissions)))
         return f'perms=[{perm_str}]'
 
+    def __contains__(self, item):
+        return item in self.permissions
 
 class Role:
     def __init__(self, model_instances=[], **kwargs):

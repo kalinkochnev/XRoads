@@ -14,7 +14,6 @@ from XroadsAPI.serializers import *
 from XroadsAuth.serializers import ProfileSerializer
 
 
-
 # TODO make sure that you set read_only=True on nested fields so then .update() works
 
 class UserViewset(viewsets.GenericViewSet, generics.RetrieveAPIView):
@@ -29,6 +28,8 @@ class UserViewset(viewsets.GenericViewSet, generics.RetrieveAPIView):
         return super().retrieve(request, *args, **kwargs)
 
 # TODO make views that lists everybody who has permissions for that view
+
+
 class DistrictViewset(api_mixins.ModifyAndReadViewset, api_mixins.AdminMixin):
     queryset = District.objects.all()
     serializer_class = DistrictSerializer
@@ -36,11 +37,11 @@ class DistrictViewset(api_mixins.ModifyAndReadViewset, api_mixins.AdminMixin):
     hier_perms = []
     permission_classes = [IsAuthenticated, MinDistrictRole]
 
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser], hier_perms=['add_admin'])
+    @action(detail=True, methods=['post'])
     def add_admin(self, request, *args, **kwargs):
         return self.add_admin(request, hier_role=PermConst.SCHOOL_ADMIN)
-        
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, IsAdminUser], hier_perms=['remove_admin'])
+
+    @action(detail=True, methods=['post'])
     def remove_admin(self, request, *args, **kwargs):
         return self.remove_admin(request)
 
@@ -52,7 +53,7 @@ class SchoolViewset(api_mixins.ModifyAndReadViewset, api_mixins.AdminMixin):
     hier_perms = []
 
     # TODO test create_school
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinDistrictRole], hier_perms=['create-school'])
+    @action(detail=True, methods=['post'])
     def create_school(self, request, *args, **kwargs):
         serializer = SchoolAdminSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -60,26 +61,26 @@ class SchoolViewset(api_mixins.ModifyAndReadViewset, api_mixins.AdminMixin):
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
     # TODO test toggle hide
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinSchoolRole], hier_perms=['hide-school'])
+    @action(detail=True, methods=['post'])
     def toggle_hide(self, request, *args, **kwargs):
         school = self.get_object()
         school.toggle_hide()
         return Response(status=204)
 
-    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated, MinSchoolRole], hier_perms=['add_admin'])
+    @action(detail=True, methods=['get'])
     def clubs(self, request, *args, **kwargs):
         return self.add_admin(request, hier_role=PermConst.SCHOOL_ADMIN)
-        
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinDistrictRole], hier_perms=['add_admin'])
+
+    @action(detail=True, methods=['post'])
     def add_admin(self, request, *args, **kwargs):
         return self.add_admin(request, hier_role=PermConst.SCHOOL_ADMIN)
-        
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinDistrictRole], hier_perms=['remove_admin'])
+
+    @action(detail=True, methods=['post'])
     def remove_admin(self, request, *args, **kwargs):
         return self.remove_admin(request)
-    
+
     # TODO test create_club
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinSchoolRole], hier_perms=['create-club'])
+    @action(detail=True, methods=['post'])
     def create_club(self, request, *args, **kwargs):
         club_serializer = CreateClubForm(data=request.data)
         if club_serializer.is_valid():
@@ -89,50 +90,56 @@ class SchoolViewset(api_mixins.ModifyAndReadViewset, api_mixins.AdminMixin):
             return Response(status=status.HTTP_400_BAD_REQUEST, data=club_serializer.errors)
 
 
-
 class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins.AdminMixin):
     queryset = Club.objects.all()
     serializer_class = ClubEditorSerializer
     permission_classes = [IsAuthenticated, MinClubEditor]
     hier_perms = []
 
+    modify_perms = {
+        'Advisor': ['Editor', 'Advisor'],
+        'Editor': ['Editor']
+    }
     # TODO change the queryset to only include the clubs in the person's school
 
     # TODO create toggle_hide mixin
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=['hide-club'])
+    @action(detail=True, methods=['post'])
     def toggle_hide(self, request, *args, **kwargs):
         club = self.get_object()
         club.toggle_hide()
         return Response(status=202)
 
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=[])
+    @action(detail=True, methods=['post'])
     def add_editor(self, request, *args, **kwargs):
         return self.add_admin(request, hier_role=PermConst.CLUB_EDITOR)
-    
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=[])
+
+    @action(detail=True, methods=['post'])
     def remove_editor(self, request, *args, **kwargs):
         return self.remove_admin(request)
-    
-    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=[])
+
+    @action(detail=True, methods=['get'])
     def list_editors(self, request, *args, **kwargs):
         return self.list_admins(request)
 
     # TODO create slide views
-    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=['remove_admin'])
+    @action(detail=True, methods=['get'])
     def slides(self, request, *args, **kwargs):
         pass
 
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=[])
+    @action(detail=True, methods=['post'])
     def answer_question(self, request, *args, **kwargs):
-        question = AnswerQuestionSerializer(data=request.data, context={'request': request})
+        question = AnswerQuestionSerializer(
+            data=request.data, context={'request': request})
         if question.is_valid():
             question = question.save()
 
             club = self.get_object()
-            subject, from_email, to = f'Your question about {club.name} was answered!', settings.DJANGO_NO_REPLY, [question.asker.email]
+            subject, from_email, to = f'Your question about {club.name} was answered!', settings.DJANGO_NO_REPLY, [
+                question.asker.email]
             plain_text = get_template('email/question/AnswerEmail.txt')
-            
-            text_content = plain_text.render({'question': question, 'club': club})
+
+            text_content = plain_text.render(
+                {'question': question, 'club': club})
 
             msg = EmailMultiAlternatives(subject, text_content, from_email, to)
             msg.send()
@@ -140,7 +147,7 @@ class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins
             return Response(status=status.HTTP_200_OK)
         return Response(question.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated, MinClubEditor], hier_perms=[])
+    @action(detail=True, methods=['get'])
     def questions(self, request, *args, **kwargs):
         club = self.get_object()
         questions = Question.objects.filter(club=club)

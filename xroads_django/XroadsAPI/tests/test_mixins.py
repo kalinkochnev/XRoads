@@ -4,8 +4,9 @@ from XroadsAPI.mixins import *
 
 
 class RequestStub:
-    def __init__(self, data):
+    def __init__(self, data, user=None):
         self.data = data
+        self.user = user
 
 
 class DummyAddAdmin(AddAdminMixin):
@@ -91,7 +92,7 @@ class TestRemoveAdminMixin:
             'email': prof.email,
         }
 
-        response = add_mixin.remove_admin(RequestStub(data))
+        response = add_mixin.remove_admin(RequestStub(data, prof))
 
         assert role.is_allowed(user=prof) is False
 

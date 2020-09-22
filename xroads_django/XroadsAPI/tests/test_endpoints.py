@@ -206,7 +206,7 @@ class TestAdmin:
         toggle_hide_url_name = 'api:admin-club-toggle-hide'
         answer_question_path = 'api:admin-club-answer-question'
         get_questions_path = 'api:admin-club-questions'
-        
+        remove_admin_path = 'api:admin-club-remove-editor'
 
         def valid_retrieve(self, client, club):
             path = reverse(self.retrieve_url_name, kwargs={
@@ -269,14 +269,6 @@ class TestAdmin:
             c1.refresh_from_db()
             assert c1.is_visible is False
 
-            # This is a different admin permission that shouldn't work
-            prof2, client2 = prof_w_perm(c1, ['add-admin'])
-            response = make_request(client2, 'post', path=path, format='json')
-            assert response.status_code == status.HTTP_403_FORBIDDEN
-
-            c1.refresh_from_db()
-            assert c1.is_visible is False
-
         def test_answer_question(self, setup_client_auth, prof_w_perm, make_request, role_model_instances, create_test_prof, perm_const_override):
             d1, s1, c1 = role_model_instances()
             profile, client = prof_w_perm(c1, perms=['answer-questions'])
@@ -306,7 +298,8 @@ class TestAdmin:
             assert len(mail.outbox) == 1, "Email not sent"
             assert mail.outbox[0].subject == f'Your question about {c1.name} was answered!'
             assert mail.outbox[0].from_email == settings.DJANGO_NO_REPLY
-            assert mail.outbox[0].to == [prof2.email], 'Email not sent to asker'
+            assert mail.outbox[0].to == [
+                prof2.email], 'Email not sent to asker'
 
         def test_answer_question_invalid(self, setup_client_auth, prof_w_perm, make_request, role_model_instances, create_test_prof, perm_const_override):
             d1, s1, c1 = role_model_instances()
@@ -331,15 +324,52 @@ class TestAdmin:
             d1, s1, c1 = role_model_instances()
             profile, client = prof_w_perm(c1, perms=[])
 
-            path = reverse(self.get_questions_path, kwargs={'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+            path = reverse(self.get_questions_path, kwargs={
+                           'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
 
-            question1 = Question.objects.create(question='yo yo', asker=profile, club=c1)
-            question2 = Question.objects.create(question='yo yo2', asker=profile, club=c1)
+            question1 = Question.objects.create(
+                question='yo yo', asker=profile, club=c1)
+            question2 = Question.objects.create(
+                question='yo yo2', asker=profile, club=c1)
 
-            response: Response = make_request(client, 'get', path=path, format='json')
+            response: Response = make_request(
+                client, 'get', path=path, format='json')
 
             assert response.status_code == status.HTTP_200_OK
-            assert response.data == GetQuestionSerializer([question1, question2], many=True).data
+            assert response.data == GetQuestionSerializer(
+                [question1, question2], many=True).data
+
+        @pytest.mark.parametrize('from_admin, remove_admin, expected', [
+            ['editor', 'advisor', status.HTTP_400_BAD_REQUEST],
+            ['editor', 'editor', status.HTTP_202_ACCEPTED],
+            ['advisor', 'editor', status.HTTP_202_ACCEPTED],
+            ['advisor', 'advisor', status.HTTP_202_ACCEPTED],
+        ])
+        def test_remove_admin_conditions(self, from_admin, remove_admin, expected, setup_client_auth, prof_w_perm, make_request, role_model_instances):
+            d1, s1, c1 = role_model_instances()
+
+            advisor, client1 = prof_w_perm(c1, perms=['Advisor'])
+            editor, client2 = prof_w_perm(c1, perms=['Editor'])
+
+            client_map = {
+                'advisor': client1,
+                'editor': client2,
+            }
+
+            user_map = {
+                'advisor': advisor,
+                'editor': editor,
+            }
+
+            path = reverse(self.remove_admin_path, kwargs={
+                           'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+            body = {'email': user_map[remove_admin].email}
+            response: Response = make_request(
+                client_map[from_admin], 'post', data=body,  path=path, format='json')
+
+            # Editor can't remove advisor
+            assert response.status_code == expected
+
 
 class TestNotAdmin:
     class TestClubViewset:
@@ -408,8 +438,9 @@ class TestNotAdmin:
             profile.refresh_from_db()
             assert c1 not in list(profile.joined_clubs)
 
-            club_editor, editor_client = prof_w_perm(c1, perms=['answer-questions'])
-        
+            club_editor, editor_client = prof_w_perm(
+                c1, perms=['answer-questions'])
+
         def test_ask_question(self, role_model_instances, make_request, setup_client_auth, prof_w_perm, perm_const_override):
             d1, s1, c1 = role_model_instances()
             profile, client = setup_client_auth
@@ -436,9 +467,11 @@ class TestNotAdmin:
 
             # test that emails are sent to admins
             assert len(mail.outbox) == 1, "Email not sent"
-            assert mail.outbox[0].subject == f'Somebody asked a question about {question.club.name}!'
+            assert mail.outbox[
+                0].subject == f'Somebody asked a question about {question.club.name}!'
             assert mail.outbox[0].from_email == settings.DJANGO_NO_REPLY
-            assert mail.outbox[0].to == [club_editor.email], 'Email not sent to editor'
+            assert mail.outbox[0].to == [
+                club_editor.email], 'Email not sent to editor'
 
         def test_ask_question_invalid(self, role_model_instances, make_request, setup_client_auth):
             d1, s1, c1 = role_model_instances()
