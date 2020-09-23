@@ -7,6 +7,8 @@ const ScreensHome = () => {
     <div>
       This is the beginning. Maybe you should <Link to={"/login"}>Log In</Link>
 
+      Or look at the Carousel Bug <Link to={"/carouselbug"}> Carousel Bug</Link>
+
     </div>
   );
 };

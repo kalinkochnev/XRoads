@@ -13,12 +13,14 @@ import ErrorOcurred from "./Generic/Error";
 import SchoolSelectForm from "../components/User/Forms/SchoolSelect";
 import SchoolSelectScreen from "./User/SchoolSelect";
 import ScreensHome from "./Home";
+import CarouselBug from "./CarouselBug";
 
 const ScreensRoot = () => {  
   return (
     <Router>
 
         <Route exact path="/" component={ScreensHome} />
+        <Route exact path="/carouselbug" component={CarouselBug} />
         <Route exact path="/signup" component={ScreenSignup} />
         <Route exact path="/login" component={ScreenLogin} />
 

@@ -80,6 +80,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 MIDDLEWARE = [
+    # 'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -236,3 +237,6 @@ DJANGO_NO_REPLY = "no-reply@xroads.club"
 
 #The root directory to collect static files
 STATIC_ROOT="/home/polrtex/projects/XRoads/deploy/staticfiles"
+
+CORS_ALLOW_ALL_ORIGINS=True
+CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:5000", "http://192.168.99.243:5000"]
