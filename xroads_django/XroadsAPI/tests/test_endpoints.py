@@ -99,7 +99,7 @@ class TestAdmin:
 
         def test_no_login_retrieve(self, role_model_instances, setup_client_no_auth):
             d1, s1, c1 = role_model_instances()
-            client = setup_client_no_auth
+            client = setup_client_no_auth()
             response = self.valid_retrieve(client, d1)
 
             assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -144,7 +144,7 @@ class TestAdmin:
             assert response.data == expected_data
 
         def test_does_not_exist(self, setup_client_auth, make_request):
-            user, client = setup_client_auth
+            user, client = setup_client_auth()
             path = reverse(self.retrieve_url_name, args={'pk': 1})
             response = make_request(client, 'get', path=path, format='json')
             assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -166,7 +166,7 @@ class TestAdmin:
 
         def test_no_login_retrieve(self, role_model_instances, setup_client_no_auth):
             d1, s1, c1 = role_model_instances()
-            client = setup_client_no_auth
+            client = setup_client_no_auth()
             response = self.valid_retrieve(client, s1)
 
             assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -194,7 +194,7 @@ class TestAdmin:
         def test_does_not_exist(self, setup_client_auth, make_request):
             d1 = District.objects.create(name='d1')
 
-            user, client = setup_client_auth
+            user, client = setup_client_auth()
             path = reverse(self.retrieve_url_name, args={
                            'district_pk': d1.id, 'pk': 1})
             response = make_request(client, 'get', path=path, format='json')
@@ -207,6 +207,7 @@ class TestAdmin:
         answer_question_path = 'api:admin-club-answer-question'
         get_questions_path = 'api:admin-club-questions'
         remove_admin_path = 'api:admin-club-remove-editor'
+        add_admin_path = 'api:admin-club-add-editor'
 
         def valid_retrieve(self, client, club):
             path = reverse(self.retrieve_url_name, kwargs={
@@ -215,7 +216,7 @@ class TestAdmin:
 
         def test_no_login_retrieve(self, role_model_instances, setup_client_no_auth):
             d1, s1, c1 = role_model_instances()
-            client = setup_client_no_auth
+            client = setup_client_no_auth()
             response = self.valid_retrieve(client, c1)
 
             assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -234,7 +235,7 @@ class TestAdmin:
             d1, s1, c1 = role_model_instances()
             c1.delete()
 
-            user, client = setup_client_auth
+            user, client = setup_client_auth()
             path = reverse(self.retrieve_url_name, args={
                            'district_pk': c1.district.id, 'school_pk': c1.school.pk, 'pk': 1})
             response = make_request(client, 'get', path=path, format='json')
@@ -262,7 +263,7 @@ class TestAdmin:
                            'district_pk': c1.district.id, 'school_pk': c1.school.pk, 'pk': c1.pk})
 
             # User without any permissions
-            prof1, client1 = setup_client_auth
+            prof1, client1 = setup_client_auth()
             response = make_request(client1, 'post', path=path, format='json')
             assert response.status_code == status.HTTP_403_FORBIDDEN
 
@@ -340,16 +341,16 @@ class TestAdmin:
                 [question1, question2], many=True).data
 
         @pytest.mark.parametrize('from_admin, remove_admin, expected', [
-            ['editor', 'advisor', status.HTTP_400_BAD_REQUEST],
+            ['editor', 'advisor', status.HTTP_403_FORBIDDEN],
             ['editor', 'editor', status.HTTP_202_ACCEPTED],
             ['advisor', 'editor', status.HTTP_202_ACCEPTED],
             ['advisor', 'advisor', status.HTTP_202_ACCEPTED],
         ])
-        def test_remove_admin_conditions(self, from_admin, remove_admin, expected, setup_client_auth, prof_w_perm, make_request, role_model_instances):
+        def test_remove_admin_conditions(self, from_admin, remove_admin, expected, setup_client_auth, prof_w_perm, make_request, role_model_instances, actual_perm_const):
             d1, s1, c1 = role_model_instances()
 
-            advisor, client1 = prof_w_perm(c1, perms=['Advisor'])
-            editor, client2 = prof_w_perm(c1, perms=['Editor'])
+            advisor, client1 = prof_w_perm(c1, 1, perms=['Advisor'])
+            editor, client2 = prof_w_perm(c1, 2, perms=['Editor'])
 
             client_map = {
                 'advisor': client1,
@@ -370,7 +371,36 @@ class TestAdmin:
             # Editor can't remove advisor
             assert response.status_code == expected
 
+        @pytest.mark.parametrize('from_admin, remove_admin, expected', [
+            ['editor', 'advisor', status.HTTP_403_FORBIDDEN],
+            ['editor', 'editor', status.HTTP_202_ACCEPTED],
+            ['advisor', 'editor', status.HTTP_202_ACCEPTED],
+            ['advisor', 'advisor', status.HTTP_202_ACCEPTED],
+        ])
+        def test_add_admin_conditions(self, from_admin, remove_admin, expected, setup_client_auth, prof_w_perm, make_request, role_model_instances):
+            d1, s1, c1 = role_model_instances()
 
+            advisor, client1 = prof_w_perm(c1, 1, perms=['Advisor'])
+            editor, client2 = prof_w_perm(c1, 2, perms=['Editor'])
+
+            client_map = {
+                'advisor': client1,
+                'editor': client2,
+            }
+
+            user_map = {
+                'advisor': advisor,
+                'editor': editor,
+            }
+
+            path = reverse(self.add_admin_path, kwargs={
+                           'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+            body = {'email': user_map[remove_admin].email}
+            response: Response = make_request(
+                client_map[from_admin], 'post', data=body,  path=path, format='json')
+
+            # Editor can't remove advisor
+            assert response.status_code == expected
 class TestNotAdmin:
     class TestClubViewset:
         club_path_name = "api:club-list"
@@ -380,7 +410,7 @@ class TestNotAdmin:
 
         def test_retrieves_club_list_no_auth(self, role_model_instances, make_request, setup_client_no_auth):
             d1, s1, c1 = role_model_instances()
-            client = setup_client_no_auth
+            client = setup_client_no_auth()
             path = reverse(self.club_path_name, kwargs={
                            'district_pk': d1.id, 'school_pk': s1.id})
             response: Response = make_request(
@@ -395,7 +425,7 @@ class TestNotAdmin:
                 s1.add_club(club, save=False)
             s1.make_save(save=True)
 
-            profile, client = setup_client_auth
+            profile, client = setup_client_auth()
             path = reverse(self.club_path_name, kwargs={
                            'district_pk': d1.id, 'school_pk': s1.id})
             response: Response = make_request(
@@ -407,7 +437,7 @@ class TestNotAdmin:
 
         def test_join_club_same_school(self, role_model_instances, make_request, setup_client_auth):
             d1, s1, c1 = role_model_instances()
-            profile, client = setup_client_auth
+            profile, client = setup_client_auth()
 
             profile.district = d1
             profile.school = s1
@@ -423,7 +453,7 @@ class TestNotAdmin:
 
         def test_leave_club(self, role_model_instances, make_request, setup_client_auth, prof_w_perm, perm_const_override):
             d1, s1, c1 = role_model_instances()
-            profile, client = setup_client_auth
+            profile, client = setup_client_auth(1)
 
             profile.district = d1
             profile.school = s1
@@ -439,14 +469,14 @@ class TestNotAdmin:
             assert c1 not in list(profile.joined_clubs)
 
             club_editor, editor_client = prof_w_perm(
-                c1, perms=['answer-questions'])
+                c1, 2, perms=['answer-questions'])
 
         def test_ask_question(self, role_model_instances, make_request, setup_client_auth, prof_w_perm, perm_const_override):
             d1, s1, c1 = role_model_instances()
-            profile, client = setup_client_auth
+            profile, client = setup_client_auth(1)
             c1.join(profile)
 
-            club_editor, editor_client = prof_w_perm(c1)
+            club_editor, editor_client = prof_w_perm(c1, 2)
             assert club_editor in list(c1.editors)
 
             path = reverse(self.ask_question_path, kwargs={
@@ -475,7 +505,7 @@ class TestNotAdmin:
 
         def test_ask_question_invalid(self, role_model_instances, make_request, setup_client_auth):
             d1, s1, c1 = role_model_instances()
-            profile, client = setup_client_auth
+            profile, client = setup_client_auth()
             c1.join(profile)
 
             path = reverse(self.ask_question_path, kwargs={
@@ -493,7 +523,7 @@ class TestNotAdmin:
 
         def test_join_school(self, role_model_instances, setup_client_auth, make_request):
             d1, s1, c1 = role_model_instances()
-            profile, client = setup_client_auth
+            profile, client = setup_client_auth()
 
             profile.district = d1
 

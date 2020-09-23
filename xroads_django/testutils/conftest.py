@@ -2,7 +2,6 @@ import pytest
 from django.test import override_settings
 from XroadsAPI.models import *
 from XroadsAuth.models import Profile
-import XroadsAuth.permisson_constants as PermConst
 import tempfile
 from PIL import Image
 from XroadsAPI.slide import SlideTemplates
@@ -43,8 +42,8 @@ def create_club(db, temp_img):
 
 @pytest.fixture
 def create_test_prof(db):
+    
     def create_test_prof2(num, **kwargs) -> Profile:
-        
         params = {
             'email': f'test{num}@email.com',
             'password': 'password',
@@ -107,6 +106,8 @@ def role_model_instances(create_club):
 
 @pytest.fixture
 def perm_const_override():
+    import XroadsAuth.permisson_constants as PermConst
+
     PermConst.DISTRICT_ADMIN = 'District Admin'
     PermConst.SCHOOL_ADMIN = 'School Admin'
     PermConst.CLUB_EDITOR = 'Club Editor'
@@ -119,18 +120,29 @@ def perm_const_override():
         PermConst.Hierarchy(District, School, Club, name=PermConst.CLUB_EDITOR, poss_perms=['__all__', 'modify-club', 'add-admin', 'hide-club', 'answer-questions']),
     ]
 
+
+@pytest.fixture
+def actual_perm_const():
+    import XroadsAuth.permisson_constants as PermConst
+    from importlib import reload  
+    reload(PermConst)
+
 @pytest.fixture
 def setup_client_no_auth():
-    client = APIClient()
-    return client
+    def setup():
+        client = APIClient()
+        return client
+    return setup
 
 
 @pytest.fixture
 def setup_client_auth(create_test_prof, setup_client_no_auth):
-    profile = create_test_prof(num=1)
-    client = setup_client_no_auth
-    client.force_authenticate(user=profile)
-    return profile, client
+    def setup(prof_num=1):
+        profile = create_test_prof(prof_num)
+        client = setup_client_no_auth()
+        client.force_authenticate(user=profile)
+        return profile, client
+    return setup
 
 @pytest.fixture
 def make_request():
@@ -151,8 +163,8 @@ def make_request():
 
 @pytest.fixture
 def prof_w_perm(setup_client_auth):
-    def setup(model, perms=[]):
-        prof, client = setup_client_auth
+    def setup(model, prof_num=1, perms=[]):
+        prof, client = setup_client_auth(prof_num)
         role = Role.from_start_model(model)
         role.permissions.add(*perms)
         role.give_role(prof)
