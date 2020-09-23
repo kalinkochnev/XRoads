@@ -417,7 +417,6 @@ const EditorCard = (props) => {
   const [display, setDisplay] = useState(true);
 
   // TODO If you are a club advisor remove the x from yourself
-
   const removeEditor = () => {
     const sendRemove = () => {
       let urlArgs = {
@@ -430,6 +429,29 @@ const EditorCard = (props) => {
       }).then((response) => {
         if (response.ok) {
           setDisplay(false);
+          store.addNotification({
+            title: "Success",
+            message: `You removed ${name} from the club editors`,
+            type: "success",
+            insert: "top",
+            container: "top-right",
+            dismiss: {
+              duration: 5000,
+              onScreen: true,
+            },
+          });
+        } else if (response.status == 403){
+          store.addNotification({
+            title: "Permission Denied",
+            message: "You don't have permission to remove this user",
+            type: "danger",
+            insert: "top",
+            container: "top-right",
+            dismiss: {
+              duration: 5000,
+              onScreen: true,
+            },
+          });
         }
       });
     };
@@ -456,13 +478,14 @@ const EditorCard = (props) => {
       </div>
       <div className="modify">
         <p>{props.editor.perms.join(", ")}</p>
-        <IconButton
+        {editor.email != user.email ? <IconButton
           icon={"faTimes"}
           filled={true}
           color="gray"
           size="2x"
           customClickEvent={removeEditor}
-        />
+        /> : <p>(You)</p>}
+        
       </div>
     </div>
   );
@@ -506,7 +529,19 @@ const EditAccess = (props) => {
           });
         })
 
-      };
+      } else if (response.status == 403) {
+        store.addNotification({
+          title: "Permission Denied",
+          message: "You don't have permission to change this user",
+          type: "danger",
+          insert: "top",
+          container: "top-right",
+          dismiss: {
+            duration: 5000,
+            onScreen: true,
+          },
+        });
+      }
     });
 
     setSubmitting(false);
@@ -543,7 +578,7 @@ const EditAccess = (props) => {
           })}
           onSubmit={onSubmit}
         >
-            <Form className="addEditor">
+          <Form className="addEditor">
             <div className="addForm editBody">
               <Field name="email" type="email" placeholder="User email"></Field>
               <Field name="permissions" as="select" >
@@ -553,8 +588,8 @@ const EditAccess = (props) => {
               <button type="submit" className="addEditorButton">
                 Add editor
               </button>
-              </div>
-            </Form>
+            </div>
+          </Form>
         </Formik>
       </div>
     </div>
