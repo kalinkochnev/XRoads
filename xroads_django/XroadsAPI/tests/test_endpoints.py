@@ -341,10 +341,10 @@ class TestAdmin:
                 [question1, question2], many=True).data
 
         @pytest.mark.parametrize('from_admin, remove_admin, expected', [
-            ['editor', 'advisor', status.HTTP_403_FORBIDDEN],
-            ['editor', 'editor', status.HTTP_202_ACCEPTED],
-            ['advisor', 'editor', status.HTTP_202_ACCEPTED],
-            ['advisor', 'advisor', status.HTTP_202_ACCEPTED],
+            ['Editor', 'Advisor', status.HTTP_403_FORBIDDEN],
+            ['Editor', 'Editor', status.HTTP_202_ACCEPTED],
+            ['Advisor', 'Editor', status.HTTP_202_ACCEPTED],
+            ['Advisor', 'Advisor', status.HTTP_202_ACCEPTED],
         ])
         def test_remove_admin_conditions(self, from_admin, remove_admin, expected, setup_client_auth, prof_w_perm, make_request, role_model_instances, actual_perm_const):
             d1, s1, c1 = role_model_instances()
@@ -353,13 +353,13 @@ class TestAdmin:
             editor, client2 = prof_w_perm(c1, 2, perms=['Editor'])
 
             client_map = {
-                'advisor': client1,
-                'editor': client2,
+                'Advisor': client1,
+                'Editor': client2,
             }
 
             user_map = {
-                'advisor': advisor,
-                'editor': editor,
+                'Advisor': advisor,
+                'Editor': editor,
             }
 
             path = reverse(self.remove_admin_path, kwargs={
@@ -371,31 +371,31 @@ class TestAdmin:
             # Editor can't remove advisor
             assert response.status_code == expected
 
-        @pytest.mark.parametrize('from_admin, remove_admin, expected', [
-            ['editor', 'advisor', status.HTTP_403_FORBIDDEN],
-            ['editor', 'editor', status.HTTP_202_ACCEPTED],
-            ['advisor', 'editor', status.HTTP_202_ACCEPTED],
-            ['advisor', 'advisor', status.HTTP_202_ACCEPTED],
+        @pytest.mark.parametrize('from_admin, add_admin, expected', [
+            ['Editor', 'Advisor', status.HTTP_403_FORBIDDEN],
+            ['Editor', 'Editor', status.HTTP_202_ACCEPTED],
+            ['Advisor', 'Editor', status.HTTP_202_ACCEPTED],
+            ['Advisor', 'Advisor', status.HTTP_202_ACCEPTED],
         ])
-        def test_add_admin_conditions(self, from_admin, remove_admin, expected, setup_client_auth, prof_w_perm, make_request, role_model_instances):
+        def test_add_admin_conditions(self, from_admin, add_admin, expected, setup_client_auth, prof_w_perm, make_request, role_model_instances, actual_perm_const):
             d1, s1, c1 = role_model_instances()
 
             advisor, client1 = prof_w_perm(c1, 1, perms=['Advisor'])
             editor, client2 = prof_w_perm(c1, 2, perms=['Editor'])
 
             client_map = {
-                'advisor': client1,
-                'editor': client2,
+                'Advisor': client1,
+                'Editor': client2,
             }
 
             user_map = {
-                'advisor': advisor,
-                'editor': editor,
+                'Advisor': advisor,
+                'Editor': editor,
             }
 
             path = reverse(self.add_admin_path, kwargs={
                            'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
-            body = {'email': user_map[remove_admin].email}
+            body = {'email': user_map[add_admin].email, 'permissions': [add_admin]}
             response: Response = make_request(
                 client_map[from_admin], 'post', data=body,  path=path, format='json')
 

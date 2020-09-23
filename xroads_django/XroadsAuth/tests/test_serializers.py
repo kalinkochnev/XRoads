@@ -120,7 +120,7 @@ class TestProfileSerializers:
         c1.join(prof)
         c2.join(prof)
 
-        expected = {
+        expected = OrderedDict({
             'id': prof.id,
             'email': prof.email,
             'first_name': prof.first_name,
@@ -130,9 +130,9 @@ class TestProfileSerializers:
             'is_anon': prof.is_anon,
             'permissions': [],
             'joined_clubs': [c1.id, c2.id],
-        }
+        })
 
-        assert ProfileSerializer(prof).data == expected
+        assert dict(OrderedDict(ProfileSerializer(prof).data)) == dict(expected)
 
 
 
