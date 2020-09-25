@@ -38,7 +38,7 @@ class EmailListForm(serializers.Serializer):
             
 class AddAdminForm(serializers.Serializer):
     permissions = serializers.ListField(child=serializers.CharField())
-    email = serializers.EmailField(validators=[email_exists])
+    email = serializers.EmailField()
 
     # TODO make something that creates a "reserved account" if they put in an email that doesn't exist        
 

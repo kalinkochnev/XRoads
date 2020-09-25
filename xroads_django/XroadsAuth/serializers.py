@@ -81,8 +81,23 @@ class EditorSerializer(serializers.Serializer):
                     'perms': list(role.permissions.permissions)
                 }
 
-class ListEditorSerializer(serializers.Serializer):
+class InvitedUserSerializer(serializers.Serializer):
+    def to_representation(self, instance):
+        expected_role = self.context.get('role')
+        prof_roles = instance.permissions
+        for role in prof_roles:
+            if role == expected_role:
+                return {
+                    'profile':  {
+                        'email': instance.email,
+                        'first_name': 'Invited',
+                        'last_name': 'User',
+                        'id': None,
+                    },
+                    'perms': list(role.permissions.permissions)
+                }
 
+class ListEditorSerializer(serializers.Serializer):
     def to_representation(self, profiles):
         expected_role = self.context.get('role')
         return {

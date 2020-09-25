@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from rest_framework import permissions
 
 from . import permisson_constants as PermConst
-from .models import Profile, RoleModel
+from .models import Profile, RoleModel, InvitedUser
 from .exceptions import RoleNotComparable, InvalidRoleCreated
 from .utils import get_parent_model
 
@@ -78,6 +78,7 @@ class Permissions:
 
     def __contains__(self, item):
         return item in self.permissions
+
 
 class Role:
     def __init__(self, model_instances=[], **kwargs):
@@ -312,18 +313,21 @@ class Role:
             return 1
         return -1
 
-    def get_admins(self, perms=[]):
+    def get_admins(self, perms=[], invited=False):
+        query_class = Profile if not invited else InvitedUser
         try:
             if '__any__' in perms:
-                return Profile.objects.filter(roles__role_name=self.role_str)
+                return query_class.objects.filter(roles__role_name=self.role_str)
             else:
-                query_perms = perms if perms != [] else list(self.permissions.permissions)
-                role = RoleModel.objects.get(role_name=self.role_str, perms=query_perms)
-                return Profile.objects.filter(roles__in=[role])
+                query_perms = perms if perms != [] else list(
+                    self.permissions.permissions)
+                role = RoleModel.objects.get(
+                    role_name=self.role_str, perms=query_perms)
+                return query_class.objects.filter(roles__in=[role])
 
         except RoleModel.DoesNotExist:
             return []
-        
+
 
 class BaseMinRole(permissions.BasePermission):
 

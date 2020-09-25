@@ -111,7 +111,15 @@ class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins
 
     @action(detail=True, methods=['post'])
     def add_editor(self, request, *args, **kwargs):
-        return self.add_admin(request, hier_role=PermConst.CLUB_EDITOR)
+        def invite_club_admin(to_emails):
+            subject, from_email, to = "You were invited to xroads!", settings.DJANGO_NO_REPLY, to_emails
+            plain_text = get_template('email/sharing/invite.txt')
+
+            text_content = plain_text.render({'club': self.get_object()})
+
+            msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+            msg.send()
+        return self.add_admin(request, hier_role=PermConst.CLUB_EDITOR, email_func=invite_club_admin)
 
     @action(detail=True, methods=['post'])
     def remove_editor(self, request, *args, **kwargs):
