@@ -326,7 +326,7 @@ class Role:
                 return query_class.objects.filter(roles__in=[role])
 
         except RoleModel.DoesNotExist:
-            return []
+            return None
 
 
 class BaseMinRole(permissions.BasePermission):

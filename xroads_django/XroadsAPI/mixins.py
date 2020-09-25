@@ -44,6 +44,26 @@ class AddAdminMixin(BaseAdminMixin):
                 return True
         return False
 
+    def _invite_user(self, email, role, email_func):
+        invited_user = None
+        try:
+            invited_user = InvitedUser.objects.get(email=email)
+            invited_user.roles.add(RoleModel.from_role(role))
+        except InvitedUser.DoesNotExist:
+            invited_user = InvitedUser.create(email, [role])
+            email_func([email])
+
+    def _add_profile(self, email, role):
+        prof = Profile.objects.get(email=email)
+        role.give_role(prof)
+        return prof
+
+    def _is_updating(self, role: Role, email):
+        admins = role.get_admins(perms=['__any__'])
+        if admins is not None:
+            return admins.filter(email=email).count() == 1
+
+
     def add_admin(self, request, hier_role, email_func=None):
         add_admin_form = AddAdminForm(
             data=request.data, hier_role=hier_role)
@@ -53,25 +73,21 @@ class AddAdminMixin(BaseAdminMixin):
             club = self.get_object()
             role = Role.from_start_model(club)
             permissions = add_admin_form.validated_data['permissions']
+            role.permissions.add(*permissions)
+
+            if self._is_updating(role, email):
+                return Response(status=status.HTTP_403_FORBIDDEN)
 
             if self._can_add_admin(request.user, permissions, role):
                 response_data = {}
+                # Try to find a user and apply the role to it
                 try:
-                    prof = Profile.objects.get(email=email)
-                    role.permissions.add(*permissions)
-                    role.give_role(prof)
-                    response_data = EditorSerializer(
-                        prof, context={'role': role}).data
-
+                    prof = self._add_profile(email, role)
+                    response_data = EditorSerializer(prof, context={'role': role}).data
                 except Profile.DoesNotExist:
-                    invited_user = None
-                    try:
-                        invited_user = InvitedUser.objects.get(email=email)
-                    except InvitedUser.DoesNotExist:
-                        invited_user = InvitedUser.create(email, [role])
-                        email_func([email])
-
-                    response_data = InvitedUserSerializer(invited_user, context={'role': role}).data
+                    # If the profile doesn't exist, invite the user and add the role
+                    invited = self._invite_user(email, role, email_func)
+                    response_data = InvitedUserSerializer(invited, context={'role': role}).data
 
                 return Response(response_data, status=status.HTTP_202_ACCEPTED)
 

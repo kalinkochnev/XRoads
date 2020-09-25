@@ -62,6 +62,30 @@ class TestAddAdminMixin:
             data), hier_role=PermConst.DISTRICT_ADMIN)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
+    def test_cant_update_user(self, create_test_prof, perm_const_override):
+        factory = APIRequestFactory()
+
+        d1 = District.objects.create(name='d1')
+        prof = create_test_prof(1)
+        add_mixin = DummyAddAdmin(d1)
+        permissions = ['modify-district']
+
+        # Expected allowed access
+        role = Role.from_start_model(d1)
+        role.permissions.add(*permissions)
+        role.give_role(prof)
+
+        assert role.is_allowed(user=prof) is True
+
+        data = {
+            'email': prof.email,
+            'permissions': permissions,
+        }
+
+        response = add_mixin.add_admin(RequestStub(
+            data), hier_role=PermConst.DISTRICT_ADMIN)
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
 class DummyRemoveAdmin(RemoveAdminMixin):
     def __init__(self, object):
@@ -111,7 +135,6 @@ class TestRemoveAdminMixin:
         response = add_mixin.remove_admin(RequestStub(data))
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-
 
 class DummyListAdmin(ListAdminMixin):
     def __init__(self, object):

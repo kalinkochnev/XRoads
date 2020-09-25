@@ -395,15 +395,14 @@ class TestAdmin:
 
             path = reverse(self.add_admin_path, kwargs={
                            'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
-            body = {'email': user_map[add_admin].email,
+            body = {'email': 'test@email.com',
                     'permissions': [add_admin]}
             response: Response = make_request(
                 client_map[from_admin], 'post', data=body,  path=path, format='json')
 
-            # Editor can't remove advisor
             assert response.status_code == expected
 
-        def test_user_invited_not_exist(self, role_model_instances, prof_w_perm, make_request):
+        def test_user_invited_not_exist(self, role_model_instances, prof_w_perm, make_request, actual_perm_const):
             d1, s1, c1 = role_model_instances()
             profile, client = prof_w_perm(c1, perms=['Advisor'])
 

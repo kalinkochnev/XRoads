@@ -489,7 +489,7 @@ class TestRole:
         role2.give_role(other_prof)
 
         assert list(role.get_admins()) == profiles
-        assert list(role.get_admins(perms=['create-club'])) == []
+        assert role.get_admins(perms=['create-club']) == None
         assert set(role.get_admins(perms=['__any__'])) == set(
             [other_prof, *profiles])
 
