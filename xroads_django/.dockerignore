@@ -1,0 +1,13 @@
+
+# xroads_django ignores
+xroads_django/__pycache__/
+
+# XroadsAPI ignores
+XroadsAPI/__pycache__/
+XroadsAPI/tests/
+
+# XroadsAuth ignores
+XroadsAuth/__pycache__/
+XroadsAuth/tests/
+
+

@@ -1,0 +1,20 @@
+Django Backend:
+* Install python 3.8
+
+* Create database, grant superuser privileges to djangouser
+
+* Run migrations
+
+* Create an superuser account
+python3 manage.py createsuperuser
+
+* Load test data into the database
+python3 manage.py loaddata fixtures/test_data_foreign.json
+
+Frontend:
+* Install react-scripts
+npm install react-scripts
+
+* Run the app
+npm start
+

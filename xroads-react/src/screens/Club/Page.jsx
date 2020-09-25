@@ -40,7 +40,7 @@ const ScreenClubDetail = ({ match: { params: { id } } }) => {
       <div>
         <Navbar>xroads</Navbar>
         <ReactNotification />
-        <Slideshow>
+        {/* <Slideshow> */}
           {
             club.slides.map(slide => {
               if (slide.img) {
@@ -52,7 +52,7 @@ const ScreenClubDetail = ({ match: { params: { id } } }) => {
               }
             })
           }
-        </Slideshow>
+        {/* </Slideshow> */}
         <ClubBodyDetail club={club}></ClubBodyDetail>
       </div>
     );
