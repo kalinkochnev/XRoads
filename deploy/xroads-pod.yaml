@@ -48,7 +48,16 @@ spec:
       readOnlyRootFilesystem: false
       seLinuxOptions: {}
     workingDir: /home/xroads/xroads_dj
-  volumes:
+    env:
+      - name: DB_HOST
+        value: "192.168.99.243"
+      - name: DB_PASS
+        value: "PTUvEj9Bh9P2"
+      - name: "CORS_ALLOWED_ORIGINS"
+        value: "http://app.xroads.local:9999"
+      - name: ALLOWED_HOSTS
+        value: "app.xroads.local"
+  volumes:   
   - hostPath:
       path: /home/polrtex/projects/XRoads/deploy/staticfiles
       type: Directory

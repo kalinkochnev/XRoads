@@ -1,5 +1,10 @@
 FROM python:3.8
 
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+
+ENV PYTHONUNBUFFERED 1
+
 RUN mkdir -p /home/xroads/xroads_dj/bin && mkdir -p /home/xroads/xroads_dj/xroads_django && mkdir -p /home/xroads/xroads_dj/XroadsAPI && mkdir -p /home/xroads/xroads_dj/XroadsAuth
 
 WORKDIR /home/xroads/xroads_dj

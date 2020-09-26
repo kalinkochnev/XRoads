@@ -27,7 +27,9 @@ SECRET_KEY = 'lp8q0qf++*#9oay4+15to5!=an!zn#6u-u8&amq&2y*r%=et3q'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost","192.168.99.243"]
+ALLOWED_HOSTS = ["localhost","127.0.0.1"]
+if (os.environ.get("ALLOWED_HOSTS","")!=""):
+    ALLOWED_HOSTS = [ah.strip() for ah in os.environ.get("ALLOWED_HOSTS","").split(",")]
 
 
 # Application definition
@@ -117,11 +119,11 @@ WSGI_APPLICATION = 'xroads_django.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'xroadsdb',
-        'USER': 'djangouser',
-        'PASSWORD': 'PTUvEj9Bh9P2',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'NAME': os.environ.get("DB_NAME", "xroadsdb"),
+        'USER': os.environ.get("DB_USER", 'djangouser'),
+        'PASSWORD': os.environ.get("DB_PASS", "PTUvEj9Bh9P2"), 
+        'HOST': os.environ.get("DB_HOST", "localhost"),
+        'PORT': os.environ.get("DB_PORT", "5432")
     }
 }
 
@@ -238,5 +240,8 @@ DJANGO_NO_REPLY = "no-reply@xroads.club"
 #The root directory to collect static files
 STATIC_ROOT="/home/polrtex/projects/XRoads/deploy/staticfiles"
 
-CORS_ALLOW_ALL_ORIGINS=True
-CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:5000", "http://192.168.99.243:5000"]
+CORS_ALLOW_ALL_ORIGINS=True 
+if (os.environ.get("CORS_ALLOWED_ORIGINS","") == ""): 
+    CORS_ALLOWED_ORIGINS = ["http://localhost:9999", "http://127.0.0.1:5000"]
+else:
+    CORS_ALLOWED_ORIGINS = [ o.strip() for o in os.environ.get("CORS_ALLOWED_ORIGINS","").split(",")]
