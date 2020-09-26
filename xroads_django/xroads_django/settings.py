@@ -22,10 +22,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'lp8q0qf++*#9oay4+15to5!=an!zn#6u-u8&amq&2y*r%=et3q'
+if (os.environ.get("SECRET_KEY","")!=""):
+    SECRET_KEY = os.environ.get("SECRET_KEY")
+else:
+    SECRET_KEY = 'lp8q0qf++*#9oay4+15to5!=an!zn#6u-u8&amq&2y*r%=et3q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get("DJANGO_DEBUG",""))
 
 ALLOWED_HOSTS = ["localhost","127.0.0.1"]
 if (os.environ.get("ALLOWED_HOSTS","")!=""):
@@ -220,7 +223,6 @@ JWT_AUTH = {
     'JWT_REFRESH_EXPIRATION_DELTA': REFRESH_TOKEN_LIFETIME,
 }
 
-
 # Needed for dj-rest-auth
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'XroadsAuth.serializers.CustomRegister',
@@ -238,7 +240,7 @@ SWAGGER_SETTINGS = {
 DJANGO_NO_REPLY = "no-reply@xroads.club"
 
 #The root directory to collect static files
-STATIC_ROOT="/home/polrtex/projects/XRoads/deploy/staticfiles"
+STATIC_ROOT= os.path.join(BASE_DIR, '../deploy/staticfiles/')
 
 CORS_ALLOW_ALL_ORIGINS=True 
 if (os.environ.get("CORS_ALLOWED_ORIGINS","") == ""): 

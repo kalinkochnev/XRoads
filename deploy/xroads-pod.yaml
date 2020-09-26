@@ -53,10 +53,12 @@ spec:
         value: "192.168.99.243"
       - name: DB_PASS
         value: "PTUvEj9Bh9P2"
-      - name: "CORS_ALLOWED_ORIGINS"
+      - name: CORS_ALLOWED_ORIGINS
         value: "http://app.xroads.local:9999"
       - name: ALLOWED_HOSTS
         value: "app.xroads.local"
+      - name: DJANGO_DEBUG
+        value: "True"
   volumes:   
   - hostPath:
       path: /home/polrtex/projects/XRoads/deploy/staticfiles
