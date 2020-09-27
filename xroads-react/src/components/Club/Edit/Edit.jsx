@@ -411,6 +411,7 @@ const ManageQuestions = (props) => {
 };
 
 const EditorCard = (props) => {
+  let [editors, setEditors] = props.editors;
   let editor = props.editor.profile;
   let name = editor.first_name + " " + editor.last_name;
   let user = props.user;
@@ -428,6 +429,8 @@ const EditorCard = (props) => {
         email: editor.email,
       }).then((response) => {
         if (response.ok) {
+          setEditors([...editors].filter(item => item.email != editor.email))
+
           setDisplay(false);
           store.addNotification({
             title: "Success",
@@ -507,14 +510,11 @@ const EditAccess = (props) => {
     sendRequest("add_editor", urlArgs, "POST", { ...values, permissions: [values.permissions] }).then((response) => {
       if (response.ok) {
         response.json().then(body => {
-          let prevLength = editors.length;
-          setEditors(editors.filter(editor => editor.profile.email != values.email).concat(body))
+          console.log(body)
+          setEditors([...editors].concat(body))
 
           // If the length is the same, that means it was updated instead
           let successMessage = `Your added ${values.email} as an editor!`;
-          if (prevLength == editors.length) {
-            successMessage = `You updated ${values.email}!`
-          }
 
           store.addNotification({
             title: "Success!",
@@ -567,7 +567,7 @@ const EditAccess = (props) => {
   return (
     <div className="editorManager">
       {editors.map((editor) => (
-        <EditorCard user={user} editor={editor} club={club} />
+        <EditorCard user={user} editor={editor} club={club} editors={[editors, setEditors]} />
       ))}
       <div className="editorCard">
         <Formik

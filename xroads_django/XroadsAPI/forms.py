@@ -55,7 +55,7 @@ class AddAdminForm(serializers.Serializer):
             raise serializers.ValidationError(detail=f'Invalid permissions were attempted to be assign for {self.hier_role} role')
 
 class RemoveAdminForm(serializers.Serializer):
-    email = serializers.EmailField(validators=[email_exists])
+    email = serializers.EmailField()
 
     # TODO make sure you remove from permissions if reserved user
     
