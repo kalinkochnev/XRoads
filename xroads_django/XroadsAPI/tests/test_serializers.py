@@ -65,7 +65,7 @@ def test_slide_position_computed(create_test_slide, create_club, temp_img):
 
         item['img'] = SimpleUploadedFile(name=test_image.name, content=open(test_image.name, 'rb').read(), content_type='image/jpeg')
 
-    loaded_slides = SlideListSerializer(child=SlideSerializer(), context={'club': club.id})
+    loaded_slides = SlideListSerializer(child=SlideSerializer(), context={'club': club})
     
     loaded_slides = loaded_slides.create(input_slide_data)
 

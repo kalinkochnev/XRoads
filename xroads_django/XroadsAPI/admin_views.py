@@ -1,3 +1,5 @@
+import base64
+from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import generics, viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -91,8 +93,8 @@ class SchoolViewset(api_mixins.ModifyAndReadViewset, api_mixins.AdminMixin):
 
 
 class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins.AdminMixin):
-    queryset = Club.objects.all()
     serializer_class = ClubEditorSerializer
+    queryset = Club.objects.all()
     permission_classes = [IsAuthenticated, MinClubEditor]
     hier_perms = []
 
@@ -100,9 +102,7 @@ class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins
         'Advisor': ['Editor', 'Advisor'],
         'Editor': ['Editor']
     }
-    # TODO change the queryset to only include the clubs in the person's school
 
-    # TODO create toggle_hide mixin
     @action(detail=True, methods=['post'])
     def toggle_hide(self, request, *args, **kwargs):
         club = self.get_object()
@@ -129,10 +129,30 @@ class ClubViewset(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, api_mixins
     def list_editors(self, request, *args, **kwargs):
         return self.list_admins(request)
 
-    # TODO create slide views
-    @action(detail=True, methods=['get'])
-    def slides(self, request, *args, **kwargs):
-        pass
+    @action(detail=True, methods=['post'])
+    def set_slides(self, request, *args, **kwargs):
+        club = self.get_object()
+
+        new_data = []
+        try:
+            for item in request.data:
+                img_bytes = base64.b64decode(item['img'])
+                # FIXME
+                item['img'] = SimpleUploadedFile(name="blahblah.jpg", content=img_bytes, content_type='image/jpeg')
+
+                new_data.append(item)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        slides = SlideSerializer(data=new_data, many=True, context={'club': club})
+        if not slides.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        Slide.objects.filter(club=club).delete()
+        slides.save()
+        club.save()
+        return Response(status=status.HTTP_201_CREATED)
+
 
     @action(detail=True, methods=['post'])
     def answer_question(self, request, *args, **kwargs):

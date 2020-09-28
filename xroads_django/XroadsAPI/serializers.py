@@ -11,7 +11,7 @@ class SlideListSerializer(serializers.ListSerializer):
         slides = []
         for i, data in enumerate(validated_data):
             data['position'] = i
-            data['club'] = Club.objects.get(id=self.context['club'])
+            data['club'] = self.context['club']
             slides.append(self.child.create(data))
         return slides
 

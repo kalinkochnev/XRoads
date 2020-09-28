@@ -1,3 +1,6 @@
+import tempfile
+from django.core.files.uploadedfile import SimpleUploadedFile
+from testutils.conftest import actual_perm_const, create_test_slide, make_request, prof_w_perm, role_model_instances, temp_img
 import pytest
 from django.urls import reverse
 from django.core import mail
@@ -5,7 +8,7 @@ from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.test import APIClient
-
+import base64
 
 from XroadsAuth.permissions import Role
 from XroadsAPI.serializers import *
@@ -208,6 +211,7 @@ class TestAdmin:
         get_questions_path = 'api:admin-club-questions'
         remove_admin_path = 'api:admin-club-remove-editor'
         add_admin_path = 'api:admin-club-add-editor'
+        set_slide_path = 'api:admin-club-set-slides'
 
         def valid_retrieve(self, client, club):
             path = reverse(self.retrieve_url_name, kwargs={
@@ -424,7 +428,41 @@ class TestAdmin:
             assert mail.outbox[0].from_email == settings.DJANGO_NO_REPLY
             assert mail.outbox[0].to == [body['email']]
 
+        def test_set_slides(self, role_model_instances, prof_w_perm, make_request, actual_perm_const, temp_img, create_test_slide):
+            d1, s1, c1 = role_model_instances()
 
+            profile, client = prof_w_perm(c1, perms=['Advisor'])
+            profile.school = s1
+
+            path = reverse(self.set_slide_path, kwargs={
+                           'district_pk': d1.id, 'school_pk': s1.id, 'pk': c1.id})
+
+            # create the slides
+            slides = []
+
+            for i in range(4):
+                template, params = create_test_slide()
+                slide = c1.add_slide(template.temp_id, **params)
+
+                slide.video_url = "https://www.youtube.com"
+                slide.save()
+                slides.append(slide)
+
+            input_slide_data = SlideSerializer(slides, many=True).data
+            data = []
+            for item in input_slide_data:
+                temp_file = tempfile.NamedTemporaryFile(suffix=".jpg")
+                test_image = temp_img(temp_file)
+
+                item['img'] = str(base64.b64encode(SimpleUploadedFile(name=test_image.name, content=open(test_image.name, 'rb').read(), content_type='image/jpeg').read()), "utf-8")
+                data.append(dict(item))
+            body = data
+
+            response = client.post(path, body, format="json")
+
+            assert c1.slides.count() == len(slides)
+            assert list(c1.slides) != slides 
+            assert response.status_code == status.HTTP_201_CREATED
 
 
 class TestNotAdmin:
