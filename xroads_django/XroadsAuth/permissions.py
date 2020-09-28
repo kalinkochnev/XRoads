@@ -6,11 +6,12 @@ from django.contrib.contenttypes.models import ContentType
 from rest_framework import permissions
 
 from . import permisson_constants as PermConst
-from .models import Profile, HierarchyPerms
+from .models import Profile, RoleModel, InvitedUser
 from .exceptions import RoleNotComparable, InvalidRoleCreated
 from .utils import get_parent_model
 
 import XroadsAPI.models as APIModels
+
 
 class Permissions:
     def __init__(self, perm_strs: List[str], hierarchy):
@@ -75,6 +76,9 @@ class Permissions:
         perm_str = ', '.join(map(str, sorted(self.permissions)))
         return f'perms=[{perm_str}]'
 
+    def __contains__(self, item):
+        return item in self.permissions
+
 
 class Role:
     def __init__(self, model_instances=[], **kwargs):
@@ -121,7 +125,7 @@ class Role:
         return Role.create(*model_instances)
 
     @classmethod
-    def from_str(cls, perm_ident: str) -> Role:
+    def from_str(cls, perm_ident: str, perms=[]) -> Role:
         def parse_perms(chunk):
             permissions_str = chunk.split('=')[1]
             removed_brackets = permissions_str.replace(
@@ -144,10 +148,11 @@ class Role:
 
         split_str = perm_ident.split('/')
 
-        permissions = []
+        permissions = perms
         model_instances = []
         for chunk in split_str:
-            if 'perms=' in chunk:
+
+            if 'perms=' in chunk and perms == []:
                 permissions = parse_perms(chunk)
             else:
                 model_instances.append(parse_model_inst(chunk))
@@ -173,7 +178,8 @@ class Role:
 
     def _role_matcher(self, model_instances):
         inst_names = [inst.__class__.__name__ for inst in model_instances]
-        role_name = PermConst.Hierarchy.match_hierarchy(inst_names, PermConst.ROLES)
+        role_name = PermConst.Hierarchy.match_hierarchy(
+            inst_names, PermConst.ROLES)
         assert role_name is not None, 'Role matcher could not find role with that hierarchy of models'
         return role_name
 
@@ -188,8 +194,8 @@ class Role:
             return self._is_allowed_role(kwargs['role'])
 
     def _is_allowed_user(self, user: Profile):
-        for hier_perm in user.hierarchy_perms.all():
-            role = Role.from_str(hier_perm.perm_name)
+        for role_model in user.roles.all():
+            role = role_model.role
             if self._is_allowed_role(role):
                 return True
         return False
@@ -206,17 +212,17 @@ class Role:
             return False
 
     def give_role(self, user: Profile):
-        perm, created = HierarchyPerms.objects.get_or_create(
-            perm_name=str(self))
-        user.add_perms(perm)
+        role_model = RoleModel.from_role(self)
+        self.remove_role(user)
+        user.add_roles(role_model)
 
     def remove_role(self, user: Profile):
         try:
-            perm = HierarchyPerms.objects.get(perm_name=str(self))
-            user.hierarchy_perms.remove(perm)
-        except HierarchyPerms.DoesNotExist:
+            user.roles.remove(
+                *list(user.roles.filter(role_name=self.role_str)))
+        except RoleModel.DoesNotExist:
             pass
-    
+
     def __eq__(self, other_inst: Role):
         return self._comparison(other_inst) == 0
 
@@ -235,6 +241,10 @@ class Role:
         return comparison == 1 or comparison == 0
 
     def __str__(self):
+        return self.role_str + '/' + str(self.permissions)
+
+    @property
+    def role_str(self):
         def key_val_format(key, val):
             return f'{key}-{val}/'
 
@@ -242,13 +252,12 @@ class Role:
         model_ids = [m.id for m in self.model_instances]
         model_info = dict(zip(self.hierarchy.level_names, model_ids))
 
-        perm_str = ""
+        role_str = ""
         for model_name, model_id in model_info.items():
-            perm_str += key_val_format(model_name, model_id)
+            role_str += key_val_format(model_name, model_id)
 
-        perm_str += str(self.permissions)
-
-        return perm_str
+        # Remove the last forward slash
+        return role_str[:-1]
 
     @property
     def highest_level_str(self):
@@ -303,6 +312,21 @@ class Role:
         if len(self.model_instances) < len(other_inst.model_instances):
             return 1
         return -1
+
+    def get_admins(self, perms=[], invited=False):
+        query_class = Profile if not invited else InvitedUser
+        try:
+            if '__any__' in perms:
+                return query_class.objects.filter(roles__role_name=self.role_str)
+            else:
+                query_perms = perms if perms != [] else list(
+                    self.permissions.permissions)
+                role = RoleModel.objects.get(
+                    role_name=self.role_str, perms=query_perms)
+                return query_class.objects.filter(roles__in=[role])
+
+        except RoleModel.DoesNotExist:
+            return None
 
 
 class BaseMinRole(permissions.BasePermission):

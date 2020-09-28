@@ -5,6 +5,7 @@ from XroadsAPI.models import *
 from XroadsAuth.permissions import Role, Permissions
 import XroadsAuth.permisson_constants as PermConst
 from XroadsAuth.exceptions import RoleNotComparable, InvalidRoleCreated
+from XroadsAuth.models import InvitedUser, RoleModel
 
 
 @pytest.mark.usefixtures("db")
@@ -171,7 +172,22 @@ class TestRole:
         role_test = Role.from_str(perm_str)
         assert role_test.permissions.permissions == set()
 
+    def test_role_from_str_given_perms(self, role_model_instances):
+        d1, s1, c1 = role_model_instances()
+
+        # The possible perms for School Admins are 'create-club', 'modify-school', 'hide-school'
+        role_expected = Role.create(d1, s1)
+
+        role_expected.permissions.add('modify-school', 'hide-school')
+
+        given_str = f'District-{d1.id}/School-{s1.id}'
+        role_test = Role.from_str(
+            given_str, perms=['modify-school', 'hide-school'])
+
+        assert str(role_expected) == str(role_test)
+
     # TODO make a test that checks that the role is valid
+
     def test_check_role_valid(self):
         pass
 
@@ -332,11 +348,30 @@ class TestRole:
         role.permissions.add('modify-club')
         role.give_role(prof)
 
-        assert str(role) in [p.perm_name for p in prof.hierarchy_perms.all()]
+        role_model = RoleModel.get_role(role)
+        assert role_model in list(prof.roles.all())
 
         role2 = Role.create(district1, school1, club1)
-        assert str(role2) not in [
-            p.perm_name for p in prof.hierarchy_perms.all()]
+        role_model2 = RoleModel.from_role(role2)
+        assert role_model2 not in list(prof.roles.all())
+
+    def test_give_role_same_obj_twice(self, create_test_prof, role_model_instances):
+        # Check that a new RoleModel is not created each time a prof is given a role. It should just be appended
+        # Added to test found bug
+
+        prof = create_test_prof(1)
+        district1, school1, club1 = role_model_instances()
+
+        role = Role.create(district1, school1, club1)
+        role.permissions.add('modify-club')
+        role.give_role(prof)
+
+        role.permissions.add('hide-club')
+        role.give_role(prof)
+
+        prof.refresh_from_db()
+
+        assert prof.roles.filter(role_name=role.role_str).count() == 1
 
     def test_from_start_model(self, role_model_instances):
         d1, s1, c1 = role_model_instances()
@@ -438,6 +473,40 @@ class TestRole:
         role = Role.create(district1, school1, club1)
         role.permissions.add('add-admin')
         assert role.highest_level_str == f"Club-{club1.id}/perms=[add-admin]"
+
+    def test_get_admins(self, role_model_instances, create_test_prof):
+        d1, s1, c1 = role_model_instances()
+        profiles = [create_test_prof(i) for i in range(2)]
+
+        role = Role.from_start_model(s1)
+        role.permissions.add('modify-school')
+        for prof in profiles:
+            role.give_role(prof)
+
+        role2 = Role.from_start_model(s1)
+        role2.permissions.add('hide-club')
+        other_prof = create_test_prof(3)
+        role2.give_role(other_prof)
+
+        assert list(role.get_admins()) == profiles
+        assert role.get_admins(perms=['create-club']) == None
+        assert set(role.get_admins(perms=['__any__'])) == set(
+            [other_prof, *profiles])
+
+    def test_get_admin_invited_users(self, role_model_instances):
+        d1, s1, c1 = role_model_instances()
+
+        role = Role.from_start_model(s1)
+        role.permissions.add('modify-school')
+
+        inv1 = InvitedUser.create(email="test1@email.com", roles=[role])
+        inv2 = InvitedUser.create(email="test2@email.com", roles=[role])
+        inv3 = InvitedUser.create(email="test3@email.com", roles=[role])
+
+        invited = [inv1, inv2, inv3]
+
+        assert list(role.get_admins(invited=True)) == invited
+
 
 @pytest.fixture
 def role_test_data():

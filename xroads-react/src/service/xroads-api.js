@@ -9,13 +9,21 @@ const endpoint_templates = {
     'signup': '/auth/registration/',
     'club_list': '/api/district/:districtId/school/:schoolId/club/',
     'club_detail': '/api/district/:districtId/school/:schoolId/club/:clubId',
-    'admin_club_detail': '/api/admin/district/:districtId/school/:schoolId/club/:clubId',
     'user_detail': '/auth/user/',
-    'toggle_hide_club': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/toggle_hide/',
     'join_club': '/api/district/:districtId/school/:schoolId/club/:clubId/join_club/',
     'leave_club': '/api/district/:districtId/school/:schoolId/club/:clubId/leave_club/',
     'school_list': '/api/district/:districtId/school/',
-    'join_school': '/api/district/:districtId/school/:schoolId/join_school/'
+    'join_school': '/api/district/:districtId/school/:schoolId/join_school/',
+    'ask_question': '/api/district/:districtId/school/:schoolId/club/:clubId/ask_question/',
+
+    'answer_question': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/answer_question/',
+    'toggle_hide_club': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/toggle_hide/',
+    'admin_club_detail': '/api/admin/district/:districtId/school/:schoolId/club/:clubId',
+    'get_questions': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/questions/',
+
+    'list_editors': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/list_editors/',
+    'remove_editor': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/remove_editor/',
+    'add_editor': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/add_editor/'
 
 };
 

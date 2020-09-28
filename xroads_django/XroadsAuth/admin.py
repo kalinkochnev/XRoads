@@ -1,7 +1,8 @@
 from django.contrib import admin
 
-from XroadsAuth.models import HierarchyPerms, Profile
+from XroadsAuth.models import InvitedUser, Profile, RoleModel
 
 # Register your models here.
 admin.site.register(Profile)
-admin.site.register(HierarchyPerms)
+admin.site.register(RoleModel)
+admin.site.register(InvitedUser)

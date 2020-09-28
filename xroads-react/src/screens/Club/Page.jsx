@@ -7,6 +7,9 @@ import ClubBodyDetail from '../../components/Club/Body/Body';
 import * as XroadsAPI from '../../service/xroads-api';
 import { useStateValue } from '../../service/State';
 
+import ReactNotification from 'react-notifications-component'
+import 'react-notifications-component/dist/theme.css'
+
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
 // This: { match: { params: { id }}} is the same as props.match.params.id and you can refer to id directly later
 const ScreenClubDetail = ({ match: { params: { id } } }) => {
@@ -36,6 +39,7 @@ const ScreenClubDetail = ({ match: { params: { id } } }) => {
     return (
       <div>
         <Navbar>xroads</Navbar>
+        <ReactNotification />
         <Slideshow>
           {
             club.slides.map(slide => {

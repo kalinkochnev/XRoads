@@ -1,0 +1,10 @@
+Hello from xroads,
+
+You're receiving this email because you're an editor for {{ club.name }}.
+
+Somebody asked: 
+   
+    {{ question.question }}
+
+
+Help a prospective member out! Answer this question by going to your club edit page!

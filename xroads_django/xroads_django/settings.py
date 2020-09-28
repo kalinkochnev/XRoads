@@ -230,3 +230,6 @@ REST_AUTH_SERIALIZERS = {
 SWAGGER_SETTINGS = {
     'USE_SESSION_AUTH': False,
 }
+
+# These are the settings involving emails
+DJANGO_NO_REPLY = "no-reply@xroads.club"

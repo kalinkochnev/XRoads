@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import "./Card.scss";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faStar, faEdit } from '@fortawesome/free-regular-svg-icons'
 import IconButton from '../../Common/IconButton/IconButton';
 import { sendRequest } from '../../../service/xroads-api'
 import { useStateValue } from "../../../service/State";

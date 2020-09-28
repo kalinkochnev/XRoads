@@ -1,9 +1,14 @@
 from rest_framework import mixins, viewsets
 from rest_framework import status
 from rest_framework.response import Response
+from django.conf import settings
 
 from XroadsAPI.forms import *
 from XroadsAuth.permissions import *
+from XroadsAuth.serializers import EditorSerializer, InvitedUserSerializer, ListEditorSerializer
+from XroadsAuth.models import InvitedUser
+from django.template.loader import get_template
+from django.core.mail import EmailMultiAlternatives
 
 
 class ModifyAndReadViewset(mixins.RetrieveModelMixin,
@@ -18,44 +23,152 @@ class ModifyAndReadViewset(mixins.RetrieveModelMixin,
 
 
 class BaseAdminMixin(viewsets.GenericViewSet):
-    pass
+    modify_perms = None
 
 
 class AddAdminMixin(BaseAdminMixin):
-    # There is no easy way to require to require an add
-    def add_admins(self, request, hier_role):
-        admin_role_serializer = AdminRoleForm(
+
+    def _can_add_admin(self, request_user, user_permissions, role: Role):
+        if self.modify_perms is None:
+            return True
+
+        request_role: Role = RoleModel.objects.get(
+            profile=request_user, role_name=role.role_str).role
+
+        assert len(request_role.permissions.permissions) == 1
+        editable_perms = self.modify_perms[list(
+            request_role.permissions.permissions)[0]]
+
+        for perm in editable_perms:
+            if perm in user_permissions:
+                return True
+        return False
+
+    def _invite_user(self, email, role, email_func):
+        invited_user = None
+        try:
+            invited_user = InvitedUser.objects.get(email=email)
+            invited_user.roles.add(RoleModel.from_role(role))
+            return invited_user
+        except InvitedUser.DoesNotExist:
+            invited_user = InvitedUser.create(email, [role])
+            email_func([email])
+            return invited_user
+
+    def _add_profile(self, email, role):
+        prof = Profile.objects.get(email=email)
+        role.give_role(prof)
+        return prof
+
+    def _is_updating(self, role: Role, email):
+        admins = role.get_admins(perms=['__any__'])
+        if admins is not None:
+            return admins.filter(email=email).count() == 1
+
+    def add_admin(self, request, hier_role, email_func=None):
+        add_admin_form = AddAdminForm(
             data=request.data, hier_role=hier_role)
-        if admin_role_serializer.is_valid():
-            profiles, non_existant_emails = admin_role_serializer.profiles
+        if add_admin_form.is_valid():
+            email = add_admin_form.validated_data['email']
 
-            for prof in profiles:
-                role = Role.from_start_model(self.get_object())
-                permissions = admin_role_serializer.validated_data['permissions']
-                role.permissions.add(*permissions)
+            club = self.get_object()
+            role = Role.from_start_model(club)
+            permissions = add_admin_form.validated_data['permissions']
+            role.permissions.add(*permissions)
 
-                role.give_role(prof)
-            return Response(status=status.HTTP_202_ACCEPTED)
+            if self._is_updating(role, email):
+                return Response(status=status.HTTP_403_FORBIDDEN)
+
+            if self._can_add_admin(request.user, permissions, role):
+                response_data = {}
+                # Try to find a user and apply the role to it
+                try:
+                    prof = self._add_profile(email, role)
+                    response_data = EditorSerializer(
+                        prof, context={'role': role}).data
+                except Profile.DoesNotExist:
+                    # If the profile doesn't exist, invite the user and add the role
+                    invited = self._invite_user(email, role, email_func)
+                    response_data = InvitedUserSerializer(
+                        invited, context={'role': role}).data
+
+                return Response(response_data, status=status.HTTP_202_ACCEPTED)
+
+            else:
+                return Response(status=status.HTTP_403_FORBIDDEN)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=admin_role_serializer.errors)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=add_admin_form.errors)
 
 
 class RemoveAdminMixin(BaseAdminMixin):
-    def remove_admins(self, request):
-        email_serializer = UserEmailForm(data=request.data)
-        if email_serializer.is_valid():
-            profiles, non_existant_emails = email_serializer.profiles
-            for prof in profiles:
-                role = Role.from_start_model(self.get_object())
-                # TODO come up with a better solution using permission model
-                for perm in prof.hierarchy_perms.all():
-                    if Role.from_str(perm.perm_name) == role:
-                        prof.hierarchy_perms.remove(perm)
-                        break
-            return Response(status=status.HTTP_202_ACCEPTED)
+
+    def _can_remove_admin(self, request_role, user_role, role):
+        if self.modify_perms is None:
+            return True
+
+        assert len(request_role.permissions.permissions) == 1
+        editable_perms = self.modify_perms[list(request_role.permissions.permissions)[0]]
+
+        data_perms = user_role.permissions.permissions
+        for perm in editable_perms:
+            if perm in data_perms:
+                return True
+        return False
+
+    def _remove_invited_user(self, email, role: Role):
+        try:
+            invited = InvitedUser.objects.get(email=email)
+            invited.roles.remove(
+                *list(invited.roles.filter(role_name=role.role_str)))
+            return Response(status)
+        except InvitedUser.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def remove_admin(self, request, has_access=None):
+        email_form = RemoveAdminForm(data=request.data)
+        if email_form.is_valid():
+            email = email_form.validated_data['email']
+            role = Role.from_start_model(self.get_object())
+
+            request_role: Role = RoleModel.objects.get(
+                profile=request.user, role_name=role.role_str).role
+            data_role = None
+            try:
+                prof = Profile.objects.get(email=email)
+                # This gets the role of the request user and the user in question
+                data_role: Role = RoleModel.objects.get(
+                    profile=prof, role_name=role.role_str).role
+
+                if self._can_remove_admin(request_role, data_role, role):
+                    role.remove_role(prof)
+                    return Response(status=status.HTTP_202_ACCEPTED)
+                return Response({'error': 'You are not allowed to modify this user\'s permissions'}, status=status.HTTP_403_FORBIDDEN)
+
+            except Profile.DoesNotExist:
+                data_role: Role = RoleModel.objects.get(inviteduser__email=email, role_name=role.role_str).role
+                if self._can_remove_admin(request_role, data_role, role):
+                    self._remove_invited_user(email, role)
+                    return Response(status=status.HTTP_202_ACCEPTED)
+                return Response({'error': 'You are not allowed to modify this user\'s permissions'}, status=status.HTTP_403_FORBIDDEN)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=email_serializer.errors)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=email_form.errors)
 
 
-class AdminMixin(AddAdminMixin, RemoveAdminMixin):
+class ListAdminMixin(BaseAdminMixin):
+    def list_admins(self, request):
+        role = Role.from_start_model(self.get_object())
+        prof_admins = role.get_admins(perms=['__any__'])
+        inv_user_admins = role.get_admins(perms=['__any__'], invited=True)
+
+        user_editors = ListEditorSerializer(
+            list(prof_admins), context={'role': role}).data
+        invited_editors = InvitedUserSerializer(list(inv_user_admins), context={
+                                                'role': role}, many=True).data
+
+        user_editors['admins'].extend(invited_editors)
+
+        return Response(user_editors, status=status.HTTP_200_OK)
+
+
+class AdminMixin(AddAdminMixin, RemoveAdminMixin, ListAdminMixin):
     pass

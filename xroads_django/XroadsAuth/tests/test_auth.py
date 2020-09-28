@@ -76,7 +76,7 @@ class TestRegistration:
     def test_valid(self, role_model_instances, setup_client_no_auth, make_request):
         d1, s1, c1 = role_model_instances()
         d1.add_email_domain('niskyschools.org')
-        client = setup_client_no_auth
+        client = setup_client_no_auth()
 
         data = {
             'email': 'test@niskyschools.org',
@@ -96,7 +96,7 @@ class TestRegistration:
         
         prof = Profile.objects.create_user(email="test@niskyschools.org", password='23kj2k3sd')
         
-        client = setup_client_no_auth
+        client = setup_client_no_auth()
 
         data = {
             'email': prof.email,
@@ -115,7 +115,7 @@ class TestRegistration:
         d1, s1, c1 = role_model_instances()
         d1.add_email_domain('niskyschools.org')
         
-        client = setup_client_no_auth
+        client = setup_client_no_auth()
 
         data = {
             'email': "test@sdflkjsdklf.com",
@@ -134,7 +134,7 @@ class TestRegistration:
         d1, s1, c1 = role_model_instances()
         d1.add_email_domain('niskyschools.org')
         
-        client = setup_client_no_auth
+        client = setup_client_no_auth()
 
         data = {
             'email': "test@niskyschools.org",
@@ -209,7 +209,7 @@ class TestLoginView:
 
         d1, s1, c1 = role_model_instances()
         d1.add_email_domain('niskyschools.org')
-        client = setup_client_no_auth
+        client = setup_client_no_auth()
 
         data = {
             'email': 'test@niskyschools.org',
@@ -232,7 +232,7 @@ class TestLoginView:
 
         d1, s1, c1 = role_model_instances()
         d1.add_email_domain('niskyschools.org')
-        client = setup_client_no_auth
+        client = setup_client_no_auth()
 
         data = {
             'email': 'bademail',
@@ -258,7 +258,7 @@ class TestLoginView:
 
         d1, s1, c1 = role_model_instances()
         d1.add_email_domain('niskyschools.org')
-        client = setup_client_no_auth
+        client = setup_client_no_auth()
 
         data = {
             'email': 'test@niskyschools.org',
@@ -276,7 +276,7 @@ class TestLoginView:
 
         d1, s1, c1 = role_model_instances()
         d1.add_email_domain('niskyschools.org')
-        client = setup_client_no_auth
+        client = setup_client_no_auth()
 
         data = {
             'email': 'test@niskyschools.org',
