@@ -64,3 +64,10 @@ def test_slide_ordered_by_pos(create_test_slide, role_model_instances):
     assert club_slides[0] == slides[0]
     assert club_slides[1] == slides[1]
     assert club_slides[2] == slides[2]
+
+
+
+def test_set_club_slides():
+    # Test positions are adjusted based on array order
+    # Test slides are set to the club
+    pass

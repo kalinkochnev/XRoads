@@ -29,7 +29,7 @@ def create_club(db, temp_img):
         commitment = "7hrs/week"
         is_visible = False
 
-        temp_file = tempfile.NamedTemporaryFile()
+        temp_file = tempfile.NamedTemporaryFile(suffix=".jpg")
         test_image = temp_img(temp_file)
 
         if id == -1:
@@ -79,7 +79,7 @@ def create_test_slide(db, temp_img, template_setup):
     def create_test_slide():
         template = template_setup
         # This creates a temporary image file to use for testing!!! The decorator overrides the django settings
-        temp_file = tempfile.NamedTemporaryFile()
+        temp_file = tempfile.NamedTemporaryFile(suffix=".jpg")
         test_image = temp_img(temp_file)
 
         # Parameters used for template
