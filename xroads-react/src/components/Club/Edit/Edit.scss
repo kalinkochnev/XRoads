@@ -160,10 +160,19 @@ form.clubEdit {
 .slideshowPreview {
     width: 100%;
     height: 10%;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
     .video-slide {
         height: 562px;
     }
+}
+
+.deleteSlide {
+    @include defaultButton(500, 200);
+}
+
+.slideControls {
+    float: right;
+    padding-top:20px;
 }
 
 .slideshowSelect {
@@ -179,6 +188,7 @@ form.clubEdit {
     .slideContain {
         margin: 15px;
         min-width: $maxPageWidth * $slideScaleAmount;
+        max-width: $maxPageWidth * $slideScaleAmount;
         height: $maxPageWidth / $slideAspectRatio * $slideScaleAmount;
         overflow: hidden;
         border-radius: 10px;
@@ -214,6 +224,7 @@ form.clubEdit {
         .add:hover {
             background-color: #ccc;
         }
+
     }
 
     .spacer {
@@ -234,8 +245,7 @@ form.clubEdit {
     border-radius: 5px;
 
     /*Changes font of submit button*/
-    color: whitesmoke;
-    font-family: "Arial", sans-serif;
+    color: white;
     font-weight: 700;
     font-size: 20px;
 }
@@ -307,7 +317,7 @@ form.clubEdit {
                 display: inline;
             }
     
-            * {
+            > * {
                 margin-left: 10px;
             }
         }

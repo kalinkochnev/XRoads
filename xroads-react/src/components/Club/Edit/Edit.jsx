@@ -155,15 +155,55 @@ class SlideshowEdit extends React.Component {
   }
 
   addSlide = (type) => {
-    let length = this.props.state.length;
+    let length = this.state.slides.length;
     this.state.slides.push({
       club: this.props.club.id,
-      img: null,
+      img: "",
       position: length + 1,
       template_type: type,
-      text: null,
-      video_url: null
+      text: "",
+      body: "",
+      video_url: ""
     });
+    this.assignPositions();
+    this.setState({ activeKey: length });
+    this.forceUpdate();
+  }
+
+  deleteSlide = (position) => {
+    if (this.state.slides.length == 1) {
+      console.log("You can't remove all the slides")
+    }
+    else {
+      this.state.slides.splice(position - 1, 1);
+      this.setState({ activeKey: 0 });
+      this.assignPositions();
+      this.forceUpdate();
+    }
+  }
+
+  moveSlide = (direction) => {
+    let slides = this.state.slides;
+
+    if (direction == -1 && this.state.activeKey > 0) {
+      slides.splice(this.state.activeKey - 1, 0, slides.splice(this.state.activeKey, 1)[0]);
+      this.setState({ activeKey: this.state.activeKey - 1 });
+    }
+    else if (direction == 1 && this.state.activeKey < slides.length - 1) {
+      slides.splice(this.state.activeKey + 1, 0, slides.splice(this.state.activeKey, 1)[0]);
+      this.setState({ activeKey: this.state.activeKey + 1 });
+    }
+    this.assignPositions();
+    this.forceUpdate();
+  }
+
+  assignPositions = () => {
+    let slides = this.state.slides;
+    for (let i = 0; i < slides.length; i++) {
+      slides[i].position = i + 1;
+      console.log("hello");
+      this.forceUpdate();
+    }
   }
 
 
@@ -187,9 +227,9 @@ class SlideshowEdit extends React.Component {
 
             }
             <div className="slideContain addSlide">
-              <div className="add"><FontAwesomeIcon icon={faFont} />Add text</div>
-              <div className="add middle"><FontAwesomeIcon icon={faImage} />Add an image</div>
-              <div className="add"><FontAwesomeIcon icon={faFilm} />Add a video</div>
+              <div className="add" onClick={() => { this.addSlide(4) }}><FontAwesomeIcon icon={faFont} />Add text</div>
+              <div className="add middle" onClick={() => { this.addSlide(1) }}><FontAwesomeIcon icon={faImage} />Add an image</div>
+              <div className="add" onClick={() => { this.addSlide(3) }}><FontAwesomeIcon icon={faFilm} />Add a video</div>
             </div>
             <div className="spacer"></div>
           </div>
@@ -202,12 +242,38 @@ class SlideshowEdit extends React.Component {
                 } else if (slide.template_type == 3) {
                   return <VideoSlide key={slide.id} videoURL={slide.video_url} caption={slide.text} />
                 } else {
-                  return <TextSlide key={slide.id} title={slide.text} body={slide.text} color="lightblue" />
+                  return <TextSlide key={slide.id} title={slide.text} body={slide.body} color="lightblue" />
                 }
               })()
             }
           </div>
           <form className="clubEdit">
+            <div class="slideControls">
+              <IconButton
+                icon={"faAngleDoubleRight"}
+                filled={true}
+                color="gray"
+                size="2x"
+                customClickEvent={() => { this.moveSlide(1) }}
+                tip="move right"
+              />
+              <IconButton
+                icon={"faTrash"}
+                filled={true}
+                color="darkred"
+                size="2x"
+                customClickEvent={() => { this.deleteSlide(this.state.slides[this.state.activeKey].position) }}
+                tip="delete slide"
+              />
+              <IconButton
+                icon={"faAngleDoubleLeft"}
+                filled={true}
+                color="gray"
+                size="2x"
+                customClickEvent={() => { this.moveSlide(-1) }}
+                tip="move left"
+              />
+            </div>
             {
               (() => {
                 let slide = this.state.slides[this.state.activeKey];
@@ -240,7 +306,7 @@ class SlideshowEdit extends React.Component {
                       </label>
 
                       <label className="" for="body">Body<br />
-                        <input class="long" type="text" id="body" name="body" value={slide.text} onChange={(e) => { slide.text = e.target.value; this.forceUpdate() }} />
+                        <input class="long" type="text" id="body" name="body" value={slide.body} onChange={(e) => { slide.body = e.target.value; this.forceUpdate() }} />
                       </label>
                     </div>
                   )
