@@ -250,5 +250,3 @@ if (os.environ.get("CORS_ALLOWED_ORIGINS","") == ""):
     CORS_ALLOWED_ORIGINS = ["http://localhost:9999", "http://127.0.0.1:5000", "https://react1.xroads.thinkjitsu.com"]
 else:
     CORS_ALLOWED_ORIGINS = [ o.strip() for o in os.environ.get("CORS_ALLOWED_ORIGINS","").split(",")]
-
-print("Cors allowed origins is " + CORS_ALLOWED_ORIGINS)    
