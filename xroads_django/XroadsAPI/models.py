@@ -17,6 +17,7 @@ class Slide(models.Model):
     video_url = models.URLField(blank=True, null=True)
     img = models.ImageField(blank=True, null=True)
     text = models.TextField(blank=True, null=True)
+    body = models.TextField(blank=True, null=True)
 
     @property
     def template(self):

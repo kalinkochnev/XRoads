@@ -11,7 +11,7 @@ from XroadsAPI.serializers import *
 from XroadsAPI.slide import SlideTemplates
 from XroadsAuth.models import Profile
 
-def test_slide_serialization(db, temp_img, create_club):
+def test_slide_serialization(db, temp_img, create_club, ):
     # Creates temp test iamge
     temp_file = tempfile.NamedTemporaryFile()
     test_image = temp_img(temp_file)
@@ -19,18 +19,19 @@ def test_slide_serialization(db, temp_img, create_club):
     video_url = "youtube.com/do-stuff"
     position = 1
     img = test_image.name
+    body = "body text"
 
     # Set class variable to prevent conflicts
     temp_id = 1
     template_args = ['img', 'video_url']
     template = SlideTemplates.Template(
-        temp_id=temp_id, name="test", required=template_args)
+        temp_id=temp_id, name="test", disabled=[])
     SlideTemplates.templates = [template]
     club = create_club()
 
     # Chooses from test values based on template_args
     slide = SlideTemplates.new_slide(
-        temp_id, club=club, position=position, img=img, video_url=video_url)
+        temp_id, club=club, position=position, img=img, video_url=video_url, body=body)
 
     expected = {
         'template_type': temp_id,
@@ -39,6 +40,7 @@ def test_slide_serialization(db, temp_img, create_club):
         'img': slide.img.url,
         'text': None,
         'club': club.id,
+        'body': body,
     }
 
     assert SlideSerializer(slide).data == expected

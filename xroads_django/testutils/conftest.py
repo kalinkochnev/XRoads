@@ -64,11 +64,10 @@ def create_test_prof(db):
 @pytest.fixture
 def template_setup():
     temp_id = 9999
-    template_args = ['video_url', 'text', 'img']
-
+    
     SlideTemplates.templates = [
         SlideTemplates.Template(
-            temp_id=temp_id, name="test", required=template_args)
+            temp_id=temp_id, name="test", disabled=['body'])
     ]
 
     template = SlideTemplates.templates[0]
@@ -86,7 +85,7 @@ def create_test_slide(db, temp_img, template_setup):
         slide_text = "this is a test"
         video_url = 'youtube.com/testing-video'
         args = [video_url, slide_text, test_image.name]
-        template_args = template.required_args
+        template_args = ['video_url', 'text', 'img']
 
         return template, dict(zip(template_args, args))
     return create_test_slide
