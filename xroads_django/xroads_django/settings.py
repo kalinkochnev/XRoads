@@ -245,8 +245,8 @@ DJANGO_NO_REPLY = "no-reply@xroads.club"
 #The root directory to collect static files
 STATIC_ROOT= os.path.join(BASE_DIR, '../deploy/staticfiles/')
 
-CORS_ALLOW_ALL_ORIGINS=True 
+# CORS_ALLOW_ALL_ORIGINS=True 
 if (os.environ.get("CORS_ALLOWED_ORIGINS","") == ""): 
-    CORS_ALLOWED_ORIGINS = ["http://localhost:9999", "http://127.0.0.1:5000", "https://react1.xroads.thinkjitsu.com"]
+    CORS_ALLOWED_ORIGINS = ["http://192.168.99.243:3000","http://localhost:9999", "http://127.0.0.1:3000","http://localhost:3000", "https://react1.xroads.thinkjitsu.com"]
 else:
     CORS_ALLOWED_ORIGINS = [ o.strip() for o in os.environ.get("CORS_ALLOWED_ORIGINS","").split(",")]
