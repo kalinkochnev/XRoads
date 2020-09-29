@@ -61,13 +61,21 @@ def test_add_club(db, create_club):
 
     assert school.clubs.count() == 1
 
-def test_get_editors(db, role_model_instances, create_test_prof):
+def test_get_editors(db, role_model_instances, create_test_prof, perm_const_override):
     d1, s1, c1 = role_model_instances()
     profiles = [create_test_prof(i) for i in range(3)]
+
     role = Role.from_start_model(c1)
-    
+    role.permissions.add('hide-club')
+
     for prof in profiles:
         role.give_role(prof)
+
+    # Tests what happens if there are multiple RoleModel instances with the same role_name
+    role2 = Role.from_start_model(c1)
+    role2.permissions.add('add-admin')
+    profiles.append(create_test_prof(4))
+    role2.give_role(profiles[-1])
 
     for prof in profiles:
         assert prof in list(c1.editors) 

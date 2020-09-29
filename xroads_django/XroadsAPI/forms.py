@@ -8,7 +8,15 @@ from XroadsAuth.permissions import Permissions
 import XroadsAuth.models as AuthModels
 from rest_framework import serializers
 
-class UserEmailForm(serializers.Serializer):
+def email_exists(email):
+    try:
+        AuthModels.Profile.objects.get(email=email)
+    except AuthModels.Profile.DoesNotExist:
+        raise serializers.ValidationError('A user with that email does not exist')
+    
+    return email
+
+class EmailListForm(serializers.Serializer):
     emails = serializers.ListField(child=serializers.EmailField())
 
     def __init__(self, data=empty, **kwargs):
@@ -28,13 +36,15 @@ class UserEmailForm(serializers.Serializer):
         
         return profiles, non_existant_emails
             
-class AdminRoleForm(UserEmailForm):
+class AddAdminForm(serializers.Serializer):
     permissions = serializers.ListField(child=serializers.CharField())
+    email = serializers.EmailField()
+
+    # TODO make something that creates a "reserved account" if they put in an email that doesn't exist        
 
     def __init__(self, hier_role, data=empty, **kwargs):
         self.hier_role = hier_role
-        super(UserEmailForm, self).__init__(data=data, **kwargs)
-
+        super(serializers.Serializer, self).__init__(data=data, **kwargs)
 
     def validate_permissions(self, value):
         hier = PermConst.Hierarchy.get_hierarchy(self.hier_role)
@@ -44,8 +54,13 @@ class AdminRoleForm(UserEmailForm):
         except AssertionError:
             raise serializers.ValidationError(detail=f'Invalid permissions were attempted to be assign for {self.hier_role} role')
 
+class RemoveAdminForm(serializers.Serializer):
+    email = serializers.EmailField()
 
-class CreateClubForm(UserEmailForm, serializers.ModelSerializer):
+    # TODO make sure you remove from permissions if reserved user
+    
+
+class CreateClubForm(EmailListForm, serializers.ModelSerializer):
     class Meta:
         fields = ['name']
         model = Club

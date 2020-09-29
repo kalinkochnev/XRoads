@@ -75,4 +75,3 @@ class ClubViewset(viewsets.ReadOnlyModelViewSet):
 
             return Response(status=status.HTTP_201_CREATED)
         return Response(question.errors, status=status.HTTP_400_BAD_REQUEST)
-

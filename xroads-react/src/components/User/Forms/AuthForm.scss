@@ -86,22 +86,12 @@ $formBottomMargin: 20px;
 
 
 #account-submit {
+  @include defaultButton($inputWidth); 
   margin-top: $submitSpacing;
   min-width: $minInputWidth;
-  width: $inputWidth;
   height: 50px;
 
   margin-bottom:$submitBottomSpacing;
-
-  background-color: $redDefault;
-  border-style: none;
-  border-radius: 5px;
-
-  /*Changes font of submit button*/
-  color: whitesmoke;
-  font-family: "Arial", sans-serif;
-  font-weight: 700;
-  font-size: 20px;
 }
 
 .error-box {
@@ -118,4 +108,8 @@ $formBottomMargin: 20px;
     font-size: 16px;
     margin: 0px;
   }
+}
+
+:export {
+  submit-button: account-submit;
 }

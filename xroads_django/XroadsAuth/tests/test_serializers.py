@@ -5,6 +5,7 @@ from XroadsAuth.models import RoleModel
 from XroadsAuth.serializers import *
 from collections import OrderedDict
 
+
 class TestProfileSerializers:
     def test_profile_serialization(self, db):
         user_obj: Profile = Profile.objects.create_user(
@@ -18,11 +19,10 @@ class TestProfileSerializers:
             'school': None,
             'district': None,
             'permissions': [],
-            'joined_clubs': [],  
+            'joined_clubs': [],
         }
 
         assert expected == ProfileSerializer(user_obj).data
-
 
     def test_profile_optional_fields(self, db):
         user_obj = Profile.objects.create_user(
@@ -41,10 +41,9 @@ class TestProfileSerializers:
 
         assert expected == ProfileSerializer(user_obj).data
 
-
     def test_profile_from_dict(self, db):
         user_obj: Profile = Profile(email="a@email.com", password="password",
-                                    first_name="a", last_name="b",is_anon=True)
+                                    first_name="a", last_name="b", is_anon=True)
         data = OrderedDict({
             'email': user_obj.email,
             'first_name': user_obj.first_name,
@@ -92,7 +91,7 @@ class TestProfileSerializers:
 
     def test_district_school_set(self, role_model_instances, create_test_prof):
         d1, s1, c1 = role_model_instances()
-        
+
         prof = create_test_prof(1)
         prof.join_school(s1)
         prof.district = d1
@@ -129,11 +128,17 @@ class TestProfileSerializers:
             'district': None,
             'is_anon': prof.is_anon,
             'permissions': [],
-            'joined_clubs': [c1.id, c2.id],
         }
 
-        assert ProfileSerializer(prof).data == expected
+        import json
+        dictA_str = json.dumps(expected, sort_keys=True)
+        dictB_str = json.dumps(ProfileSerializer(prof).data, sort_keys=True)
 
+        serializer_data = ProfileSerializer(prof).data
+        clubs = serializer_data.pop('joined_clubs')
+
+        assert set(clubs) == set([c1.id, c2.id])
+        assert serializer_data == expected
 
 
 class TestAnonProfileSerializers:
@@ -149,7 +154,6 @@ class TestAnonProfileSerializers:
                     invisible.append(create_test_prof(num))
             return visible, invisible
 
-
     def test_anon_profile_remove_anon(self, db, gen_profiles, create_test_prof):
         prof1 = create_test_prof(1, is_anon=True)
         expected = {
@@ -157,7 +161,6 @@ class TestAnonProfileSerializers:
         }
 
         assert AnonProfileSerializer(prof1).data == expected
-
 
     def test_anon_prof_not_anon_serialization(self, db, create_test_prof):
         prof1 = create_test_prof(1)
@@ -172,7 +175,6 @@ class TestAnonProfileSerializers:
         assert AnonProfileSerializer(prof1).data == expected
 
 
-
 class TestPermissionSerializer:
     def test_highest_level_str(self, perm_const_override, create_test_prof, role_model_instances):
         prof = create_test_prof(1)
@@ -184,3 +186,27 @@ class TestPermissionSerializer:
 
         hier_perm = RoleModel.get_role(role)
         assert hier_perm.highest_level_str == f'School-{school1.id}/perms=[create-club]'
+
+
+class TestEditorSerializer:
+    def test_valid_data(self, perm_const_override, create_test_prof, role_model_instances):
+        d1, s1, c1 = role_model_instances()
+
+        role = Role.from_start_model(c1)
+        role.permissions.add('hide-club')
+
+        prof = create_test_prof(1)
+        role.give_role(prof)
+        serializer = EditorSerializer(prof, context={'role': role})
+
+        expected_data = {
+            'profile': {
+                'id': prof.id,
+                'email': prof.email,
+                'first_name': prof.first_name,
+                'last_name': prof.last_name,
+            },
+            'perms': ['hide-club']
+        }
+
+        assert serializer.data == expected_data

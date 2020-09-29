@@ -3,25 +3,32 @@ from XroadsAPI.exceptions import InvalidSlideTemplate, SlideParamError
 
 class SlideTemplates:
     class Template:
-        possible_args = ['img', 'text', 'video_url']
+        possible_args = ['img', 'text', 'video_url', 'body', 'position']
 
-        def __init__(self, temp_id: int, name, required):
+        def __init__(self, temp_id: int, name, disabled, *args, **kwargs):
+            assert 'required' not in kwargs.keys()
+
             self.temp_id = temp_id
 
             # makes sure that position is always included
-            self.required_args = required
-            self.required_args.append('position')
+            self.disabled_args = disabled
 
             self.name = name
 
-        def args_match(self, args):
-            return set(args) == set(self.required_args)
+        @property
+        def useable_args(self):
+            return set(self.possible_args).difference(self.disabled_args)
+
+        def has_proper_args(self, args):
+            has_position = 'position' in args
+            has_possible = len(set(args).intersection(self.possible_args)) == len(args)# Don't include position
+            contains_invalid = len(set(args).intersection(self.disabled_args)) > 0
+            return has_possible and not contains_invalid and has_position
 
     templates = [
-        Template(temp_id=1, name="img/text",  required=['img', 'text']),
-        Template(temp_id=2, name="img_only", required=['img']),
-        Template(temp_id=3, name="video_only", required=['video_url']),
-        Template(temp_id=4, name="text_only", required=['text'])
+        Template(temp_id=1, name="img", disabled=['video_url', 'body']),
+        Template(temp_id=2, name="text", disabled=['video_url', 'img']),
+        Template(temp_id=3, name="video", disabled=['video_url', 'text', 'body']),
     ]
 
     @classmethod
@@ -36,8 +43,8 @@ class SlideTemplates:
     def new_slide(cls, temp_id, club, **kwargs: dict):
         template = SlideTemplates.get(temp_id)
 
-        if template.args_match(kwargs.keys()):
+        if template.has_proper_args(kwargs.keys()):
             return Models.Slide.objects.create(club=club, template_type=temp_id, **kwargs)
         raise SlideParamError(
-            f'Args given do not match. Expected args: {template.required_args} Given: {kwargs} ')
+            f'Args given do not match. Possible args: {template.useable_args} Given: {kwargs} ')
 

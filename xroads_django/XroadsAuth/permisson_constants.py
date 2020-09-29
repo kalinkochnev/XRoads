@@ -51,5 +51,5 @@ ROLE_HIERARCHY = Hierarchy(Models.District, Models.School, Models.Club, name=CLU
 ROLES = [
     Hierarchy(Models.District, name=DISTRICT_ADMIN, poss_perms=['__all__', 'create-school', 'modify-district', 'add-admin', 'remove-admin']),
     Hierarchy(Models.District, Models.School, name=SCHOOL_ADMIN, poss_perms=['__all__', 'create-club', 'modify-school', 'hide-club', 'view-user-detail', 'hide-school',]),
-    Hierarchy(Models.District, Models.School, Models.Club, name=CLUB_EDITOR, poss_perms=['__all__', 'modify-club', 'add-admin', 'hide-club']),
+    Hierarchy(Models.District, Models.School, Models.Club, name=CLUB_EDITOR, poss_perms=['__all__', 'Advisor', 'Editor']),
 ]

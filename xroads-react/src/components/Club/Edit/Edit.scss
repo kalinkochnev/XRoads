@@ -1,6 +1,7 @@
 @import "../../Common/Variables.scss";
 @import "../../Common/Common.scss";
 @import "../Body/Body.scss";
+@import "../../User/Forms/AuthForm.scss";
 
 $slideScaleAmount: 0.25;
 
@@ -241,14 +242,75 @@ form.clubEdit {
 
     margin-bottom: 20px;
     padding: 20px;
-    
-    .icon {
-        position: relative;
-        margin-bottom: 100px;
-    }
 
     h3 {
         display: inline;
+    }
+}
+
+
+
+.editorManager {
+    display: flex;
+    align-content: center;
+    flex-direction: column;
+
+    .addEditor {
+        width: 100%;
+        
+        input {
+            margin: 0px 30px 0px 0px;
+        }
+
+        .addForm {
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+            align-items: center;
+
+            select {
+                max-width: 150px;
+                margin: 0px 30px 0px 0px;
+
+            }
+        }
+        .addEditorButton {
+            @include defaultButton(150px);
+        }
+    }
+    
+
+    .editorCard {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        @extend .questionCard;
+    
+        p {
+            margin: 0px;
+        }
+    
+        h2 {
+            margin: 0px;
+        }
+    
+        .modify {
+            float: right;
+            margin: 0px;
+            p {
+                display: inline;
+            }
+    
+            * {
+                margin-left: 10px;
+            }
+        }
+    
+        .editorInfo {
+            float: left;
+        }
+    
     }
 }
 

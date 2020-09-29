@@ -3,18 +3,24 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields import ArrayField
+from django.conf import settings
+from django.dispatch import receiver
+from django.template.loader import get_template
 
 from XroadsAuth.manager import CustomUserManager
 import XroadsAPI.models as APIModels
 
 # Create your models here
+
+
 class RoleModel(models.Model):
     role_name = models.CharField(max_length=200)
     perms = ArrayField(base_field=models.CharField(max_length=50))
 
     @classmethod
     def from_role(cls, role):
-        role, created = cls.objects.get_or_create(role_name=role.role_str, perms=list(role.permissions.permissions))
+        role, created = cls.objects.get_or_create(
+            role_name=role.role_str, perms=list(role.permissions.permissions))
         return role
 
     @classmethod
@@ -40,8 +46,10 @@ class Profile(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     username = None
 
-    school = models.ForeignKey('XroadsAPI.School', on_delete=models.SET_NULL, null=True, blank=True)
-    district = models.ForeignKey('XroadsAPI.District', on_delete=models.SET_NULL, null=True)
+    school = models.ForeignKey(
+        'XroadsAPI.School', on_delete=models.SET_NULL, null=True, blank=True)
+    district = models.ForeignKey(
+        'XroadsAPI.District', on_delete=models.SET_NULL, null=True)
 
     # used for making sure the admin login and signup page works correctly
     USERNAME_FIELD = 'email'
@@ -74,7 +82,11 @@ class Profile(AbstractUser):
 
     def add_roles(self, *roles, save=True):
         self.roles.add(*roles)
-        self.make_save(save) 
+        self.make_save(save)
+
+    def remove_roles(self, *roles, save=True):
+        self.roles.remove(*roles)
+        self.make_save(save)
 
     @property
     def permissions(self):
@@ -88,3 +100,48 @@ class Profile(AbstractUser):
     def match_district(self, save=True):
         self.district = APIModels.District.match_district(self.email)
         self.make_save(save)
+
+
+class InvitedUser(models.Model):
+    email = models.EmailField(unique=True)
+    roles = models.ManyToManyField(RoleModel, blank=True)
+
+    def __str__(self):
+        return self.email
+
+    @classmethod
+    def create(cls, email, roles=[]):
+        from XroadsAuth.permissions import Role
+        role_models = [RoleModel.from_role(r) for r in roles]
+        invited = cls.objects.create(email=email)
+        invited.roles.set(role_models)
+
+        return invited
+
+    def add_roles(self, *roles, save=True):
+        self.roles.add(*roles)
+        self.make_save(save)
+
+    def remove_roles(self, *roles, save=True):
+        self.roles.remove(*roles)
+        self.make_save(save)
+
+    def make_save(self, save):
+        if save:
+            self.save()
+
+    @property
+    def permissions(self):
+        from .permissions import Role
+        return [i.role for i in self.roles.all()]
+
+
+@receiver(models.signals.post_save, sender=Profile)
+def after_save(sender, instance, created, *args, **kwargs):
+    if created:
+        try:
+            invited = InvitedUser.objects.get(email=instance.email)
+            instance.roles.set(invited.roles.all())
+            invited.delete()
+        except InvitedUser.DoesNotExist:
+            pass

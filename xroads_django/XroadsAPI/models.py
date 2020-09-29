@@ -17,6 +17,7 @@ class Slide(models.Model):
     video_url = models.URLField(blank=True, null=True)
     img = models.ImageField(blank=True, null=True)
     text = models.TextField(blank=True, null=True)
+    body = models.TextField(blank=True, null=True)
 
     @property
     def template(self):
@@ -81,7 +82,9 @@ class Club(models.Model):
     def editors(self):
         import XroadsAuth.permissions as AuthPerms
         club_role = AuthPerms.Role.from_start_model(self)
-        return AuthModels.Profile.objects.filter(roles__in=[AuthModels.RoleModel.objects.get(role_name=club_role.role_str)])
+        # FIXME make sure it works with more than one role model
+        
+        return AuthModels.Profile.objects.filter(roles__role_name=club_role.role_str)
 
 class School(models.Model):
     name = models.CharField(max_length=40)

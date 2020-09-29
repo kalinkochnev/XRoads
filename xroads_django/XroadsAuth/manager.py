@@ -2,6 +2,7 @@ from allauth.account.models import EmailAddress
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
+import XroadsAuth.models as AuthModels
 
 
 class CustomUserManager(BaseUserManager):
@@ -37,7 +38,6 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
 
         # TEST Probably difficult to test. Used for django allauth
-
         EmailAddress.objects.create(user=user, email=user.email, verified=verified, primary=True)
 
         return user
