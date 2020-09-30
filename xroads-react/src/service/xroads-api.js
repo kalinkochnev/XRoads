@@ -70,7 +70,7 @@ function generateFetchConfig(method, body = null) {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         },
-        credentials: 'same-origin'
+        credentials: 'include'
     };
 
     if (['POST', 'PUT'].includes(upCasedMethod)) {
