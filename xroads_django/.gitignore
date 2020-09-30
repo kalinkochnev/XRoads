@@ -2,3 +2,4 @@ venv/
 htmlcov/*
 test_media/*
 media/*
+staticfiles/*

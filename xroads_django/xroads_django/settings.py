@@ -66,7 +66,8 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     # cors headers
-    'corsheaders'
+    'corsheaders',
+    #'sslserver'
 
 ]
 
@@ -243,10 +244,22 @@ SWAGGER_SETTINGS = {
 DJANGO_NO_REPLY = "no-reply@xroads.club"
 
 #The root directory to collect static files
-STATIC_ROOT= os.path.join(BASE_DIR, '../deploy/staticfiles/')
+#STATIC_ROOT= os.path.join(BASE_DIR, '../deploy/staticfiles/')
+STATIC_ROOT= os.path.join(BASE_DIR, './staticfiles/')
 
 # CORS_ALLOW_ALL_ORIGINS=True 
 if (os.environ.get("CORS_ALLOWED_ORIGINS","") == ""): 
-    CORS_ALLOWED_ORIGINS = ["http://192.168.99.243:3000","http://localhost:9999", "http://127.0.0.1:3000","http://localhost:3000", "https://react1.xroads.thinkjitsu.com"]
+    CORS_ALLOWED_ORIGINS = [
+        "http://127.0.0.1:3000",
+        "http://localhost:3000", 
+        "https://localhost:3000",
+        "https://127.0.0.1:3000"  
+    ]
 else:
     CORS_ALLOWED_ORIGINS = [ o.strip() for o in os.environ.get("CORS_ALLOWED_ORIGINS","").split(",")]
+
+CORS_ALLOW_CREDENTIALS=True    
+
+#".xroads.thinkjitsu.com"
+# This sets up the login cookie that would indicate that the user is logged in
+JWT_COOKIE_DOMAIN=os.environ.get("CORS_ALLOWED_ORIGINS","localhost")

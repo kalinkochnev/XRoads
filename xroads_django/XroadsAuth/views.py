@@ -18,6 +18,7 @@ class CustomLoginView(LoginView):
         # This creates the cookies to be sent back to the client 
         payload_cookie_name = settings.JWT_PAYLOAD_COOKIE_NAME
         signature_cookie_name = settings.JWT_SIGNATURE_COOKIE_NAME
+        cookie_domain_name = settings.JWT_COOKIE_DOMAIN
 
         token_str = str(self.access_token)
         header_payload_key = '.'.join(token_str.split('.')[:2])
@@ -31,16 +32,18 @@ class CustomLoginView(LoginView):
             payload_cookie_name,
             header_payload_key,
             expires=expiration,
-            secure=False,
-            samesite='Strict'
+            secure=True,
+            samesite='None', 
+            domain=cookie_domain_name
         )
         # FIXME make secure = to TRUE in production
 
         # Creates Signature cookie name (normally session cookie, unless remember login)
         signature_kwargs = {
-            'secure': False,
+            'secure': True,
             'httponly': True,
-            'samesite': 'Strict',
+            'samesite': 'None',
+            'domain':cookie_domain_name
         }
         if self.serializer.validated_data['remember_me']:
             signature_kwargs['expires'] = expiration
