@@ -30,6 +30,8 @@ else:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DJANGO_DEBUG",""))
 
+# This needs to be set to the possible hostnames on which the backend runs
+# e.g. if deployed to backend.xroads.com
 ALLOWED_HOSTS = ["localhost","127.0.0.1"]
 if (os.environ.get("ALLOWED_HOSTS","")!=""):
     ALLOWED_HOSTS = [ah.strip() for ah in os.environ.get("ALLOWED_HOSTS","").split(",")]
@@ -248,6 +250,12 @@ DJANGO_NO_REPLY = "no-reply@xroads.club"
 STATIC_ROOT= os.path.join(BASE_DIR, './staticfiles/')
 
 # CORS_ALLOW_ALL_ORIGINS=True 
+# This setting configures the REST API to properly work when receiving
+# requests from a cross-domain request. More specifically, when the frontend is running
+# on one of these URLs, the backend will respond with proper CORS headers
+# that allow the browser to interact across domain - e.g. 
+# if the frontend is running on frontend.xroads.com and the backend is on 
+# backend.xroads.com
 if (os.environ.get("CORS_ALLOWED_ORIGINS","") == ""): 
     CORS_ALLOWED_ORIGINS = [
         "http://127.0.0.1:3000",
@@ -258,8 +266,16 @@ if (os.environ.get("CORS_ALLOWED_ORIGINS","") == ""):
 else:
     CORS_ALLOWED_ORIGINS = [ o.strip() for o in os.environ.get("CORS_ALLOWED_ORIGINS","").split(",")]
 
+# This allows the cookies to be received in the cross-domain requests, if the frontend
+# is running on a different domain than the django app (e.g. if the frontend is running on 
+# frontend.xroads.com and the backend is running on api.xroads.com)
 CORS_ALLOW_CREDENTIALS=True    
 
-#".xroads.thinkjitsu.com"
-# This sets up the login cookie that would indicate that the user is logged in
+# The domain for which the login cookie is set from the django backend. 
+# For this domain (and if the domain starts with a '.', all of its subdomains), the browser
+# will send cookies along with each request (thus allowing for the transparent authentication). 
+# Additionally, if the frontend is running on a subdomain (e.g. react1.xroads.com), it will be able
+# to see the login cookie and allow for proper login/logout. 
+# ".xroads.com"
+# 
 JWT_COOKIE_DOMAIN=os.environ.get("CORS_ALLOWED_ORIGINS","localhost")

@@ -1,0 +1,46 @@
+# NOTE : In order to use this file, copy it into app.yaml and replace the 
+# env vars below with the values for your domain
+# At a minimum for a deployment to App Engine, the following need to be configured:
+# - Database connection values - e.g. DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT
+# - CORS configuration : 
+#   -- CORS_ALLOWED_ORIGINS - this will be the domain where the frontend is deployed - e.g. frontend.xroads.com
+#   -- ALLOWED_HOSTS - this will be the domain where the backend is deployed , e.g. backend.xroads.com
+#   -- JWT_COOKIE_DOMAIN - this will likely be the parent domain between frontend and backed - e.g. '.xroads.com'. 
+#      Note the '.' prefixing the domain, which means that the cookie will be read/sent by both the frontend and the backend sub-domains
+
+# [START django_app]
+runtime: python38
+
+service: default
+
+instance_class: F2
+
+entrypoint: gunicorn -b :$PORT -w 2 --log-level debug main:app
+
+# These variables provide the configuration values for the django app to run 
+# on Google App Engine. The definitions of these env vars files are
+# in the xroads_settings file, which is modified to read some of its configuraiton
+# from environment variables
+env_variables:
+  DB_HOST: "/cloudsql/ak-xroads1:us-east4:xroadsdb1"
+  DB_USER: "djangogcpuser1"
+  DB_PASS: "<replace-with-password-here>"
+  DB_NAME: "xroadsdbtest1"
+  DB_PORT: "5432"
+  CORS_ALLOWED_ORIGINS: "https://react1.xroads.thinkjitsu.com" 
+  ALLOWED_HOSTS: "127.0.0.1, localhost, ak-xroads1.uk.r.appspot.com, xroads.thinkjitsu.com"
+  DJANGO_DEBUG: True  
+  JWT_COOKIE_DOMAIN: ".xroads.thinkjitsu.com"
+
+handlers:
+# This configures Google App Engine to serve the files in the app's static
+# directory.
+- url: /djstatic
+  static_dir: staticfiles/
+
+# This handler routes all requests not caught above to your main app. It is
+# required when static routes are defined, but can be omitted (along with
+# the entire handlers section) when there are no static files defined.
+- url: /.*
+  script: auto
+# [END django_app]

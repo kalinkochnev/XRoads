@@ -3,3 +3,4 @@ htmlcov/*
 test_media/*
 media/*
 staticfiles/*
+app.yaml
