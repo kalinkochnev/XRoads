@@ -69,9 +69,17 @@ INSTALLED_APPS = [
 
     # cors headers
     'corsheaders',
-    #'sslserver'
-
 ]
+
+run_mode = os.environ.get("RUN_MODE","DEV")
+if (run_mode == "DEV"):
+    # This is needed for django to run in SSL mode for local development - needed for cookies to 
+    # work in the same way they work in production
+    print("Running django in DEV_MODE, automatically adding sslserver app. If you see this in production, django will fail to start")
+    INSTALLED_APPS.append("sslserver")
+else:
+    print("Running django in %s mode" % run_mode)
+
 
 
 SITE_ID = 1
@@ -261,7 +269,7 @@ if (os.environ.get("CORS_ALLOWED_ORIGINS","") == ""):
         "http://127.0.0.1:3000",
         "http://localhost:3000", 
         "https://localhost:3000",
-        "https://127.0.0.1:3000"  
+        "https://127.0.0.1:3000"
     ]
 else:
     CORS_ALLOWED_ORIGINS = [ o.strip() for o in os.environ.get("CORS_ALLOWED_ORIGINS","").split(",")]
@@ -278,4 +286,19 @@ CORS_ALLOW_CREDENTIALS=True
 # to see the login cookie and allow for proper login/logout. 
 # ".xroads.com"
 # 
-JWT_COOKIE_DOMAIN=os.environ.get("CORS_ALLOWED_ORIGINS","localhost")
+JWT_COOKIE_DOMAIN=os.environ.get("JWT_COOKIE_DOMAIN","localhost")
+
+
+# Settings for file/image storage in GCP
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_BUCKET_NAME = 'xroads_django_files'
+GS_PROJECT_ID="ak-xroads1"
+
+# Collect static files into the bucket
+STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+
+from google.oauth2 import service_account
+
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    "ak-xroads1-a86ad977fbb5.json"
+)
