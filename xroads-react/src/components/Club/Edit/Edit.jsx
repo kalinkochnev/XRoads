@@ -108,7 +108,7 @@ const GeneralEdit = (props) => {
           </label>
           <label class="switch">
             <input type="checkbox" onClick={toggleHide} checked={!isVisible} />
-            <span class="slider round"></span>
+            <span className="slider round"></span>
           </label>
           <ReactTooltip place="right" effect="solid" />
 
@@ -243,7 +243,7 @@ const SlideshowEdit = (props) => {
           <label for="title">
             Slide Template
             <br />
-            <select class="short" id="title" name="title">
+            <select className="short" id="title" name="title">
               <option>Text</option>
               <option>Image</option>
               <option>Video</option>
@@ -253,13 +253,13 @@ const SlideshowEdit = (props) => {
           <label className="" for="title">
             Title
             <br />
-            <input class="medium" type="text" id="title" name="title" />
+            <input className="medium" type="text" id="title" name="title" />
           </label>
 
           <label className="" for="body">
             Body
             <br />
-            <input class="long" type="text" id="body" name="body"></input>
+            <input className="long" type="text" id="body" name="body"></input>
           </label>
         </form>
       </div>
@@ -390,8 +390,8 @@ const ManageQuestions = (props) => {
 
   return (
     <div className="centerContent">
-      <label class="switch">
-        <span class="slider round"></span>
+      <label className="switch">
+        <span className="slider round"></span>
       </label>
       <div className="editBody">
         {questions.map((question) => {
