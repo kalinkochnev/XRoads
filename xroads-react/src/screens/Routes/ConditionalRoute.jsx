@@ -13,7 +13,6 @@ const ConditionalRoute = ({ component: Component, condition, conditionArgs = {},
     const [originalState, setState] = useState(state);
     
     conditionArgs.state = state;
-    conditionArgs.computedMatch = other.computedMatch;
 
 
     useEffect(() => {
@@ -31,6 +30,8 @@ const ConditionalRoute = ({ component: Component, condition, conditionArgs = {},
                 // without any issues. However, if the user is not logged in, current state never changes. 
                 // We check that they are logged in (this does not rely on user state), if they are not, 
                 // and they are not allowed to access the page, they are redirected anyways
+
+                conditionArgs.match = props.match;
                 let [reason, isAllowed] = condition(conditionArgs)
                 if (isAllowed) {
                     return <Component {...props} />;

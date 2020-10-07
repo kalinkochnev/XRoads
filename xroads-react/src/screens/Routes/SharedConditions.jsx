@@ -76,9 +76,10 @@ const clubAdminConditions = (args) => {
         userCanEdit
     ]
     args.modelName = "Club";
-    args.id = args.computedMatch.params.id;
+    args.id = args.match.params.id;
+
+    return checkConditions(conditions, args);
     
-    return checkConditions(conditions, args)
 }
 
 export {userConditions, checkConditions, getCondRedirect, clubAdminConditions, registrationConditions}
