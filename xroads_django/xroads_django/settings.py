@@ -300,5 +300,5 @@ STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 from google.oauth2 import service_account
 
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    "ak-xroads1-a86ad977fbb5.json"
+    "xroads-serviceaccount-token.json"
 )

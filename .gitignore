@@ -13,3 +13,4 @@ forum/__pycache__/
 forum/migrations/__pycache__/
 xroads_django/env/*
 deploy/staticfiles/*
+xroads_django/xroads-serviceaccount-token.json
