@@ -33,9 +33,6 @@ const ScreenClubEdit = ({ match: { params: { id } } }) => {
     });
   }, [id, user]);
 
-
-  console.log("The useState club is", club);
-
   if (club == undefined) {
     console.log("Loading");
     return (

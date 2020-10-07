@@ -15,7 +15,7 @@ class IconButton extends React.Component {
 
     static defaultProps = {
         link: "#",
-        size: 'md',
+        size: '1x',
     };
 
     render() {
