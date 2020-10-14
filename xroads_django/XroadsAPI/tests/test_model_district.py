@@ -2,31 +2,9 @@ import pytest
 from django.db import IntegrityError
 
 from XroadsAPI.models import *
-from XroadsAuth.models import Profile
 
 
-def test_match_email_with_district(create_test_prof):
-    d1: District = District.objects.create(name='d1')
-    prof: Profile = create_test_prof(1)
 
-    assert prof.district == None
-
-    prof.email = "test_email@school.org"
-    prof.save()
-
-    domain = d1.add_email_domain('school.org')
-
-    prof.match_district()
-    assert prof.district == d1
-
-def test_match_email_district_no_exist(create_test_prof):
-    d1: District = District.objects.create(name='d1')
-    domain = d1.add_email_domain('school.org')
-
-    prof: Profile = create_test_prof(1)
-
-    assert prof.match_district() == None
-    
 def test_domain_already_created(db):
     d1: District = District.objects.create(name='d1')
     domain1 = DistrictDomain.objects.create(domain='school.org', district=d1)

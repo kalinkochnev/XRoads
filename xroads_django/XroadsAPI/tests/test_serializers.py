@@ -9,7 +9,7 @@ import pytest
 
 from XroadsAPI.serializers import *
 from XroadsAPI.slide import SlideTemplates
-from XroadsAuth.models import Profile
+
 
 def test_slide_serialization(db, temp_img, create_club, ):
     # Creates temp test iamge
@@ -45,6 +45,7 @@ def test_slide_serialization(db, temp_img, create_club, ):
 
     assert SlideSerializer(slide).data == expected
 
+
 def test_slide_position_computed(create_test_slide, create_club, temp_img):
     club = create_club()
     slides = []
@@ -65,19 +66,16 @@ def test_slide_position_computed(create_test_slide, create_club, temp_img):
         temp_file = tempfile.NamedTemporaryFile(suffix=".jpg")
         test_image = temp_img(temp_file)
 
-        item['img'] = SimpleUploadedFile(name=test_image.name, content=open(test_image.name, 'rb').read(), content_type='image/jpeg')
+        item['img'] = SimpleUploadedFile(name=test_image.name, content=open(
+            test_image.name, 'rb').read(), content_type='image/jpeg')
 
-    loaded_slides = SlideListSerializer(child=SlideSerializer(), context={'club': club})
-    
+    loaded_slides = SlideListSerializer(
+        child=SlideSerializer(), context={'club': club})
+
     loaded_slides = loaded_slides.create(input_slide_data)
 
     for i, slide in enumerate(loaded_slides):
         assert slide.position == i
-    
-
-    
-    
-
 
 
 def test_club_creation(db, temp_img):

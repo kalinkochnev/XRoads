@@ -2,7 +2,6 @@ from django.db import models
 
 import XroadsAPI.slide as SlideTemp
 from XroadsAPI.exceptions import *
-import XroadsAuth.models as AuthModels
 
 
 class Slide(models.Model):
@@ -36,8 +35,6 @@ class Club(models.Model):
     join_promo = models.TextField(blank=True, null=True)
 
     school = models.ForeignKey('School', on_delete=models.CASCADE, null=True)
-
-    members = models.ManyToManyField('XroadsAuth.Profile', blank=True)
 
     def __str__(self):
         return f"{self.name} - id: {self.id}"
@@ -77,14 +74,6 @@ class Club(models.Model):
     @property
     def district(self):
         return self.school.district
-
-    @property
-    def editors(self):
-        import XroadsAuth.permissions as AuthPerms
-        club_role = AuthPerms.Role.from_start_model(self)
-        # FIXME make sure it works with more than one role model
-        
-        return AuthModels.Profile.objects.filter(roles__role_name=club_role.role_str)
 
 class School(models.Model):
     name = models.CharField(max_length=40)
@@ -152,13 +141,3 @@ class District(models.Model):
             return DistrictDomain.objects.get(domain=domain).district
         except DistrictDomain.DoesNotExist:
             return None
-
-class Question(models.Model):
-    asker = models.ForeignKey('XroadsAuth.Profile', on_delete=models.CASCADE)
-    club = models.ForeignKey(Club, on_delete=models.CASCADE)
-
-    question = models.TextField()
-    answer = models.TextField(null=True, blank=True)
-
-    def __str__(self):
-        return self.question
