@@ -30,7 +30,7 @@ const ScreenClubBrowser = () => {
   }
 
   function loadClubs() {
-
+    // FIXME use school and district from url
     XroadsAPI.fetchClubs(state.user.district, state.user.school).then(res => {
       return res.json().then(clubs => {
         clubs = invisibleFilter(clubs);
@@ -71,8 +71,6 @@ const ScreenClubBrowser = () => {
               title={club.name}
               imageURL={club.main_img}
               description={club.description}
-              favorited={state.user.joinedClubs.includes(club.id)}
-              editable={state.user.editableClubs(state.user.roles).includes(club.id)}
               hidden={!club.is_visible}
             />)
           }

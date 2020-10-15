@@ -15,16 +15,14 @@ import 'react-notifications-component/dist/theme.css'
 const ScreenClubDetail = ({ match: { params: { id } } }) => {
   const [club, setClub] = useState();
   const [state, dispatch] = useStateValue();
-  let user = state.user;
 
   useEffect(() => {
     XroadsAPI.fetchClub(user.district, user.school, id).then(res => {
       return res.json().then(clubRes => {
-        console.log("Parsed out club from endpoint", clubRes);
         setClub(clubRes);
       });
     });
-  }, [id, state.user]);
+  }, [id]);
 
 
   if (club == undefined) {

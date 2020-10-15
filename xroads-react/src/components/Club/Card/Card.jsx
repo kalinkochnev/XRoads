@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import "./Card.scss";
 import { Link } from "react-router-dom";
-import IconButton from '../../Common/IconButton/IconButton';
-import { sendRequest } from '../../../service/xroads-api'
-import { useStateValue } from "../../../service/State";
 
 class ClubBrowserCard extends React.Component {
   constructor(props) {
@@ -13,7 +10,6 @@ class ClubBrowserCard extends React.Component {
     };
   }
 
-  
 
   render() {
     var clubStyle = { backgroundImage: `url(${this.props.imageURL})` };
@@ -29,7 +25,6 @@ class ClubBrowserCard extends React.Component {
           <div className="info">
             <h1>
               {this.props.title}
-              <ClubIcons favorited={this.props.favorited} editable={this.props.editable} id={this.props.id} />
             </h1>
           </div>
         </div>
@@ -37,52 +32,4 @@ class ClubBrowserCard extends React.Component {
     );
   }
 }
-
-function ClubIcons(props) {
-  const editable = props.editable;
-  const [favorited, setFavorite] = useState(props.favorited)
-  var output = [];
-  const [state, dispatch] = useStateValue();
-
-
-  const toggleFavorite = () => {
-    let user = state.user;
-    let urlArgs = {
-      'districtId': user.district,
-      'schoolId': user.school,
-      'clubId': props.id
-    }
-
-    if (favorited) {
-      sendRequest('leave_club', urlArgs, 'POST').then(response => {
-        if (response.ok) {
-          setFavorite(false);
-          dispatch({ type: 'leave club', payload: props.id })
-        }
-      })
-    } else {
-      sendRequest('join_club', urlArgs, 'POST').then(response => {
-        if (response.ok) {
-          setFavorite(true);
-          dispatch({ type: 'join club', payload: props.id })
-        }
-      })
-
-    }
-  }
-
-  if (favorited) {
-    output.push(<IconButton key={output.length + 1} icon={"faStar"} filled={true} color="goldenrod" customClickEvent={toggleFavorite} />);
-  }
-  else {
-    output.push(<IconButton key={output.length + 1} icon={"faStar"} customClickEvent={toggleFavorite}/>);
-  }
-
-  if (editable) {
-    output.push(<IconButton key={output.length + 1} icon={"faEdit"} link={`/clubs/${props.id}/edit`} />);
-  }
-
-  return output;
-}
-
 export default ClubBrowserCard;

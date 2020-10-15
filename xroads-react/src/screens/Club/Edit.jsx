@@ -20,10 +20,8 @@ import { store } from 'react-notifications-component';
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
 // This: { match: { params: { id }}} is the same as props.match.params.id and you can refer to id directly later
 const ScreenClubEdit = ({ match: { params: { id } } }) => {
-
   const [club, setClub] = useState();
   const [state, dispatch] = useStateValue();
-  let user = state.user;
 
   useEffect(() => {
     XroadsAPI.fetchClub(user.district, user.school, id).then(res => {
@@ -31,7 +29,7 @@ const ScreenClubEdit = ({ match: { params: { id } } }) => {
         setClub(clubRes);
       });
     });
-  }, [id, user]);
+  }, [id]);
 
   if (club == undefined) {
     console.log("Loading");
@@ -59,14 +57,6 @@ const ScreenClubEdit = ({ match: { params: { id } } }) => {
 
             <div label="Slideshow">
               <SlideshowEdit label="Slideshow" club={club}></SlideshowEdit>
-            </div>
-
-            <div label="Questions">
-              <ManageQuestions label="Questions" stateValue={[state, dispatch]} club={club}></ManageQuestions>
-            </div>
-
-            <div label="Editors">
-              <EditAccess label="Editors" stateValue={[state, dispatch]} club={club} ></EditAccess>
             </div>
           </Tabs>
         </div>
