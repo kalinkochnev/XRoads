@@ -1,40 +1,15 @@
 from django.db import models
 
-import XroadsAPI.slide as SlideTemp
-from XroadsAPI.exceptions import *
-
-
-class Slide(models.Model):
-    class Meta:
-        ordering = ['position']
-
-    club = models.ForeignKey('Club', on_delete=models.CASCADE)
-
-    position = models.IntegerField()
-    template_type = models.IntegerField()
-
-    video_url = models.URLField(blank=True, null=True)
-    img = models.ImageField(blank=True, null=True)
-    text = models.TextField(blank=True, null=True)
-    body = models.TextField(blank=True, null=True)
-
-    @property
-    def template(self):
-        return SlideTemp.SlideTemplates.get(temp_id=self.template_type)
-
-    def __str__(self):
-        return f"{self.club} slide {self.position} {self.template.name}"
-
-
 class Club(models.Model):
     name = models.CharField(max_length=30)
     description = models.TextField()
     main_img = models.ImageField()
-    hours = models.CharField(max_length=10)
     is_visible = models.BooleanField(default=False)
+    # TODO change to hidden info
     join_promo = models.TextField(blank=True, null=True)
 
     school = models.ForeignKey('School', on_delete=models.CASCADE, null=True)
+    # TODO store google slides link
 
     def __str__(self):
         return f"{self.name} - id: {self.id}"
@@ -43,37 +18,14 @@ class Club(models.Model):
         if save:
             self.save()
 
-
-    def add_slide(self, template_type, save=True, **kwargs) -> Slide:
-        max_pos = self.slides.count()
-        new_slide = SlideTemp.SlideTemplates.new_slide(
-            template_type, club=self, position=max_pos+1, **kwargs)
-        self.make_save(save)
-        return new_slide
-
-    def remove_slide(self, position, save=True):
-        self.slides.filter(position=position).delete()
-        self.make_save(save)
-
-    def join(self, profile, save=True):
-        self.members.add(profile)
-        self.make_save(save)
-
-    def leave(self, profile, save=True):
-        self.members.remove(profile)
-        self.make_save(save)
-
     def toggle_hide(self, save=True):
         self.is_visible = not self.is_visible
         self.make_save(save)
 
     @property
-    def slides(self):
-        return Slide.objects.filter(club=self)
-
-    @property
     def district(self):
         return self.school.district
+
 
 class School(models.Model):
     name = models.CharField(max_length=40)
@@ -93,19 +45,19 @@ class School(models.Model):
         club.make_save(save)
 
     @property
-    def students(self):
-        return AuthModels.Profile.objects.filter(school=self)
-
-    @property
     def clubs(self):
         return Club.objects.filter(school=self)
 
+
 class DistrictDomain(models.Model):
     domain = models.CharField(max_length=20, unique=True)
-    district = models.ForeignKey('XroadsAPI.District', on_delete=models.CASCADE)
+    district = models.ForeignKey(
+        'XroadsAPI.District', on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.district}: {self.domain}'
+
+
 class District(models.Model):
     name = models.CharField(max_length=40)
 
