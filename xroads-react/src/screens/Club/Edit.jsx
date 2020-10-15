@@ -54,10 +54,6 @@ const ScreenClubEdit = ({ match: { params: { id } } }) => {
             <div label="General">
               <GeneralEdit label="General" club={club}></GeneralEdit>
             </div>
-
-            <div label="Slideshow">
-              <SlideshowEdit label="Slideshow" club={club}></SlideshowEdit>
-            </div>
           </Tabs>
         </div>
       </div>

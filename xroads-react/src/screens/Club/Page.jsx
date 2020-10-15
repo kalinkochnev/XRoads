@@ -39,17 +39,7 @@ const ScreenClubDetail = ({ match: { params: { id } } }) => {
         <Navbar>xroads</Navbar>
         <ReactNotification />
         <Slideshow>
-          {
-            club.slides.map(slide => {
-              if (slide.img) {
-                return <ImageSlide key={slide.id} source={slide.img} caption={slide.text} />
-              } else if (slide.video_url) {
-                return <VideoSlide key={slide.id} videoURL={slide.video_url} caption={slide.text} />
-              } else {
-                return <TextSlide key={slide.id} title={slide.text} body={slide.text} color="lightblue" />
-              }
-            })
-          }
+          {/* Add new slides */}
         </Slideshow>
         <ClubBodyDetail club={club}></ClubBodyDetail>
       </div>
