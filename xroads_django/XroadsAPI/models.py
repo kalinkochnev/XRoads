@@ -81,8 +81,8 @@ class District(models.Model):
 
     def remove_email_domain(self, domain: str):
         try:
-            domain = DistrictDomain.objects.get(domain=domain, district=self)
-            domain.delete()
+            district_domain = DistrictDomain.objects.get(domain=domain, district=self)
+            district_domain.delete()
         except DistrictDomain.DoesNotExist:
             pass
 
