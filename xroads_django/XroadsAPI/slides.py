@@ -1,7 +1,7 @@
 from typing import List, Match, Optional
 from googleapiclient.discovery import build
-import google
-from google.auth import load_credentials_from_file
+from google.auth import load_credentials_from_file, default
+from django.conf import settings
 
 import re
 
@@ -9,7 +9,7 @@ PREZ_REGEX = r"^.*docs\.google\.com\/presentation\/d\/(?P<id>[^\/]*).*"
 slide_svg_url = lambda prez_id, slide_id: f'https://docs.google.com/presentation/d/{prez_id}/export/svg?id={prez_id}&pageid={slide_id}' 
 
 def create_credentials():
-    credentials = load_credentials_from_file('api_keys.json') # TODO fixme!!!
+    credentials = load_credentials_from_file(settings.GOOGLE_KEY_FILE.name) # TODO fixme!!!
     return build('slides', 'v1', credentials=credentials[0])
 
 

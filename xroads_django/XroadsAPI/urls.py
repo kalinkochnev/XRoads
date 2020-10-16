@@ -14,54 +14,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, include, re_path
-from rest_framework_nested import routers
-
+from rest_framework.routers import DefaultRouter
 from XroadsAPI import views, admin_views
 
 app_name = "api"
 
-router = routers.SimpleRouter(trailing_slash=True)
-# ----- Normal Routes
-# user/
-# router.register('user', views.UserViewset, basename="user")
+default_route = DefaultRouter()
+default_route.register(r'club', views.ClubViewset)
+default_route.register(r'school', views.SchoolViewset)
+default_route.register(r'district', views.DistrictViewset)
 
-# district/
-router.register('district', views.DistrictViewset, basename="district")
-
-# district/school/
-school_router = routers.NestedDefaultRouter(router, "district", lookup=r"district")
-school_router.register('school', views.SchoolViewset, basename="school")
-
-# district/school/club/
-club_router = routers.NestedDefaultRouter(school_router, 'school', lookup=r"school")
-club_router.register('club', views.ClubViewset, basename='club')
-
-
-# ----- ADMIN ROUTES
-# admin/user/
-router.register(r'admin/user', admin_views.UserViewset, basename="admin-user")
-
-
-# admin/district/
-router.register('admin/district', admin_views.DistrictViewset,
-                basename="admin-district")
-
-# admin/district/school/
-admin_school_router = routers.NestedDefaultRouter(router, "admin/district", lookup=r"district")
-admin_school_router.register('school', admin_views.SchoolViewset, basename="admin-school")
-
-# admin/district/school/club/
-admin_club_router = routers.NestedDefaultRouter(admin_school_router, 'school', lookup=r"school")
-admin_club_router.register('club', admin_views.ClubViewset, basename='admin-club')
-
-
+admin_route = DefaultRouter()
+admin_route.register(r'club/(?P<code>[a-z0-9]+)', admin_views.ClubEditViewset)
 
 urlpatterns = [
-    path('csrf/', views.csrf),
-    re_path("", include(router.urls)),
-    re_path("", include(school_router.urls)),
-    re_path("", include(club_router.urls)),
-    
-    re_path("", include(admin_school_router.urls)),
-    re_path("", include(admin_club_router.urls)),
+    path('', include(admin_route.urls)),
+    path('', include(default_route.urls)),
 ]

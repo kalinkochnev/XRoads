@@ -31,7 +31,6 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,6 +42,7 @@ INSTALLED_APPS = [
 
     # Rest app
     'XroadsAPI.apps.XroadsapiConfig',
+    'rest_framework',
     
     # documentation for api
     'drf_yasg',
@@ -159,3 +159,8 @@ SWAGGER_SETTINGS = {
 
 # These are the settings involving emails
 DJANGO_NO_REPLY = "no-reply@xroads.club"
+
+
+# Google API key data
+with open('../xroads_django/api_keys.json') as f:
+    GOOGLE_KEY_FILE = f
