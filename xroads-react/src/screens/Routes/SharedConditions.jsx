@@ -1,4 +1,3 @@
-const { Role } = require("../../service/Roles");
 
 const UNEXPECTED_ERROR = "An unexpected error occurred";
 

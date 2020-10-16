@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useReducer, useState } from 'react';
-
+import { userReducer } from './User';
 export const StateContext = createContext();
 export const StateProvider = ({ reducer, initialState, children }) => {
     let [state, dispatch] = useReducer(reducer, initialState);

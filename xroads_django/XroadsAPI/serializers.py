@@ -30,6 +30,14 @@ class ClubDetailSerializer(serializers.ModelSerializer):
         model = Club
         exclude = ['code', 'hidden_info']
 
+class SchoolDetailSerializer(serializers.ModelSerializer):
+    clubs = BasicClubInfoSerial(many=True)
+
+    class Meta:
+        fields = '__all__'
+        model = School
+
+
 class ClubEditSerializer(serializers.ModelSerializer):
     slides = serializers.ListField(child=serializers.URLField())
 

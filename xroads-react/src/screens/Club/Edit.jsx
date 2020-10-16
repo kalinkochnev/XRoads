@@ -24,7 +24,7 @@ const ScreenClubEdit = ({ match: { params: { id } } }) => {
   const [state, dispatch] = useStateValue();
 
   useEffect(() => {
-    XroadsAPI.fetchClub(user.district, user.school, id).then(res => {
+    XroadsAPI.fetchClub(id).then(res => {
       return res.json().then(clubRes => {
         setClub(clubRes);
       });

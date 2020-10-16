@@ -14,10 +14,9 @@ import 'react-notifications-component/dist/theme.css'
 // This: { match: { params: { id }}} is the same as props.match.params.id and you can refer to id directly later
 const ScreenClubDetail = ({ match: { params: { id } } }) => {
   const [club, setClub] = useState();
-  const [state, dispatch] = useStateValue();
 
   useEffect(() => {
-    XroadsAPI.fetchClub(user.district, user.school, id).then(res => {
+    XroadsAPI.fetchClub(id).then(res => {
       return res.json().then(clubRes => {
         setClub(clubRes);
       });
@@ -39,7 +38,7 @@ const ScreenClubDetail = ({ match: { params: { id } } }) => {
         <Navbar>xroads</Navbar>
         <ReactNotification />
         <Slideshow>
-          {/* Add new slides */}
+          {club.slides.map(url => <ImageSlide source={url}></ImageSlide>)}
         </Slideshow>
         <ClubBodyDetail club={club}></ClubBodyDetail>
       </div>

@@ -1,9 +1,10 @@
 
 // To have keyworded args use this format:   :keyword_arg
 const endpoint_templates = {
-    'club_list': '/api/district/:districtId/school/:schoolId/club/',
-    'club_detail': '/api/district/:districtId/school/:schoolId/club/:clubId',
-    'school_list': '/api/district/:districtId/school/',
+    'club_list': '/api/school/:schoolId',
+    'club_detail': '/api/club/:clubId',
+    'club_edit': '/api/club/:code/:clubId',
+    'school_list': '/api/district/:districtId',
 
     'toggle_hide_club': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/toggle_hide/',
     'admin_club_detail': '/api/admin/district/:districtId/school/:schoolId/club/:clubId',
@@ -67,14 +68,18 @@ export async function sendRequest(urlName, urlArgs, method, body = null) {
     return await fetch(getUrl(urlName, urlArgs), generateFetchConfig(method, body));
 }
 
-export function fetchClubs(districtId, schoolId) {
-    return sendRequest('club_list', { 'districtId': districtId, 'schoolId': schoolId }, 'GET');
+export function fetchClubs(schoolId) {
+    return sendRequest('club_list', { 'schoolId': schoolId }, 'GET');
 }
 
-export function fetchClub(districtId, schoolId, clubId) {
-    return sendRequest('club_detail', { 'districtId': districtId, 'schoolId': schoolId, 'clubId': clubId }, 'GET');
+export function fetchClub(clubId) {
+    return sendRequest('club_detail', { 'clubId': clubId }, 'GET');
 }
 
-export function updateClub(districtId, schoolId, clubId, updatedClub) {
-    return sendRequest('admin_club_detail', { 'districtId': districtId, 'schoolId': schoolId, 'clubId': clubId }, 'PUT', updatedClub);
+export function fetchClubEdit(clubId, code) {
+    return sendRequest('club_edit', { 'code': code, 'clubId': clubId }, 'GET');
+}
+
+export function updateClub(clubId, updatedClub) {
+    return sendRequest('admin_club_detail', { 'clubId': clubId }, 'PUT', updatedClub);
 }
