@@ -1,15 +1,17 @@
 from django.db import models
+from XroadsAPI.slides import get_slides
 
 class Club(models.Model):
     name = models.CharField(max_length=30)
     description = models.TextField()
     main_img = models.ImageField()
     is_visible = models.BooleanField(default=False)
-    # TODO change to hidden info
-    join_promo = models.TextField(blank=True, null=True)
+    presentation_url = models.URLField()
+
+    hidden_info = models.TextField(blank=True, null=True)
+    code = models.CharField(max_length=30)
 
     school = models.ForeignKey('School', on_delete=models.CASCADE, null=True)
-    # TODO store google slides link
 
     def __str__(self):
         return f"{self.name} - id: {self.id}"
@@ -26,6 +28,9 @@ class Club(models.Model):
     def district(self):
         return self.school.district
 
+    @property
+    def slides(self):
+        return get_slides(self.presentation_url)
 
 class School(models.Model):
     name = models.CharField(max_length=40)

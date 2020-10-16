@@ -1,6 +1,6 @@
 from rest_framework import serializers
+from rest_framework.generics import mixins
 from XroadsAPI.models import *
-from django.shortcuts import get_object_or_404
 
 class BasicClubInfoSerial(serializers.ModelSerializer):
 
@@ -22,8 +22,9 @@ class DistrictSerializer(serializers.ModelSerializer):
         model = District
         fields = '__all__'
 
+
 class ClubDetailSerializer(serializers.ModelSerializer):
-    slides = SlideSerializer(many=True) # TODO change this to return google slide ids
+    slides = serializers.ListField(child=serializers.URLField())
 
     class Meta:
         model = Club

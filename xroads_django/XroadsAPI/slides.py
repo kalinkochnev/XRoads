@@ -1,22 +1,29 @@
+from typing import List, Match, Optional
 from googleapiclient.discovery import build
+import google
 from google.auth import load_credentials_from_file
+
 import re
 
-presentation_url = "https://docs.google.com/presentation/d/15CG2Iore-8OsyhTlYGB0RR4Bu2FqDbgmpo_UlVBTe9E/edit?usp=sharing"
-url_regex = r"^.*docs\.google\.com\/presentation\/d\/(?P<id>[^\/]*).*"
+PREZ_REGEX = r"^.*docs\.google\.com\/presentation\/d\/(?P<id>[^\/]*).*"
+slide_svg_url = lambda prez_id, slide_id: f'https://docs.google.com/presentation/d/{prez_id}/export/svg?id={prez_id}&pageid={slide_id}' 
 
-matches = re.search(url_regex, presentation_url)
-pres_id = matches.group('id')
+def create_credentials():
+    credentials = load_credentials_from_file('api_keys.json') # TODO fixme!!!
+    return build('slides', 'v1', credentials=credentials[0])
 
-credentials = load_credentials_from_file('api_keys.json')
-service = build('slides', 'v1', credentials=credentials[0])
 
-result = service.presentations().get(presentationId=pres_id).execute()
+def is_valid(url: str) -> Optional[Match[str]]:
+    match = re.search(PREZ_REGEX, url)
+    return match
 
-slide_ids = [slide['objectId'] for slide in result['slides']]
+def get_slides(url: str) -> List[str]:
+    service = create_credentials()
+    valid = is_valid(url)
 
-svg_links = []
-for slide_id in slide_ids:
-    link = f'https://docs.google.com/presentation/d/{pres_id}/export/svg?id={pres_id}&pageid={slide_id}'
-    svg_links.append(link)
-
+    if valid is not None:
+        prez_id = valid.group('id')
+        response = service.presentations().get(presentationId=prez_id).execute()
+        slide_ids = [slide['objectId'] for slide in response['slides']]
+        return [slide_svg_url(prez_id, slide_id) for slide_id in slide_ids]
+    return []
