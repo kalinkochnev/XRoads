@@ -6,8 +6,13 @@ import ClubCard from '../../components/Club/Card/Card';
 
 import * as XroadsAPI from '../../service/xroads-api';
 import { useStateValue } from '../../service/State';
+import { useHistory } from 'react-router-dom';
+import checkURLParams from '../Routes/utils';
 
-const ScreenClubBrowser = ({ match: { params: { school } } }) => {
+const ScreenClubBrowser = ({ match: { params } }) => {
+  let history = useHistory();
+  checkURLParams(params, {schoolId: "number"}, history)
+
   const [allClubs, setAllClubs] = useState([]);
   const [displayedClubs, setDisplayedClubs] = useState([]);
   const clubIds = allClubs.map(club => club.id);
@@ -16,6 +21,7 @@ const ScreenClubBrowser = ({ match: { params: { school } } }) => {
 
   function invisibleFilter(clubs) {
     let filteredClubs = [];
+
 
     for (let i = 0; i < clubs.length; i++) {
       if (clubs[i].is_visible) {
@@ -26,13 +32,17 @@ const ScreenClubBrowser = ({ match: { params: { school } } }) => {
   }
 
   function loadClubs() {
-    XroadsAPI.fetchClubs(school).then(res => {
-      return res.json().then(response => {
-        console.log(response)
-        let clubs = invisibleFilter(response.clubs);
-        setAllClubs(clubs);
-        setDisplayedClubs(clubs);
-      });
+    XroadsAPI.fetchClubs(params.schoolId).then(res => {
+      if (res.ok) {
+        return res.json().then(response => {
+          console.log(response)
+          let clubs = invisibleFilter(response.clubs);
+          setAllClubs(clubs);
+          setDisplayedClubs(clubs);
+        });
+      } else {
+        history.push('/')
+      }
     });
   }
 
@@ -50,11 +60,11 @@ const ScreenClubBrowser = ({ match: { params: { school } } }) => {
   useEffect(() => {
     console.log("ClubBrowser component did mount");
     loadClubs();
-  }, [state.user.school])
+  }, [params.school])
   
   return (
     <div>
-      <Navbar school={school}>xroads</Navbar>
+      <Navbar school={params.schoolId}>xroads</Navbar>
       <div className="body">
         <SearchBar key={clubIds} clubs={allClubs} filterClubs={searchFilter}></SearchBar>
         <div className="card-container">
@@ -67,7 +77,7 @@ const ScreenClubBrowser = ({ match: { params: { school } } }) => {
               imageURL={club.main_img}
               description={club.description}
               hidden={!club.is_visible}
-              school={school}
+              school={params.schoolId}
             />)
           }
           

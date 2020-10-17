@@ -3,8 +3,6 @@ import "./Card.scss";
 import { Link, useHistory } from "react-router-dom";
 
 const ClubBrowserCard = (props) => {
-  let history = useHistory()
-
   var clubStyle = { backgroundImage: `url(${props.imageURL})` };
   if (props.hidden) {
     clubStyle = { backgroundImage: `url(${props.imageURL})`, filter: "grayscale()" }

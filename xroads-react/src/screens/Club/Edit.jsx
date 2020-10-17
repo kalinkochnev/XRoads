@@ -20,6 +20,7 @@ import { store } from 'react-notifications-component';
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
 // This: { match: { params: { id }}} is the same as props.match.params.id and you can refer to id directly later
 const ScreenClubEdit = ({ match: { params: { school, id } } }) => {
+  
   const [club, setClub] = useState();
   const [state, dispatch] = useStateValue();
 
