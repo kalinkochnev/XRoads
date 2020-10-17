@@ -6,7 +6,7 @@ const endpoint_templates = {
     'club_edit': '/api/club/:code/:clubId',
     'school_list': '/api/district/:districtId',
 
-    'toggle_hide_club': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/toggle_hide/',
+    'toggle_hide_club': '/api/club/:code/:clubId/toggle_hide/',
     'admin_club_detail': '/api/admin/district/:districtId/school/:schoolId/club/:clubId',
 };
 
@@ -80,6 +80,6 @@ export function fetchClubEdit(clubId, code) {
     return sendRequest('club_edit', { 'code': code, 'clubId': clubId }, 'GET');
 }
 
-export function updateClub(clubId, updatedClub) {
-    return sendRequest('admin_club_detail', { 'clubId': clubId }, 'PUT', updatedClub);
+export function updateClub(clubId, updatedClub, code) {
+    return sendRequest('club_edit', { 'clubId': clubId, 'code': code }, 'PUT', updatedClub);
 }

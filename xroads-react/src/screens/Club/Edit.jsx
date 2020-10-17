@@ -15,35 +15,43 @@ import { useStateValue } from '../../service/State';
 import ReactNotification from 'react-notifications-component'
 import 'react-notifications-component/dist/theme.css'
 import { store } from 'react-notifications-component';
+import { useHistory } from 'react-router-dom';
 
 
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
 // This: { match: { params: { id }}} is the same as props.match.params.id and you can refer to id directly later
-const ScreenClubEdit = ({ match: { params: { school, id } } }) => {
-  
+const ScreenClubEdit = ({ match: { params: { schoolId, clubId, code } } }) => {
+  let history = useHistory();
+
   const [club, setClub] = useState();
   const [state, dispatch] = useStateValue();
 
   useEffect(() => {
-    XroadsAPI.fetchClub(id).then(res => {
-      return res.json().then(clubRes => {
-        setClub(clubRes);
-      });
+    console.log(code)
+    XroadsAPI.fetchClubEdit(clubId, code).then(res => {
+      if (res.ok) {
+        return res.json().then(clubRes => {
+          console.log(clubRes)
+          setClub(clubRes);
+        });
+      } else {
+        history.push(`/school/${schoolId}/clubs/${clubId}`)
+      }
     });
-  }, [id]);
+  }, [clubId, code]);
 
   if (club == undefined) {
     console.log("Loading");
     return (
       <div>
-        <Navbar school={school}>xroads</Navbar>
+        <Navbar school={schoolId}>xroads</Navbar>
       </div>
     );
   }
   else {
     return (
       <div>
-        <Navbar school={school}>xroads</Navbar>
+        <Navbar school={schoolId}>xroads</Navbar>
         <ReactNotification />
         <div className="centerContent">
           <div className="clubHeading">
@@ -51,11 +59,9 @@ const ScreenClubEdit = ({ match: { params: { school, id } } }) => {
             <h1 data-tip="please email us support@xroads.club to change club name">{club.name}</h1>
             <ReactTooltip place="right" effect="solid"/>
           </div>
-          <Tabs>
-            <div label="General">
-              <GeneralEdit label="General" club={club}></GeneralEdit>
-            </div>
-          </Tabs>
+          <div label="General">
+            <GeneralEdit label="General" club={club} code={code}></GeneralEdit>
+          </div>
         </div>
       </div>
     );

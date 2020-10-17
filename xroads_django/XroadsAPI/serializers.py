@@ -39,10 +39,11 @@ class SchoolDetailSerializer(serializers.ModelSerializer):
 
 
 class ClubEditSerializer(serializers.ModelSerializer):
-    slides = serializers.ListField(child=serializers.URLField())
+    slides = serializers.ListField(child=serializers.URLField(), read_only=True)
 
     class Meta:
         model = Club
         fields = '__all__'
+        read_only_fields = ['main_img', 'name']
 
 
