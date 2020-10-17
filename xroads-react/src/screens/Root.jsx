@@ -12,9 +12,9 @@ const ScreensRoot = () => {
   return (
     <Router>
       <Switch>
-        <Route exact path="/clubs/:id/edit/:code" component={ScreenClubEdit} />
-        <Route exact path="/clubs/:id" component={ScreenClubDetail} />
-        <Route exact path="/clubs" component={ScreenClubBrowser} />
+        <Route exact path="/school/:school/" component={ScreenClubBrowser} />
+        <Route exact path="/school/:school/clubs/:id/" component={ScreenClubDetail} />
+        <Route exact path="/school/:school/clubs/:id/edit/:code/" component={ScreenClubEdit} />
 
         <Route exact path="/error" component={ErrorOcurred} />
         <Route component={ScreenNotFound} />

@@ -19,7 +19,7 @@ import { store } from 'react-notifications-component';
 
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
 // This: { match: { params: { id }}} is the same as props.match.params.id and you can refer to id directly later
-const ScreenClubEdit = ({ match: { params: { id } } }) => {
+const ScreenClubEdit = ({ match: { params: { school, id } } }) => {
   const [club, setClub] = useState();
   const [state, dispatch] = useStateValue();
 
@@ -35,14 +35,14 @@ const ScreenClubEdit = ({ match: { params: { id } } }) => {
     console.log("Loading");
     return (
       <div>
-        <Navbar>xroads</Navbar>
+        <Navbar school={school}>xroads</Navbar>
       </div>
     );
   }
   else {
     return (
       <div>
-        <Navbar>xroads</Navbar>
+        <Navbar school={school}>xroads</Navbar>
         <ReactNotification />
         <div className="centerContent">
           <div className="clubHeading">

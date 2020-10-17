@@ -7,13 +7,11 @@ from XroadsAPI.serializers import *
 class DistrictViewset(viewsets.ReadOnlyModelViewSet):
     queryset = District.objects.all()
     serializer_class = DistrictSerializer
-    permission_classes = [IsAuthenticated]
 
 
 class SchoolViewset(viewsets.ReadOnlyModelViewSet):
     queryset = School.objects.all()
     serializer_class = BasicInfoSchoolSerial
-    permission_classes = [IsAuthenticated]
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()

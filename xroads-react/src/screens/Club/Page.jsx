@@ -12,7 +12,7 @@ import 'react-notifications-component/dist/theme.css'
 
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
 // This: { match: { params: { id }}} is the same as props.match.params.id and you can refer to id directly later
-const ScreenClubDetail = ({ match: { params: { id } } }) => {
+const ScreenClubDetail = ({ match: { params: { id, school } } }) => {
   const [club, setClub] = useState();
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const ScreenClubDetail = ({ match: { params: { id } } }) => {
   else {
     return (
       <div>
-        <Navbar>xroads</Navbar>
+        <Navbar school={school}>xroads</Navbar>
         <ReactNotification />
         <Slideshow>
           {club.slides.map(url => <ImageSlide source={url}></ImageSlide>)}

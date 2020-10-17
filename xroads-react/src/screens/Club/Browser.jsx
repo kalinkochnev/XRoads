@@ -7,38 +7,33 @@ import ClubCard from '../../components/Club/Card/Card';
 import * as XroadsAPI from '../../service/xroads-api';
 import { useStateValue } from '../../service/State';
 
-const ScreenClubBrowser = () => {
+const ScreenClubBrowser = ({ match: { params: { school } } }) => {
   const [allClubs, setAllClubs] = useState([]);
   const [displayedClubs, setDisplayedClubs] = useState([]);
   const clubIds = allClubs.map(club => club.id);
+
   const [state, dispatch] = useStateValue();
 
   function invisibleFilter(clubs) {
-    let editableClubs = state.user.editableClubs(state.user.roles)
     let filteredClubs = [];
 
     for (let i = 0; i < clubs.length; i++) {
-      if (!clubs[i].is_visible) {
-        if (editableClubs.includes(clubs[i].id)) {
-          filteredClubs.push(clubs[i]);
-        }
-      } else {
+      if (clubs[i].is_visible) {
         filteredClubs.push(clubs[i]);
-      }
+      } 
     }
     return filteredClubs;
   }
 
   function loadClubs() {
-    // FIXME use school and district from url
-    XroadsAPI.fetchClubs(state.user.district, state.user.school).then(res => {
-      return res.json().then(clubs => {
-        clubs = invisibleFilter(clubs);
+    XroadsAPI.fetchClubs(school).then(res => {
+      return res.json().then(response => {
+        console.log(response)
+        let clubs = invisibleFilter(response.clubs);
         setAllClubs(clubs);
         setDisplayedClubs(clubs);
       });
     });
-
   }
 
   function searchFilter(matchingIds) {
@@ -55,11 +50,11 @@ const ScreenClubBrowser = () => {
   useEffect(() => {
     console.log("ClubBrowser component did mount");
     loadClubs();
-  }, [state.user.district, state.user.school])
+  }, [state.user.school])
   
   return (
     <div>
-      <Navbar>xroads</Navbar>
+      <Navbar school={school}>xroads</Navbar>
       <div className="body">
         <SearchBar key={clubIds} clubs={allClubs} filterClubs={searchFilter}></SearchBar>
         <div className="card-container">
@@ -72,6 +67,7 @@ const ScreenClubBrowser = () => {
               imageURL={club.main_img}
               description={club.description}
               hidden={!club.is_visible}
+              school={school}
             />)
           }
           

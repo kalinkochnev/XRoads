@@ -13,11 +13,10 @@ export const StateProvider = ({ reducer, initialState, children }) => {
 export const useStateValue = () => useContext(StateContext);
 
 const AppState = ({children}) => {
-
+    
     let initialState = {
         user: {
             school: null,
-            district: null,
         }
     };
 
