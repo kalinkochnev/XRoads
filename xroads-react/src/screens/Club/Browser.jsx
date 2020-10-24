@@ -6,18 +6,18 @@ import ClubCard from '../../components/Club/Card/Card';
 
 import * as XroadsAPI from '../../service/xroads-api';
 import { useStateValue } from '../../service/State';
-import { useHistory } from 'react-router-dom';
+import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import checkURLParams from '../Routes/utils';
+import ScreenClubDetail from './Page';
 
 const ScreenClubBrowser = ({ match: { params } }) => {
   let history = useHistory();
-  checkURLParams(params, {schoolId: "number"}, history)
+
+  checkURLParams(params, { schoolId: "number" }, history)
 
   const [allClubs, setAllClubs] = useState([]);
   const [displayedClubs, setDisplayedClubs] = useState([]);
   const clubIds = allClubs.map(club => club.id);
-
-  const [state, dispatch] = useStateValue();
 
   function invisibleFilter(clubs) {
     let filteredClubs = [];
@@ -26,7 +26,7 @@ const ScreenClubBrowser = ({ match: { params } }) => {
     for (let i = 0; i < clubs.length; i++) {
       if (clubs[i].is_visible) {
         filteredClubs.push(clubs[i]);
-      } 
+      }
     }
     return filteredClubs;
   }
@@ -61,26 +61,26 @@ const ScreenClubBrowser = ({ match: { params } }) => {
     console.log("ClubBrowser component did mount");
     loadClubs();
   }, [params.school])
-  
+
   return (
     <div>
-      <Navbar school={params.schoolId}>xroads</Navbar>
+      <Navbar>xroads</Navbar>
       <div className="body">
         <SearchBar key={clubIds} clubs={allClubs} filterClubs={searchFilter}></SearchBar>
         <div className="card-container">
           {
-            displayedClubs.length == 0 ? (<h1>Loading...</h1>) : 
-            displayedClubs.map(club => <ClubCard
-              key={club.id}
-              id={club.id}
-              title={club.name}
-              imageURL={club.main_img}
-              description={club.description}
-              hidden={!club.is_visible}
-              school={params.schoolId}
-            />)
+            displayedClubs.length == 0 ? (<h1>Loading...</h1>) :
+              displayedClubs.map(club => <ClubCard
+                key={club.id}
+                id={club.id}
+                title={club.name}
+                imageURL={club.main_img}
+                description={club.description}
+                hidden={!club.is_visible}
+                school={params.schoolId}
+              />)
           }
-          
+
         </div>
       </div>
     </div>
