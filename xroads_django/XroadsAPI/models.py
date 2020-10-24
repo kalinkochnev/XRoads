@@ -4,7 +4,7 @@ from XroadsAPI.slides import get_slides
 class Club(models.Model):
     name = models.CharField(max_length=30)
     description = models.TextField()
-    main_img = models.ImageField()
+    img = models.ImageField()
     is_visible = models.BooleanField(default=False)
     presentation_url = models.URLField()
 

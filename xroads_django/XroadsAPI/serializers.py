@@ -6,7 +6,7 @@ class BasicClubInfoSerial(serializers.ModelSerializer):
 
     class Meta:
         model = Club
-        fields = ['id', 'name', 'description', 'main_img', 'is_visible']
+        fields = ['id', 'name', 'description', 'img', 'is_visible']
 
 
 class BasicInfoSchoolSerial(serializers.ModelSerializer):
@@ -44,6 +44,6 @@ class ClubEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = Club
         fields = '__all__'
-        read_only_fields = ['main_img', 'name']
+        read_only_fields = ['img', 'name']
 
 
