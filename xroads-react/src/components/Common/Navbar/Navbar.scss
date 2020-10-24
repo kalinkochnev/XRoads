@@ -22,8 +22,11 @@
   justify-content: space-between;
 
   .navbar-buttons {
-    button {
+
+    .nav-item {
       @extend .basic_button;
+      text-decoration: none;
+
       $font-size: 20px;
       
       /*Sets padding of button to take up entire height of navbar*/
@@ -37,7 +40,7 @@
       color: white;
     }
 
-    button:hover {
+    .nav-item:hover {
       background-color: $redHover;
     }
   }

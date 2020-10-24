@@ -7,6 +7,7 @@ import ScreenClubEdit from "./Club/Edit";
 
 import ScreenNotFound from "./Generic/NotFound";
 import ErrorOcurred from "./Generic/Error";
+import ClubCode from "../components/Club/Edit/ClubCode";
 
 const ScreensRoot = () => {  
   return (
@@ -15,6 +16,7 @@ const ScreensRoot = () => {
         <Route exact path="/school/:schoolId" component={ScreenClubBrowser} />
         <Route exact path="/school/:schoolId/clubs/:clubId" component={ScreenClubDetail} />
         <Route exact path="/school/:schoolId/clubs/:clubId/edit/:code" component={ScreenClubEdit} />
+        <Route exact path="/school/:schoolId/club/edit" component={ClubCode} />
 
         <Route exact path="/error" component={ErrorOcurred} />
         <Route component={ScreenNotFound} />

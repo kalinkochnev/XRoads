@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Navbar.scss";
 import { AlertBar } from "../AlertBar/AlertBar";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 const Navbar = (props) => {
   return (
@@ -13,7 +13,9 @@ const Navbar = (props) => {
           </div>
         </NavLink>
         <div className="navbar-buttons">
-          <span></span>
+          <Link className="nav-item" to={`/school/${props.school}/club/edit`} >
+            edit club
+          </Link>
         </div>
       </div>
       <AlertBar>

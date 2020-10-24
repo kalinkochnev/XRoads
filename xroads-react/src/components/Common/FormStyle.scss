@@ -1,6 +1,9 @@
 @import "./Common.scss";
 @import "./Variables.scss";
 
+// Logic variables
+// ---------------
+
 $formBottomMargin: 0px !default;
 $formPadding: 40px !default;
 $formMaxW: 405px !default;
@@ -8,11 +11,13 @@ $formBorderWidth: 10px !default;
 $formBorderSize: 2px !default;
 
 $inputBRadius: 8px !default;
-$inputLabelSpace: 10px !default;
+$inputLabelMB: 10px !default;
 $inputPadVert: 25px !default;
 $inputPadHoriz: 15px !default;
 $inputMinW: 250px !default;
 $inputWidth: 275px !default;
+$inputTextSize: 20px !default;
+$inputCentered: false !default;
 
 $submitTopM: 50px !default;
 
@@ -36,7 +41,7 @@ $submitTopM: 50px !default;
     @extend .flex-center-col;
 
     label {
-      margin-bottom: $inputLabelSpace;
+      margin-bottom: $inputLabelMB;
 
       h1, h2 {
         margin: 0px;
@@ -44,15 +49,18 @@ $submitTopM: 50px !default;
     }
 
     input:not([type=checkbox]) {
-      padding: $inputPadVert $inputPadHoriz $inputPadVert $inputPadHoriz;
+      padding: $inputPadVert $inputPadHoriz;
 
+      @if $inputCentered {
+        text-align: center;
+      }
       /*Styles main input fields, not including submit*/
       border-color: $greyOutline;
       border-width: 2px;
       border-style: solid solid none;
 
       font-family: Raleway, sans-serif;
-      font-size: 16px;
+      font-size: $inputTextSize;
     }
 
     #only-field {
