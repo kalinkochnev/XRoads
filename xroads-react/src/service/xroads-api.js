@@ -7,7 +7,7 @@ const endpoint_templates = {
     'school_list': '/api/district/:districtId',
 
     'toggle_hide_club': '/api/club/:code/:clubId/toggle_hide/',
-    'admin_club_detail': '/api/admin/district/:districtId/school/:schoolId/club/:clubId',
+    'check_code': '/api/school/:schoolId/club_code/'
 };
 
 function fillTemplate(urlName, urlArgs) {
@@ -64,8 +64,9 @@ function generateFetchConfig(method, body = null) {
     return config;
 }
 
-export async function sendRequest(urlName, urlArgs, method, body = null) {
-    return await fetch(getUrl(urlName, urlArgs), generateFetchConfig(method, body));
+export async function sendRequest(urlName, urlArgs, method, body = null, query_params = null) {
+    let query = query_params != null ? "?" + new URLSearchParams(query_params) : ""
+    return await fetch(getUrl(urlName, urlArgs) + query, generateFetchConfig(method, body));
 }
 
 export function fetchClubs(schoolId) {

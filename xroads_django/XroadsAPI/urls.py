@@ -25,7 +25,7 @@ default_route.register(r'school', views.SchoolViewset)
 default_route.register(r'district', views.DistrictViewset)
 
 admin_route = DefaultRouter()
-admin_route.register(r'club/(?P<code>[a-z0-9]+)', admin_views.ClubEditViewset)
+admin_route.register(r'club/(?P<code>[a-z0-9A-Z]+)', admin_views.ClubEditViewset)
 
 urlpatterns = [
     path('', include(admin_route.urls)),

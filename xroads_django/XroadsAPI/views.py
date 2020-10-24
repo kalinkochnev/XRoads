@@ -25,7 +25,7 @@ class SchoolViewset(viewsets.ReadOnlyModelViewSet):
         try:
             club = Club.objects.get(school=self.get_object(), code=request.query_params['code'])
             return Response(BasicClubInfoSerial(club).data, status=status.HTTP_200_OK)
-        except Club.DoesNotExist:
+        except (Club.DoesNotExist, KeyError):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
