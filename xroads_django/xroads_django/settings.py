@@ -159,6 +159,7 @@ SWAGGER_SETTINGS = {
 
 # These are the settings involving emails
 DJANGO_NO_REPLY = "no-reply@xroads.club"
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 # Google API key data

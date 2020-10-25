@@ -1,0 +1,6 @@
+Hello from Xroads!
+
+We just wanted to let you guys know that {{ club.name }} is being featured next week!
+We recommend spiffing up your club page by going to your specific edit page!
+
+Here's a link to it: https://xroads.club/school/{{ school.id }}/clubs/{{ club.id }}/edit/{{ club.code }}
