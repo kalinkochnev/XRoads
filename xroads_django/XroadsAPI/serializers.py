@@ -32,9 +32,10 @@ class ClubDetailSerializer(serializers.ModelSerializer):
 
 class SchoolDetailSerializer(serializers.ModelSerializer):
     clubs = BasicClubInfoSerial(many=True)
+    curr_featured = ClubDetailSerializer(source="_curr_club")
 
     class Meta:
-        fields = '__all__'
+        exclude = ['_next_club', 'featured']
         model = School
 
 

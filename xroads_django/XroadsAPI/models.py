@@ -107,7 +107,6 @@ class School(models.Model):
     def next_club(self, value):
         self._next_club = value
 
-
     def email_warning(self, club: Club):
         if club is None:
             return

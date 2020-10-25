@@ -9,6 +9,7 @@ import { useStateValue } from '../../service/State';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import checkURLParams from '../Routes/utils';
 import ScreenClubDetail from './Page';
+import FeaturedCard from '../../components/Club/Featured/Featured';
 
 const ScreenClubBrowser = ({ match: { params } }) => {
   let history = useHistory();
@@ -18,6 +19,7 @@ const ScreenClubBrowser = ({ match: { params } }) => {
   const [allClubs, setAllClubs] = useState([]);
   const [displayedClubs, setDisplayedClubs] = useState([]);
   const clubIds = allClubs.map(club => club.id);
+  let [featured, setFeatured] = useState({});
 
   function invisibleFilter(clubs) {
     let filteredClubs = [];
@@ -37,6 +39,7 @@ const ScreenClubBrowser = ({ match: { params } }) => {
         return res.json().then(response => {
           console.log(response)
           let clubs = invisibleFilter(response.clubs);
+          setFeatured(response.curr_featured);
           setAllClubs(clubs);
           setDisplayedClubs(clubs);
         });
@@ -66,6 +69,7 @@ const ScreenClubBrowser = ({ match: { params } }) => {
     <div>
       <Navbar>xroads</Navbar>
       <div className="body">
+        <FeaturedCard club={featured}></FeaturedCard>
         <SearchBar key={clubIds} clubs={allClubs} filterClubs={searchFilter}></SearchBar>
         <div className="card-container">
           {
