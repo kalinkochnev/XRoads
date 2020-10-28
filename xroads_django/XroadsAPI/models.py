@@ -3,9 +3,11 @@ from django.db.models.expressions import Random
 from django.conf import settings
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
+from xkcdpass.xkcd_password import CASE_METHODS
 
 from XroadsAPI.slides import get_slides
 import random
+import xkcdpass.xkcd_password as xp
 
 
 class Club(models.Model):
@@ -17,9 +19,18 @@ class Club(models.Model):
     contact = models.EmailField(blank=True, null=True)
 
     hidden_info = models.TextField(blank=True, null=True)
-    code = models.CharField(max_length=30)
+    code = models.CharField(max_length=30, blank=True)
 
     school = models.ForeignKey('School', on_delete=models.CASCADE, null=True)
+
+    @classmethod
+    def gen_code(cls) -> str:
+        words = xp.locate_wordfile()
+        word_list = xp.generate_wordlist(wordfile=words, min_length=4, max_length=5)
+        code = xp.generate_xkcdpassword(wordlist=word_list, numwords=2, case='first').split(" ")
+        rand_num = random.randint(10, 99)
+        return "".join([code[0], str(rand_num), code[1]])
+
 
     def __str__(self):
         return f"{self.name} - id: {self.id}"
@@ -39,6 +50,12 @@ class Club(models.Model):
     @property
     def slides(self):
         return get_slides(self.presentation_url)
+
+    def save(self, *args, **kwargs):
+        if not self.pk or not self.code:
+            self.code = self.gen_code()
+
+        super(Club, self).save(*args, **kwargs)
 
 
 class School(models.Model):
