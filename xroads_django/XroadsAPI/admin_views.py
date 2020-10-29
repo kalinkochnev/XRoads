@@ -16,6 +16,6 @@ class ClubEditViewset(viewsets.GenericViewSet, mixins.UpdateModelMixin, mixins.R
 
     @action(detail=True, methods=['post'])
     def toggle_hide(self, request, *args, **kwargs):
-        club = self.get_object()
+        club: Club = self.get_object()
         club.toggle_hide()
         return Response(status=202)

@@ -12,27 +12,67 @@ import ReactTooltip from "react-tooltip";
 import { store } from "react-notifications-component";
 
 import "react-confirm-alert/src/react-confirm-alert.css"; // Import css for alert
+import { Formik, yupToFormErrors } from "formik";
+import * as Yup from 'yup';
+
 
 const GeneralEdit = (props) => {
-  let [clubDescriptionMd, setClubDescription] = useState(
-    props.club.description
-  );
-  let [clubName, setClubName] = useState(props.club.name);
-  let [clubJoinPromo, setClubJoinPromo] = useState(props.club.join_promo);
   const [state, dispatch] = useStateValue();
   const [isVisible, setVisibility] = useState(props.club.is_visible);
+  const [clubData, setClubData] = useState(props.clubData);
 
-  const handleClubDescription = (clubDescMd) => {
-    setClubDescription(clubDescMd);
-  };
+  const TextInput = ({label, ...props}) => {
+    const [field, meta] = useField(props);
+    
+    return (
+      <>
+       <label htmlFor={props.id || props.name}>{label}</label>
+       <input className="text-input" {...field} {...props} />
+       {meta.touched && meta.error ? (
+         <div className="error">{meta.error}</div>
+       ) : null}
+     </>
+    );
+  }
 
-  const saveClubDetails = () => {
-    // FIXME : pull the district ID from whereever it lives in the context
+  const TextField = ({label, ...props}) => {
+    
+  }
+
+  const getFormFields = () => {
+
+  }
+
+  const getValues = () => {
+
+    let possFields = {
+      description: Yup.string(), 
+      presentation_url: Yup.string().url().matches("^.*docs\.google\.com\/presentation\/d\/(?<id>[^\/]*).*", message="Please enter a valid google slides url"),
+      hidden_info: Yup.string(),
+      contact:Yup.string().email()
+    }
+
+    if (!clubData.school.club_contact) {
+      delete possFields.contact
+    }
+
+    // Gets the initial values from the data that was loaded in based on what fields are given
+    let initialValues = {}
+    for (let key in Object.keys(possFields)) {
+      initialValues[key] = possFields[key];
+    }
+
+    return {
+      validation: possFields,
+      initialValues: initialValues
+    }
+  }
+
+  const saveClubDetails = (values, {setSubmitting}) => {
+    setSubmitting(false);
     const updatedClub = {
       ...props.club,
-      description: clubDescriptionMd,
-      name: clubName,
-      // join_promo: clubJoinPromo, TODO fix
+      ...values
     };
 
     console.log("Updated club would be", updatedClub);
@@ -86,27 +126,28 @@ const GeneralEdit = (props) => {
   return (
     <div className="centerContent">
       <div className="editBody">
+
+        <Formik
+          initialValues={getValues().initialValues}
+          validationSchema={Yup.object(getValues().validation)}
+          onSubmit={saveClubDetails}
+        >
+
+        <label htmlFor="firstName">First Name</label>
+         <Field name="firstName" type="text" />
+         <ErrorMessage name="firstName" />
+
+        </Formik>
         <form className="clubEdit">
-          <label className="" htmlFor="join">
+          <label className="" htmlFor="">
             Hide club
           </label>
+
           <label class="switch">
             <input type="checkbox" onClick={toggleHide} checked={!isVisible} />
             <span className="slider round"></span>
           </label>
           <ReactTooltip place="right" effect="solid" />
-
-          <label className="" htmlFor="join">
-            How to join
-            <br />
-            <input
-              type="text"
-              id="join"
-              name="join"
-              value={clubJoinPromo}
-              onChange={(e) => setClubJoinPromo(e.target.value)}
-            />
-          </label>
 
           <label className="" htmlFor="description">
             Description
@@ -115,7 +156,23 @@ const GeneralEdit = (props) => {
               mdContent={clubDescriptionMd}
               onChange={handleClubDescription}
             />
+            <br />
+
           </label>
+
+          <label className="" htmlFor="presentation url">
+            Google Slides Link
+            <br />
+            <input
+              type="text"
+              id="presentation url"
+              name="presentation url"
+              value={clubJoinPromo}
+              onChange={(e) => setClubJoinPromo(e.target.value)}
+            />
+          </label>
+          <ReactTooltip place="right" effect="solid" />
+
         </form>
         <button type="submit" id="club-submit" onClick={saveClubDetails}>
           Save

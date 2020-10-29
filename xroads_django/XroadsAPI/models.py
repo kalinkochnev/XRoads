@@ -17,6 +17,7 @@ class Club(models.Model):
     is_visible = models.BooleanField(default=False)
     presentation_url = models.URLField()
     contact = models.EmailField(blank=True, null=True)
+    featured_order = models.IntegerField(blank=True, null=True)
 
     hidden_info = models.TextField(blank=True, null=True)
     code = models.CharField(max_length=30, blank=True)
@@ -55,6 +56,9 @@ class Club(models.Model):
         if not self.pk or not self.code:
             self.code = self.gen_code()
 
+        if self.school is not None and self.featured_order is None:
+            self.featured_order = self.school.clubs.count() + 1
+
         super(Club, self).save(*args, **kwargs)
 
 
@@ -64,15 +68,10 @@ class School(models.Model):
     district = models.ForeignKey(
         'District', on_delete=models.CASCADE, null=True)
 
+    featured: Club = models.ForeignKey(Club, on_delete=models.SET_NULL, null=True, related_name='featured')
+
     club_contact = models.BooleanField(default=False)
-    _curr_club: Club = models.ForeignKey(
-        Club, null=True, on_delete=models.SET_NULL, related_name="curr_club", blank=True)
-    _next_club: Club = models.ForeignKey(
-        Club, null=True, on_delete=models.SET_NULL, related_name="next_club", blank=True)
-
-    featured = models.ManyToManyField(
-        Club, related_name="featured_club", blank=True)
-
+    
     def __str__(self):
         return f"{self.name} - id: {self.id}"
 
@@ -88,43 +87,11 @@ class School(models.Model):
     def clubs(self):
         return Club.objects.filter(school=self)
 
-    def get_unfeatured(self) -> Club:
-        not_featured = self.clubs.difference(self.featured.all())
-
-        if not_featured.count() > 0:
-            return random.choice(not_featured)
-        return None
-
-    def get_next(self, save=True):
-        if self.next_club is None:
-            self.next_club = self.get_unfeatured()
-
-        self.curr_club = self.next_club
-        self.next_club = self.get_unfeatured()
-
-        if save:
-            self.save()
-
     @property
-    def curr_club(self):
-        return self._curr_club
+    def next_featured(self):
+        return self.get_next()
 
-    @curr_club.setter
-    def curr_club(self, value):
-        self._curr_club = value
-
-        if self._curr_club is not None:
-            self.featured.add(self._curr_club)
-
-    @property
-    def next_club(self):
-        return self._next_club
-
-    @next_club.setter
-    def next_club(self, value):
-        self._next_club = value
-
-    def email_warning(self, club: Club):
+    def email_club_warning(self, club: Club):
         if club is None:
             return
 
@@ -157,21 +124,18 @@ class School(models.Model):
             msg = EmailMultiAlternatives(subject, text_content, from_email, to)
             msg.send()
 
+    def get_next(self):
+        curr_id = 1
+        if self.featured is not None:
+            curr_id = self.featured.featured_order
+
+        return Club.objects.get(featured_order=curr_id + 1)
+
     def save(self, *args, **kwargs):
         if self.pk:
-            if self.curr_club is None:
-                self.get_next(save=False)
-
-            past: self = School.objects.get(id=self.id)
-
-            if past._next_club != self._next_club:
-                self.next_club = self._next_club
-                self.email_warning(self._next_club)
-
-            if past._curr_club != self._curr_club:
-                self.curr_club = self._curr_club
-                self.email_featured(self._curr_club)
-
+            if self.featured is None:
+                self.featured = self.get_next()
+            
         super(School, self).save(*args, **kwargs)
 
 
