@@ -17,7 +17,7 @@ class Club(models.Model):
     is_visible = models.BooleanField(default=False)
     presentation_url = models.URLField()
     contact = models.EmailField(blank=True, null=True)
-    featured_order = models.IntegerField(blank=True, null=True)
+    featured_order = models.IntegerField(blank=True, null=True, default=None)
 
     hidden_info = models.TextField(blank=True, null=True)
     code = models.CharField(max_length=30, blank=True)
@@ -53,7 +53,7 @@ class Club(models.Model):
         return get_slides(self.presentation_url)
 
     def save(self, *args, **kwargs):
-        if not self.pk or not self.code:
+        if not self.pk and not self.code:
             self.code = self.gen_code()
 
         if self.school is not None and self.featured_order is None:
@@ -102,12 +102,11 @@ class School(models.Model):
         contact = club.contact
 
         if self.club_contact and contact is not None:
-            subject, from_email, to = f'{self._next_club.name} is going to be featured!', settings.DJANGO_NO_REPLY, [
+            subject, from_email, to = f'{club.name} is going to be featured!', settings.DJANGO_NO_REPLY, [
                 contact]
             plain_text = get_template('email/featured_alert.txt')
 
-            text_content = plain_text.render(
-                {'club': self._next_club, 'school': self})
+            text_content = plain_text.render({'club': club, 'school': self})
 
             msg = EmailMultiAlternatives(subject, text_content, from_email, to)
             msg.send()
@@ -118,26 +117,38 @@ class School(models.Model):
 
         club_contact = club.contact
         if self.club_contact and club_contact is not None:
-            subject, from_email, to = f'{self._curr_club.name} is being featured right now!', settings.DJANGO_NO_REPLY, [
+            subject, from_email, to = f'{club.name} is being featured right now!', settings.DJANGO_NO_REPLY, [
                 club_contact]
             plain_text = get_template('email/curr_featured.txt')
 
-            text_content = plain_text.render(
-                {'club': self._curr_club, 'school': self})
+            text_content = plain_text.render({'club': club, 'school': self})
 
             msg = EmailMultiAlternatives(subject, text_content, from_email, to)
             msg.send()
 
-    def get_next(self):
-        curr_id = 1
-        if self.featured is not None:
+    # If you specify a start position, it gets the next club from that position
+    def get_next(self, start=None):
+        curr_id = 0
+
+        if start is not None:
+            curr_id = start
+        elif self.featured is not None:
             curr_id = self.featured.featured_order
-        return Club.objects.get(featured_order=curr_id + 1)
+        
+        try:
+            club = Club.objects.get(featured_order=curr_id + 1)
+
+            
+            return club
+        except Club.DoesNotExist:
+            return None
 
     def save(self, *args, **kwargs):
         if self.pk:
             if self.featured is None:
                 self.featured = self.get_next()
+                self.email_featured(self.featured)
+                self.email_club_warning(self.next_featured)
             
         super(School, self).save(*args, **kwargs)
 

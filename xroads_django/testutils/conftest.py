@@ -43,7 +43,7 @@ def create_club(db, temp_img):
             'img': temp_img(temp_file).name,
         }
         data.update(kwargs)
-
+        
         if club_id == -1:
             return Club.objects.create(**data)
         return Club.objects.create(id=club_id, **data)

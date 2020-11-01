@@ -15,12 +15,11 @@ class TestClub:
     club_get_from_code = "api:school-club-code"
 
     def test_club_code_valid_get(self, setup_client_no_auth, make_request, role_model_instances):
-        d1, s1, c1 = role_model_instances(club_data={'code': 'randomCode'})
+        code = "Random24Code"
+        d1, s1, c1 = role_model_instances(club_data={'code': code})
         client = setup_client_no_auth()
         path = reverse(self.club_get_from_code, kwargs={'pk': s1.id})
-        request_data = {
-            'code': 'randomCode',
-        }
+        request_data = {'code': code}
 
         response = make_request(client, 'get', data=request_data, path=path)
 
