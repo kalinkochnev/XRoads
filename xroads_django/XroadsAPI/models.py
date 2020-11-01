@@ -68,7 +68,7 @@ class School(models.Model):
     district = models.ForeignKey(
         'District', on_delete=models.CASCADE, null=True)
 
-    featured: Club = models.ForeignKey(Club, on_delete=models.SET_NULL, null=True, related_name='featured')
+    featured: Club = models.ForeignKey(Club, on_delete=models.SET_NULL, null=True, blank=True, related_name='featured')
 
     club_contact = models.BooleanField(default=False)
     
@@ -89,7 +89,9 @@ class School(models.Model):
 
     @property
     def curr_featured_order(self):
-        return self.featured.featured_order
+        if self.featured is not None:
+            return self.featured.featured_order
+        return 0
 
     @property
     def next_featured(self):
@@ -136,10 +138,7 @@ class School(models.Model):
             curr_id = self.featured.featured_order
         
         try:
-            club = Club.objects.get(featured_order=curr_id + 1)
-
-            
-            return club
+            return Club.objects.get(featured_order=curr_id + 1, school=self)
         except Club.DoesNotExist:
             return None
 

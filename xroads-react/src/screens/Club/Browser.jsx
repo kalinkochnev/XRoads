@@ -33,15 +33,48 @@ const ScreenClubBrowser = ({ match: { params } }) => {
     return filteredClubs;
   }
 
+  
+
+  function determineFeatured(response) {
+    if (response.curr_featured_order != 0) {
+      let position = response.curr_featured_order
+
+      while (Object.keys(featured).length == 0 && position <= response.clubs.length) {        
+        function getClubByOrder(featuredOrder) {
+          let clubs = response.clubs.filter(club => club.featured_order == featuredOrder)
+          if (clubs.length == 1) {
+            return clubs[0]
+          }
+          return null;
+        }
+
+        let club = getClubByOrder(position)
+
+        if (club.is_visible) {
+          let id = club.id
+          XroadsAPI.fetchClub(id).then(res => {
+            if (res.ok) {
+              res.json().then(response => setFeatured(response))
+            }
+          })
+          break
+        } else {
+          position++;
+        }
+      }
+    }
+  }
+
   function loadClubs() {
     XroadsAPI.fetchClubs(params.schoolId).then(res => {
       if (res.ok) {
         return res.json().then(response => {
           console.log(response)
           let clubs = invisibleFilter(response.clubs);
-          setFeatured(response.curr_featured);
-          setAllClubs(clubs);
+          setAllClubs(response.clubs);
           setDisplayedClubs(clubs);
+          determineFeatured(response)
+          
         });
       } else {
         history.push('/')

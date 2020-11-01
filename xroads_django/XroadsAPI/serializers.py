@@ -2,11 +2,12 @@ from rest_framework import serializers
 from rest_framework.generics import mixins
 from XroadsAPI.models import *
 
+
 class BasicClubInfoSerial(serializers.ModelSerializer):
 
     class Meta:
         model = Club
-        fields = ['id', 'name', 'description', 'img', 'is_visible']
+        fields = ['id', 'name', 'description', 'img', 'is_visible', 'featured_order']
 
 
 class BasicInfoSchoolSerial(serializers.ModelSerializer):
@@ -30,6 +31,7 @@ class ClubDetailSerializer(serializers.ModelSerializer):
         model = Club
         exclude = ['code', 'hidden_info']
 
+
 class SchoolDetailSerializer(serializers.ModelSerializer):
     clubs = BasicClubInfoSerial(many=True)
     curr_featured_order = serializers.IntegerField()
@@ -40,12 +42,11 @@ class SchoolDetailSerializer(serializers.ModelSerializer):
 
 
 class ClubEditSerializer(serializers.ModelSerializer):
-    slides = serializers.ListField(child=serializers.URLField(), read_only=True)
+    slides = serializers.ListField(
+        child=serializers.URLField(), read_only=True)
     school = BasicInfoSchoolSerial(read_only=True)
 
     class Meta:
         model = Club
         fields = '__all__'
         read_only_fields = ['img', 'name']
-
-

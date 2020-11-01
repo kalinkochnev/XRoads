@@ -3,7 +3,6 @@ import { ImageSlide, Slideshow } from "../../Common/Slides/Slides";
 
 const FeaturedCard = (props) => {
     let [club, setClub] = useState({});
-    console.log(club)
 
     useEffect(() => {
         setClub(props.club)
@@ -13,15 +12,13 @@ const FeaturedCard = (props) => {
         return null;
     }
 
-  
-
     return (
         <div>
             <h1>Featured Club!</h1>
             <h2>{club.name}</h2>
             <p>{club.description}</p>
             <Slideshow>
-                {club.slides.map(url => <ImageSlide source={url}></ImageSlide>)}
+                {club.slides != null ? club.slides.map(url => <ImageSlide source={url}></ImageSlide>) : null}
             </Slideshow>
             
         </div>

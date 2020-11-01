@@ -4,7 +4,6 @@ from google.auth import load_credentials_from_file, default
 from django.conf import settings
 
 import re
-
 PREZ_REGEX = r"^.*docs\.google\.com\/presentation\/d\/(?P<id>[^\/]*).*"
 slide_svg_url = lambda prez_id, slide_id: f'https://docs.google.com/presentation/d/{prez_id}/export/svg?id={prez_id}&pageid={slide_id}' 
 
