@@ -88,6 +88,10 @@ class School(models.Model):
         return Club.objects.filter(school=self)
 
     @property
+    def curr_featured_order(self):
+        return self.featured.featured_order
+
+    @property
     def next_featured(self):
         return self.get_next()
 
@@ -128,7 +132,6 @@ class School(models.Model):
         curr_id = 1
         if self.featured is not None:
             curr_id = self.featured.featured_order
-
         return Club.objects.get(featured_order=curr_id + 1)
 
     def save(self, *args, **kwargs):

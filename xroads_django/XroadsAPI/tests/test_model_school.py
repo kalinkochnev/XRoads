@@ -6,33 +6,36 @@ from django.conf import settings
 
 from XroadsAPI.models import Club, District, School
 
+@pytest.fixture
+def multi_clubs(create_club):
+    def create_clubs(school=None, count=3):
+        if school is None:
+            school = School.objects.create(name)
+
+        clubs = [create_club() for club in range(count=count)]
+        school.add_club(clubs, save=False)
+        school.save()
+        return school, clubs
+    return create_clubs
 
 class TestSchool:
-    def test_init_school_with_featured_clubs(self, role_model_instances, create_club, db):
-        # 1 club
-        s1: School = School.objects.create(name="s1")
-        assert s1.curr_club is None
-        assert s1.next_club is None
+    def test_club_has_featured_order(self, multi_clubs):
+        school, clubs = multi_clubs()
 
-        c1 = create_club()
-        s1.add_club(c1)
-        s1.save()
-        assert s1.curr_club == c1
+        expected_order = clubs.sort(lambda club: club.featured_order)
+        assert len(expected_order) == 3
+        saved_order = featured_order = list(school.clubs.order_by("featured_order"))
+        assert expected_order == saved_order
 
-    def test_init_school_2_clubs(self, create_club):
-        s2: School = School.objects.create(name="s2")
-        assert s2.curr_club is None
-        assert s2.next_club is None
+    def test_get_next(self, multi_clubs):
+        school, clubs = multi_clubs()
 
-        c1 = create_club()
-        c2 = create_club()
+        prev_featured = school.featured.featured_order
+        assert prev_featured == 1
 
-        s2.add_club(c1)
-        s2.add_club(c2)
-        s2.save()
-        assert s2.curr_club is not None
-        assert s2.next_club is not None
-        assert s2.curr_club != s2.next_club
+        school.get_next()
+        assert prev_featured != school.featured
+        assert school.featured.featured_order == 2
 
     def test_featured_email_sent(self, create_club):
         s1: School = School.objects.create(name="s1")
@@ -76,63 +79,3 @@ class TestSchool:
         assert mail.outbox[0].subject == f'{c1.name} is going to be featured!'
         assert mail.outbox[0].from_email == settings.DJANGO_NO_REPLY
         assert mail.outbox[0].to == ["test@email.com"]
-
-    def test_set_curr_club(self, create_club):
-        s1: School = School.objects.create(name="s2")
-        c1 = create_club()
-        c1.contact = "test@email.com"
-        c1.save()
-
-        s1.add_club(c1, save=False)
-        s1.club_contact = True
-        s1.save()
-
-        assert s1.featured.all().count() == 0
-        s1.curr_club = c1
-
-    def test_set_next_club(self, role_model_instances):
-        d1, s1, c1 = role_model_instances()
-        c1.contact = "test@email.com"
-        c1.save()
-
-        s1.club_contact = True
-        s1.save()
-        
-        s1.next_club = c1
-
-    def test_get_next_featured(self, role_model_instances, create_club):
-        d1, s1, c1 = role_model_instances()
-        s1: School
-        clubs = [c1] + [s1.add_club(create_club()) for i in range(1, 3)]
-
-        s1.curr_club = clubs[0]
-        s1.next_club = clubs[1]
-        s1.get_next()
-        assert s1.featured is not None
-
-    def test_get_next_clubs_exist(self, create_club):
-        school = School.objects.create(name="s")
-
-        clubs = [create_club(id=i) for i in range(3)]
-        for c in clubs:
-            school.add_club(c)
-
-        assert school.curr_club is None
-        assert school.next_club is None
-
-        school.save()
-
-        assert school.curr_club is not None
-        assert school.next_club is not None
-        assert school.next_club != school.curr_club
-
-    def test_get_next_1_club_exist(self, role_model_instances):
-        d1, s1, c1 = role_model_instances()
-
-        assert s1.curr_club is None
-        assert s1.next_club is None
-
-        s1.save()
-
-        assert s1.curr_club is not None
-        assert s1.next_club is None

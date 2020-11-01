@@ -32,10 +32,10 @@ class ClubDetailSerializer(serializers.ModelSerializer):
 
 class SchoolDetailSerializer(serializers.ModelSerializer):
     clubs = BasicClubInfoSerial(many=True)
-    curr_featured = ClubDetailSerializer(source="_curr_club")
+    curr_featured_order = serializers.IntegerField()
 
     class Meta:
-        exclude = ['_next_club', 'featured']
+        exclude = ['featured']
         model = School
 
 
