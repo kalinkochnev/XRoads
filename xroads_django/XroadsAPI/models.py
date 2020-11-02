@@ -1,9 +1,10 @@
+from datetime import datetime
+from XroadsAPI.tasks import weekly_task
 from django.db import models
 from django.db.models.expressions import Random
 from django.conf import settings
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
-from xkcdpass.xkcd_password import CASE_METHODS
 
 from XroadsAPI.slides import get_slides
 import random
@@ -151,6 +152,14 @@ class School(models.Model):
             
         super(School, self).save(*args, **kwargs)
 
+# Scheduling every monday at 8 am
+@weekly_task(week_day=6, hours=22, minutes=22)
+def update_featured_club():
+    school: School
+    for school in School.objects.all():
+        school.featured = school.get_next()
+        school.save()
+    print('updated school')
 
 class DistrictDomain(models.Model):
     domain = models.CharField(max_length=20, unique=True)
