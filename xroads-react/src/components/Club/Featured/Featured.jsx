@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AutoSlide, Slideshow } from "../../Common/Slides/Slides";
-import Carousel, { slidesToShowPlugin } from '@brainhubeu/react-carousel';
+import ReactPlayer from "react-player";
 
 const FeaturedCard = (props) => {
     let [club, setClub] = useState({});
@@ -17,7 +17,7 @@ const FeaturedCard = (props) => {
         <div>
             <h1>Featured Club!</h1>
             <h2>{club.name}</h2>
-            <p>{club.description}</p>            
+            <p>{club.description}</p>    
             <Slideshow>
                 {club.slides != null ? club.slides.map(url => <AutoSlide url={url}></AutoSlide>) : null}
             </Slideshow>
