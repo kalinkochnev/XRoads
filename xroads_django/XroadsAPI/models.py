@@ -6,7 +6,7 @@ from django.conf import settings
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
 
-from XroadsAPI.slides import get_slides
+from XroadsAPI.slides import get_slide_urls, get_slides
 import random
 import xkcdpass.xkcd_password as xp
 
@@ -51,7 +51,7 @@ class Club(models.Model):
 
     @property
     def slides(self):
-        return get_slides(self.presentation_url)
+        return get_slide_urls(self.presentation_url)
 
     def save(self, *args, **kwargs):
         if not self.pk and not self.code:

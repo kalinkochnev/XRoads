@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Navbar from '../../components/Common/Navbar/Navbar';
-import { Slideshow, SlideshowFiller, TextSlide, ImageSlide, VideoSlide } from '../../components/Common/Slides/Slides';
+import { AutoSlide, Slideshow, SlideshowFiller } from '../../components/Common/Slides/Slides';
 
 import ClubBodyDetail from '../../components/Club/Body/Body';
 
@@ -48,7 +48,7 @@ const ScreenClubDetail = ({ match: { params } }) => {
         <Navbar school={params.schoolId}>xroads</Navbar>
         <ReactNotification />
         <Slideshow>
-          {club.slides.map(url => <ImageSlide source={url}></ImageSlide>)}
+          {club.slides.map(url => <AutoSlide url={url}></AutoSlide>)}
         </Slideshow>
         <ClubBodyDetail club={club}></ClubBodyDetail>
       </div>

@@ -39,6 +39,7 @@ const ScreenClubBrowser = ({ match: { params } }) => {
     if (response.curr_featured_order != 0) {
       let position = response.curr_featured_order
 
+      // Keep iterating through clubs until you find a club that is visible and is after the current featured id
       while (Object.keys(featured).length == 0 && position <= response.clubs.length) {        
         function getClubByOrder(featuredOrder) {
           let clubs = response.clubs.filter(club => club.featured_order == featuredOrder)

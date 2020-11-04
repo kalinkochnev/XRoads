@@ -1,4 +1,4 @@
-from typing import List, Match, Optional
+from typing import Dict, List, Match, Optional
 from googleapiclient.discovery import build
 from google.auth import load_credentials_from_file, default
 from django.conf import settings
@@ -16,13 +16,35 @@ def is_valid(url: str) -> Optional[Match[str]]:
     match = re.search(PREZ_REGEX, url)
     return match
 
-def get_slides(url: str) -> List[str]:
+def get_slides(url: str):
     service = create_credentials()
     valid = is_valid(url)
 
     if valid is not None:
         prez_id = valid.group('id')
         response = service.presentations().get(presentationId=prez_id).execute()
-        slide_ids = [slide['objectId'] for slide in response['slides']]
-        return [slide_svg_url(prez_id, slide_id) for slide_id in slide_ids]
+
+        return prez_id, response['slides']
+
     return []
+
+def find_yt_url(slide):
+    for element in slide['pageElements']:
+        if 'video' in element.keys():
+            return element['video']['url']
+    return
+
+def get_slide_urls(url: str):
+    pres_id, slides = get_slides(url)
+    urls = []
+
+    for slide in slides:
+        yt_url = find_yt_url(slide)
+        if yt_url:
+            urls.append(yt_url)
+        else:
+            urls.append(slide_svg_url(pres_id, slide['objectId']))
+
+    print(urls)
+    return urls
+

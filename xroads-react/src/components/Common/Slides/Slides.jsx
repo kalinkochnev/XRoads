@@ -5,6 +5,24 @@ import './Slides.scss';
 import Carousel, { slidesToShowPlugin } from '@brainhubeu/react-carousel';
 import '@brainhubeu/react-carousel/lib/style.css';
 
+function getEmbed(url) {
+
+    if (url != null && url.includes("youtu")) {
+        let regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+        let match = url.match(regExp);
+        return (match && match[7].length === 11) ? ("https://www.youtube-nocookie.com/embed/" + match[7]) : null;
+    }
+
+    // else if (url != null && url.includes("vimeo")) {
+    //     let regExp = /(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)(?:[a-zA-Z0-9_\-]+)?/i
+    //     let match = url.match(regExp);
+    //     return (match && match.length === 2) ? ("https://player.vimeo.com/video/" + match[1]) : null;
+    // }
+    
+    return null;
+
+}
+
 class Slideshow extends React.Component {
     constructor(props) {
         super(props);
@@ -74,36 +92,17 @@ class SlideshowFiller extends React.Component {
     }
 }
 
-class TextSlide extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            scaleAmount: 1,
-        };
-        this.slideContainer = React.createRef();
-    }
+const AutoSlide = (props) => {
 
-    componentDidMount() {
-        var height = this.slideContainer.current.offsetHeight;
-        console.log("Slidewidth is: " + height);
-        this.setState({
-            scaleAmount: height / (variables.maxPageWidth.replace('px', '') / variables.slideAspectRatio)
-        });
-    }
-
-    render() {
+    let embed = getEmbed(props.url)
+    if (embed == null) {
         return (
-            <div ref={this.slideContainer} className="slide text-slide" style={{ backgroundColor: this.props.color }}>
-                <div className="slide-content" style={{ transform: "scale(" + this.state.scaleAmount + ")" }}>
-                    <div className="text-area">
-                        <h1>{this.props.title}</h1>
-                        <h2>{this.props.subtitle}</h2>
-                        <p>{this.props.body}</p>
-                    </div>
-                </div>
-            </div>
-        );
+            <ImageSlide source={props.url}></ImageSlide>
+        ); 
     }
+    return (<VideoSlide videoURL={props.url}></VideoSlide>);
+
+    
 }
 
 class ImageSlide extends React.Component {
@@ -182,4 +181,4 @@ class VideoSlide extends React.Component {
     }
 }
 
-export { Slideshow, SlideshowFiller, TextSlide, ImageSlide, VideoSlide };
+export { Slideshow, SlideshowFiller, ImageSlide, VideoSlide, AutoSlide };
