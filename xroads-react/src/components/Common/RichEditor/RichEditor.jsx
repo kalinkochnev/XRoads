@@ -10,6 +10,7 @@ import { faListOl, faQuoteLeft, fa, faUnderline, faItalic, faBold, faListUl, faH
 import 'draft-js/dist/Draft.css';
 
 import './RichEditor.scss';
+import { withFormik } from 'formik';
 
 const {useState, useRef, useCallback} = React;
 

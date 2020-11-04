@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import Navbar from '../../components/Common/Navbar/Navbar';
 
 import Tabs from '../../components/Common/Tabs/Tabs';
-import { EditAccess, GeneralEdit, ManageQuestions, SlideshowEdit } from '../../components/Club/Edit/Edit';
+import { GeneralEdit } from '../../components/Club/Edit/Edit';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
@@ -30,7 +30,7 @@ const ScreenClubEdit = ({ match: { params: { schoolId, clubId, code } } }) => {
     console.log(code)
     XroadsAPI.fetchClubEdit(clubId, code).then(res => {
       if (res.ok) {
-        return res.json().then(clubRes => {
+        res.json().then(clubRes => {
           console.log(clubRes)
           setClub(clubRes);
         });
@@ -44,14 +44,14 @@ const ScreenClubEdit = ({ match: { params: { schoolId, clubId, code } } }) => {
     console.log("Loading");
     return (
       <div>
-        <Navbar school={schoolId}>xroads</Navbar>
+        <Navbar>xroads</Navbar>
       </div>
     );
   }
   else {
     return (
       <div>
-        <Navbar school={schoolId}>xroads</Navbar>
+        <Navbar>xroads</Navbar>
         <ReactNotification />
         <div className="centerContent">
           <div className="clubHeading">
@@ -60,7 +60,7 @@ const ScreenClubEdit = ({ match: { params: { schoolId, clubId, code } } }) => {
             <ReactTooltip place="right" effect="solid"/>
           </div>
           <div label="General">
-            <GeneralEdit label="General" club={club} code={code}></GeneralEdit>
+            <GeneralEdit label="General" clubData={club} code={code}></GeneralEdit>
           </div>
         </div>
       </div>

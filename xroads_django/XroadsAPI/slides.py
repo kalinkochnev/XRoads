@@ -45,6 +45,5 @@ def get_slide_urls(url: str):
         else:
             urls.append(slide_svg_url(pres_id, slide['objectId']))
 
-    print(urls)
     return urls
 
