@@ -75,6 +75,8 @@ function RichEditor(props) {
     const content = newEditorState.getCurrentContent();
     const rawObject = convertToRaw(content);
     const markdownString = draftToMarkdown(rawObject);
+    console.log(markdownString)
+    props.setFieldValue(props.fieldName, markdownString)
     props.onChange(markdownString);
     setEditorState(newEditorState);
   }
