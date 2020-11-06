@@ -15,16 +15,17 @@ import "react-confirm-alert/src/react-confirm-alert.css"; // Import css for aler
 import { Formik, useField, withFormik, yupToFormErrors } from "formik";
 import * as Yup from 'yup';
 import { ContentState, EditorState } from "draft-js";
+import "../../Common/Form/FormStyle.scss";
 
 
-const InputField = ({ label, ...props }) => {
+const InputField = ({ label, type, ...props }) => {
     // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
     // which we can spread on <input> and also replace ErrorMessage entirely.
     const [field, meta] = useField(props);
     return (
         <>
             <label htmlFor={props.id || props.name}>{label}</label>
-            <input className="text-input" {...field} {...props} />
+            { type == "textarea" ? <textarea style={{height: "200px"}} cols="2" {...field} {...props}></textarea> : <input className="text-input" {...field} {...props} />}
             {meta.touched && meta.error ? (
                 <div className="error">{meta.error}</div>
             ) : null}
@@ -32,24 +33,62 @@ const InputField = ({ label, ...props }) => {
     );
 };
 
+
+
+const possData = ['label', 'type', 'validation', 'component']
+const componentArgs = ['label', 'type']
+const fieldData = {
+    presentation_url: {
+        label: 'Presentation Link',
+        type: 'text',
+        validation: Yup.string().url().matches("^.*docs\.google\.com\/presentation\/d\/(?<id>[^\/]*).*", "Please enter a valid google slides url"),
+    },
+    contact: {
+        label: 'Club contact',
+        type: 'text',
+        validation: Yup.string().email("Please enter a valid contact email")
+    },
+    hidden_info: {
+        label: 'Detailed Info Email Body',
+        type: 'textarea',
+        validation: Yup.string(),
+    },
+    description: {
+        label: 'Club Description',
+        type: 'rich-text',
+        validation: null,
+        component: (formik) => (
+            <div>
+                <label >Club Description</label>
+                <RichEditor fieldName="description" mdContent={formik.values.description} onChange={formik.handleChange} setFieldValue={formik.setFieldValue} onBlur={formik.handleBlur} />
+            </div>
+        ),
+    },
+}
+
 // Created by following this example: https://codesandbox.io/s/QW1rqjBLl?file=/index.js:860-992
 const GeneralEdit = (props) => {
     const [state, dispatch] = useStateValue();
     const [isVisible, setVisibility] = useState(props.clubData.is_visible);
     const [clubData, setClubData] = useState(props.clubData);
+    
 
-    let editableFields = (() => {
-        if (clubData == null) {
-            return []
+    // This returns a dictionary of every field and the associated value of that (ex want to know every fields input type)
+    const filterObjByAttr = (attr, obj, fields=[], removeNull=false, emptyFieldFiller=null) => {
+        let keys = fields.length == 0 ? Object.keys(obj) : fields
+
+        let newObj = {};
+        for (let key of keys) {
+            if (!Object.keys(obj[key]).includes(attr)) {
+                obj[key][attr] = emptyFieldFiller;
+            }
+            if (obj[key][attr] == null && removeNull) {
+                continue
+            }
+            newObj[key] = obj[key][attr];
         }
-        let fields = ['presentation_url', 'hidden_info', 'description']
-
-        if (clubData.school.club_contact) {
-            fields.push('contact')
-        }
-
-        return fields
-    })();
+        return newObj;
+    }
 
     const objFromKeys = (keys, obj) => {
         let values = {};
@@ -59,19 +98,23 @@ const GeneralEdit = (props) => {
         return values;
     }
 
+    let getEditableFields = (() => {
+        if (clubData == null) {
+            return []
+        }
+        let fields = Object.keys(fieldData);
+        if (!clubData.school.club_contact) {
+            fields.pop('contact')
+        }
+        return fields
+    });
+
     const getInitialValues = () => {
-        console.log(clubData)
-        return objFromKeys(editableFields, clubData);
+        return objFromKeys(getEditableFields(), clubData);
     }
 
     const getValidation = () => {
-        let possFields = {
-            description: Yup.string(),
-            presentation_url: Yup.string().url().matches("^.*docs\.google\.com\/presentation\/d\/(?<id>[^\/]*).*", "Please enter a valid google slides url"),
-            hidden_info: Yup.string(),
-            contact: Yup.string().email()
-        }
-        return objFromKeys(editableFields, possFields)
+        return filterObjByAttr('validation', fieldData, getEditableFields(), true)
     }
 
     const saveClubInfo = (values, { setSubmitting }) => {
@@ -106,28 +149,32 @@ const GeneralEdit = (props) => {
 
     // This is where you should define individual field's JSX. This will then render the propers fields into the form
     const fieldsJSX = (formik) => {
-        let fieldJSX = {
-            description: (
-                <div>
-                    <label>Club Description</label>
-                    <RichEditor fieldName="description" mdContent={formik.values.description} onChange={formik.handleChange} setFieldValue={formik.setFieldValue} onBlur={formik.handleBlur} />
-                </div>
-            ),
-            presentation_url: (<InputField label="Presentation URL" name="presentation_url" type="text"></InputField>),
-            hidden_info: (<InputField label="Detailed info email body" name="hidden_info" type="text"></InputField>),
-            contact: (<InputField label="Club contact email" name="contact" type="text"></InputField>)
+        let compsToRender = [];
+        let compData = filterObjByAttr('component', fieldData, getEditableFields(), false, null)
+        for (let key of Object.keys(compData)) {
+            if (Object.keys(fieldData[key]).includes("component")) {
+                if (fieldData[key].component != null) {
+                    compsToRender.push(fieldData[key].component(formik))
+                    continue;
+                }
+                
+            }
+            switch (fieldData[key].type){
+                case "textarea":
+                case "text":
+                    compsToRender.push(<InputField name={key} {...objFromKeys(componentArgs, fieldData[key])}></InputField>)
+                    break;
+                case "rich-text":
+                    compsToRender.push(fieldData[key].component(formik))
+                    break;
+            }
         }
 
-        let jsxToRender = [];
-        for (let field of editableFields) {
-            jsxToRender.push(fieldJSX[field]);
-        }
-
-        return jsxToRender.map(item => item)
+        return compsToRender.map(item => item)
     }
 
     const Form = (formik) => (
-        <form onSubmit={formik.handleSubmit}>
+        <form className="editBody" onSubmit={formik.handleSubmit}>
             {fieldsJSX(formik)}
             <button type="submit" id="club-submit" disabled={formik.isSubmitting}>Save</button>
         </form>
@@ -178,53 +225,3 @@ const GeneralEdit = (props) => {
 
 
 export { GeneralEdit };
-
-/*
-<Formik
-          initialValues={getValues().initialValues}
-          validationSchema={Yup.object(getValues().validation)}
-          onSubmit={saveClubDetails}
-        >
-
-        <label htmlFor="firstName">First Name</label>
-         <Field name="firstName" type="text" />
-         <ErrorMessage name="firstName" />
-
-        </Formik>
-        <form className="clubEdit">
-          <label className="" htmlFor="">
-            Hide club
-          </label>
-
-
-          <ReactTooltip place="right" effect="solid" />
-
-          <label className="" htmlFor="description">
-            Description
-            <br />
-            <RichEditor
-              mdContent={clubDescriptionMd}
-              onChange={handleClubDescription}
-            />
-            <br />
-
-          </label>
-
-          <label className="" htmlFor="presentation url">
-            Google Slides Link
-            <br />
-            <input
-              type="text"
-              id="presentation url"
-              name="presentation url"
-              value={clubJoinPromo}
-              onChange={(e) => setClubJoinPromo(e.target.value)}
-            />
-          </label>
-          <ReactTooltip place="right" effect="solid" />
-
-        </form>
-        <button type="submit" id="club-submit" onClick={saveClubDetails}>
-          Save
-        </button>
-*/

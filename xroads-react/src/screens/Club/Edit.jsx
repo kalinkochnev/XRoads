@@ -56,7 +56,7 @@ const ScreenClubEdit = ({ match: { params: { schoolId, clubId, code } } }) => {
         <div className="centerContent">
           <div className="clubHeading">
             <h2>Now Editing</h2>
-            <h1 data-tip="please email us support@xroads.club to change club name">{club.name}</h1>
+            <h1 data-tip="please email us support@xroads.club to change club name">{club.name + ` (${club.code})`}</h1>
             <ReactTooltip place="right" effect="solid"/>
           </div>
           <div label="General">

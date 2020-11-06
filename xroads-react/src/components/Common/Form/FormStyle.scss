@@ -1,5 +1,5 @@
-@import "./Common.scss";
-@import "./Variables.scss";
+@import "./../Common.scss";
+@import "./../Variables.scss";
 
 
 $formBottomMargin: 0px !default;
@@ -79,7 +79,6 @@ $submitTopM: 50px !default;
       border-bottom-right-radius: $inputBRadius;
       margin-bottom: 20px;
     }
-
   }
 
   input:not([type=checkbox]) {
@@ -101,9 +100,16 @@ $submitTopM: 50px !default;
     min-width: $inputMinW;
     height: 50px;
   }
+
+  
 }
 
-
+.blurrable::placeholder {
+  filter: blur(3px);
+}
+.no-blur::placeholder {
+  filter: none;
+}
 
 
 

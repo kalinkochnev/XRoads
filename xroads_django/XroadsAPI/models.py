@@ -19,7 +19,7 @@ class Club(models.Model):
     presentation_url = models.URLField()
     contact = models.EmailField(blank=True, null=True)
     featured_order = models.IntegerField(blank=True, null=True, default=None)
-
+    
     hidden_info = models.TextField(blank=True, null=True)
     code = models.CharField(max_length=30, blank=True)
 
