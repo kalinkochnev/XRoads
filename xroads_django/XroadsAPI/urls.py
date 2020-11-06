@@ -28,6 +28,6 @@ admin_route = DefaultRouter()
 admin_route.register(r'club/(?P<code>[a-z0-9A-Z]+)', admin_views.ClubEditViewset)
 
 urlpatterns = [
-    path('', include(admin_route.urls)),
     path('', include(default_route.urls)),
+    path('', include(admin_route.urls)),
 ]

@@ -48,7 +48,7 @@ const fieldData = {
         type: 'text',
         validation: Yup.string().email("Please enter a valid contact email")
     },
-    hidden_info: {
+    extra_info: {
         label: 'Detailed Info Email Body',
         type: 'textarea',
         validation: Yup.string(),

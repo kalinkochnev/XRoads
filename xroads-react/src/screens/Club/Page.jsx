@@ -12,6 +12,7 @@ import 'react-notifications-component/dist/theme.css'
 import checkURLParams from '../Routes/utils';
 import { useHistory } from 'react-router-dom';
 import ReactPlayer from 'react-player';
+import ExtraInfo from '../../components/Club/ExtraInfo/ExtraInfo';
 
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
 // This: { match: { params: { id }}} is the same as props.match.params.id and you can refer to id directly later
@@ -50,6 +51,7 @@ const ScreenClubDetail = ({ match: { params } }) => {
         <Slideshow>
           {club.slides.map(url => <AutoSlide url={url}></AutoSlide>)}
         </Slideshow>
+        <ExtraInfo club={club}></ExtraInfo>
         <ClubBodyDetail club={club}></ClubBodyDetail>
       </div>
     );

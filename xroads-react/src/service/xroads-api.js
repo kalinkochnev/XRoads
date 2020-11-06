@@ -7,7 +7,8 @@ const endpoint_templates = {
     'school_list': '/api/district/:districtId',
 
     'toggle_hide_club': '/api/club/:code/:clubId/toggle_hide/',
-    'check_code': '/api/school/:schoolId/club_code/'
+    'check_code': '/api/school/:schoolId/club_code/',
+    'extra_info': '/api/club/:clubId/send_info/'
 };
 
 function fillTemplate(urlName, urlArgs) {

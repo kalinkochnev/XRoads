@@ -1,8 +1,10 @@
+from django.http import request
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.viewsets import GenericViewSet
 
 from XroadsAPI.serializers import *
 
@@ -11,7 +13,7 @@ class DistrictViewset(viewsets.ReadOnlyModelViewSet):
     serializer_class = DistrictSerializer
 
 
-class SchoolViewset(viewsets.ReadOnlyModelViewSet):
+class SchoolViewset(viewsets.ReadOnlyModelViewSet, GenericViewSet):
     queryset = School.objects.all()
     serializer_class = BasicInfoSchoolSerial
 
@@ -27,13 +29,31 @@ class SchoolViewset(viewsets.ReadOnlyModelViewSet):
             return Response(BasicClubInfoSerial(club).data, status=status.HTTP_200_OK)
         except (Club.DoesNotExist, KeyError):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
+    
+
 
 
 class ClubViewset(viewsets.ReadOnlyModelViewSet):
     queryset = Club.objects.all()
     serializer_class = ClubDetailSerializer
 
+    @action(detail=True, methods=['get'])
+    def send_info(self, request, *args, **kwargs):
+        email = self.request.query_params.get('email', None)
+        if email is not None:
+            district = District.match_district(email)
+
+            club: Club = self.get_object()
+            if district == club.district:
+                club.send_extra_info(email)
+                return Response({}, status=status.HTTP_200_OK)
+        return Response({'message': 'The email provided was invalid or is not allowed to access'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
     def list(self, request, *args, **kwargs):
         school_id = self.kwargs['school_pk']
         queryset = Club.objects.filter(school=school_id)
         return Response(BasicClubInfoSerial(queryset, many=True).data)
+
+    

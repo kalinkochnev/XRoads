@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models.expressions import Random
 from django.conf import settings
 from django.template.loader import get_template
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives, send_mail
 
 from XroadsAPI.slides import get_slide_urls, get_slides
 import random
@@ -19,8 +19,8 @@ class Club(models.Model):
     presentation_url = models.URLField()
     contact = models.EmailField(blank=True, null=True)
     featured_order = models.IntegerField(blank=True, null=True, default=None)
-    
-    hidden_info = models.TextField(blank=True, null=True)
+
+    extra_info = models.TextField(blank=True, null=True)
     code = models.CharField(max_length=30, blank=True)
 
     school = models.ForeignKey('School', on_delete=models.CASCADE, null=True)
@@ -28,11 +28,12 @@ class Club(models.Model):
     @classmethod
     def gen_code(cls) -> str:
         words = xp.locate_wordfile()
-        word_list = xp.generate_wordlist(wordfile=words, min_length=4, max_length=5)
-        code = xp.generate_xkcdpassword(wordlist=word_list, numwords=2, case='first').split(" ")
+        word_list = xp.generate_wordlist(
+            wordfile=words, min_length=4, max_length=5)
+        code = xp.generate_xkcdpassword(
+            wordlist=word_list, numwords=2, case='first').split(" ")
         rand_num = random.randint(10, 99)
         return "".join([code[0], str(rand_num), code[1]])
-
 
     def __str__(self):
         return f"{self.name} - id: {self.id}"
@@ -53,6 +54,11 @@ class Club(models.Model):
     def slides(self):
         return get_slide_urls(self.presentation_url)
 
+    def send_extra_info(self, email):
+        subject, from_email, to = f'Extra info for {self.name}', settings.DJANGO_NO_REPLY, [email]
+        
+        send_mail(subject, self.extra_info, from_email, to)
+
     def save(self, *args, **kwargs):
         if not self.pk and not self.code:
             self.code = self.gen_code()
@@ -69,10 +75,11 @@ class School(models.Model):
     district = models.ForeignKey(
         'District', on_delete=models.CASCADE, null=True)
 
-    featured: Club = models.ForeignKey(Club, on_delete=models.SET_NULL, null=True, blank=True, related_name='featured')
+    featured: Club = models.ForeignKey(
+        Club, on_delete=models.SET_NULL, null=True, blank=True, related_name='featured')
 
     club_contact = models.BooleanField(default=False)
-    
+
     def __str__(self):
         return f"{self.name} - id: {self.id}"
 
@@ -137,7 +144,7 @@ class School(models.Model):
             curr_id = start
         elif self.featured is not None:
             curr_id = self.featured.featured_order
-        
+
         try:
             return Club.objects.get(featured_order=curr_id + 1, school=self)
         except Club.DoesNotExist:
@@ -149,10 +156,12 @@ class School(models.Model):
                 self.featured = self.get_next()
                 self.email_featured(self.featured)
                 self.email_club_warning(self.next_featured)
-            
+
         super(School, self).save(*args, **kwargs)
 
 # Scheduling every monday at 8 am
+
+
 @weekly_task(week_day=6, hours=22, minutes=22)
 def update_featured_club():
     school: School
@@ -160,6 +169,7 @@ def update_featured_club():
         school.featured = school.get_next()
         school.save()
     print('updated school')
+
 
 class DistrictDomain(models.Model):
     domain = models.CharField(max_length=20, unique=True)
@@ -202,6 +212,8 @@ class District(models.Model):
     @classmethod
     def match_district(cls, email):
         domain = email.split('@')[1]
+        yo = 1
+        
         try:
             return DistrictDomain.objects.get(domain=domain).district
         except DistrictDomain.DoesNotExist:

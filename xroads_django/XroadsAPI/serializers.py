@@ -29,7 +29,7 @@ class ClubDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Club
-        exclude = ['code', 'hidden_info']
+        exclude = ['code', 'extra_info']
 
 
 class SchoolDetailSerializer(serializers.ModelSerializer):

@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useReducer, useState } from 'react';
 import { userReducer } from './User';
+import { Cookies } from 'react-cookie'
+
 export const StateContext = createContext();
 export const StateProvider = ({ reducer, initialState, children }) => {
     let [state, dispatch] = useReducer(reducer, initialState);
@@ -17,6 +19,7 @@ const AppState = ({children}) => {
     let initialState = {
         user: {
             school: null,
+            email: new Cookies().get('email')
         }
     };
 
