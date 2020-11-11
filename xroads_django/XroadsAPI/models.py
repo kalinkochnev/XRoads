@@ -84,6 +84,9 @@ class Event(models.Model):
     description = models.TextField()
     requested_count = models.IntegerField(default=0)
 
+    def __str__(self) -> str:
+        return f'{self.name} -- {self.club.name}: {self.club.pk}'
+
 class School(models.Model):
     name = models.CharField(max_length=40)
     img = models.ImageField()

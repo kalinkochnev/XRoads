@@ -14,6 +14,7 @@
     "formik": "^2.1.5",
     "lunr": "^2.3.9",
     "markdown-draft-js": "^2.2.1",
+    "moment": "^2.29.1",
     "react": "^16.13.1",
     "react-confirm-alert": "^2.6.2",
     "react-cookie": "^4.0.3",

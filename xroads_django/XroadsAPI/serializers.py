@@ -24,10 +24,14 @@ class DistrictSerializer(serializers.ModelSerializer):
         model = District
         fields = '__all__'
 
+class EventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = '__all__'
 
 class ClubDetailSerializer(serializers.ModelSerializer):
     slides = serializers.ListField(child=serializers.URLField())
-    
+    events = EventSerializer(many=True)
 
     class Meta:
         model = Club
@@ -54,7 +58,3 @@ class ClubEditSerializer(serializers.ModelSerializer):
         read_only_fields = ['img', 'name']
 
 
-class EventSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Event
-        fields = '__all__'
