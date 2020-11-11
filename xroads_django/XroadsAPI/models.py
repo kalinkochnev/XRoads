@@ -1,12 +1,12 @@
-from datetime import datetime
+import datetime
 from XroadsAPI.tasks import weekly_task
 from django.db import models
-from django.db.models.expressions import Random
 from django.conf import settings
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives, send_mail
+from django.db.models import Q
 
-from XroadsAPI.slides import get_slide_urls, get_slides
+from XroadsAPI.slides import get_slide_urls
 import random
 import xkcdpass.xkcd_password as xp
 
@@ -55,8 +55,9 @@ class Club(models.Model):
         return get_slide_urls(self.presentation_url)
 
     def send_extra_info(self, email):
-        subject, from_email, to = f'Extra info for {self.name}', settings.DJANGO_NO_REPLY, [email]
-        
+        subject, from_email, to = f'Extra info for {self.name}', settings.DJANGO_NO_REPLY, [
+            email]
+
         send_mail(subject, self.extra_info, from_email, to)
 
     def save(self, *args, **kwargs):
@@ -68,6 +69,20 @@ class Club(models.Model):
 
         super(Club, self).save(*args, **kwargs)
 
+    @property
+    def events(self):
+        events_gt_today = Q(date__gt=datetime.date.today())
+        today_unfinished_events = Q(end__gte=datetime.datetime.now(), date=datetime.date.today()) 
+        return Event.objects.filter(today_unfinished_events | events_gt_today, club=self)
+
+class Event(models.Model):
+    club = models.ForeignKey(Club, on_delete=models.CASCADE)
+    name = models.CharField(max_length=35)
+    date = models.DateField()
+    start = models.TimeField()
+    end = models.TimeField()
+    description = models.TextField()
+    requested_count = models.IntegerField(default=0)
 
 class School(models.Model):
     name = models.CharField(max_length=40)
@@ -160,9 +175,7 @@ class School(models.Model):
         super(School, self).save(*args, **kwargs)
 
 # Scheduling every monday at 8 am
-
-
-@weekly_task(week_day=6, hours=22, minutes=22)
+@weekly_task(week_day=0, hours=23, minutes=59)
 def update_featured_club():
     school: School
     for school in School.objects.all():
@@ -213,7 +226,7 @@ class District(models.Model):
     def match_district(cls, email):
         domain = email.split('@')[1]
         yo = 1
-        
+
         try:
             return DistrictDomain.objects.get(domain=domain).district
         except DistrictDomain.DoesNotExist:

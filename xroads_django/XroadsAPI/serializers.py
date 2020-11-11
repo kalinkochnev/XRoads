@@ -7,7 +7,8 @@ class BasicClubInfoSerial(serializers.ModelSerializer):
 
     class Meta:
         model = Club
-        fields = ['id', 'name', 'description', 'img', 'is_visible', 'featured_order']
+        fields = ['id', 'name', 'description',
+                  'img', 'is_visible', 'featured_order']
 
 
 class BasicInfoSchoolSerial(serializers.ModelSerializer):
@@ -26,6 +27,7 @@ class DistrictSerializer(serializers.ModelSerializer):
 
 class ClubDetailSerializer(serializers.ModelSerializer):
     slides = serializers.ListField(child=serializers.URLField())
+    
 
     class Meta:
         model = Club
@@ -50,3 +52,9 @@ class ClubEditSerializer(serializers.ModelSerializer):
         model = Club
         fields = '__all__'
         read_only_fields = ['img', 'name']
+
+
+class EventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = '__all__'

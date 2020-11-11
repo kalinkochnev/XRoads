@@ -36,7 +36,7 @@ def create_club(db, temp_img):
         data = {
             'name': "Test Club",
             'description': "This is a club description",
-            'hidden_info': "hidden info",
+            'extra_info': "extra_info",
             'presentation_url': "https://docs.google.com/presentation/d/fake_id/edit",
             'code': 'Random52Code23',
             'is_visible': True,
