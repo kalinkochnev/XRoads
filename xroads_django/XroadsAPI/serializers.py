@@ -51,6 +51,7 @@ class ClubEditSerializer(serializers.ModelSerializer):
     slides = serializers.ListField(
         child=serializers.URLField(), read_only=True)
     school = BasicInfoSchoolSerial(read_only=True)
+    events = EventSerializer(many=True)
 
     class Meta:
         model = Club

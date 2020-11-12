@@ -73,7 +73,7 @@ class Club(models.Model):
     def events(self):
         events_gt_today = Q(date__gt=datetime.date.today())
         today_unfinished_events = Q(end__gte=datetime.datetime.now(), date=datetime.date.today()) 
-        return Event.objects.filter(today_unfinished_events | events_gt_today, club=self)
+        return Event.objects.filter(today_unfinished_events | events_gt_today, club=self).order_by('date')
 
 class Event(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE)

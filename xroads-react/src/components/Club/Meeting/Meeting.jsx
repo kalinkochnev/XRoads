@@ -1,7 +1,43 @@
-import React from "react";
-const moment = require('moment');
+import React, { useState } from "react";
+import DynamicForm from '../../Common/Form/DynamicForm';
+import * as Yup from 'yup';
+import { withFormik } from 'formik';
 
-const MeetingCard = ({ event }) => {
+
+
+const MeetingForm = ({initialData={}}) => {
+    const fieldData = {
+        description: {
+            label: 'Meeting Description',
+            type: 'text',
+            validation: Yup.string(),
+        },
+    }
+
+    const [fieldsJSX, getInitialValues, getValidation] = DynamicForm(fieldData, initialData);
+    const Form = (formik) => (
+        <form className="editBody" onSubmit={formik.handleSubmit}>
+            {fieldsJSX(formik)}
+            <button type="submit" id="club-submit" disabled={formik.isSubmitting}>Save</button>
+        </form>
+    )
+
+    const saveInfo = () => {
+
+    }
+
+    const formikEnhancer = withFormik({
+        mapPropsToValues: props => getInitialValues(),
+        validationSchema: Yup.object().shape(getValidation()),
+        handleSubmit: saveInfo,
+        displayName: 'Add Meeting'
+    });
+
+    return formikEnhancer(Form);
+}
+
+const MeetingCard = ({ event, editable=false }) => {
+    let [showEdit, setEdit] = useState(editable);
     let date_str = new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'utc' });
     let start = formatTimeShow(event.start);
     let end = formatTimeShow(event.end);
@@ -21,13 +57,24 @@ const MeetingCard = ({ event }) => {
         return (h < 10 ? '0' : '') + h + `:${m}` + (includeSeconds ? `:${s}` : '') + (showMeridian ? meridian : '');
     }
 
+    const handleClick = (e) => {
+        if (editable) {
+            setEdit(true);
+        }
+    }
+
     return (
         <div>
             <h2>{event.name}</h2>
+            <button onClick={handleClick}>Edit</button>
             <b>{`${date_str} ${start} — ${end}`}</b>
             <p>{event.description}</p>
+            <br />
+            { showEdit ? <MeetingForm initialData={event}/> : null}
         </div>
     )
 }
+
+
 
 export default MeetingCard

@@ -16,6 +16,7 @@ import ReactNotification from 'react-notifications-component'
 import 'react-notifications-component/dist/theme.css'
 import { store } from 'react-notifications-component';
 import { useHistory } from 'react-router-dom';
+import Meetings from '../../components/Club/Edit/Meetings';
 
 
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
@@ -59,9 +60,16 @@ const ScreenClubEdit = ({ match: { params: { schoolId, clubId, code } } }) => {
             <h1 data-tip="please email us support@xroads.club to change club name">{club.name + ` (${club.code})`}</h1>
             <ReactTooltip place="right" effect="solid"/>
           </div>
-          <div label="General">
-            <GeneralEdit label="General" clubData={club} code={code}></GeneralEdit>
-          </div>
+          <Tabs>
+            <div label="General">
+              <GeneralEdit clubData={club} code={code}/>
+            </div>
+
+            <div label="Meetings">
+              <Meetings clubData={club} />
+            </div>
+          </Tabs>
+          
         </div>
       </div>
     );
