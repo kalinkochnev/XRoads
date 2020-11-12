@@ -1,5 +1,6 @@
 import { useField } from "formik";
 import React from "react";
+import RichEditor from "../RichEditor/RichEditor";
 
 const InputField = ({ label, type, ...props }) => {
     // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
@@ -15,6 +16,23 @@ const InputField = ({ label, type, ...props }) => {
         </>
     );
 };
+
+const FormikTextEditor = ({label, name}) => {
+    const [field, meta, helpers] = useField(name)
+    const fieldValue  = meta.initialValue;
+    const { setValue } = helpers;
+
+    return (
+        <div>
+            <label>{label}</label>
+            <RichEditor initialValue={fieldValue} setValue={setValue}></RichEditor>
+        </div>
+    );
+}
+
+const TimePicker = ({}) => {
+    
+}
 
 const DynamicForm = (fieldData, data, editableFields = null) => {
     /* 
@@ -118,7 +136,7 @@ const DynamicForm = (fieldData, data, editableFields = null) => {
                     compsToRender.push(<InputField name={field} {...propsFromFields[field]}></InputField>)
                     break;
                 case "rich-text":
-                    compsToRender.push(fieldData[field].component(formik))
+                    compsToRender.push(<FormikTextEditor name={field} {...propsFromFields[field]} />)
                     break;
                 case "time-selector":
                     break;

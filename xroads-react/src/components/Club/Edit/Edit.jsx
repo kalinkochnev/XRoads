@@ -41,13 +41,10 @@ const fieldData = {
         validation: Yup.string(),
     },
     description: {
+        fieldProps: {
+            label: 'Club Page Description'
+        },
         type: 'rich-text',
-        component: (formik) => (
-            <div>
-                <label>Club Description</label>
-                <RichEditor fieldName="description" mdContent={formik.values.description} onChange={formik.handleChange} setFieldValue={formik.setFieldValue} onBlur={formik.handleBlur} />
-            </div>
-        ),
     },
 }
 
