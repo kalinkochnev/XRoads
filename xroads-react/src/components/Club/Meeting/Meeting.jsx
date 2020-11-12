@@ -8,21 +8,26 @@ import { withFormik } from 'formik';
 const MeetingForm = ({initialData={}}) => {
     const fieldData = {
         description: {
-            label: 'Meeting Description',
             type: 'text',
+            initialValue: 'Some initial value',
+            fieldProps: {
+                label: 'Meeting description'
+            },
             validation: Yup.string(),
         },
     }
 
     const [fieldsJSX, getInitialValues, getValidation] = DynamicForm(fieldData, initialData);
+    console.log(getInitialValues())
     const Form = (formik) => (
         <form className="editBody" onSubmit={formik.handleSubmit}>
             {fieldsJSX(formik)}
+            {console.log(fieldsJSX(formik))}
             <button type="submit" id="club-submit" disabled={formik.isSubmitting}>Save</button>
         </form>
     )
 
-    const saveInfo = () => {
+    const saveInfo = (values, { setSubmitting }) => {
 
     }
 
@@ -63,6 +68,8 @@ const MeetingCard = ({ event, editable=false }) => {
         }
     }
 
+    const MeetingSDds = MeetingForm({})
+
     return (
         <div>
             <h2>{event.name}</h2>
@@ -70,7 +77,7 @@ const MeetingCard = ({ event, editable=false }) => {
             <b>{`${date_str} ${start} — ${end}`}</b>
             <p>{event.description}</p>
             <br />
-            { showEdit ? <MeetingForm initialData={event}/> : null}
+            <MeetingSDds initialData={event}></MeetingSDds>
         </div>
     )
 }
