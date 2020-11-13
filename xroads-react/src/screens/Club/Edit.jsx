@@ -16,7 +16,7 @@ import ReactNotification from 'react-notifications-component'
 import 'react-notifications-component/dist/theme.css'
 import { store } from 'react-notifications-component';
 import { useHistory } from 'react-router-dom';
-import Meetings from '../../components/Club/Edit/Meetings';
+import MeetingsEdit from '../../components/Club/Edit/Meetings';
 
 
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
@@ -66,7 +66,7 @@ const ScreenClubEdit = ({ match: { params: { schoolId, clubId, code } } }) => {
             </div>
 
             <div label="Meetings">
-              <Meetings clubData={club} />
+              <MeetingsEdit clubData={club} />
             </div>
           </Tabs>
           

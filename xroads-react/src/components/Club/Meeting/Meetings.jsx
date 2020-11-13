@@ -3,10 +3,38 @@ import DynamicForm from '../../Common/Form/DynamicForm';
 import * as Yup from 'yup';
 import { withFormik } from 'formik';
 
+const MeetingsEdit = ({ clubData }) => {
+    let [displayAdd, setDisplay] = useState(true);
 
+    const addEventClick = (e) => {
+        setDisplay(false);
+    }
 
-const MeetingForm = ({initialData={}}) => {
+    return (
+        <div>
+
+            {clubData.events.map(event => <MeetingCard event={event} editable={false} />)}
+            { displayAdd ? <button onClick={addEventClick}>Add event</button> : null}
+        </div>
+    );
+}
+
+const MeetingFormFunc = (initialData = {}) => {
     const fieldData = {
+        start: {
+            initialValue: "14:15:00",
+            type: 'time-selector',
+            fieldProps: {
+                label: 'Start time'
+            }
+        },
+        end: {
+            initialValue: "15:15:00",
+            type: 'time-selector',
+            fieldProps: {
+                label: 'End time'
+            }
+        },
         description: {
             type: 'text',
             initialValue: 'Some initial value',
@@ -18,11 +46,9 @@ const MeetingForm = ({initialData={}}) => {
     }
 
     const [fieldsJSX, getInitialValues, getValidation] = DynamicForm(fieldData, initialData);
-    console.log(getInitialValues())
     const Form = (formik) => (
         <form className="editBody" onSubmit={formik.handleSubmit}>
             {fieldsJSX(formik)}
-            {console.log(fieldsJSX(formik))}
             <button type="submit" id="club-submit" disabled={formik.isSubmitting}>Save</button>
         </form>
     )
@@ -41,15 +67,16 @@ const MeetingForm = ({initialData={}}) => {
     return formikEnhancer(Form);
 }
 
-const MeetingCard = ({ event, editable=false }) => {
+const MeetingCard = ({ event, editable = false }) => {
     let [showEdit, setEdit] = useState(editable);
     let date_str = new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'utc' });
     let start = formatTimeShow(event.start);
     let end = formatTimeShow(event.end);
+    console.log(event.start);
 
-    function formatTimeShow(time, includeSeconds=false, showMeridian=true) {
+    function formatTimeShow(time, includeSeconds = false, showMeridian = true) {
         let times = time.split(":") // hours, minutes, seconds
-        
+
         for (let i = 0; i < 3; i++) {
             times[0] = Number(times[0])
         }
@@ -68,20 +95,21 @@ const MeetingCard = ({ event, editable=false }) => {
         }
     }
 
-    const MeetingSDds = MeetingForm({})
+    const MeetingForm = MeetingFormFunc(event)
 
     return (
         <div>
             <h2>{event.name}</h2>
-            <button onClick={handleClick}>Edit</button>
             <b>{`${date_str} ${start} — ${end}`}</b>
             <p>{event.description}</p>
             <br />
-            <MeetingSDds initialData={event}></MeetingSDds>
+            {editable ? <button onClick={handleClick}>Edit</button> : null}
+            {showEdit ? <MeetingForm initialData={event} /> : null}
+
         </div>
     )
 }
 
 
 
-export default MeetingCard
+export { MeetingsEdit, MeetingCard };

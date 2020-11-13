@@ -1,6 +1,9 @@
 import { useField } from "formik";
-import React from "react";
+import React, { useState } from "react";
+import ReactDatePicker from "react-datepicker";
 import RichEditor from "../RichEditor/RichEditor";
+import "react-datepicker/dist/react-datepicker.css";
+import moment from "moment";
 
 const InputField = ({ label, type, ...props }) => {
     // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
@@ -19,19 +22,37 @@ const InputField = ({ label, type, ...props }) => {
 
 const FormikTextEditor = ({label, name}) => {
     const [field, meta, helpers] = useField(name)
-    const fieldValue  = meta.initialValue;
+    const initial  = meta.initialValue;
+    console.log(meta, field, helpers)
     const { setValue } = helpers;
 
     return (
         <div>
             <label>{label}</label>
-            <RichEditor initialValue={fieldValue} setValue={setValue}></RichEditor>
+            <RichEditor initialValue={initial} setValue={setValue}></RichEditor>
         </div>
     );
 }
 
-const TimePicker = ({}) => {
-    
+const TimePicker = ({label, name}) => {
+    const [field, meta, helpers] = useField(name);
+    const value = moment(meta.value, 'H:mm:ss').toDate();
+    const { setValue } = helpers;
+    return (
+        <div>
+            <label>{label}</label>
+            <ReactDatePicker 
+            selected={value}
+            onChange={date => setValue(date)}
+            showTimeSelect
+            showTimeSelectOnly
+            timeIntervals={15}
+            timeCaption="Time"
+            dateFormat="h:mm aa"
+            />
+        </div>
+        
+    );
 }
 
 const DynamicForm = (fieldData, data, editableFields = null) => {
@@ -139,6 +160,7 @@ const DynamicForm = (fieldData, data, editableFields = null) => {
                     compsToRender.push(<FormikTextEditor name={field} {...propsFromFields[field]} />)
                     break;
                 case "time-selector":
+                    compsToRender.push(<TimePicker name={field} {...propsFromFields[field]}></TimePicker>)
                     break;
             }
         }

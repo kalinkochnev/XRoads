@@ -13,7 +13,7 @@ import checkURLParams from '../Routes/utils';
 import { useHistory } from 'react-router-dom';
 import ReactPlayer from 'react-player';
 import ExtraInfo from '../../components/Club/ExtraInfo/ExtraInfo';
-import MeetingCard from '../../components/Club/Meeting/Meeting';
+import {MeetingCard} from '../../components/Club/Meeting/Meetings';
 
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
 // This: { match: { params: { id }}} is the same as props.match.params.id and you can refer to id directly later
