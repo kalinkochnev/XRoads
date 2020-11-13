@@ -29,28 +29,31 @@ const MeetingFormFunc = (initialData = {}) => {
             fieldProps: {
                 label: 'Meeting name'
             },
-            validation: Yup.string(),
+            validation: Yup.string().required(),
         },
         date: {
             initialValue: moment().format("yyyy-MM-DD"),
             type: 'date-selector',
             fieldProps: {
                 label: 'Meeting Date'
-            }
+            },
+            validation: Yup.date().required()
         },
         start: {
             initialValue: "14:15:00",
             type: 'time-selector',
             fieldProps: {
                 label: 'Start time'
-            }
+            },
+            validation: Yup.date().required()
         },
         end: {
             initialValue: "15:15:00",
             type: 'time-selector',
             fieldProps: {
                 label: 'End time'
-            }
+            },
+            validation: Yup.date().min(Yup.ref('start'), "End time must be sometime after start time")
         },
         description: {
             type: 'text',
@@ -58,7 +61,7 @@ const MeetingFormFunc = (initialData = {}) => {
             fieldProps: {
                 label: 'Meeting description'
             },
-            validation: Yup.string(),
+            validation: Yup.string().required(),
         },
     }
 

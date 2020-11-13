@@ -42,7 +42,13 @@ const TimePicker = ({ label, name }) => {
             <label>{label}</label>
             <ReactDatePicker
                 selected={value}
-                onChange={date => setValue(date)}
+                onChange={date => {
+                    if (moment(date).isValid()) {
+                        setValue(date);
+                    } else {
+                        setValue(moment().toDate())
+                    }
+                }}
                 showTimeSelect
                 showTimeSelectOnly
                 timeIntervals={15}
@@ -64,7 +70,13 @@ const DatePicker = ({ label, name }) => {
             <label>{label}</label>
             <ReactDatePicker
                 selected={value}
-                onChange={date => setValue(date)}
+                onChange={date => {
+                    if (moment(date).isValid()) {
+                        setValue(date);
+                    } else {
+                        setValue(moment().toDate())
+                    }
+                }}
                 dateFormat="MM/dd/yyyy"
             />
         </div>
