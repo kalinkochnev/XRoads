@@ -20,10 +20,9 @@ const InputField = ({ label, type, ...props }) => {
     );
 };
 
-const FormikTextEditor = ({label, name}) => {
+const FormikTextEditor = ({ label, name }) => {
     const [field, meta, helpers] = useField(name)
-    const initial  = meta.initialValue;
-    console.log(meta, field, helpers)
+    const initial = meta.initialValue;
     const { setValue } = helpers;
 
     return (
@@ -34,24 +33,41 @@ const FormikTextEditor = ({label, name}) => {
     );
 }
 
-const TimePicker = ({label, name}) => {
+const TimePicker = ({ label, name }) => {
     const [field, meta, helpers] = useField(name);
     const value = moment(meta.value, 'H:mm:ss').toDate();
     const { setValue } = helpers;
     return (
         <div>
             <label>{label}</label>
-            <ReactDatePicker 
-            selected={value}
-            onChange={date => setValue(date)}
-            showTimeSelect
-            showTimeSelectOnly
-            timeIntervals={15}
-            timeCaption="Time"
-            dateFormat="h:mm aa"
+            <ReactDatePicker
+                selected={value}
+                onChange={date => setValue(date)}
+                showTimeSelect
+                showTimeSelectOnly
+                timeIntervals={15}
+                timeCaption="Time"
+                dateFormat="h:mm aa"
             />
         </div>
-        
+
+    );
+}
+
+const DatePicker = ({ label, name }) => {
+    const [field, meta, helpers] = useField(name);
+    const value = moment(meta.value, 'yyyy-MM-DD').toDate();
+    const { setValue } = helpers;
+    console.log(value);
+    return (
+        <div>
+            <label>{label}</label>
+            <ReactDatePicker
+                selected={value}
+                onChange={date => setValue(date)}
+                dateFormat="MM/dd/yyyy"
+            />
+        </div>
     );
 }
 
@@ -161,6 +177,9 @@ const DynamicForm = (fieldData, data, editableFields = null) => {
                     break;
                 case "time-selector":
                     compsToRender.push(<TimePicker name={field} {...propsFromFields[field]}></TimePicker>)
+                    break;
+                case "date-selector":
+                    compsToRender.push(<DatePicker name={field} {...propsFromFields[field]} />)
                     break;
             }
         }

@@ -16,7 +16,7 @@ import ReactNotification from 'react-notifications-component'
 import 'react-notifications-component/dist/theme.css'
 import { store } from 'react-notifications-component';
 import { useHistory } from 'react-router-dom';
-import MeetingsEdit from '../../components/Club/Edit/Meetings';
+import { MeetingsEdit } from '../../components/Club/Meeting/Meetings';
 
 
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
