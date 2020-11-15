@@ -1,5 +1,5 @@
 import { useField } from "formik";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactDatePicker from "react-datepicker";
 import RichEditor from "../RichEditor/RichEditor";
 import "react-datepicker/dist/react-datepicker.css";
@@ -35,13 +35,18 @@ const FormikTextEditor = ({ label, name }) => {
 
 const TimePicker = ({ label, name }) => {
     const [field, meta, helpers] = useField(name);
-    const value = moment(meta.value, 'H:mm:ss').toDate();
+    const value = () => moment(meta.value, 'H:mm:ss').toDate();
     const { setValue } = helpers;
+
+    useEffect(() => {
+        setValue(value())
+    }, [])
+
     return (
         <div>
             <label>{label}</label>
             <ReactDatePicker
-                selected={value}
+                selected={value()}
                 onChange={date => {
                     if (moment(date).isValid()) {
                         setValue(date);
@@ -55,6 +60,9 @@ const TimePicker = ({ label, name }) => {
                 timeCaption="Time"
                 dateFormat="h:mm aa"
             />
+            {meta.touched && meta.error ? (
+                <div className="error">{meta.error}</div>
+            ) : null}
         </div>
 
     );
@@ -64,7 +72,6 @@ const DatePicker = ({ label, name }) => {
     const [field, meta, helpers] = useField(name);
     const value = moment(meta.value, 'yyyy-MM-DD').toDate();
     const { setValue } = helpers;
-    console.log(value);
     return (
         <div>
             <label>{label}</label>
@@ -79,6 +86,10 @@ const DatePicker = ({ label, name }) => {
                 }}
                 dateFormat="MM/dd/yyyy"
             />
+            {meta.touched && meta.error ? (
+                <div className="error">{meta.error}</div>
+            ) : null}
+
         </div>
     );
 }
@@ -134,7 +145,6 @@ const DynamicForm = (fieldData, data, editableFields = null) => {
     /* This retrieves the editable fields based on some conditions. 
     By default all fields are editable */
     let getEditableFields = editableFields == null ? () => Object.keys(fieldData) : () => editableFields(Object.keys(fieldData), data)
-
     /* This retrieves the initial values to be used in the form
     based on what fields are editable. If the provided object is empty,
     the editable fields are set to the specified default value. If

@@ -6,22 +6,20 @@ import moment from "moment";
 
 const MeetingsEdit = ({ clubData }) => {
     let [displayAdd, setDisplay] = useState(true);
-
+    let [events, setEvents] = useState(clubData.events);
     const addEventClick = (e) => {
         setDisplay(!displayAdd);
     }
-    console.log()
+
     return (
         <div>
-            {clubData.events.map(event => <MeetingCard event={event} editable={true} />)}
-            <MeetingCard event={{}} editable={true} />
-            {!displayAdd ? <MeetingCard event={{}} displayEdit={true} editable={true} /> : null}
-            { displayAdd ? <button onClick={addEventClick}>Add event</button> : <MeetingCard event={{}} />}
+            {events.map(event => <MeetingCard event={event} editable={true} state={[events, setEvents]} />)}
+            { displayAdd ? <button onClick={addEventClick}>Add event</button> : <MeetingCard event={{}} displayEdit={true} editable={true} setDisplay={setDisplay}/>}
         </div>
     );
 }
 
-const MeetingFormFunc = (initialData = {}) => {
+const MeetingFormFunc = (initialData = {}, state, setDisplay = (bool) => null) => {
     const fieldData = {
         name: {
             initialValue: "",
@@ -40,7 +38,7 @@ const MeetingFormFunc = (initialData = {}) => {
             validation: Yup.date().required()
         },
         start: {
-            initialValue: "14:15:00",
+            initialValue: moment("14:15:00", 'H:mm:ss').toDate(),
             type: 'time-selector',
             fieldProps: {
                 label: 'Start time'
@@ -48,7 +46,7 @@ const MeetingFormFunc = (initialData = {}) => {
             validation: Yup.date().required()
         },
         end: {
-            initialValue: "15:15:00",
+            initialValue: moment("15:15:00", 'H:mm:ss').toDate(),
             type: 'time-selector',
             fieldProps: {
                 label: 'End time'
@@ -66,34 +64,52 @@ const MeetingFormFunc = (initialData = {}) => {
     }
 
     const [fieldsJSX, getInitialValues, getValidation] = DynamicForm(fieldData, initialData);
-    console.log(getInitialValues())
     const Form = (formik) => (
         <form className="editBody" onSubmit={formik.handleSubmit}>
             {fieldsJSX(formik)}
-            <button type="submit" id="club-submit" disabled={formik.isSubmitting}>Save</button>
+            <button type="submit" id="club-submit" disabled={formik.isSubmitting}>{Object.keys(initialData).length == 0 ? "Create Event" : "Save Event"}</button>
+            <button type="reset" id="club-reset" onClick={() => handleReset(formik)}>Cancel Event</button>
         </form>
     )
 
     const saveInfo = (values, { setSubmitting }) => {
+        console.log(values);
+    }
 
+    const handleReset = (formik) => {
+        if (window.confirm("Are you sure you want to cancel the event?")) {
+            if (Object.keys(initialData).length != 0) {
+                if (state.length == 0) {
+                    throw new Error("Specify the state in order to update the db")
+                }
+
+                const [events, setEvents] = state;
+                // Remove the event from the events being displayed
+                setEvents(events.filter(event => event.id != initialData.id));
+                // TODO cancel the event on the backend
+            } else {
+                setDisplay(true);
+            }
+            formik.resetForm()
+        }
     }
 
     const formikEnhancer = withFormik({
         mapPropsToValues: props => getInitialValues(),
         validationSchema: Yup.object().shape(getValidation()),
         handleSubmit: saveInfo,
-        displayName: 'Add Meeting'
+        displayName: 'Edit Meeting',
     });
 
     return formikEnhancer(Form);
 }
 
-const MeetingCard = ({ event, editable = false, displayEdit = false}) => {
+const MeetingCard = ({ event, editable = false, displayEdit = false, state = {}, setDisplay=null}) => {
     let [showEdit, setEdit] = useState(displayEdit);
-    const MeetingForm = MeetingFormFunc(event)
+    const MeetingForm = MeetingFormFunc(event, state, setDisplay)
 
     if (Object.keys(event).length == 0) {
-        return showEdit ? <MeetingForm/> : null;
+        return showEdit ? <MeetingForm /> : null;
     }
 
     let date_str = new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'utc' });
@@ -108,13 +124,11 @@ const MeetingCard = ({ event, editable = false, displayEdit = false}) => {
     return (
         <div>
             <h2>{event.name}</h2>
-            {editable ? <button onClick={handleClick}>Edit</button> : null}
-
             <b>{`${date_str}  ${start} — ${end}`}</b>
+            {editable ? <button onClick={handleClick}>Edit</button> : null}
             <p>{event.description}</p>
             <br />
-            {showEdit ? <MeetingForm initialData={event} /> : null}
-
+            {showEdit ? <MeetingForm /> : null}
         </div>
     )
 }
