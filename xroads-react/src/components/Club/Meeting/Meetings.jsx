@@ -5,11 +5,13 @@ import { withFormik } from 'formik';
 import moment from "moment";
 import { sendRequest } from "../../../service/xroads-api";
 import { ClubContext } from "../../../screens/Club/Routes";
+import { store } from "react-notifications-component";
+import "react-confirm-alert/src/react-confirm-alert.css"; // Import css for alert
 
 const MeetingsEdit = () => {
     const [club, setClub] = useContext(ClubContext);
     let [displayAdd, setDisplay] = useState(true);
-    let [events, setEvents] = [club.events, (events) => setClub({...club, events: events})];
+    let [events, setEvents] = [club.events, (events) => setClub({ ...club, events: events })];
 
     const addEventClick = (e) => {
         setDisplay(!displayAdd);
@@ -18,12 +20,12 @@ const MeetingsEdit = () => {
     return (
         <div>
             {events.map(event => <MeetingCard event={event} editable={true} state={[events, setEvents]} />)}
-            { displayAdd ? <button onClick={addEventClick}>Add event</button> : <MeetingCard event={{}} displayEdit={true} editable={true} setDisplay={setDisplay}/>}
+            { displayAdd ? <button onClick={addEventClick}>Add event</button> : <MeetingCard event={{}} displayEdit={true} editable={true} setDisplay={setDisplay} />}
         </div>
     );
 }
 
-const MeetingFormFunc = (initialData = {}, state, setDisplay = (bool) => null) => {
+const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
     const fieldData = {
         name: {
             initialValue: "",
@@ -67,7 +69,7 @@ const MeetingFormFunc = (initialData = {}, state, setDisplay = (bool) => null) =
         },
     }
     const [club, setClub] = useContext(ClubContext);
-    let [events, setEvents] = [club.events, (events) => setClub({...club, events: events})];
+    let [events, setEvents] = [club.events, (events) => setClub({ ...club, events: events })];
     const [fieldsJSX, getInitialValues, getValidation] = DynamicForm(fieldData, initialData);
     const Form = (formik) => (
         <form className="editBody" onSubmit={formik.handleSubmit}>
@@ -76,40 +78,97 @@ const MeetingFormFunc = (initialData = {}, state, setDisplay = (bool) => null) =
             <button type="reset" id="club-reset" onClick={() => handleReset(formik)}>Cancel Event</button>
         </form>
     )
+
+    const updateEvent = (values, club, initialData) => {
+        // Send PUT request to server to update event
+        let eventId = initialData.id
+        let urlParams = { clubId: club.id, clubCode: club.code, eventId: eventId}
+        sendRequest('event', urlParams, "PUT", values).then(response => {
+            if (response.ok) {
+                response.json().then(body => {
+                    // Update the club event state
+                    let newEvents = events.map(event => {
+                        if (event.id == initialData.id) {
+                            event = body
+                        }
+                        return event
+                    })
+                    setEvents(newEvents); 
+                })
+                store.addNotification({
+                    title: "Event updated!",
+                    message: "Event " + values.name + " has been saved!",
+                    type: "success",
+                    insert: "top",
+                    container: "top-right",
+                    dismiss: {
+                        duration: 5000,
+                        onScreen: true,
+                    },
+                });
+            }
+
+        })
+    }
+
+    const createEvent = (values, club, initialData) => {
+        let urlParams = { clubId: club.id, clubCode: club.code }
+        sendRequest('event_create', urlParams, "POST", values).then(response => {
+            if (response.ok) {
+                // Create the new event and update state
+                response.json().then(body => {
+                    setEvents([...events, body]);
+                })
+                store.addNotification({
+                    title: "Event Created!",
+                    message: "Event " + values.name + " has been created!",
+                    type: "success",
+                    insert: "top",
+                    container: "top-right",
+                    dismiss: {
+                        duration: 5000,
+                        onScreen: true,
+                    },
+                });
+            }
+            
+        })
+    }
+
+    const cancelEvent = () => {
+        let eventId = initialData.id
+        let urlParams = { clubId: club.id, clubCode: club.code, eventId: eventId}
+        sendRequest('event', urlParams, "DELETE", {}).then(response => {
+            if (response.ok) {
+                // Create the new event and update state
+                response.json().then(body => {
+                    setEvents(events.map(event => event.id != eventId));
+                })
+                store.addNotification({
+                    title: "Event Cancelled",
+                    message: "Event was successfully canceled",
+                    type: "success",
+                    insert: "top",
+                    container: "top-right",
+                    dismiss: {
+                        duration: 5000,
+                        onScreen: true,
+                    },
+                });
+            }
+
+        })
+    }
+
     const saveInfo = (values, { setSubmitting }) => {
-        const formatTime = (time) =>  moment(time).format("H:mm:ss")
+        const formatTime = (time) => moment(time).format("H:mm:ss")
         const formatDate = (date) => moment(date).format("yyyy-MM-DD")
-        values = {...values, start: formatTime(values.start), end: formatTime(values.end), date:formatDate(values.date)}
-        
+        values = { ...values, start: formatTime(values.start), end: formatTime(values.end), date: formatDate(values.date) }
+
         if (Object.keys(initialData).includes("id")) {
-            // Send PUT request to server to update event
-            let urlParams = {clubId: club.id, clubCode: club.code, eventId: initialData.id}
-            sendRequest('event', urlParams, "PUT", values).then(response => {
-                if (response.ok) {
-                    response.json().then(body => {
-                        // Update the club event state
-                        let newEvents = events.map(event => {
-                            if (event.id == initialData.id) {
-                                event = body
-                            }
-                            return event
-                        })
-                        setEvents(newEvents);
-                    })
-                }
-                
-            })
+            updateEvent(values, club, initialData)
         } else {
-            let urlParams = {clubId: club.id, clubCode: club.code, eventId: initialData.id}
-            sendRequest('event_create', urlParams, "POST", values).then(response => {
-                if (response.ok) {
-                    // Create the new event and update state
-                    response.json().then(body => {
-                        setEvents([...events, body]);
-                    })
-                }
-                
-            })
+            createEvent(values, club, initialData)
         }
         setSubmitting(false);
     }
@@ -117,14 +176,9 @@ const MeetingFormFunc = (initialData = {}, state, setDisplay = (bool) => null) =
     const handleReset = (formik) => {
         if (window.confirm("Are you sure you want to cancel the event?")) {
             if (Object.keys(initialData).length != 0) {
-                if (state.length == 0) {
-                    throw new Error("Specify the state in order to update the db")
-                }
-
-                const [events, setEvents] = state;
                 // Remove the event from the events being displayed
                 setEvents(events.filter(event => event.id != initialData.id));
-                // TODO cancel the event on the backend
+                cancelEvent()
             } else {
                 setDisplay(true);
             }
@@ -142,7 +196,7 @@ const MeetingFormFunc = (initialData = {}, state, setDisplay = (bool) => null) =
     return formikEnhancer(Form);
 }
 
-const MeetingCard = ({ event, editable = false, displayEdit = false, state = {}, setDisplay=null}) => {
+const MeetingCard = ({ event, editable = false, displayEdit = false, state = {}, setDisplay = null }) => {
     let [showEdit, setEdit] = useState(displayEdit);
     const MeetingForm = MeetingFormFunc(event, state, setDisplay)
 
