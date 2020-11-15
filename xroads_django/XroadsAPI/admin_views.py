@@ -34,7 +34,6 @@ class NoListModelViewset(mixins.CreateModelMixin,
 
 class CanCreateEvent(permissions.BasePermission):
 
-
     def has_permission(self, request, view):
         try:
             self.club = Club.objects.get(id=request.parser_context['kwargs']['club_id'])
@@ -51,4 +50,7 @@ class EventViewset(NoListModelViewset):
     queryset = Event.objects.all()
     permission_classes = [CanCreateEvent, AllowAny]
 
+    def get_serializer_context(self):
+        club = Club.objects.get(id=self.request.parser_context['kwargs']['club_id'])
+        return {'club': club}
     

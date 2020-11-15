@@ -28,13 +28,17 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = '__all__'
-        read_only_fields = ['club']
+        read_only_fields = ['club', 'views']
 
     def validate(self, data):
         if data['start'] > data['end']:
             time_str = data['start'].strftime("%H:%M:%S")
             raise serializers.ValidationError("Pick a time later than " + time_str)
         return data
+
+    def create(self, validated_data):
+        event = super(EventSerializer, self).create({**validated_data, 'club': self.context['club']})
+        return event
 
 class ClubDetailSerializer(serializers.ModelSerializer):
     slides = serializers.ListField(child=serializers.URLField())
@@ -43,6 +47,7 @@ class ClubDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Club
         exclude = ['code', 'extra_info']
+
 
 
 class SchoolDetailSerializer(serializers.ModelSerializer):

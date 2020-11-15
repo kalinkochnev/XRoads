@@ -10,7 +10,8 @@ const endpoint_templates = {
     'check_code': '/api/school/:schoolId/club_code/',
     'extra_info': '/api/club/:clubId/send_info/',
 
-    'events': '/api/event/:clubId/:clubCode/:eventId/'
+    'event_create': '/api/event/:clubId/:clubCode/',
+    'event': '/api/event/:clubId/:clubCode/:eventId/'
 };
 
 function fillTemplate(urlName, urlArgs) {

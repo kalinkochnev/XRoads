@@ -84,7 +84,7 @@ const MeetingFormFunc = (initialData = {}, state, setDisplay = (bool) => null) =
         if (Object.keys(initialData).includes("id")) {
             // Send PUT request to server to update event
             let urlParams = {clubId: club.id, clubCode: club.code, eventId: initialData.id}
-            sendRequest('events', urlParams, "PUT", values).then(response => {
+            sendRequest('event', urlParams, "PUT", values).then(response => {
                 if (response.ok) {
                     response.json().then(body => {
                         // Update the club event state
@@ -95,6 +95,17 @@ const MeetingFormFunc = (initialData = {}, state, setDisplay = (bool) => null) =
                             return event
                         })
                         setEvents(newEvents);
+                    })
+                }
+                
+            })
+        } else {
+            let urlParams = {clubId: club.id, clubCode: club.code, eventId: initialData.id}
+            sendRequest('event_create', urlParams, "POST", values).then(response => {
+                if (response.ok) {
+                    // Create the new event and update state
+                    response.json().then(body => {
+                        setEvents([...events, body]);
                     })
                 }
                 

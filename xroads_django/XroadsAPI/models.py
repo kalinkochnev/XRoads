@@ -82,7 +82,7 @@ class Event(models.Model):
     start = models.TimeField()
     end = models.TimeField()
     description = models.TextField()
-    requested_count = models.IntegerField(default=0)
+    views = models.IntegerField(default=0)
 
     def __str__(self) -> str:
         return f'{self.name} -- {self.club.name}: {self.club.pk}'
