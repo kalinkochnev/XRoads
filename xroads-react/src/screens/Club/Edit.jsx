@@ -17,15 +17,15 @@ import 'react-notifications-component/dist/theme.css'
 import { store } from 'react-notifications-component';
 import { useHistory } from 'react-router-dom';
 import { MeetingsEdit } from '../../components/Club/Meeting/Meetings';
+import { ClubProvider, ClubContext } from "../Club/Routes"
+
 
 
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
 // This: { match: { params: { id }}} is the same as props.match.params.id and you can refer to id directly later
 const ScreenClubEdit = ({ match: { params: { schoolId, clubId, code } } }) => {
   let history = useHistory();
-
-  const [club, setClub] = useState();
-  const [state, dispatch] = useStateValue();
+  const [club, setClub] = useContext(ClubContext);
 
   useEffect(() => {
     console.log(code)
@@ -41,7 +41,7 @@ const ScreenClubEdit = ({ match: { params: { schoolId, clubId, code } } }) => {
     });
   }, [clubId, code]);
 
-  if (club == undefined) {
+  if (Object.keys(club).length == 0) {
     console.log("Loading");
     return (
       <div>
@@ -58,18 +58,19 @@ const ScreenClubEdit = ({ match: { params: { schoolId, clubId, code } } }) => {
           <div className="clubHeading">
             <h2>Now Editing</h2>
             <h1 data-tip="please email us support@xroads.club to change club name">{club.name + ` (${club.code})`}</h1>
-            <ReactTooltip place="right" effect="solid"/>
+            <ReactTooltip place="right" effect="solid" />
           </div>
+
           <Tabs>
             <div label="General">
-              <GeneralEdit clubData={club} code={code}/>
+              <GeneralEdit />
             </div>
-
             <div label="Meetings">
-              <MeetingsEdit clubData={club} />
+              <MeetingsEdit />
             </div>
           </Tabs>
-          
+
+
         </div>
       </div>
     );

@@ -8,6 +8,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from XroadsAPI.serializers import *
 
+
 class DistrictViewset(viewsets.ReadOnlyModelViewSet):
     queryset = District.objects.all()
     serializer_class = DistrictSerializer
@@ -25,13 +26,11 @@ class SchoolViewset(viewsets.ReadOnlyModelViewSet, GenericViewSet):
     @action(detail=True, methods=['get'])
     def club_code(self, request, *args, **kwargs):
         try:
-            club = Club.objects.get(school=self.get_object(), code=request.query_params['code'])
+            club = Club.objects.get(
+                school=self.get_object(), code=request.query_params['code'])
             return Response(BasicClubInfoSerial(club).data, status=status.HTTP_200_OK)
         except (Club.DoesNotExist, KeyError):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-    
-    
-
 
 
 class ClubViewset(viewsets.ReadOnlyModelViewSet):
@@ -50,10 +49,7 @@ class ClubViewset(viewsets.ReadOnlyModelViewSet):
                 return Response({}, status=status.HTTP_200_OK)
         return Response({'message': 'The email provided was invalid or is not allowed to access'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-
     def list(self, request, *args, **kwargs):
         school_id = self.kwargs['school_pk']
         queryset = Club.objects.filter(school=school_id)
         return Response(BasicClubInfoSerial(queryset, many=True).data)
-
-    

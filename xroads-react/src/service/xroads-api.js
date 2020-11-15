@@ -1,36 +1,25 @@
 
 // To have keyworded args use this format:   :keyword_arg
 const endpoint_templates = {
-    'club_list': '/api/school/:schoolId',
-    'club_detail': '/api/club/:clubId',
-    'club_edit': '/api/club/:code/:clubId',
-    'school_list': '/api/district/:districtId',
+    'club_list': '/api/school/:schoolId/',
+    'club_detail': '/api/club/:clubId/',
+    'club_edit': '/api/club/:code/:clubId/',
+    'school_list': '/api/district/:districtId/',
 
     'toggle_hide_club': '/api/club/:code/:clubId/toggle_hide/',
     'check_code': '/api/school/:schoolId/club_code/',
-    'extra_info': '/api/club/:clubId/send_info/'
+    'extra_info': '/api/club/:clubId/send_info/',
+
+    'events': '/api/event/:clubId/:clubCode/:eventId/'
 };
 
 function fillTemplate(urlName, urlArgs) {
     let template = endpoint_templates[urlName];
-
-    let items = template.split("/");
-    let urlFragments = [];
-    for (var item of items) {
-        if (item !== '') {
-            urlFragments.push(item)
-        }
+    for (var arg of Object.keys(urlArgs)) {
+        template = template.replace(`:${arg}`, urlArgs[arg])
     }
-
-    let newUrl = "";
-    for (var part of urlFragments) {
-        if (part.charAt(0) === ":") {
-            newUrl += "/" + urlArgs[part.substring(1, part.length)];
-        } else {
-            newUrl += "/" + part;
-        }
-    }
-    return newUrl + '/';
+    console.log(template)
+    return template;
 }
 
 function getUrl(urlName, urlArgs) {

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 
 import "./Edit.scss";
 
@@ -17,6 +17,7 @@ import * as Yup from 'yup';
 import { ContentState, EditorState } from "draft-js";
 import "../../Common/Form/FormStyle.scss";
 import DynamicForm from "../../Common/Form/DynamicForm";
+import { ClubContext } from "../../../screens/Club/Routes";
 
 const fieldData = {
     presentation_url: {
@@ -51,12 +52,12 @@ const fieldData = {
 // Created by following this example: https://codesandbox.io/s/QW1rqjBLl?file=/index.js:860-992
 const GeneralEdit = (props) => {
     const [state, dispatch] = useStateValue();
-    const [isVisible, setVisibility] = useState(props.clubData.is_visible);
-    const [clubData, setClubData] = useState(props.clubData);
+    const [club, setClub] = useContext(ClubContext);
+    const [isVisible, setVisibility] = useState(club.is_visible);
 
     // This returns a dictionary of every field and the associated value of that (ex want to know every fields input type)
     const saveClubInfo = (values, { setSubmitting }) => {
-        updateClub(clubData.id, values, clubData.code).then((res) => {
+        updateClub(club.id, values, club.code).then((res) => {
             if (res.ok) {
                 res.json().then(() => {
                     store.addNotification({
@@ -90,7 +91,7 @@ const GeneralEdit = (props) => {
     }
     
 
-    const [fieldsJSX, getInitialValues, getValidation] = DynamicForm(fieldData, clubData, getEditableFields);
+    const [fieldsJSX, getInitialValues, getValidation] = DynamicForm(fieldData, club, getEditableFields);
 
     const Form = (formik) => (
         <form className="editBody" onSubmit={formik.handleSubmit}>
@@ -109,8 +110,8 @@ const GeneralEdit = (props) => {
     const toggleHide = () => {
         let user = state.user;
         let urlArgs = {
-            clubId: clubData.id,
-            code: clubData.code
+            clubId: club.id,
+            code: club.code
         };
         sendRequest("toggle_hide_club", urlArgs, "POST", {}).then((response) => {
             if (response.ok) {

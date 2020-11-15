@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import DynamicForm from '../../Common/Form/DynamicForm';
 import * as Yup from 'yup';
 import { withFormik } from 'formik';
 import moment from "moment";
+import { sendRequest } from "../../../service/xroads-api";
+import { ClubContext } from "../../../screens/Club/Routes";
 
-const MeetingsEdit = ({ clubData }) => {
+const MeetingsEdit = () => {
+    const [club, setClub] = useContext(ClubContext);
     let [displayAdd, setDisplay] = useState(true);
-    let [events, setEvents] = useState(clubData.events);
+    let [events, setEvents] = [club.events, (events) => setClub({...club, events: events})];
+
     const addEventClick = (e) => {
         setDisplay(!displayAdd);
     }
@@ -62,7 +66,8 @@ const MeetingFormFunc = (initialData = {}, state, setDisplay = (bool) => null) =
             validation: Yup.string().required(),
         },
     }
-
+    const [club, setClub] = useContext(ClubContext);
+    let [events, setEvents] = [club.events, (events) => setClub({...club, events: events})];
     const [fieldsJSX, getInitialValues, getValidation] = DynamicForm(fieldData, initialData);
     const Form = (formik) => (
         <form className="editBody" onSubmit={formik.handleSubmit}>
@@ -71,9 +76,31 @@ const MeetingFormFunc = (initialData = {}, state, setDisplay = (bool) => null) =
             <button type="reset" id="club-reset" onClick={() => handleReset(formik)}>Cancel Event</button>
         </form>
     )
-
     const saveInfo = (values, { setSubmitting }) => {
-        console.log(values);
+        const formatTime = (time) =>  moment(time).format("H:mm:ss")
+        const formatDate = (date) => moment(date).format("yyyy-MM-DD")
+        values = {...values, start: formatTime(values.start), end: formatTime(values.end), date:formatDate(values.date)}
+        
+        if (Object.keys(initialData).includes("id")) {
+            // Send PUT request to server to update event
+            let urlParams = {clubId: club.id, clubCode: club.code, eventId: initialData.id}
+            sendRequest('events', urlParams, "PUT", values).then(response => {
+                if (response.ok) {
+                    response.json().then(body => {
+                        // Update the club event state
+                        let newEvents = events.map(event => {
+                            if (event.id == initialData.id) {
+                                event = body
+                            }
+                            return event
+                        })
+                        setEvents(newEvents);
+                    })
+                }
+                
+            })
+        }
+        setSubmitting(false);
     }
 
     const handleReset = (formik) => {
