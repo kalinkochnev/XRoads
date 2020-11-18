@@ -24,6 +24,7 @@ class DistrictSerializer(serializers.ModelSerializer):
         model = District
         fields = '__all__'
 
+
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
@@ -33,12 +34,15 @@ class EventSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data['start'] > data['end']:
             time_str = data['start'].strftime("%H:%M:%S")
-            raise serializers.ValidationError("Pick a time later than " + time_str)
+            raise serializers.ValidationError(
+                "Pick a time later than " + time_str)
         return data
 
     def create(self, validated_data):
-        event = super(EventSerializer, self).create({**validated_data, 'club': self.context['club']})
+        event = super(EventSerializer, self).create(
+            {**validated_data, 'club': self.context['club']})
         return event
+
 
 class ClubDetailSerializer(serializers.ModelSerializer):
     slides = serializers.ListField(child=serializers.URLField())
@@ -49,10 +53,10 @@ class ClubDetailSerializer(serializers.ModelSerializer):
         exclude = ['code', 'extra_info']
 
 
-
 class SchoolDetailSerializer(serializers.ModelSerializer):
     clubs = BasicClubInfoSerial(many=True)
     curr_featured_order = serializers.IntegerField()
+    events = EventSerializer(many=True)
 
     class Meta:
         exclude = ['featured']
@@ -69,5 +73,3 @@ class ClubEditSerializer(serializers.ModelSerializer):
         model = Club
         fields = '__all__'
         read_only_fields = ['img', 'name']
-
-

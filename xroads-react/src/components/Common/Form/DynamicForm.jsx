@@ -173,14 +173,17 @@ const DynamicForm = (fieldData, data, editableFields = null) => {
     /* Based on fieldData, this will decided which components to render for the field.
     You can specify props to be passed into the field by adding an attribute to a field
     called fieldProps. */
-    const fieldsJSX = (formik) => {
+    const fieldsJSX = (formik, toDisplay=[]) => {
         let compsToRender = [];
-        // This retrieves the components for all the editable fields
+        // This retrieves the components args for all the editable fields
         let compData = objByChildAttr('component', fieldData, getEditableFields(), null, null)
         // This retrieves all props to be passed into the fields of the form
         let propsFromFields = objByChildAttr('fieldProps', fieldData, getEditableFields(), null, (data, child) => { });
+        
+        // Specifies which fields you want to display for more customizable styling. Default all fields
+        let fieldsToReturn = toDisplay.length == 0 ? Object.keys(compData) : toDisplay
 
-        for (let field of Object.keys(compData)) {
+        for (let field of fieldsToReturn) {
             // If a component is specified directly, it renders that instead
             if (Object.keys(fieldData[field]).includes("component")) {
                 compsToRender.push(fieldData[field].component(formik))

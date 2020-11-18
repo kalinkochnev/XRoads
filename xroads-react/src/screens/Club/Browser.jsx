@@ -10,16 +10,19 @@ import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import checkURLParams from '../Routes/utils';
 import ScreenClubDetail from './Page';
 import FeaturedCard from '../../components/Club/Featured/Featured';
+import UpcomingEvents from '../../components/Club/Meeting/Upcoming';
 
 const ScreenClubBrowser = ({ match: { params } }) => {
   let history = useHistory();
-
   checkURLParams(params, { schoolId: "number" }, history)
 
-  const [allClubs, setAllClubs] = useState([]);
+  const [school, setSchool] = useState({})
   const [displayedClubs, setDisplayedClubs] = useState([]);
-  const clubIds = allClubs.map(club => club.id);
   let [featured, setFeatured] = useState({});
+
+  const allClubs = school.clubs === undefined ? [] : school.clubs;
+  console.log(school)
+  const clubIds = displayedClubs.map(club => club.id);
 
   function invisibleFilter(clubs) {
     let filteredClubs = [];
@@ -33,14 +36,14 @@ const ScreenClubBrowser = ({ match: { params } }) => {
     return filteredClubs;
   }
 
-  
+
 
   function determineFeatured(response) {
     if (response.curr_featured_order != 0) {
       let position = response.curr_featured_order
 
       // Keep iterating through clubs until you find a club that is visible and is after the current featured id
-      while (Object.keys(featured).length == 0 && position <= response.clubs.length) {        
+      while (Object.keys(featured).length == 0 && position <= response.clubs.length) {
         function getClubByOrder(featuredOrder) {
           let clubs = response.clubs.filter(club => club.featured_order == featuredOrder)
           if (clubs.length == 1) {
@@ -70,12 +73,10 @@ const ScreenClubBrowser = ({ match: { params } }) => {
     XroadsAPI.fetchClubs(params.schoolId).then(res => {
       if (res.ok) {
         return res.json().then(response => {
-          console.log(response)
+          setSchool(response);
           let clubs = invisibleFilter(response.clubs);
-          setAllClubs(response.clubs);
           setDisplayedClubs(clubs);
           determineFeatured(response)
-          
         });
       } else {
         history.push('/')
@@ -104,6 +105,7 @@ const ScreenClubBrowser = ({ match: { params } }) => {
       <Navbar>xroads</Navbar>
       <div className="body">
         <FeaturedCard club={featured}></FeaturedCard>
+        <UpcomingEvents events={school.events}></UpcomingEvents>
         <SearchBar key={clubIds} clubs={allClubs} filterClubs={searchFilter}></SearchBar>
         <div className="card-container">
           {

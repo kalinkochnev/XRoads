@@ -110,6 +110,16 @@ class School(models.Model):
         club.make_save(save)
 
     @property
+    def events(self):
+        # Get events that are going on today and up until the end of the week
+        today = datetime.datetime.today()
+        end_of_week = today + datetime.timedelta(days=6 - today.weekday())
+        events_gt_today = Q(date__gt=datetime.date.today(), date__lte=end_of_week)
+        today_unfinished_events = Q(end__gte=datetime.datetime.now(), date=datetime.date.today()) 
+        return Event.objects.filter(today_unfinished_events | events_gt_today, club__school=self).order_by('date')
+
+
+    @property
     def clubs(self):
         return Club.objects.filter(school=self)
 
@@ -176,7 +186,6 @@ class School(models.Model):
                 self.email_club_warning(self.next_featured)
 
         super(School, self).save(*args, **kwargs)
-
 # Scheduling every monday at 8 am
 @weekly_task(week_day=0, hours=23, minutes=59)
 def update_featured_club():
@@ -184,7 +193,6 @@ def update_featured_club():
     for school in School.objects.all():
         school.featured = school.get_next()
         school.save()
-    print('updated school')
 
 
 class DistrictDomain(models.Model):
