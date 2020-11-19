@@ -21,7 +21,6 @@ const ScreenClubBrowser = ({ match: { params } }) => {
   let [featured, setFeatured] = useState({});
 
   const allClubs = school.clubs === undefined ? [] : school.clubs;
-  console.log(school)
   const clubIds = displayedClubs.map(club => club.id);
 
   function invisibleFilter(clubs) {
@@ -104,8 +103,8 @@ const ScreenClubBrowser = ({ match: { params } }) => {
     <div>
       <Navbar>xroads</Navbar>
       <div className="body">
+        <UpcomingEvents events={school.events} displayedClubs={displayedClubs}></UpcomingEvents>
         <FeaturedCard club={featured}></FeaturedCard>
-        <UpcomingEvents events={school.events}></UpcomingEvents>
         <SearchBar key={clubIds} clubs={allClubs} filterClubs={searchFilter}></SearchBar>
         <div className="card-container">
           {

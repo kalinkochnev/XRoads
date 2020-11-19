@@ -86,7 +86,6 @@ const GeneralEdit = (props) => {
         if (!data.school.club_contact) {
             fields.splice(fields.indexOf('contact'), 1)
         }
-        console.log(fields);
         return fields;
     }
     
