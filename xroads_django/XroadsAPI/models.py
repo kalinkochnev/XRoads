@@ -72,8 +72,10 @@ class Club(models.Model):
     @property
     def events(self):
         events_gt_today = Q(date__gt=datetime.date.today())
-        today_unfinished_events = Q(end__gte=datetime.datetime.now(), date=datetime.date.today()) 
+        today_unfinished_events = Q(
+            end__gte=datetime.datetime.now(), date=datetime.date.today())
         return Event.objects.filter(today_unfinished_events | events_gt_today, club=self).order_by('date')
+
 
 class Event(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
@@ -84,8 +86,15 @@ class Event(models.Model):
     description = models.TextField()
     views = models.IntegerField(default=0)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return f'{self.name} -- {self.club.name}: {self.club.pk}'
+
+    def send_info(self, email):
+        subject, from_email, to = f'Event info for {self.name}', settings.DJANGO_NO_REPLY, [
+            email]
+
+        send_mail(subject, self.description, from_email, to)
+
 
 class School(models.Model):
     name = models.CharField(max_length=40)
@@ -114,10 +123,11 @@ class School(models.Model):
         # Get events that are going on today and up until the end of the week
         today = datetime.datetime.today()
         end_of_week = today + datetime.timedelta(days=6 - today.weekday())
-        events_gt_today = Q(date__gt=datetime.date.today(), date__lte=end_of_week)
-        today_unfinished_events = Q(end__gte=datetime.datetime.now(), date=datetime.date.today()) 
+        events_gt_today = Q(date__gt=datetime.date.today(),
+                            date__lte=end_of_week)
+        today_unfinished_events = Q(
+            end__gte=datetime.datetime.now(), date=datetime.date.today())
         return Event.objects.filter(today_unfinished_events | events_gt_today, club__school=self).order_by('date')
-
 
     @property
     def clubs(self):
@@ -187,6 +197,8 @@ class School(models.Model):
 
         super(School, self).save(*args, **kwargs)
 # Scheduling every monday at 8 am
+
+
 @weekly_task(week_day=0, hours=23, minutes=59)
 def update_featured_club():
     school: School
