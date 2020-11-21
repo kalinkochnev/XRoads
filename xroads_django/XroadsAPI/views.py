@@ -53,3 +53,7 @@ class ClubViewset(viewsets.ReadOnlyModelViewSet):
         school_id = self.kwargs['school_pk']
         queryset = Club.objects.filter(school=school_id)
         return Response(BasicClubInfoSerial(queryset, many=True).data)
+
+class EventViewset(viewsets.ReadOnlyModelViewSet):
+    class Meta:
+        model = 

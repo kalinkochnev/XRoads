@@ -4,6 +4,7 @@ import ClubCode from '../../components/Club/Edit/ClubCode';
 import { useStateValue } from '../../service/State';
 import ScreenClubBrowser from './Browser';
 import ScreenClubEdit from './Edit';
+import CalendarView from './EventView';
 import ScreenClubDetail from './Page';
 
 const ClubContext = React.createContext([{}, () => { }])
@@ -27,8 +28,9 @@ const SchoolRoutes = ({ match: { params: { schoolId } } }) => {
     return (
         <Switch>
             <Route exact path={path} component={ScreenClubBrowser} />
+            <Route exact path={`${path}/events/`} component={CalendarView}/>
             <Route exact path={`${path}/clubs/edit/`} component={ClubCode} />
-            <Route exact path={`${path}/clubs/:clubId`} component={ScreenClubDetail} />
+            <Route exact path={`${path}/clubs/:clubId/`} component={ScreenClubDetail} />
             <ClubProvider>
                 <Route exact path={`${path}/clubs/:clubId/edit/:code`} component={ScreenClubEdit} />
             </ClubProvider>
