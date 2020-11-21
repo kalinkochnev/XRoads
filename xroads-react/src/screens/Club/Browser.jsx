@@ -16,10 +16,12 @@ const ScreenClubBrowser = ({ match: { params } }) => {
 
   checkURLParams(params, { schoolId: "number" }, history);
 
-  const [allClubs, setAllClubs] = useState([]);
+  const [school, setSchool] = useState({})
   const [displayedClubs, setDisplayedClubs] = useState([]);
-  const clubIds = allClubs.map((club) => club.id);
   let [featured, setFeatured] = useState({});
+
+  const allClubs = school.clubs === undefined ? [] : school.clubs;
+  const clubIds = displayedClubs.map(club => club.id);
 
   function invisibleFilter(clubs) {
     let filteredClubs = [];
@@ -71,12 +73,11 @@ const ScreenClubBrowser = ({ match: { params } }) => {
   function loadClubs() {
     XroadsAPI.fetchClubs(params.schoolId).then((res) => {
       if (res.ok) {
-        return res.json().then((response) => {
-          console.log(response);
+        return res.json().then(response => {
+          setSchool(response);
           let clubs = invisibleFilter(response.clubs);
-          setAllClubs(response.clubs);
           setDisplayedClubs(clubs);
-          determineFeatured(response);
+          determineFeatured(response)
         });
       } else {
         history.push("/");
@@ -105,6 +106,7 @@ const ScreenClubBrowser = ({ match: { params } }) => {
     <div>
       <Navbar>xroads</Navbar>
       <div className="body">
+        <UpcomingEvents events={school.events} displayedClubs={displayedClubs}></UpcomingEvents>
         <FeaturedCard club={featured}></FeaturedCard>
         <SearchBar
           key={clubIds}

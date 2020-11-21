@@ -11,7 +11,7 @@ def create_event():
         data = {
             'name': 'event1',
             'description': 'description',
-            'requested_count': 1,
+            'views': 1,
             'end': end_time.time(),
             'start': start,
             'date': date,
