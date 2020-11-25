@@ -8,6 +8,7 @@ import { ClubContext } from "../../../screens/Club/Routes";
 import { store } from "react-notifications-component";
 import "react-confirm-alert/src/react-confirm-alert.css"; // Import css for alert
 import Dayz from "dayz";
+import * as utils from "./utils";
 
 const MeetingsEdit = () => {
     const [club, setClub] = useContext(ClubContext);
@@ -84,7 +85,7 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
         // Send PUT request to server to update event
         let eventId = initialData.id
         let urlParams = { clubId: club.id, clubCode: club.code, eventId: eventId}
-        sendRequest('event', urlParams, "PUT", values).then(response => {
+        sendRequest('event_edit', urlParams, "PUT", values).then(response => {
             if (response.ok) {
                 response.json().then(body => {
                     // Update the club event state
@@ -114,7 +115,7 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
 
     const createEvent = (values, club, initialData) => {
         let urlParams = { clubId: club.id, clubCode: club.code }
-        sendRequest('event_create', urlParams, "POST", values).then(response => {
+        sendRequest('event_edit', urlParams, "POST", values).then(response => {
             if (response.ok) {
                 // Create the new event and update state
                 response.json().then(body => {
@@ -139,7 +140,7 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
     const cancelEvent = () => {
         let eventId = initialData.id
         let urlParams = { clubId: club.id, clubCode: club.code, eventId: eventId}
-        sendRequest('event', urlParams, "DELETE", {}).then(response => {
+        sendRequest('event_edit', urlParams, "DELETE", {}).then(response => {
             if (response.ok) {
                 // Create the new event and update state
                 response.json().then(body => {
@@ -227,6 +228,8 @@ const MeetingCard = ({ event, editable = false, displayEdit = false, state = {},
 }
 
 const CalendarView = ({events}) => {
+    utils.strToTime(event.start)
+    utils.strToTime(event.end)
     let dayzEvents = Dayz.EventsCollection(events.map(event => {return {content: event.name, range: moment}}))
 
     return (

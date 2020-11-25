@@ -8,10 +8,13 @@ const endpoint_templates = {
 
     'toggle_hide_club': '/api/club/:code/:clubId/toggle_hide/',
     'check_code': '/api/school/:schoolId/club_code/',
-    'extra_info': '/api/club/:clubId/send_info/',
+    'club_email_info': '/api/club/:clubId/send_info/',
 
     'event_create': '/api/event/:clubId/:clubCode/',
-    'event': '/api/event/:clubId/:clubCode/:eventId/'
+    'event_edit': '/api/edit/event/:clubId/:clubCode/:eventId/',
+
+    'school_events': '/api/school/:schoolId/events/',
+    'event_info': '/api/events/:eventId/info/'
 };
 
 function fillTemplate(urlName, urlArgs) {

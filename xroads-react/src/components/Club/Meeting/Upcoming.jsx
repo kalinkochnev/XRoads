@@ -1,21 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import moment from "moment";
-
-const weekdayName = (dateObj) => moment(dateObj).format('dddd')
-const strToTime = (timeStr) => moment(timeStr, "H:mm:ss").toDate();
-const parseJSDate = (dateStr) => new Date(Date.parse(dateStr))
-const timeObjToStr = (timeObj) => moment(timeObj).format("h:mm  a")
-
-const isToday = (otherDate) => {
-    if (typeof otherDate == "string") {
-        otherDate = parseJSDate(otherDate);
-    }
-    const today = new Date()
-    return otherDate.getDate() == today.getDate() &&
-        otherDate.getMonth() == today.getMonth() &&
-        otherDate.getFullYear() == today.getFullYear()
-}
-
+import * as utils from "./utils";
 
 const UpcomingEvents = ({ events = [], displayedClubs = [] }) => {
     const [sortedEvents, setEvents] = useState(null);
@@ -61,7 +46,7 @@ const UpcomingEvents = ({ events = [], displayedClubs = [] }) => {
         // For each date, sort events by start time
         for (var date of Object.keys(orderedEvents)) {
             orderedEvents[date].sort((e1, e2) => {
-                return strToTime(e1.start) - strToTime(e2.start);
+                return utils.strToTime(e1.start) - utils.strToTime(e2.start);
             })
         }
         return orderedEvents;
@@ -83,7 +68,7 @@ const UpcomingEvents = ({ events = [], displayedClubs = [] }) => {
 const DateComp = ({ date, events = [] }) => {
     return (
         <div>
-            <b>{isToday(date) ? "Today's meetings" : weekdayName(date)}</b>
+            <b>{utils.isToday(date) ? "Today's meetings" : utils.weekdayName(date)}</b>
             {events.map(event => <Event event={event}></Event>)}
         </div>
     );

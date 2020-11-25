@@ -49,7 +49,7 @@ const ExtraInfo = ({club}) => {
         if (state.user.email == null || state.user.email == '') {
             setPopup(true)
         } else {
-            sendRequest('extra_info', {clubId: club.id}, 'GET', {}, {email: state.user.email}).then(res => {
+            sendRequest('club_email_info', {clubId: club.id}, 'GET', {}, {email: state.user.email}).then(res => {
                 res.json().then(body => {
                     if (res.ok) {
                         store.addNotification({

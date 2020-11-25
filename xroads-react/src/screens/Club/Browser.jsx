@@ -106,7 +106,7 @@ const ScreenClubBrowser = ({ match: { params } }) => {
     <div>
       <Navbar>xroads</Navbar>
       <div className="body">
-        <UpcomingEvents events={school.events} displayedClubs={displayedClubs}></UpcomingEvents>
+        {/* <UpcomingEvents events={school.events} displayedClubs={displayedClubs}></UpcomingEvents> */}
         <FeaturedCard club={featured}></FeaturedCard>
         <SearchBar
           key={clubIds}
