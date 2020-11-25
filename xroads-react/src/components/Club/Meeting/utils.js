@@ -1,3 +1,5 @@
+import moment from "moment";
+
 const weekdayName = (dateObj) => moment(dateObj).format('dddd');
 const strToTime = (timeStr) => moment(timeStr, "H:mm:ss").toDate();
 const parseJSDate = (dateStr) => new Date(Date.parse(dateStr));
@@ -17,11 +19,11 @@ const isToday = (otherDate) => {
 const eventToStartEnd = (event) => {
     let date = dateStrToDate(event.date);
     let endDate = dateStrToDate(event.date);
-    let startTime = utils.strToTime(event.start)
-    let endTime = utils.strToTime(event.end)
-    moment(date).clone().
+    let startTime = strToTime(event.start)
+    let endTime = strToTime(event.end)
+    // moment(date).clone(). TODO fix
 
-    new Date().setTime(start)
+    new Date().setTime()
     new Date().getTime()
 }
 

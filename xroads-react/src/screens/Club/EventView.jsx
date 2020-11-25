@@ -25,4 +25,4 @@ const EVENTS = new Dayz.EventsCollection([
 
 
 
-export default CalendarView;
+// export default CalendarView;

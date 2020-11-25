@@ -228,13 +228,13 @@ const MeetingCard = ({ event, editable = false, displayEdit = false, state = {},
 }
 
 const CalendarView = ({events}) => {
-    utils.strToTime(event.start)
-    utils.strToTime(event.end)
+    // utils.strToTime(event.start)
+    // utils.strToTime(event.end)
     let dayzEvents = Dayz.EventsCollection(events.map(event => {return {content: event.name, range: moment}}))
 
     return (
       <div>
-        <Dayz display="month" date={props.date} events={EVENTS} />
+        <Dayz display="month" date={new Date()} events={{}} />
       </div>
     );
 };
