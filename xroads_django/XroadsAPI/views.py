@@ -32,25 +32,11 @@ class SchoolViewset(viewsets.ReadOnlyModelViewSet, GenericViewSet):
         except (Club.DoesNotExist, KeyError):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-    @action(methods=['get'])
-    def event_info(self, request, *args, **kwargs):
-        event_id = self.request.query_params.get('')
-        email = self.request.query_params.get('email', None)
-
-        if email is not None and event_id is not None:
-            district = District.match_district(email)
-
-            try:
-                Event.objects.get(id=event_id)
-            except Event.DoesNotExist:
-                
-
-            club: Club = self.get_object()
-            if district == club.district:
-                club.send_extra_info(email)
-                return Response({}, status=status.HTTP_200_OK)
-        return Response({'message': 'The email provided was invalid or is not allowed to access'}, status=status.HTTP_406_NOT_ACCEPTABLE)
-
+    @action(detail=True, methods=['get'])
+    def events(self, request, *args, **kwargs):
+        first_of_month = datetime.today().replace(day=1)
+        events = Event.objects.filter(date__gte=first_of_month , club__school=self.get_object())
+        return Response(EventSerializer(data=events, many=True).data, status=status.HTTP_200_OK)
 
 class ClubViewset(viewsets.ReadOnlyModelViewSet):
     queryset = Club.objects.all()
@@ -73,6 +59,22 @@ class ClubViewset(viewsets.ReadOnlyModelViewSet):
         queryset = Club.objects.filter(school=school_id)
         return Response(BasicClubInfoSerial(queryset, many=True).data)
 
-class EventViewset(viewsets.ReadOnlyModelViewSet):
-    class Meta:
-        model = 
+class EventViewset(GenericViewSet):
+    queryset = Event.objects.all()
+    
+    @action(detail=True, methods=['get'])
+    def info(self, request, *args, **kwargs):
+        email = self.request.query_params.get('email', None)
+        district = District.match_district(email)
+
+        if email is not None:
+            event: Event = self.get_object()
+            try:
+                if district == event.club.district:
+                    event.send_info(email)
+                    return Response({}, status=status.HTTP_200_OK)
+            except Event.DoesNotExist:
+                pass
+        return Response({'message': 'The email provided was invalid or is not allowed to access'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+

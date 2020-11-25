@@ -119,7 +119,7 @@ class School(models.Model):
         club.make_save(save)
 
     @property
-    def events(self):
+    def week_events(self):
         # Get events that are going on today and up until the end of the week
         today = datetime.datetime.today()
         end_of_week = today + datetime.timedelta(days=6 - today.weekday())
@@ -247,6 +247,9 @@ class District(models.Model):
 
     @classmethod
     def match_district(cls, email):
+        if email is None:
+            return None
+            
         domain = email.split('@')[1]
         yo = 1
 

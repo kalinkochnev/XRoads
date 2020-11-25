@@ -56,7 +56,7 @@ class ClubDetailSerializer(serializers.ModelSerializer):
 class SchoolDetailSerializer(serializers.ModelSerializer):
     clubs = BasicClubInfoSerial(many=True)
     curr_featured_order = serializers.IntegerField()
-    events = EventSerializer(many=True)
+    week_events = EventSerializer(many=True)
 
     class Meta:
         exclude = ['featured']
