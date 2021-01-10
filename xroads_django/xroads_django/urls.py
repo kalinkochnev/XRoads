@@ -41,7 +41,6 @@ urlpatterns = [
 
     path('api/', include('XroadsAPI.urls')),
     path('admin/', admin.site.urls),
-    path('auth/', include('XroadsAuth.urls')),
 ]
 
 if settings.DEBUG:

@@ -1,6 +1,0 @@
-You've been added as an editor for {{club.name}}!
-
-This is great, but you don't have an account yet. Just create one with this link:
-    https://xroads.club/signup
-
-You are probably getting this email because your advisor added you to the club

@@ -10,14 +10,14 @@ import { faListOl, faQuoteLeft, fa, faUnderline, faItalic, faBold, faListUl, faH
 import 'draft-js/dist/Draft.css';
 
 import './RichEditor.scss';
+import { useField, withFormik } from 'formik';
 
 const {useState, useRef, useCallback} = React;
 
-function RichEditor(props) {
-
-  const currContentState = convertFromRaw(markdownToDraft(props.mdContent));
-
+function RichEditor({initialValue, setValue=(value) => null}) {
+  const currContentState = convertFromRaw(markdownToDraft(initialValue));
   const [editorState, setEditorState] = useState(EditorState.createWithContent(currContentState));
+
   const editor = useRef(null);
 
   const focus = () => {
@@ -74,7 +74,7 @@ function RichEditor(props) {
     const content = newEditorState.getCurrentContent();
     const rawObject = convertToRaw(content);
     const markdownString = draftToMarkdown(rawObject);
-    props.onChange(markdownString);
+    setValue(markdownString);
     setEditorState(newEditorState);
   }
 

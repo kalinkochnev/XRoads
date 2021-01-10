@@ -1,0 +1,11 @@
+// Variables to override
+$inputWidth: 450px;
+$inputPadVert: 40px;
+$inputTextSize: 40px;
+$inputCentered: true;
+$inputBRadius: 10px;
+
+$inputLabelMB: 20px;
+
+@import "./../../Common/Form/FormStyle.scss";
+

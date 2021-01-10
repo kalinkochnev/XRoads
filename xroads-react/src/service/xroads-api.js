@@ -1,52 +1,29 @@
-import InvalidKeysProvided from '../utils/exceptions';
-import {isEqual} from '../utils/arrays';
-import { Cookies } from 'react-cookie';
 
 // To have keyworded args use this format:   :keyword_arg
 const endpoint_templates = {
-    'login': '/auth/login/',
-    'logout': '/auth/logout/',
-    'signup': '/auth/registration/',
-    'club_list': '/api/district/:districtId/school/:schoolId/club/',
-    'club_detail': '/api/district/:districtId/school/:schoolId/club/:clubId',
-    'user_detail': '/auth/user/',
-    'join_club': '/api/district/:districtId/school/:schoolId/club/:clubId/join_club/',
-    'leave_club': '/api/district/:districtId/school/:schoolId/club/:clubId/leave_club/',
-    'school_list': '/api/district/:districtId/school/',
-    'join_school': '/api/district/:districtId/school/:schoolId/join_school/',
-    'ask_question': '/api/district/:districtId/school/:schoolId/club/:clubId/ask_question/',
+    'club_list': '/api/school/:schoolId/',
+    'club_detail': '/api/club/:clubId/',
+    'club_edit': '/api/club/:code/:clubId/',
+    'school_list': '/api/district/:districtId/',
 
-    'answer_question': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/answer_question/',
-    'toggle_hide_club': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/toggle_hide/',
-    'admin_club_detail': '/api/admin/district/:districtId/school/:schoolId/club/:clubId',
-    'get_questions': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/questions/',
+    'toggle_hide_club': '/api/club/:code/:clubId/toggle_hide/',
+    'check_code': '/api/school/:schoolId/club_code/',
+    'club_email_info': '/api/club/:clubId/send_info/',
 
-    'list_editors': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/list_editors/',
-    'remove_editor': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/remove_editor/',
-    'add_editor': '/api/admin/district/:districtId/school/:schoolId/club/:clubId/add_editor/'
+    'event_create': '/api/event/:clubId/:clubCode/',
+    'event_edit': '/api/edit/event/:clubId/:clubCode/:eventId/',
 
+    'school_events': '/api/school/:schoolId/events/',
+    'event_info': '/api/events/:eventId/info/'
 };
 
 function fillTemplate(urlName, urlArgs) {
     let template = endpoint_templates[urlName];
-
-    let items = template.split("/");
-    let urlFragments = [];
-    for (var item of items) {
-        if (item !== '') {
-            urlFragments.push(item)
-        }
+    for (var arg of Object.keys(urlArgs)) {
+        template = template.replace(`:${arg}`, urlArgs[arg])
     }
-
-    let newUrl = "";
-    for (var part of urlFragments) {
-        if (part.charAt(0) === ":") {
-            newUrl += "/" + urlArgs[part.substring(1, part.length)];
-        } else {
-            newUrl += "/" + part;
-        }
-    }
-    return newUrl + '/';
+    console.log(template)
+    return template;
 }
 
 function getUrl(urlName, urlArgs) {
@@ -81,42 +58,23 @@ function generateFetchConfig(method, body = null) {
     return config;
 }
 
-export async function sendRequest(urlName, urlArgs, method, body = null) {
-    return await fetch(getUrl(urlName, urlArgs), generateFetchConfig(method, body));
+export async function sendRequest(urlName, urlArgs, method, body = null, query_params = null) {
+    let query = query_params != null ? "?" + new URLSearchParams(query_params) : ""
+    return await fetch(getUrl(urlName, urlArgs) + query, generateFetchConfig(method, body));
 }
 
-export function fetchClubs(districtId, schoolId) {
-    return sendRequest('club_list', { 'districtId': districtId, 'schoolId': schoolId }, 'GET');
+export function fetchClubs(schoolId) {
+    return sendRequest('club_list', { 'schoolId': schoolId }, 'GET');
 }
 
-export function fetchClub(districtId, schoolId, clubId) {
-    return sendRequest('club_detail', { 'districtId': districtId, 'schoolId': schoolId, 'clubId': clubId }, 'GET');
+export function fetchClub(clubId) {
+    return sendRequest('club_detail', { 'clubId': clubId }, 'GET');
 }
 
-export function signup(formData) {
-    let requiredKeys = ['email', 'first_name', 'last_name', 'password1', 'password2']
-    if (!isEqual(Object.keys(formData), requiredKeys)) {
-        throw InvalidKeysProvided('The signup form did not have the right values')
-    }
-    return sendRequest('signup', {}, 'POST', formData, false);
+export function fetchClubEdit(clubId, code) {
+    return sendRequest('club_edit', { 'code': code, 'clubId': clubId }, 'GET');
 }
 
-export function updateClub(districtId, schoolId, clubId, updatedClub) {
-    return sendRequest('admin_club_detail', { 'districtId': districtId, 'schoolId': schoolId, 'clubId': clubId }, 'PUT', updatedClub);
-}
-
-export function removeAuthCookies() {
-    let cookies = new Cookies();
-    cookies.remove('JWT-SIGNATURE', { path: '/' });
-    cookies.remove('JWT-HEADER-PAYLOAD', { path: '/' });
-}
-
-export function login(formData) {
-    removeAuthCookies();
-    
-    let requiredKeys = ['email', 'password', 'remember_me']
-    if (!isEqual(Object.keys(formData), requiredKeys)) {
-        throw InvalidKeysProvided('The login form did not have the right keys')
-    }
-    return sendRequest('login', {}, 'POST', formData);
+export function updateClub(clubId, updatedClub, code) {
+    return sendRequest('club_edit', { 'clubId': clubId, 'code': code }, 'PUT', updatedClub);
 }

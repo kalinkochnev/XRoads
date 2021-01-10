@@ -1,43 +1,39 @@
+import datetime
+from XroadsAPI.tasks import weekly_task
 from django.db import models
+from django.conf import settings
+from django.template.loader import get_template
+from django.core.mail import EmailMultiAlternatives, send_mail
+from django.db.models import Q
 
-import XroadsAPI.slide as SlideTemp
-from XroadsAPI.exceptions import *
-import XroadsAuth.models as AuthModels
-
-
-class Slide(models.Model):
-    class Meta:
-        ordering = ['position']
-
-    club = models.ForeignKey('Club', on_delete=models.CASCADE)
-
-    position = models.IntegerField()
-    template_type = models.IntegerField()
-
-    video_url = models.URLField(blank=True, null=True)
-    img = models.ImageField(blank=True, null=True)
-    text = models.TextField(blank=True, null=True)
-    body = models.TextField(blank=True, null=True)
-
-    @property
-    def template(self):
-        return SlideTemp.SlideTemplates.get(temp_id=self.template_type)
-
-    def __str__(self):
-        return f"{self.club} slide {self.position} {self.template.name}"
+from XroadsAPI.slides import get_slide_urls
+import random
+import xkcdpass.xkcd_password as xp
 
 
 class Club(models.Model):
     name = models.CharField(max_length=30)
     description = models.TextField()
-    main_img = models.ImageField()
-    hours = models.CharField(max_length=10)
+    img = models.ImageField()
     is_visible = models.BooleanField(default=False)
-    join_promo = models.TextField(blank=True, null=True)
+    presentation_url = models.URLField()
+    contact = models.EmailField(blank=True, null=True)
+    featured_order = models.IntegerField(blank=True, null=True, default=None)
+
+    extra_info = models.TextField(blank=True, null=True)
+    code = models.CharField(max_length=30, blank=True)
 
     school = models.ForeignKey('School', on_delete=models.CASCADE, null=True)
 
-    members = models.ManyToManyField('XroadsAuth.Profile', blank=True)
+    @classmethod
+    def gen_code(cls) -> str:
+        words = xp.locate_wordfile()
+        word_list = xp.generate_wordlist(
+            wordfile=words, min_length=4, max_length=5)
+        code = xp.generate_xkcdpassword(
+            wordlist=word_list, numwords=2, case='first').split(" ")
+        rand_num = random.randint(10, 99)
+        return "".join([code[0], str(rand_num), code[1]])
 
     def __str__(self):
         return f"{self.name} - id: {self.id}"
@@ -46,51 +42,70 @@ class Club(models.Model):
         if save:
             self.save()
 
-
-    def add_slide(self, template_type, save=True, **kwargs) -> Slide:
-        max_pos = self.slides.count()
-        new_slide = SlideTemp.SlideTemplates.new_slide(
-            template_type, club=self, position=max_pos+1, **kwargs)
-        self.make_save(save)
-        return new_slide
-
-    def remove_slide(self, position, save=True):
-        self.slides.filter(position=position).delete()
-        self.make_save(save)
-
-    def join(self, profile, save=True):
-        self.members.add(profile)
-        self.make_save(save)
-
-    def leave(self, profile, save=True):
-        self.members.remove(profile)
-        self.make_save(save)
-
     def toggle_hide(self, save=True):
         self.is_visible = not self.is_visible
         self.make_save(save)
-
-    @property
-    def slides(self):
-        return Slide.objects.filter(club=self)
 
     @property
     def district(self):
         return self.school.district
 
     @property
-    def editors(self):
-        import XroadsAuth.permissions as AuthPerms
-        club_role = AuthPerms.Role.from_start_model(self)
-        # FIXME make sure it works with more than one role model
-        
-        return AuthModels.Profile.objects.filter(roles__role_name=club_role.role_str)
+    def slides(self):
+        return get_slide_urls(self.presentation_url)
+
+    def send_extra_info(self, email):
+        subject, from_email, to = f'Extra info for {self.name}', settings.DJANGO_NO_REPLY, [
+            email]
+
+        send_mail(subject, self.extra_info, from_email, to)
+
+    def save(self, *args, **kwargs):
+        if not self.pk and not self.code:
+            self.code = self.gen_code()
+
+        if self.school is not None and self.featured_order is None:
+            self.featured_order = self.school.clubs.count() + 1
+
+        super(Club, self).save(*args, **kwargs)
+
+    @property
+    def events(self):
+        events_gt_today = Q(date__gt=datetime.date.today())
+        today_unfinished_events = Q(
+            end__gte=datetime.datetime.now(), date=datetime.date.today())
+        return Event.objects.filter(today_unfinished_events | events_gt_today, club=self).order_by('date')
+
+
+class Event(models.Model):
+    club = models.ForeignKey(Club, on_delete=models.CASCADE)
+    name = models.CharField(max_length=35)
+    date = models.DateField()
+    start = models.TimeField()
+    end = models.TimeField()
+    description = models.TextField()
+    views = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f'{self.name} -- {self.club.name}: {self.club.pk}'
+
+    def send_info(self, email):
+        subject, from_email, to = f'Event info for {self.name}', settings.DJANGO_NO_REPLY, [
+            email]
+
+        send_mail(subject, self.description, from_email, to)
+
 
 class School(models.Model):
     name = models.CharField(max_length=40)
     img = models.ImageField()
     district = models.ForeignKey(
         'District', on_delete=models.CASCADE, null=True)
+
+    featured: Club = models.ForeignKey(
+        Club, on_delete=models.SET_NULL, null=True, blank=True, related_name='featured')
+
+    club_contact = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.name} - id: {self.id}"
@@ -104,19 +119,103 @@ class School(models.Model):
         club.make_save(save)
 
     @property
-    def students(self):
-        return AuthModels.Profile.objects.filter(school=self)
+    def week_events(self):
+        # Get events that are going on today and up until the end of the week
+        today = datetime.datetime.today()
+        end_of_week = today + datetime.timedelta(days=6 - today.weekday())
+        events_gt_today = Q(date__gt=datetime.date.today(),
+                            date__lte=end_of_week)
+        today_unfinished_events = Q(
+            end__gte=datetime.datetime.now(), date=datetime.date.today())
+        return Event.objects.filter(today_unfinished_events | events_gt_today, club__school=self).order_by('date')
 
     @property
     def clubs(self):
         return Club.objects.filter(school=self)
 
+    @property
+    def curr_featured_order(self):
+        if self.featured is not None:
+            return self.featured.featured_order
+        return 0
+
+    @property
+    def next_featured(self):
+        return self.get_next()
+
+    def email_club_warning(self, club: Club):
+        if club is None:
+            return
+
+        contact = club.contact
+
+        if self.club_contact and contact is not None:
+            subject, from_email, to = f'{club.name} is going to be featured!', settings.DJANGO_NO_REPLY, [
+                contact]
+            plain_text = get_template('email/featured_alert.txt')
+
+            text_content = plain_text.render({'club': club, 'school': self})
+
+            msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+            msg.send()
+
+    def email_featured(self, club: Club):
+        if club is None:
+            return
+
+        club_contact = club.contact
+        if self.club_contact and club_contact is not None:
+            subject, from_email, to = f'{club.name} is being featured right now!', settings.DJANGO_NO_REPLY, [
+                club_contact]
+            plain_text = get_template('email/curr_featured.txt')
+
+            text_content = plain_text.render({'club': club, 'school': self})
+
+            msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+            msg.send()
+
+    # If you specify a start position, it gets the next club from that position
+    def get_next(self, start=None):
+        curr_id = 0
+
+        if start is not None:
+            curr_id = start
+        elif self.featured is not None:
+            curr_id = self.featured.featured_order
+
+        try:
+            return Club.objects.get(featured_order=curr_id + 1, school=self)
+        except Club.DoesNotExist:
+            return None
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            if self.featured is None:
+                self.featured = self.get_next()
+                self.email_featured(self.featured)
+                self.email_club_warning(self.next_featured)
+
+        super(School, self).save(*args, **kwargs)
+# Scheduling every monday at 8 am
+
+
+@weekly_task(week_day=0, hours=23, minutes=59)
+def update_featured_club():
+    school: School
+    for school in School.objects.all():
+        school.featured = school.get_next()
+        school.save()
+
+
 class DistrictDomain(models.Model):
     domain = models.CharField(max_length=20, unique=True)
-    district = models.ForeignKey('XroadsAPI.District', on_delete=models.CASCADE)
+    district = models.ForeignKey(
+        'XroadsAPI.District', on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.district}: {self.domain}'
+
+
 class District(models.Model):
     name = models.CharField(max_length=40)
 
@@ -140,25 +239,21 @@ class District(models.Model):
 
     def remove_email_domain(self, domain: str):
         try:
-            domain = DistrictDomain.objects.get(domain=domain, district=self)
-            domain.delete()
+            district_domain = DistrictDomain.objects.get(
+                domain=domain, district=self)
+            district_domain.delete()
         except DistrictDomain.DoesNotExist:
             pass
 
     @classmethod
     def match_district(cls, email):
+        if email is None:
+            return None
+            
         domain = email.split('@')[1]
+        yo = 1
+
         try:
             return DistrictDomain.objects.get(domain=domain).district
         except DistrictDomain.DoesNotExist:
             return None
-
-class Question(models.Model):
-    asker = models.ForeignKey('XroadsAuth.Profile', on_delete=models.CASCADE)
-    club = models.ForeignKey(Club, on_delete=models.CASCADE)
-
-    question = models.TextField()
-    answer = models.TextField(null=True, blank=True)
-
-    def __str__(self):
-        return self.question

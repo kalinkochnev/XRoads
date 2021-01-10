@@ -38,7 +38,6 @@ if (os.environ.get("ALLOWED_HOSTS","")!=""):
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -46,24 +45,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     # Rest app
     'XroadsAPI.apps.XroadsapiConfig',
-    'XroadsAuth.apps.XroadsauthConfig',
-    'rest_framework.authtoken',
-    'dj_rest_auth',
-    'rest_framework_nested',
-
-    # Registration for dj-rest-auth
-    'django.contrib.sites',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'dj_rest_auth.registration',
-
-    # JWT tokens
-    'rest_framework_simplejwt',
-
+    'rest_framework',
+    
     # documentation for api
     'drf_yasg',
 
@@ -84,18 +71,9 @@ else:
 
 SITE_ID = 1
 
-# Need for custom user model allauth
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
-
-    # `allauth` specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 MIDDLEWARE = [
@@ -177,28 +155,13 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+TIME_ZONE = "EST"
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/djstatic/'
-
-# User substitution
-# https://docs.djangoproject.com/en/1.11/topics/auth/customizing/#auth-custom-user
-AUTH_USER_MODEL = 'XroadsAuth.Profile'
-
-# Email for development only!!!
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-ACCOUNT_EMAIL_VERIFICATION = True
-ACCOUNT_CONFIRM_EMAIL_ON_GET = True
-
-ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = False
-LOGIN_URL = reverse_lazy("account_registration_success")
-ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = LOGIN_URL
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 7
-
 
 # Base url to serve media files
 MEDIA_URL = '/media/'
@@ -208,12 +171,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'XroadsAuth.auth.CustomCookieAuthentication',
-        
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
-        # 'rest_framework.authentication.TokenAuthentication'
         # 'rest_framework.authentication.BasicAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication', # FIXME make sure to remove this in production
+        'rest_framework.authentication.SessionAuthentication', # FIXME make sure to remove this in production
     ]
 }
 
