@@ -19,6 +19,4 @@ COPY ./xroads_django  /home/xroads/xroads_dj/xroads_django/
 
 COPY ./XroadsAPI /home/xroads/xroads_dj/XroadsAPI/
 
-COPY ./XroadsAuth /home/xroads/xroads_dj/XroadsAuth/
-
 ENTRYPOINT ["/home/xroads/xroads_dj/bin/start_gunicorn.sh"]
