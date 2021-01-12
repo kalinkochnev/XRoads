@@ -10,11 +10,8 @@ const ClubBrowserCard = (props) => {
 
   return (
     <Link to={`/school/${props.school}/clubs/${props.id}`}>
-      <div
-        className="card"
-        style={clubStyle}
-      >
-        <div className="info">
+      <div className="card">
+        <div className="card-content" style={clubStyle}>
           <h1>
             {props.title}
           </h1>
