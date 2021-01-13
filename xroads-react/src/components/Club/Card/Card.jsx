@@ -9,16 +9,15 @@ const ClubBrowserCard = (props) => {
   }
 
   return (
-    <Link to={`/school/${props.school}/clubs/${props.id}`}>
-      <div className="card">
+    <div className="card">
+      <Link to={`/school/${props.school}/clubs/${props.id}`}>
         <div className="card-content" style={clubStyle}>
           <h1>
             {props.title}
           </h1>
         </div>
-      </div>
-    </Link>
+      </Link>
+    </div>
   );
-
 }
 export default ClubBrowserCard;

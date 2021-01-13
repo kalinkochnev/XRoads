@@ -1,6 +1,11 @@
 @import "../Variables.scss";
 @import "../Common.scss";
 
+.search-center {
+  max-width:calc(max(65%, 760px));
+  margin:auto;
+}
+
 .default-searchbar {
   /*Setting up the flexbox*/
   @extend .flex-container;
@@ -9,37 +14,40 @@
   align-items: center;
   box-sizing: border-box;
 
-
   /*Sets form properties*/
   @include card(40px, 4px);
-  height: 60px;
-  width: 100%;
-  margin: 150px 0px 0px 0px;
-  padding: 10px 20px 10px 20px;
+  height: 50px;
+  max-width: 100%;
+  margin: 0 auto 0px auto;
+  padding: 8px 20px 5px 20px;
 
   #search-box {
+    box-sizing: border-box;
     margin: 0px;
     width: 100%;
     border-style: none;
     background-color: transparent;
-
-    font-size: 30px;
+    position: relative;
+    font-size: 20px;
     color: #5c5c5c;
+
+    &:focus {
+      outline: none;
+    }
+    
   }
 
-  #search-box:focus {
-    outline: none;
-  }
+  
 
   #search-submit {
     @extend .basic_button;
     /*Creates a centered icon*/
 
     @include center-icon("icons/search-icon.svg");
-    height: 40px;
-    width: 40px;
+    height: 30px;
+    width: 30px;
     padding-left: 10px;
-    background-color: $greyOutline;
+    background-color: #5c5c5c;
   }
 
   #search-submit:hover {
