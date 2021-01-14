@@ -2,11 +2,34 @@ import React from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import ReactPlayer from 'react-player';
+import './Slides.scss';
 
 class Slideshow extends React.Component {
     render() {
+        let centered = true;
+        if (this.props.singleSlide) {
+            centered = false;
+        }
+
         return (
-            <Carousel centerMode infiniteLoop> 
+            <Carousel 
+            centerMode={centered} 
+            infiniteLoop 
+            swipeable 
+            showThumbs={false} 
+            showIndicators={false} 
+            showStatus={false}
+                renderArrowPrev={(onClickHandler, hasPrev, label) =>
+                    hasPrev && (
+                        <button className="slide-arrow" type="button" onClick={onClickHandler} title={label} style={{left: 15}}>&lt;</button>
+                    )
+                }
+                renderArrowNext={(onClickHandler, hasNext, label) =>
+                    hasNext && (
+                        <button className="slide-arrow" type="button" onClick={onClickHandler} title={label} style={{right: 15}}>&gt;</button>
+                    )
+                }
+            >
                 {this.props.children}
             </Carousel>
         );
