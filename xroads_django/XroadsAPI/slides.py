@@ -5,7 +5,7 @@ from django.conf import settings
 
 import re
 PREZ_REGEX = r"^(.*docs\.google\.com\/presentation\/)((d\/e\/)|(d\/))(?P<id>[^\/]*).*"
-slide_svg_url = lambda prez_id, slide_id: f'https://docs.google.com/presentation/d/{prez_id}/export/svg?id={prez_id}&pageid={slide_id}' 
+slide_png_url = lambda prez_id, slide_id: f'https://docs.google.com/presentation/d/{prez_id}/export/png?id={prez_id}&pageid={slide_id}' 
 
 def create_credentials():
     credentials = load_credentials_from_file(settings.GOOGLE_KEY_FILE.name) # TODO fixme!!!
@@ -48,7 +48,7 @@ def get_slide_urls(url: str):
         if yt_url:
             urls.append(yt_url)
         else:
-            urls.append(slide_svg_url(pres_id, slide['objectId']))
+            urls.append(slide_png_url(pres_id, slide['objectId']))
 
     return urls
 
