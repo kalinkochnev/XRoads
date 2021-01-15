@@ -4,7 +4,7 @@ from google.auth import load_credentials_from_file, default
 from django.conf import settings
 
 import re
-PREZ_REGEX = r"^.*docs\.google\.com\/presentation\/d\/(?P<id>[^\/]*).*"
+PREZ_REGEX = r"^(.*docs\.google\.com\/presentation\/)((d\/e\/)|(d\/))(?P<id>[^\/]*).*"
 slide_svg_url = lambda prez_id, slide_id: f'https://docs.google.com/presentation/d/{prez_id}/export/svg?id={prez_id}&pageid={slide_id}' 
 
 def create_credentials():
@@ -22,8 +22,13 @@ def get_slides(url: str):
 
     if valid is not None:
         prez_id = valid.group('id')
-        response = service.presentations().get(presentationId=prez_id).execute()
 
+        response = {}
+        try:
+            response = service.presentations().get(presentationId=prez_id).execute()
+        except:
+            response['slides'] = []
+            
         return prez_id, response['slides']
 
     return []
