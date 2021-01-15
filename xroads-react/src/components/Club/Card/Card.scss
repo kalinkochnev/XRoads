@@ -5,7 +5,7 @@
     height: 300px;
     margin: 20px;
     width: calc(100% - 40px);
-    box-shadow: $lightShadow;
+    box-shadow: $darkShadow;
     transition: 0.3s;
     overflow: visible;
     position: relative;
@@ -64,7 +64,7 @@
     height: 100%;
 }
 
-@media (max-width: 991px) {
+@media (max-width: 1000px) {
     .card-container {
         grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
     }
