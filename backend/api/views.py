@@ -1,13 +1,17 @@
-from django.shortcuts import render
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+
+import api.serializers as serializers
+
 
 # Create your views here.
 class DistrictViewset(viewsets.ReadOnlyModelViewSet):
     queryset = District.objects.all()
     serializer_class = DistrictSerializer
 
-class SchoolViewset(viewsets.ReadOnlyModelViewSet, GenericViewSet):
+class SchoolViewset(viewsets.ReadOnlyModelViewSet, viewsets.GenericViewSet):
     queryset = School.objects.all()
-    serializer_class = BasicInfoSchoolSerial
+    serializer_class = DistrictSerializer()
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
