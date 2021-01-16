@@ -1,20 +1,13 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-
-import { Editor, EditorState, ContentState, RichUtils, getDefaultKeyBinding , convertFromRaw, convertToRaw } from 'draft-js';
-import { draftToMarkdown, markdownToDraft } from 'markdown-draft-js';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faListOl, faQuoteLeft, fa, faUnderline, faItalic, faBold, faListUl, faHeading } from '@fortawesome/free-solid-svg-icons'
-
-
+import { faBold, faItalic, faListOl, faListUl, faQuoteLeft, faUnderline } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { convertFromRaw, convertToRaw, Editor, EditorState, getDefaultKeyBinding, RichUtils } from 'draft-js';
 import 'draft-js/dist/Draft.css';
-
+import { draftToMarkdown, markdownToDraft } from 'markdown-draft-js';
+import React from 'react';
 import './RichEditor.scss';
-import { useField, withFormik } from 'formik';
+const { useState, useRef, useCallback } = React;
 
-const {useState, useRef, useCallback} = React;
-
-function RichEditor({initialValue, setValue=(value) => null}) {
+function RichEditor({ initialValue, setValue = (value) => null }) {
   const currContentState = convertFromRaw(markdownToDraft(initialValue));
   const [editorState, setEditorState] = useState(EditorState.createWithContent(currContentState));
 
@@ -132,7 +125,7 @@ function getBlockStyle(block) {
   }
 }
 
-function StyleButton({onToggle, active, label, icon, style}) {
+function StyleButton({ onToggle, active, label, icon, style }) {
   let className = 'RichEditor-styleButton';
   if (active) {
     className += ' RichEditor-activeButton';
@@ -145,23 +138,23 @@ function StyleButton({onToggle, active, label, icon, style}) {
         e.preventDefault();
         onToggle(style);
       }}>
-      {typeof(label)=='string' && <b>{label}</b>}
-      { icon && <FontAwesomeIcon icon={icon} /> }
-      
+      {typeof (label) == 'string' && <b>{label}</b>}
+      { icon && <FontAwesomeIcon icon={icon} />}
+
     </span>
   );
 }
 
 const BLOCK_TYPES = [
-  {id: 'h1', label: 'H1', style: 'header-one'},
-  {id: 'h2', label: 'H2', style: 'header-two'},
-  {id: 'h3', label: 'H3', style: 'header-three'},
-  {id: 'leftQuote', icon: faQuoteLeft,  style: 'blockquote'},
-  {id: 'unorderedList',  icon: faListUl, style: 'unordered-list-item'},
-  {id: 'orderedList',  icon: faListOl, style: 'ordered-list-item'},
+  { id: 'h1', label: 'H1', style: 'header-one' },
+  { id: 'h2', label: 'H2', style: 'header-two' },
+  { id: 'h3', label: 'H3', style: 'header-three' },
+  { id: 'leftQuote', icon: faQuoteLeft, style: 'blockquote' },
+  { id: 'unorderedList', icon: faListUl, style: 'unordered-list-item' },
+  { id: 'orderedList', icon: faListOl, style: 'ordered-list-item' },
 ];
 
-function BlockStyleControls({editorState, onToggle}) {
+function BlockStyleControls({ editorState, onToggle }) {
   const selection = editorState.getSelection();
   const blockType = editorState
     .getCurrentContent()
@@ -185,12 +178,12 @@ function BlockStyleControls({editorState, onToggle}) {
 }
 
 const INLINE_STYLES = [
-  {id: 'bold', label: faBold, icon: faBold, style: 'BOLD'},
-  {id: 'italic', label: faItalic, icon: faItalic, style: 'ITALIC'},
-  {id: 'underline', label: faUnderline, icon: faUnderline, style: 'UNDERLINE'},
+  { id: 'bold', label: faBold, icon: faBold, style: 'BOLD' },
+  { id: 'italic', label: faItalic, icon: faItalic, style: 'ITALIC' },
+  { id: 'underline', label: faUnderline, icon: faUnderline, style: 'UNDERLINE' },
 ];
 
-function InlineStyleControls({editorState, onToggle}) {
+function InlineStyleControls({ editorState, onToggle }) {
   const currentStyle = editorState.getCurrentInlineStyle();
   return (
     <div className="RichEditor-controls">

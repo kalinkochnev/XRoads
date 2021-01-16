@@ -1,23 +1,16 @@
-import React, { useContext, useEffect } from "react";
-
+import { withFormik } from "formik";
+import React, { useContext, useState } from "react";
+import { store } from "react-notifications-component";
+import * as Yup from 'yup';
+import { ClubContext } from "../../../screens/Club/Routes";
+import { useStateValue } from "../../../service/State";
+import { sendRequest, updateClub } from "../../../service/xroads-api";
+import DynamicForm from "../../Common/Form/DynamicForm";
+import "../../Common/Form/FormStyle.scss";
 import "./Edit.scss";
 
-import RichEditor from "../../Common/RichEditor/RichEditor";
 
-import { useState } from "react";
-import { sendRequest, updateClub } from "../../../service/xroads-api";
-import { useStateValue } from "../../../service/State";
-import ReactTooltip from "react-tooltip";
 
-import { store } from "react-notifications-component";
-
-import "react-confirm-alert/src/react-confirm-alert.css"; // Import css for alert
-import { Formik, useField, withFormik, yupToFormErrors } from "formik";
-import * as Yup from 'yup';
-import { ContentState, EditorState } from "draft-js";
-import "../../Common/Form/FormStyle.scss";
-import DynamicForm from "../../Common/Form/DynamicForm";
-import { ClubContext } from "../../../screens/Club/Routes";
 
 const fieldData = {
     presentation_url: {

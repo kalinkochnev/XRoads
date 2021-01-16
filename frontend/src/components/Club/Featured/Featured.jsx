@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { AutoSlide, Slideshow } from "../../Common/Slides/Slides";
 import Sticky from '../../Common/StickyCard/StickyCard';
 import './Featured.scss';
-import { Link, useHistory } from "react-router-dom";
-import ReactPlayer from "react-player";
 
 const FeaturedCard = (props) => {
     let [club, setClub] = useState({});

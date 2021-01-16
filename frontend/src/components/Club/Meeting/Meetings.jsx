@@ -6,9 +6,6 @@ import moment from "moment";
 import { sendRequest } from "../../../service/xroads-api";
 import { ClubContext } from "../../../screens/Club/Routes";
 import { store } from "react-notifications-component";
-import "react-confirm-alert/src/react-confirm-alert.css"; // Import css for alert
-import Dayz from "dayz";
-import * as utils from "./utils";
 
 const MeetingsEdit = () => {
     const [club, setClub] = useContext(ClubContext);
@@ -234,18 +231,6 @@ const MeetingCard = ({ event, editable = false, displayEdit = false, state = {},
         </div>
     )
 }
-
-const CalendarView = ({ events }) => {
-    // utils.strToTime(event.start)
-    // utils.strToTime(event.end)
-    let dayzEvents = Dayz.EventsCollection(events.map(event => { return { content: event.name, range: moment } }))
-
-    return (
-        <div>
-            <Dayz display="month" date={new Date()} events={{}} />
-        </div>
-    );
-};
 
 
 export { MeetingsEdit, MeetingCard };

@@ -1,16 +1,15 @@
+import { Formik } from "formik";
+import React from "react";
+import { store } from "react-notifications-component";
+import { useHistory } from "react-router-dom";
+import * as Yup from "yup";
+import { useStateValue } from "../../../service/State";
+import { sendRequest } from "../../../service/xroads-api";
+import Navbar from "../../Common/Navbar/Navbar";
 import "../Edit/ClubCode.scss";
 
-import { Formik } from "formik";
-import * as Yup from "yup";
 
-import React from "react";
-import Navbar from "../../Common/Navbar/Navbar";
-import { sendRequest } from "../../../service/xroads-api";
 
-import "react-confirm-alert/src/react-confirm-alert.css"; // Import css for alert
-import { store } from "react-notifications-component";
-import { useStateValue } from "../../../service/State";
-import { useHistory } from "react-router-dom";
 
 
 const ClubCode = () => {

@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Linkify from "react-linkify";
-import "./Body.scss";
 import "./../Edit/Edit.scss";
+import "./Body.scss";
 
 const Markdown = require("react-markdown");
 
