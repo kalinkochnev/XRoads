@@ -11,7 +11,7 @@ const endpoint_templates = {
     'club_email_info': '/api/club/:clubId/send_info/',
 
     'event_create': '/api/event/:clubId/:clubCode/',
-    'event_edit': '/api/edit/event/:clubId/:clubCode/:eventId/',
+    'event_edit': '/api/event/:clubId/:clubCode/:eventId/',
 
     'school_events': '/api/school/:schoolId/events/',
     'event_info': '/api/events/:eventId/info/'

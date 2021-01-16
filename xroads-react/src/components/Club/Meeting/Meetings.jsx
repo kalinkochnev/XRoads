@@ -76,7 +76,13 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
     const Form = (formik) => (
         <form className="editBody" onSubmit={formik.handleSubmit}>
             {fieldsJSX(formik)}
-            <button type="submit" id="club-submit" disabled={formik.isSubmitting}>{Object.keys(initialData).length == 0 ? "Create Event" : "Save Event"}</button>
+            { Object.keys(initialData).length == 0 ?
+                <button type="submit" id="club-submit" onClick={() => createEvent(formik.values, club)} disabled={formik.isSubmitting}>"Create Event"</button>
+
+                :
+                <button type="submit" id="club-submit" onClick={() => updateEvent(formik.values, club, initialData)} disabled={formik.isSubmitting}>Save Event</button>
+
+            }
             <button type="reset" id="club-reset" onClick={() => handleReset(formik)}>Cancel Event</button>
         </form>
     )
@@ -84,7 +90,7 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
     const updateEvent = (values, club, initialData) => {
         // Send PUT request to server to update event
         let eventId = initialData.id
-        let urlParams = { clubId: club.id, clubCode: club.code, eventId: eventId}
+        let urlParams = { clubId: club.id, clubCode: club.code, eventId: eventId }
         sendRequest('event_edit', urlParams, "PUT", values).then(response => {
             if (response.ok) {
                 response.json().then(body => {
@@ -95,7 +101,7 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
                         }
                         return event
                     })
-                    setEvents(newEvents); 
+                    setEvents(newEvents);
                 })
                 store.addNotification({
                     title: "Event updated!",
@@ -113,12 +119,14 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
         })
     }
 
-    const createEvent = (values, club, initialData) => {
+    const createEvent = (values, club) => {
+        console.log(values)
         let urlParams = { clubId: club.id, clubCode: club.code }
-        sendRequest('event_edit', urlParams, "POST", values).then(response => {
+        sendRequest('event_create', urlParams, "POST", values).then(response => {
             if (response.ok) {
                 // Create the new event and update state
                 response.json().then(body => {
+                    console.log(body);
                     setEvents([...events, body]);
                 })
                 store.addNotification({
@@ -133,13 +141,13 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
                     },
                 });
             }
-            
+
         })
     }
 
     const cancelEvent = () => {
         let eventId = initialData.id
-        let urlParams = { clubId: club.id, clubCode: club.code, eventId: eventId}
+        let urlParams = { clubId: club.id, clubCode: club.code, eventId: eventId }
         sendRequest('event_edit', urlParams, "DELETE", {}).then(response => {
             if (response.ok) {
                 // Create the new event and update state
@@ -227,15 +235,15 @@ const MeetingCard = ({ event, editable = false, displayEdit = false, state = {},
     )
 }
 
-const CalendarView = ({events}) => {
+const CalendarView = ({ events }) => {
     // utils.strToTime(event.start)
     // utils.strToTime(event.end)
-    let dayzEvents = Dayz.EventsCollection(events.map(event => {return {content: event.name, range: moment}}))
+    let dayzEvents = Dayz.EventsCollection(events.map(event => { return { content: event.name, range: moment } }))
 
     return (
-      <div>
-        <Dayz display="month" date={new Date()} events={{}} />
-      </div>
+        <div>
+            <Dayz display="month" date={new Date()} events={{}} />
+        </div>
     );
 };
 
