@@ -1,15 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import ClubCard from "../../components/Club/Card/Card";
+import FeaturedCard from "../../components/Club/Featured/Featured";
 import Navbar from "../../components/Common/Navbar/Navbar";
 import SearchBar from "../../components/Common/Search/Search";
-import ClubCard from "../../components/Club/Card/Card";
-
 import * as XroadsAPI from "../../service/xroads-api";
-import { useStateValue } from "../../service/State";
-import { Route, Switch, useHistory, useRouteMatch } from "react-router-dom";
 import checkURLParams from "../Routes/utils";
-import ScreenClubDetail from "./Page";
-import FeaturedCard from "../../components/Club/Featured/Featured";
 
 const ScreenClubBrowser = ({ match: { params } }) => {
   let history = useHistory();
@@ -117,18 +113,18 @@ const ScreenClubBrowser = ({ match: { params } }) => {
           {displayedClubs.length == 0 ? (
             <h1>Loading...</h1>
           ) : (
-            displayedClubs.map((club) => (
-              <ClubCard
-                key={club.id}
-                id={club.id}
-                title={club.name}
-                imageURL={club.main_img}
-                description={club.description}
-                hidden={!club.is_visible}
-                school={params.schoolId}
-              />
-            ))
-          )}
+              displayedClubs.map((club) => (
+                <ClubCard
+                  key={club.id}
+                  id={club.id}
+                  title={club.name}
+                  imageURL={club.main_img}
+                  description={club.description}
+                  hidden={!club.is_visible}
+                  school={params.schoolId}
+                />
+              ))
+            )}
         </div>
       </div>
     </div>

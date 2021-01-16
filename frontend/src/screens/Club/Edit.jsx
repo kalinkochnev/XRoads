@@ -1,24 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
-import Navbar from '../../components/Common/Navbar/Navbar';
-
-import Tabs from '../../components/Common/Tabs/Tabs';
-import { GeneralEdit } from '../../components/Club/Edit/Edit';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
-
-import ReactTooltip from 'react-tooltip';
-
-import * as XroadsAPI from '../../service/xroads-api';
-import { useStateValue } from '../../service/State';
-
-import ReactNotification from 'react-notifications-component'
-import 'react-notifications-component/dist/theme.css'
-import { store } from 'react-notifications-component';
+import React, { useContext, useEffect } from 'react';
+import ReactNotification from 'react-notifications-component';
+import 'react-notifications-component/dist/theme.css';
 import { useHistory } from 'react-router-dom';
+import ReactTooltip from 'react-tooltip';
+import { GeneralEdit } from '../../components/Club/Edit/Edit';
 import { MeetingsEdit } from '../../components/Club/Meeting/Meetings';
-import { ClubProvider, ClubContext } from "../Club/Routes"
-
+import Navbar from '../../components/Common/Navbar/Navbar';
+import Tabs from '../../components/Common/Tabs/Tabs';
+import * as XroadsAPI from '../../service/xroads-api';
+import { ClubContext } from "../Club/Routes";
 
 
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html

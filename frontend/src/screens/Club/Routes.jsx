@@ -38,4 +38,4 @@ const SchoolRoutes = ({ match: { params: { schoolId } } }) => {
     );
 }
 
-export {SchoolRoutes, ClubProvider, ClubContext};
+export { SchoolRoutes, ClubProvider, ClubContext };
