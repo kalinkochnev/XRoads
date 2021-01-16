@@ -1,4 +1,8 @@
 from django.db import models
+import xkcdpass.xkcd_password as xp
+import random
+from django.db.models import Q
+import datetime
 
 # Create your models here.
 
@@ -37,18 +41,14 @@ class Club(models.Model):
         self.is_visible = not self.is_visible
         self.make_save(save)
 
-    # Sends api request to get slide urls
-    @property
-    def slides(self):
-        return get_slide_urls(self.presentation_url)
+    # # Sends api request to get slide urls TODO
+    # @property
+    # def slides(self):
+    #     return get_slide_urls(self.presentation_url)
 
     def save(self, *args, **kwargs):
         if not self.code:
             self.code = self.gen_code()
-
-        # If the club was just added to the school, add it to the featured order
-        if self.school is not None and self.featured_order is None:
-            self.featured_order = self.school.clubs.count() + 1
 
         super(Club, self).save(*args, **kwargs)
 
@@ -79,9 +79,6 @@ class School(models.Model):
     img = models.ImageField()
     district = models.ForeignKey(
         'District', on_delete=models.CASCADE, null=True)
-
-    featured: Club = models.ForeignKey(
-        Club, on_delete=models.SET_NULL, null=True, blank=True, related_name='featured')
 
     def __str__(self):
         return f"{self.name} - id: {self.id}"

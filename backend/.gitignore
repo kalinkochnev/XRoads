@@ -5,3 +5,4 @@ test_media/*
 media/*
 api_keys.json
 .mypy_cache/
+.pytest_cache/
