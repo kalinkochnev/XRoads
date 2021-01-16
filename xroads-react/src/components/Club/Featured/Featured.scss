@@ -1,0 +1,125 @@
+@import "../../Common/Variables.scss";
+@import "../../Common/Common.scss";
+
+.featured-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    margin-bottom: 150px;
+}
+
+.meetings {
+    flex-basis: 30%;
+    flex-grow: 1;
+
+    .meeting-list {
+        box-sizing: border-box;
+        background-color: white;
+        box-shadow: $lightShadow;
+        padding: 20px;
+        margin-right:50px;
+        height: 100%;
+
+        h3 {
+            margin: 0;
+            margin-top: 20px;
+
+            &:first-of-type {
+                margin-top: 0;
+            }
+        }
+
+        p {
+            margin: 0;
+            padding: 4px 0;
+        }
+    }
+}
+
+.featured-club {
+    box-sizing: border-box;
+    flex-basis: 70%;
+    flex-grow: 1;
+    padding: 0;
+
+    .featured-club-content {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        box-shadow: $lightShadow;
+    }
+
+    .featured-club-details {
+        box-sizing: border-box;
+        padding: 20px;
+        flex-basis: 50%;
+        flex-grow: 1;
+        background-color: white;
+        min-height: 0;
+        overflow: hidden;
+        position: relative;
+
+        h2 {
+            margin-top: 0;
+        }
+
+        p {
+            margin: 0;
+            height: 0;
+        }
+
+        a {
+            color: black;
+            text-decoration: none;
+        }
+
+        a:hover h2{
+            text-decoration: underline;
+        }
+
+        .haze-bottom {
+            background: linear-gradient(0deg, rgba(255,255,255,1) 25%, rgba(0,0,0,0) 100%);
+            position: absolute;
+            height: 80px;
+            width: 100%;
+            bottom: 0;
+        }
+
+    }
+
+    .carousel-root {
+        flex-grow: 1;
+        box-sizing: border-box;
+        flex-basis: 50%;
+        padding: 0;
+    }
+
+}
+
+#root {
+    padding-bottom: 200px;
+}
+
+
+@media (max-width: 1000px) {
+    .featured-club-content {
+        flex-direction: column !important;
+        p {
+            height: auto !important;
+            max-height: 200px !important;
+        }
+    }
+
+}
+
+@media (max-width: 1600px) {
+    .featured-container {
+        flex-direction: column !important;
+    }
+    
+    .meetings .meeting-list {
+        margin-right:0px !important;
+        margin-bottom:100px !important;
+    }
+}
