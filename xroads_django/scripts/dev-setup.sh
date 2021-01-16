@@ -46,6 +46,6 @@ sudo -u postgres psql <<< $setup_db_command
 # Install npm
 echo "Setting up npm.................................."
 sudo apt-get install npm
-cd xroads-react/
+cd frontend/
 npm install
 npm audit fix
