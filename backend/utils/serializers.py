@@ -11,7 +11,7 @@ class DynamicModelSerializer(serializers.ModelSerializer):
 
 
     @classmethod
-    def to_serializer(cls, fields, exclude=False) -> Callable: 
+    def sub_serializer(cls, fields, exclude=False) -> Callable: 
         """An alternate constructor that creates a serializer that is uninstantiated."""
         
         

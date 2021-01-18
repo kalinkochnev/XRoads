@@ -8,13 +8,8 @@ class ClubAll(DynamicModelSerializer):
     class Meta:
         model = Club
         fields = '__all__'
-        lookup_field = 'slug'
-        extra_kwargs = {
-            'url': {'lookup_field': 'slug'}
-        }
 
-
-ClubBasic = ClubAll.to_serializer(fields=['name', 'img', 'is_visible', 'slug'])
+ClubBasic = ClubAll.sub_serializer(fields=['name', 'img', 'is_visible', 'slug'])
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -40,7 +35,7 @@ class SchoolAll(DynamicModelSerializer):
         fields = '__all__'
 
 
-SchoolNoClubs = SchoolAll.to_serializer(
+SchoolNoClubs = SchoolAll.sub_serializer(
     fields=['clubs', 'week_events'], exclude=True)
 
 

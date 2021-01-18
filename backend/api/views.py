@@ -1,4 +1,4 @@
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -11,23 +11,17 @@ class DistrictViewset(viewsets.ReadOnlyModelViewSet):
     queryset = District.objects.all()
     serializer_class = serializers.DistrictAll
 
-class SchoolViewset(viewsets.ReadOnlyModelViewSet, viewsets.GenericViewSet):
+
+class SchoolViewset(mixins.RetrieveModelMixin):
     queryset = School.objects.all()
-    serializer_class = serializers.DistrictAll
+    serializer_class = serializers.SchoolAll
     lookup_field = 'slug'
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = serializers.School(instance)
-        return Response(serializer.data)
 
 class ClubViewset(viewsets.ReadOnlyModelViewSet):
     queryset = Club.objects.all()
     serializer_class = serializers.ClubBasic
     lookup_field = 'slug'
-
-    def get_serializer(self, *args, **kwargs):
-        return super().get_serializer(*args, **kwargs)
 
     @action(detail=True, methods=['get'])
     def club_info(self, request, *args, **kwargs):
@@ -92,4 +86,3 @@ class EventViewset(GenericViewSet):
         return Response({'message': 'The email provided was invalid or is not allowed to access'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 """
-

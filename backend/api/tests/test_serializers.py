@@ -9,9 +9,9 @@ class SerializerStub(DynamicModelSerializer):
         fields = '__all__'
 
 
-StubBasic = SerializerStub.to_serializer(
+StubBasic = SerializerStub.sub_serializer(
     fields=['name', 'description'])
-StubBasic2 = SerializerStub.to_serializer(
+StubBasic2 = SerializerStub.sub_serializer(
     fields=['name'], exclude=True
 )
 
