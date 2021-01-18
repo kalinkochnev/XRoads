@@ -1,42 +1,33 @@
-from rest_framework import viewsets, status
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.response import Response
 
 import api.serializers as serializers
+from api.models import *
 
 
 # Create your views here.
 class DistrictViewset(viewsets.ReadOnlyModelViewSet):
     queryset = District.objects.all()
-    serializer_class = DistrictSerializer
+    serializer_class = serializers.DistrictAll
 
 class SchoolViewset(viewsets.ReadOnlyModelViewSet, viewsets.GenericViewSet):
     queryset = School.objects.all()
-    serializer_class = DistrictSerializer()
+    serializer_class = serializers.DistrictAll
+    lookup_field = 'slug'
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = SchoolDetailSerializer(instance)
+        serializer = serializers.School(instance)
         return Response(serializer.data)
-
-    @action(detail=True, methods=['get'])
-    def club_code(self, request, *args, **kwargs):
-        try:
-            club = Club.objects.get(
-                school=self.get_object(), code=request.query_params['code'])
-            return Response(BasicClubInfoSerial(club).data, status=status.HTTP_200_OK)
-        except (Club.DoesNotExist, KeyError):
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-    @action(detail=True, methods=['get'])
-    def events(self, request, *args, **kwargs):
-        first_of_month = datetime.today().replace(day=1)
-        events = Event.objects.filter(date__gte=first_of_month , club__school=self.get_object())
-        return Response(EventSerializer(data=events, many=True).data, status=status.HTTP_200_OK)
-
 
 class ClubViewset(viewsets.ReadOnlyModelViewSet):
     queryset = Club.objects.all()
-    serializer_class = ClubDetailSerializer
+    serializer_class = serializers.ClubBasic
+    lookup_field = 'slug'
+
+    def get_serializer(self, *args, **kwargs):
+        return super().get_serializer(*args, **kwargs)
 
     @action(detail=True, methods=['get'])
     def club_info(self, request, *args, **kwargs):
@@ -53,8 +44,34 @@ class ClubViewset(viewsets.ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
         school_id = self.kwargs['school_pk']
         queryset = Club.objects.filter(school=school_id)
-        return Response(BasicClubInfoSerial(queryset, many=True).data)
+        return Response(serializers.ClubAll(queryset, many=True).data)
 
+
+"""
+class SchoolViewset(viewsets.ReadOnlyModelViewSet, viewsets.GenericViewSet):
+    queryset = School.objects.all()
+    serializer_class = serializers.DistrictAll
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = serializers.School(instance)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def club_code(self, request, *args, **kwargs):
+        try:
+            club = Club.objects.get(
+                school=self.get_object(), code=request.query_params['code'])
+            data = serializers.ClubBasic(club).data
+            return Response(data, status=status.HTTP_200_OK)
+        except (Club.DoesNotExist, KeyError):
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    @action(detail=True, methods=['get'])
+    def events(self, request, *args, **kwargs):
+        first_of_month = datetime.today().replace(day=1)
+        events = Event.objects.filter(date__gte=first_of_month , club__school=self.get_object())
+        return Response(EventSerializer(data=events, many=True).data, status=status.HTTP_200_OK)
 
 class EventViewset(GenericViewSet):
     queryset = Event.objects.all()
@@ -74,4 +91,5 @@ class EventViewset(GenericViewSet):
                 pass
         return Response({'message': 'The email provided was invalid or is not allowed to access'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
+"""
 

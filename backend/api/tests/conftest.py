@@ -32,14 +32,23 @@ def create_club(db, temp_img):
             'description': "This is a club description",
             'presentation_url': "https://docs.google.com/presentation/d/fake_id/edit",
             'code': 'Random52Code23',
+            'slug': 'test-slug',
             'is_visible': True,
             'img': temp_img(temp_file).name,
         }
         data.update(kwargs)
 
+        club = None
         if club_id == -1:
-            return Club.objects.create(**data)
-        return Club.objects.create(id=club_id, **data)
+            club = Club.objects.create(**data)
+        else:
+            club = Club.objects.create(id=club_id, **data)
+
+        # Makes sure it is unique
+        club.slug += str(club.id)
+        club.save()
+
+        return club
 
     return create_club
 

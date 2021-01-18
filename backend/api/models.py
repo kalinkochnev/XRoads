@@ -3,6 +3,7 @@ import xkcdpass.xkcd_password as xp
 import random
 from django.db.models import Q
 import datetime
+from django.utils.text import slugify
 
 # Create your models here.
 
@@ -11,11 +12,14 @@ class Club(models.Model):
     school = models.ForeignKey('School', on_delete=models.CASCADE, null=True)
 
     name = models.CharField(max_length=30)
+    slug = models.SlugField(max_length=20, unique=True, null=False)
+
     description = models.TextField()
     code = models.CharField(max_length=30, blank=True)
 
     img = models.ImageField()
-    presentation_url = models.URLField()
+    # TODO add validator for presentation url   
+    presentation_url = models.URLField(validators=[])
 
     is_visible = models.BooleanField(default=False)
 
@@ -46,9 +50,17 @@ class Club(models.Model):
     # def slides(self):
     #     return get_slide_urls(self.presentation_url)
 
+    @property
+    def default_slug(self):
+        slugify(self.name[:20])
+        return 
+
     def save(self, *args, **kwargs):
         if not self.code:
             self.code = self.gen_code()
+
+        if not self.slug or len(self.slug) == 0:
+            self.slug = self.default_slug
 
         super(Club, self).save(*args, **kwargs)
 
@@ -76,6 +88,7 @@ class Event(models.Model):
 
 class School(models.Model):
     name = models.CharField(max_length=40)
+    slug = models.SlugField(max_length=40, unique=True, null=False)
     img = models.ImageField()
     district = models.ForeignKey(
         'District', on_delete=models.CASCADE, null=True)

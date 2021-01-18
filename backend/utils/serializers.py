@@ -12,27 +12,38 @@ class DynamicModelSerializer(serializers.ModelSerializer):
 
     @classmethod
     def to_serializer(cls, fields, exclude=False) -> Callable: 
-        """An alternate constructor to be used in serializers member different fields"""
-        def decorator(*args, **kwargs):
-            return cls(fields=fields, exclude=exclude, *args, **kwargs)
-        return decorator
+        """An alternate constructor that creates a serializer that is uninstantiated."""
+        
+        
+        original_fields = cls().fields.keys()
+        new_fields = set(fields)
+        # Drop any fields that are not specified in the `fields` argument.
 
-    def __init__(self, *args, **kwargs:dict):
+        if exclude:
+            new_fields = original_fields - set(fields)
+
+        class SubSerializer(cls):
+            class Meta(cls.Meta):
+                model = cls.Meta.model
+                fields = list(new_fields)
+
+        return SubSerializer
+    
+
+    def __init__(self, *args, **kwargs):
+        """
+        An initializer that takes an additional `fields` argument that
+        controls which fields should be displayed.
+        """
         # Don't pass the 'fields' arg up to the superclass
         fields = kwargs.pop('fields', None)
-        exclude = kwargs.pop('exclude', False)
-        
+
         # Instantiate the superclass normally
         super(serializers.ModelSerializer, self).__init__(*args, **kwargs)
 
         if fields is not None:
             # Drop any fields that are not specified in the `fields` argument.
-            specified_fields = set(fields)
+            allowed = set(fields)
             existing = set(self.fields)
-
-            if exclude:
-                for field_name in specified_fields:
-                    self.fields.pop(field_name)
-            else:
-                for field_name in existing - specified_fields:
-                    self.fields.pop(field_name)
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)

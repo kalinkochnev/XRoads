@@ -11,7 +11,9 @@ class SerializerStub(DynamicModelSerializer):
 
 StubBasic = SerializerStub.to_serializer(
     fields=['name', 'description'])
-
+StubBasic2 = SerializerStub.to_serializer(
+    fields=['name'], exclude=True
+)
 
 class SubStub(DynamicModelSerializer):
     clubs = StubBasic(many=True)
@@ -32,9 +34,9 @@ class TestDynamicSerializer:
 
     def test_exclude(self, create_club):
         c1 = create_club()
-        excluded_fields = ['name', 'description']
+        excluded_fields = ['name']
         
-        result = SerializerStub(c1, fields=excluded_fields, exclude=True).data
+        result = StubBasic2(c1).data
         assert len(set(result.keys()).intersection(set(excluded_fields))) == 0
 
 
