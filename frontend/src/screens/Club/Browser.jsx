@@ -79,6 +79,7 @@ const ScreenClubBrowser = ({ match: { params } }) => {
         history.push("/");
       }
     });
+    
   }
 
   function searchFilter(matchingIds) {
