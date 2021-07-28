@@ -1,43 +1,32 @@
 import { Formik } from "formik";
 import React from "react";
-import { store } from "react-notifications-component";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
 import { useStateValue } from "../../../service/State";
 import { sendRequest } from "../../../service/xroads-api";
 import Navbar from "../../Common/Navbar/Navbar";
 import "../Edit/ClubCode.scss";
-
-
-
-
+import 'react-notifications/lib/notifications.css';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
+import { useContext } from "react";
+import { ClubContext } from "../../../screens/Club/Routes";
 
 const ClubCode = () => {
     let history = useHistory();
     const [state, dispatch] = useStateValue();
     let school = state.user.school;
+    const [club, setClub] = useContext(ClubContext);
 
     const onSubmit = (values) => {
-        console.log(values)
-        sendRequest('check_code', { schoolId: school }, 'GET', null, {code: values.code}).then(response => {
+        sendRequest('check_code', { schoolSlug: school }, 'GET', null, {code: values.code}).then(response => {
             if (response.ok) {
                 response.json().then(club => {
-                    let url = `/school/${school}/clubs/${club.id}/edit/${values.code}`
-                    console.log(url)
+                    setClub({...club, code: values.code})
+                    let url = `/${school}/${club.slug}/edit/`
                     history.push(url)
                 })
             } else {
-                store.addNotification({
-                    title: "Warning",
-                    message: "Invalid club code given",
-                    type: "warning",
-                    insert: "top",
-                    container: "top-right",
-                    dismiss: {
-                      duration: 5000,
-                      onScreen: true,
-                    },
-                  });
+                NotificationManager.success("Bringing you to edit the club", "Success!")
             }
 
         })
@@ -46,6 +35,7 @@ const ClubCode = () => {
     return (
         <div>
             <Navbar></Navbar>
+            <NotificationContainer />
             <div className="center-form">
                 <Formik
                     initialValues={{ code: '' }}

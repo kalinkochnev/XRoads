@@ -1,35 +1,38 @@
 import React, { useContext, useEffect } from 'react';
-import ReactNotification from 'react-notifications-component';
-import 'react-notifications-component/dist/theme.css';
 import { useHistory } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import { GeneralEdit } from '../../components/Club/Edit/Edit';
 import { MeetingsEdit } from '../../components/Club/Meeting/Meetings';
 import Navbar from '../../components/Common/Navbar/Navbar';
 import Tabs from '../../components/Common/Tabs/Tabs';
+import { useStateValue } from '../../service/State';
 import * as XroadsAPI from '../../service/xroads-api';
 import { ClubContext } from "../Club/Routes";
 
 
 // This page is going to use the react hooks format: https://reactjs.org/docs/hooks-overview.html
 // This: { match: { params: { id }}} is the same as props.match.params.id and you can refer to id directly later
-const ScreenClubEdit = ({ match: { params: { schoolId, clubId, code } } }) => {
+const ScreenClubEdit = ({ match: { params: { clubSlug } } }) => {
   let history = useHistory();
   const [club, setClub] = useContext(ClubContext);
+  const [state, dispatch] = useStateValue();
+  let school = state.user.school;
 
   useEffect(() => {
-    console.log(code)
-    XroadsAPI.fetchClubEdit(clubId, code).then(res => {
+    if (!('code' in club)) {
+      history.push(`/${school}/${clubSlug}`)
+    }
+    XroadsAPI.fetchClubEdit(clubSlug, club.code).then(res => {
       if (res.ok) {
         res.json().then(clubRes => {
           console.log(clubRes)
           setClub(clubRes);
         });
       } else {
-        history.push(`/school/${schoolId}/clubs/${clubId}`)
+        history.push(`/${school}/${clubSlug}`)
       }
     });
-  }, [clubId, code]);
+  }, [clubSlug, club.code]);
 
   if (Object.keys(club).length == 0) {
     console.log("Loading");
@@ -43,7 +46,6 @@ const ScreenClubEdit = ({ match: { params: { schoolId, clubId, code } } }) => {
     return (
       <div>
         <Navbar>xroads</Navbar>
-        <ReactNotification />
         <div className="centerContent">
           <div className="clubHeading">
             <h2>Now Editing</h2>

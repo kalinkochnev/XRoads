@@ -11,6 +11,7 @@ import checkURLParams from "../Routes/utils";
 const ScreenClubBrowser = ({ match: { params } }) => {
   let history = useHistory();
   const [state, dispatch] = useStateValue();
+  console.log(state); 
   checkURLParams(params, { schoolSlug: "string" }, history);
 
   const [school, setSchool] = useState({})
