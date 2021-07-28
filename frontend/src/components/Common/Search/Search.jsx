@@ -12,6 +12,8 @@ class SearchBar extends React.Component {
       searchRes: null
     }
 
+    console.log("Props", props);
+
     this.handleChange = this.handleChange.bind(this);
     this.searchClubs = this.searchClubs.bind(this);
 
@@ -40,6 +42,8 @@ class SearchBar extends React.Component {
     this.setState(() => ({
       searchQuery: v
     }));
+    this.clubs = this.props.clubs;
+    console.log("Received clubs for searching", this.props.clubs);
   }
 
   searchClubs(e) {
@@ -74,7 +78,7 @@ class SearchBar extends React.Component {
             </form>
           </Sticky>
         </div>
-        { searchResNotFound ? <div>No results in search - womp, womp, womp :(  </div> : <div />}
+        {/* { searchResNotFound ? <div>No results in search - womp, womp, womp :(  </div> : <div />} */}
       </div>);
   }
 }

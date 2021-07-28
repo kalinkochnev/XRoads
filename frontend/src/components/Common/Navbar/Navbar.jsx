@@ -11,13 +11,13 @@ const Navbar = () => {
   return (
     <div>
       <div className="navbar-simple">
-        <NavLink className="logoLink" to={`/school/${school}/`} >
+        <NavLink className="logoLink" to={`/${school}/`} >
           <div className="xroadsLogo" >
             <h1>xroads</h1>
           </div>
         </NavLink>
         <div className="navbar-buttons">
-          <Link className="nav-item" to={`/school/${school}/clubs/edit`} >
+          <Link className="nav-item" to={`/${school}/clubs/edit`} >
             edit club
           </Link>
         </div>
