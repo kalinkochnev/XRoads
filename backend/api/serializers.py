@@ -4,15 +4,6 @@ from rest_framework.generics import mixins
 from api.models import *
 
 
-class ClubAll(DynamicModelSerializer):
-    slides = serializers.ListField(child=serializers.URLField())
-
-    class Meta:
-        model = Club
-        fields = '__all__'
-
-ClubBasic = ClubAll.sub_serializer(fields=['name', 'img', 'is_visible', 'slug'])
-
 
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,6 +18,15 @@ class EventSerializer(serializers.ModelSerializer):
                 "Pick a time later than " + time_str)
         return data
 
+class ClubAll(DynamicModelSerializer):
+    slides = serializers.ListField(child=serializers.URLField())
+    events = EventSerializer(many=True)
+    
+    class Meta:
+        model = Club
+        fields = '__all__'
+
+ClubBasic = ClubAll.sub_serializer(fields=['name', 'img', 'is_visible', 'slug'])
 
 class SchoolAll(DynamicModelSerializer):
     clubs = ClubBasic(many=True)

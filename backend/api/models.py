@@ -5,8 +5,6 @@ from django.db.models import Q
 import datetime
 from django.utils.text import slugify
 from api.slides import get_slide_urls
-# Create your models here.
-
 
 class Club(models.Model):
     school = models.ForeignKey('School', on_delete=models.CASCADE, null=True)

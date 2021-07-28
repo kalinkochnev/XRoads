@@ -3,7 +3,6 @@ import { Carousel } from 'react-responsive-carousel';
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import ReactPlayer from 'react-player';
 import './Slides.scss';
-import variables from '../Variables.scss';
 
 class Slideshow extends React.Component {
     render() {
@@ -11,8 +10,7 @@ class Slideshow extends React.Component {
         if (this.props.singleSlide) {
             centered = false;
         }
-
-        let centerSlidePercentage = Math.min((variables.maxPageWidth.replace('px', '') / window.innerWidth) * 100, 100);
+        let centerSlidePercentage = Math.min((1000 / window.innerWidth) * 100, 100);
 
         return (
             <Carousel
@@ -22,7 +20,7 @@ class Slideshow extends React.Component {
                 showThumbs={false}
                 showIndicators={false}
                 showStatus={false}
-                centerSlidePercentage={centerSlidePercentage}
+                centerSlidePercentage={ centerSlidePercentage }
                 renderArrowPrev={(onClickHandler, hasPrev, label) =>
                     hasPrev && (
                         <button className="slide-arrow" type="button" onClick={onClickHandler} title={label} style={{ left: 15 }}>&lt;</button>
