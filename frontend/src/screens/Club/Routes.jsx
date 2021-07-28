@@ -16,12 +16,12 @@ const ClubProvider = (props) => {
     );
 }
 
-const SchoolRoutes = ({ match: { params: { schoolId } } }) => {
+const SchoolRoutes = ({ match: { params: { schoolSlug } } }) => {
     let { path, url } = useRouteMatch();
     const [state, dispatch] = useStateValue();
 
     useEffect(() => {
-        dispatch({ type: 'set school', payload: schoolId })
+        dispatch({ type: 'set school', payload: schoolSlug })
     }, [])
 
     return (

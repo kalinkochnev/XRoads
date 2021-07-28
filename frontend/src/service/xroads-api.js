@@ -1,19 +1,20 @@
 
 // To have keyworded args use this format:   :keyword_arg
 const endpoint_templates = {
-    'club_list': '/api/school/:schoolId/',
+    'club_list': '/api/school/:schoolSlug/',
     'club_detail': '/api/club/:clubId/',
     'club_edit': '/api/club/:code/:clubId/',
+    
     'school_list': '/api/district/:districtId/',
 
     'toggle_hide_club': '/api/club/:code/:clubId/toggle_hide/',
-    'check_code': '/api/school/:schoolId/club_code/',
+    'check_code': '/api/school/:schoolSlug/club_code/',
     'club_email_info': '/api/club/:clubId/send_info/',
 
     'event_create': '/api/event/:clubId/:clubCode/',
     'event_edit': '/api/event/:clubId/:clubCode/:eventId/',
 
-    'school_events': '/api/school/:schoolId/events/',
+    'school_events': '/api/school/:schoolSlug/events/',
     'event_info': '/api/events/:eventId/info/'
 };
 
@@ -47,7 +48,8 @@ function generateFetchConfig(method, body = null) {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         },
-        credentials: 'same-origin'
+        // credentials: 'same-origin',
+        // mode: 'no-cors'
     };
 
     if (['POST', 'PUT'].includes(upCasedMethod)) {
@@ -65,8 +67,8 @@ export async function sendRequest(urlName, urlArgs, method, body = null, query_p
     return result;
 }
 
-export function fetchClubs(schoolId) {
-    return sendRequest('club_list', { 'schoolId': schoolId }, 'GET');
+export function fetchClubs(schoolSlug) {
+    return sendRequest('club_list', { 'schoolSlug': schoolSlug }, 'GET');
 }
 
 export function fetchClub(clubId) {

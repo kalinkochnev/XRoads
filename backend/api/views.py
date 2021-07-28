@@ -12,10 +12,10 @@ class DistrictViewset(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.DistrictAll
 
 
-class SchoolViewset(mixins.RetrieveModelMixin):
-    queryset = School.objects.all()
-    serializer_class = serializers.SchoolAll
-    lookup_field = 'slug'
+# class SchoolViewset(viewsets.ReadOnlyModelViewSet):
+#     queryset = School.objects.all()
+#     serializer_class = serializers.SchoolAll
+#     lookup_field = 'slug'
 
 
 class ClubViewset(viewsets.ReadOnlyModelViewSet):
@@ -43,11 +43,8 @@ class ClubViewset(viewsets.ReadOnlyModelViewSet):
 class SchoolViewset(viewsets.ReadOnlyModelViewSet, viewsets.GenericViewSet):
     queryset = School.objects.all()
     serializer_class = serializers.SchoolAll
+    lookup_field = "slug"
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = serializers.School(instance)
-        return Response(serializer.data)
 
     @action(detail=True, methods=['get'])
     def club_code(self, request, *args, **kwargs):

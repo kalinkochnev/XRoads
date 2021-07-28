@@ -42,11 +42,14 @@ INSTALLED_APPS = [
 
     # Packages
     'rest_framework',
+    'corsheaders',
+
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -145,3 +148,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Google API key data
 with open('../backend/api_keys.json') as f:
     GOOGLE_KEY_FILE = f
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
+]
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

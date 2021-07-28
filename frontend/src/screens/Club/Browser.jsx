@@ -4,13 +4,15 @@ import ClubCard from "../../components/Club/Card/Card";
 import FeaturedCard from "../../components/Club/Featured/Featured";
 import Navbar from "../../components/Common/Navbar/Navbar";
 import SearchBar from "../../components/Common/Search/Search";
+import { useStateValue } from "../../service/State";
 import * as XroadsAPI from "../../service/xroads-api";
 import checkURLParams from "../Routes/utils";
 
 const ScreenClubBrowser = ({ match: { params } }) => {
   let history = useHistory();
+  const [state, dispatch] = useStateValue();
 
-  checkURLParams(params, { schoolSlug: "string" }, history);
+  // checkURLParams(params, { schoolSlug: "string" }, history);
 
   const [school, setSchool] = useState({})
   const [displayedClubs, setDisplayedClubs] = useState([]);
@@ -67,9 +69,10 @@ const ScreenClubBrowser = ({ match: { params } }) => {
   }
 
   function loadClubs() {
-    XroadsAPI.fetchClubs(params.schoolId).then((res) => {
+    XroadsAPI.fetchClubs(params.schoolSlug).then((res) => {
       if (res.ok) {
         return res.json().then(response => {
+          console.log(response)
           setSchool(response);
           let clubs = invisibleFilter(response.clubs);
           setDisplayedClubs(clubs);
