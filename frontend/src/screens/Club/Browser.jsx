@@ -11,8 +11,7 @@ import checkURLParams from "../Routes/utils";
 const ScreenClubBrowser = ({ match: { params } }) => {
   let history = useHistory();
   const [state, dispatch] = useStateValue();
-
-  // checkURLParams(params, { schoolSlug: "string" }, history);
+  checkURLParams(params, { schoolSlug: "string" }, history);
 
   const [school, setSchool] = useState({})
   const [displayedClubs, setDisplayedClubs] = useState([]);
@@ -119,13 +118,13 @@ const ScreenClubBrowser = ({ match: { params } }) => {
           ) : (
               displayedClubs.map((club) => (
                 <ClubCard
-                  key={club.id}
-                  id={club.id}
+                  key={club.slug}
+                  clubSlug={club.slug}
                   title={club.name}
                   imageURL={club.main_img}
                   description={club.description}
                   hidden={!club.is_visible}
-                  school={params.schoolId}
+                  school={params.schoolSlug}
                 />
               ))
             )}

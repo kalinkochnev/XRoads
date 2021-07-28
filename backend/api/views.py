@@ -23,6 +23,11 @@ class ClubViewset(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.ClubBasic
     lookup_field = 'slug'
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = serializers.ClubAll(instance)
+        return Response(serializer.data)
+
     @action(detail=True, methods=['get'])
     def club_info(self, request, *args, **kwargs):
         email = self.request.query_params.get('email', None)

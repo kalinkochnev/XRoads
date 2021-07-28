@@ -4,7 +4,7 @@ import random
 from django.db.models import Q
 import datetime
 from django.utils.text import slugify
-
+from api.slides import get_slide_urls
 # Create your models here.
 
 
@@ -45,10 +45,9 @@ class Club(models.Model):
         self.is_visible = not self.is_visible
         self.make_save(save)
 
-    # # Sends api request to get slide urls TODO
-    # @property
-    # def slides(self):
-    #     return get_slide_urls(self.presentation_url)
+    @property
+    def slides(self):
+        return get_slide_urls(self.presentation_url)
 
     @property
     def default_slug(self):

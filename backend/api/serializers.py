@@ -5,6 +5,8 @@ from api.models import *
 
 
 class ClubAll(DynamicModelSerializer):
+    slides = serializers.ListField(child=serializers.URLField())
+
     class Meta:
         model = Club
         fields = '__all__'

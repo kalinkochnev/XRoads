@@ -6,6 +6,7 @@ import ClubBodyDetail from '../../components/Club/Body/Body';
 import { MeetingCard } from '../../components/Club/Meeting/Meetings';
 import Navbar from '../../components/Common/Navbar/Navbar';
 import { AutoSlide, Slideshow } from '../../components/Common/Slides/Slides';
+import { useStateValue } from '../../service/State';
 import * as XroadsAPI from '../../service/xroads-api';
 
 
@@ -13,18 +14,19 @@ import * as XroadsAPI from '../../service/xroads-api';
 // This: { match: { params: { id }}} is the same as props.match.params.id and you can refer to id directly later
 const ScreenClubDetail = ({ match: { params } }) => {
   let history = useHistory();
-  console.log(params);
+  const [state, dispatch] = useStateValue();
+
   const [club, setClub] = useState();
 
   useEffect(() => {
-    XroadsAPI.fetchClub(params.clubId).then(res => {
+    XroadsAPI.fetchClub(params.clubSlug).then(res => {
       if (res.ok) {
         return res.json().then(clubRes => {
           console.log(clubRes)
           setClub(clubRes);
         });
       } else {
-        history.push(`/school/${params.schoolId}`)
+        history.push(state.school)
       }
 
     });
