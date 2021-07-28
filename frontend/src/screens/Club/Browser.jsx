@@ -124,7 +124,7 @@ const ScreenClubBrowser = ({ match: { params } }) => {
                   imageURL={club.main_img}
                   description={club.description}
                   hidden={!club.is_visible}
-                  school={params.schoolSlug}
+                  schoolSlug={state.user.school}
                 />
               ))
             )}

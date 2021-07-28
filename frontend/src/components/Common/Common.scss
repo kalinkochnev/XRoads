@@ -105,6 +105,10 @@ p {
   padding: 0px;
 }
 
+body {
+  margin: 0;
+}
+
 #root {
   background-color: $greyBackground;
   min-height: 100vh;
