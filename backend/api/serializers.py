@@ -44,7 +44,7 @@ class DistrictAll(DynamicModelSerializer):
 
     class Meta:
         model = District
-        fields = '__all__'
+        fields = ['id', 'name', 'schools']
 
     def create(self, validated_data):
         event = super(EventSerializer, self).create(

@@ -4,7 +4,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.routers import SimpleRouter, Route, DynamicRoute
 from rest_framework.viewsets import GenericViewSet
-from XroadsAPI.serializers import *
+from api.serializers import *
 
 
 class IsClubAdmin(permissions.BasePermission):

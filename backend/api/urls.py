@@ -16,20 +16,21 @@ Including another URLconf
 from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
 from api import views
+from api import admin_views
 
 app_name = "api"
 
 default_route = DefaultRouter()
 default_route.register(r'club', views.ClubViewset)
-# default_route.register(r'school', views.SchoolViewset)
-# default_route.register(r'district', views.DistrictViewset)
-# default_route.register(r'events', views.EventViewset)
+default_route.register(r'school', views.SchoolViewset)
+default_route.register(r'district', views.DistrictViewset)
+default_route.register(r'events', views.EventViewset)
 
-# admin_route = DefaultRouter()
-# admin_route.register(r'club/(?P<code>[a-z0-9A-Z]+)', admin_views.ClubEditViewset)
-# admin_route.register(r'event/(?P<club_id>[^/.]+)/(?P<code>[a-z0-9A-Z]+)', admin_views.EventViewset)
+admin_route = DefaultRouter()
+admin_route.register(r'club/(?P<code>[a-z0-9A-Z]+)', admin_views.ClubEditViewset)
+admin_route.register(r'event/(?P<club_id>[^/.]+)/(?P<code>[a-z0-9A-Z]+)', admin_views.EventViewset)
 
 urlpatterns = [
     path('', include(default_route.urls)),
-    # path('', include(admin_route.urls)),
+    path('admin/', include(admin_route.urls)),
 ]

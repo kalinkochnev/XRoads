@@ -10,7 +10,7 @@ import checkURLParams from "../Routes/utils";
 const ScreenClubBrowser = ({ match: { params } }) => {
   let history = useHistory();
 
-  checkURLParams(params, { schoolId: "number" }, history);
+  checkURLParams(params, { schoolSlug: "string" }, history);
 
   const [school, setSchool] = useState({})
   const [displayedClubs, setDisplayedClubs] = useState([]);

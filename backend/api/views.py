@@ -36,15 +36,13 @@ class ClubViewset(viewsets.ReadOnlyModelViewSet):
         return Response({'message': 'The email provided was invalid or is not allowed to access'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def list(self, request, *args, **kwargs):
-        school_id = self.kwargs['school_pk']
-        queryset = Club.objects.filter(school=school_id)
+        school_slug = self.kwargs['school_slug']
+        queryset = Club.objects.filter(school__slug=school_slug)
         return Response(serializers.ClubAll(queryset, many=True).data)
 
-
-"""
 class SchoolViewset(viewsets.ReadOnlyModelViewSet, viewsets.GenericViewSet):
     queryset = School.objects.all()
-    serializer_class = serializers.DistrictAll
+    serializer_class = serializers.SchoolAll
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -67,7 +65,7 @@ class SchoolViewset(viewsets.ReadOnlyModelViewSet, viewsets.GenericViewSet):
         events = Event.objects.filter(date__gte=first_of_month , club__school=self.get_object())
         return Response(EventSerializer(data=events, many=True).data, status=status.HTTP_200_OK)
 
-class EventViewset(GenericViewSet):
+class EventViewset(viewsets.GenericViewSet):
     queryset = Event.objects.all()
     
     @action(detail=True, methods=['get'])
@@ -85,4 +83,4 @@ class EventViewset(GenericViewSet):
                 pass
         return Response({'message': 'The email provided was invalid or is not allowed to access'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-"""
+

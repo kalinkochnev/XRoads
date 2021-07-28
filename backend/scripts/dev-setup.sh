@@ -16,16 +16,16 @@ then
 fi
 
 
-FILE=xroads_django/venv/
+FILE=backend/venv/
 if [! -f "$FILE" ]; then
     echo "The virtual env was not setup."
-    python3 -m venv xroads_django/venv/ > /dev/null
+    python3 -m venv backend/venv/ > /dev/null
 fi
 
 echo "Installing pip packages.................................."
-. ./xroads_django/venv/bin/activate
+. ./backend/venv/bin/activate
 pip3 --version
-pip3 install -r xroads_django/requirements.txt
+pip3 install -r backend/requirements.txt
 
 echo "Installing postgres.................................."
 sudo apt update > /dev/null
