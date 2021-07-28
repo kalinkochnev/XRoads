@@ -6,6 +6,16 @@
   margin:auto;
 }
 
+.no-results {
+  padding-top: 70px;
+}
+
+.no-results h1 {
+  color:#999;
+  text-align: center;
+  width: 100%;
+}
+
 .default-searchbar {
   /*Setting up the flexbox*/
   @extend .flex-container;

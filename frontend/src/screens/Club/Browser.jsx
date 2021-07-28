@@ -81,12 +81,13 @@ const ScreenClubBrowser = ({ match: { params } }) => {
         history.push("/");
       }
     });
-    
+
   }
 
   function searchFilter(matchingIds) {
     let matchingClubs = allClubs;
     if (matchingIds.length > 0) {
+      console.log(matchingIds)
       matchingClubs = matchingClubs.filter((c, i) =>
         matchingIds.includes(c.id.toString())
       );
@@ -98,8 +99,10 @@ const ScreenClubBrowser = ({ match: { params } }) => {
 
   useEffect(() => {
     console.log("ClubBrowser component did mount");
-    loadClubs();
-  }, [params.school]);
+    if (allClubs.length === 0) {
+      loadClubs();
+    }
+  }, [state.user.school, allClubs]);
 
   return (
     <div>
@@ -112,22 +115,29 @@ const ScreenClubBrowser = ({ match: { params } }) => {
           clubs={allClubs}
           filterClubs={searchFilter}
         ></SearchBar>
+        {displayedClubs.length == 0 ? (
+            <div className="no-results">
+
+              <h1>Ó╭╮Ò</h1>
+              <h1>nothing here</h1>
+            </div>) : (
+            <div></div>)}
         <div className="card-container">
           {displayedClubs.length == 0 ? (
-            <h1>Loading...</h1>
-          ) : (
-              displayedClubs.map((club) => (
-                <ClubCard
-                  key={club.slug}
-                  clubSlug={club.slug}
-                  title={club.name}
-                  imageURL={club.main_img}
-                  description={club.description}
-                  hidden={!club.is_visible}
-                  schoolSlug={state.user.school}
-                />
-              ))
-            )}
+            <div>
+            </div>) : (
+            displayedClubs.map((club) => (
+              <ClubCard
+                key={club.slug}
+                clubSlug={club.slug}
+                title={club.name}
+                imageURL={club.main_img}
+                description={club.description}
+                hidden={!club.is_visible}
+                schoolSlug={state.user.school}
+              />
+            ))
+          )}
         </div>
       </div>
     </div>
