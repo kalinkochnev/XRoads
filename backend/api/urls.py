@@ -33,4 +33,5 @@ admin_route.register(r'event/(?P<club_id>[^/.]+)/(?P<code>[a-z0-9A-Z]+)', admin_
 urlpatterns = [
     path('', include(default_route.urls)),
     path('', include(admin_route.urls)),
+    path('csrf/', views.csrf),
 ]

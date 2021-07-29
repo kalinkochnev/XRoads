@@ -8,9 +8,6 @@ import DynamicForm from "../../Common/Form/DynamicForm";
 import "../../Common/Form/FormStyle.scss";
 import "./Edit.scss";
 
-
-
-
 const fieldData = {
     presentation_url: {
         type: 'text',
@@ -25,13 +22,6 @@ const fieldData = {
             label: 'Club contact',
         },
         validation: Yup.string().email("Please enter a valid contact email")
-    },
-    extra_info: {
-        type: 'textarea',
-        fieldProps: {
-            label: 'Detailed Info Email Body',
-        },
-        validation: Yup.string(),
     },
     description: {
         fieldProps: {
@@ -51,7 +41,8 @@ const GeneralEdit = (props) => {
     const saveClubInfo = (values, { setSubmitting }) => {
         updateClub(club.slug, values, club.code).then((res) => {
             if (res.ok) {
-                res.json().then(() => {
+                res.json().then((body) => {
+                    console.log(body);
                     // store.addNotification({
                     //     title: "Saved",
                     //     message: "Club details successfully saved",
@@ -99,7 +90,7 @@ const GeneralEdit = (props) => {
     const toggleHide = () => {
         let user = state.user;
         let urlArgs = {
-            clubId: club.id,
+            clubSlug: club.slug,
             code: club.code
         };
         sendRequest("toggle_hide_club", urlArgs, "POST", {}).then((response) => {

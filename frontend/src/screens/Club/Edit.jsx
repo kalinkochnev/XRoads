@@ -17,7 +17,7 @@ const ScreenClubEdit = ({ match: { params: { clubSlug } } }) => {
   const [club, setClub] = useContext(ClubContext);
   const [state, dispatch] = useStateValue();
   let school = state.user.school;
-
+  console.log(school);
   useEffect(() => {
     if (!('code' in club)) {
       history.push(`/${school}/${clubSlug}`)
@@ -29,7 +29,7 @@ const ScreenClubEdit = ({ match: { params: { clubSlug } } }) => {
           setClub(clubRes);
         });
       } else {
-        history.push(`/${school}/${clubSlug}`)
+        history.push(`/`)
       }
     });
   }, [clubSlug, club.code]);
