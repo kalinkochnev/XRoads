@@ -58,7 +58,6 @@ const ScreenClubBrowser = ({ match: { params } }) => {
         let d = new Date
         let UTCDays = Math.floor(d.getTime()/86400000)
         let featuredNumber = UTCDays % response.clubs.length
-        console.log('date', featuredNumber)
         let club = response.clubs[featuredNumber]
         
         if (club.is_visible) {

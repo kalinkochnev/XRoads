@@ -11,15 +11,17 @@ const FeaturedCard = (props) => {
         setClub(props.club)
     }, [props.club])
 
-    if (Object.keys(club).length == 0) {
-        return null;
+    // if (Object.keys(club).length == 0) {
+    //     return null;
+    // }
+    if (club.description != null) {
+        var description = club.description;
+        if (club.description.length > 150) {
+            description = club.description.substring(0, 5000).concat("...")
+        }
+    } else {
+        var description = "";
     }
-
-    var description = club.description;
-    if (club.description.length > 150) {
-        description = club.description.substring(0, 5000).concat("...")
-    }
-
     return (
         <div class="featured-container">
             <MeetingsSummary />
@@ -30,7 +32,7 @@ const FeaturedCard = (props) => {
                             {club.slides != null ? club.slides.map(url => <AutoSlide url={url}></AutoSlide>) : null}
                         </Slideshow>
                         <div className="featured-club-details">
-                            <Link to={`/school/${club.school}/clubs/${club.id}`}>
+                            <Link to={`/school/${club.school != null ? club.school : null}/clubs/${club.id}`}>
                                 <h2>{club.name}</h2>
                                 <p>{description}</p>
                                 <div className="haze-bottom" />
