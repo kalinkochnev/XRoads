@@ -10,6 +10,7 @@ import 'react-notifications/lib/notifications.css';
 import {NotificationContainer, NotificationManager} from 'react-notifications';
 import { useContext } from "react";
 import { ClubContext } from "../../../screens/Club/Routes";
+import { Cookies } from "react-cookie";
 
 const ClubCode = () => {
     let history = useHistory();
@@ -22,6 +23,7 @@ const ClubCode = () => {
             if (response.ok) {
                 response.json().then(club => {
                     setClub({...club, code: values.code})
+                    new Cookies().set("club_code", values.code)
                     let url = `/${school}/${club.slug}/edit/`
                     history.push(url)
                 })

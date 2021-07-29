@@ -18,8 +18,8 @@ const AppState = ({children}) => {
     
     let initialState = {
         user: {
-            school: null,
-            email: new Cookies().get('email')
+            school: new Cookies().get("school"),
+            // email: new Cookies().get('email')
         }
     };
 
