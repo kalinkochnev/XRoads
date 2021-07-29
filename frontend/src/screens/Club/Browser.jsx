@@ -119,7 +119,7 @@ const ScreenClubBrowser = ({ match: { params } }) => {
             <div className="no-results">
 
               <h1>Ó╭╮Ò</h1>
-              <h1>nothing here</h1>
+              <h1 className="text">nothing here</h1>
             </div>) : (
             <div></div>)}
         <div className="card-container">
