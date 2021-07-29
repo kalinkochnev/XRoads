@@ -34,7 +34,8 @@ const ScreenClubBrowser = ({ match: { params } }) => {
 
   function determineFeatured(response) {
     if (response.curr_featured_order != 0) {
-      let position = response.curr_featured_order;
+      // let position = response.curr_featured_order;
+      let position = 0;
 
       // Keep iterating through clubs until you find a club that is visible and is after the current featured id
       while (
@@ -46,18 +47,27 @@ const ScreenClubBrowser = ({ match: { params } }) => {
             (club) => club.featured_order == featuredOrder
           );
           if (clubs.length == 1) {
+            
             return clubs[0];
+            
           }
           return null;
         }
 
-        let club = getClubByOrder(position);
-
+        // let club = getClubByOrder(position);
+        let d = new Date
+        let UTCDays = Math.floor(d.getTime()/86400000)
+        let featuredNumber = UTCDays % response.clubs.length
+        console.log('date', featuredNumber)
+        let club = response.clubs[featuredNumber]
+        
         if (club.is_visible) {
-          let id = club.id;
-          XroadsAPI.fetchClub(id).then((res) => {
+          let slug = club.slug;
+          XroadsAPI.fetchClub(slug).then((res) => {
+            console.log("response", res)
             if (res.ok) {
               res.json().then((response) => setFeatured(response));
+              console.log("response", response)
             }
           });
           break;
