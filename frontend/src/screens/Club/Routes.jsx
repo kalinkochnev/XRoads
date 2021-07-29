@@ -27,13 +27,14 @@ const SchoolRoutes = ({ match: { params: { schoolSlug } } }) => {
     return (
         <Switch>
             <Route exact path={path} component={ScreenClubBrowser} />
-            <Route exact path={`${path}/:clubSlug/`} component={ScreenClubDetail} />
             <ClubProvider>
                 {/* TODO make this url set the code into state and redirect to edit page*/}
+                <Route exact path={`${path}/edit-code/`} component={ClubCode} />
                 <Route exact path={`${path}/:clubSlug/edit`} component={ScreenClubEdit} />
-                <Route exact path={`${path}/:clubSlug/code/`} component={ClubCode} />
 
             </ClubProvider>
+            <Route exact path={`${path}/:clubSlug/`} component={ScreenClubDetail} />
+            
 
         </Switch>
     );
