@@ -1,6 +1,5 @@
 import { withFormik } from "formik";
 import React, { useContext, useState } from "react";
-import { store } from "react-notifications-component";
 import * as Yup from 'yup';
 import { ClubContext } from "../../../screens/Club/Routes";
 import { useStateValue } from "../../../service/State";
@@ -50,20 +49,20 @@ const GeneralEdit = (props) => {
 
     // This returns a dictionary of every field and the associated value of that (ex want to know every fields input type)
     const saveClubInfo = (values, { setSubmitting }) => {
-        updateClub(club.id, values, club.code).then((res) => {
+        updateClub(club.slug, values, club.code).then((res) => {
             if (res.ok) {
                 res.json().then(() => {
-                    store.addNotification({
-                        title: "Saved",
-                        message: "Club details successfully saved",
-                        type: "success",
-                        insert: "top",
-                        container: "top-right",
-                        dismiss: {
-                            duration: 5000,
-                            onScreen: true,
-                        },
-                    });
+                    // store.addNotification({
+                    //     title: "Saved",
+                    //     message: "Club details successfully saved",
+                    //     type: "success",
+                    //     insert: "top",
+                    //     container: "top-right",
+                    //     dismiss: {
+                    //         duration: 5000,
+                    //         onScreen: true,
+                    //     },
+                    // });
                 });
             }
 
@@ -76,9 +75,7 @@ const GeneralEdit = (props) => {
         if (data == null) {
             return []
         }
-        if (!data.school.club_contact) {
-            fields.splice(fields.indexOf('contact'), 1)
-        }
+        
         return fields;
     }
     
@@ -109,19 +106,19 @@ const GeneralEdit = (props) => {
             if (response.ok) {
                 setVisibility(!isVisible);
                 console.log("The club is now " + isVisible.toString());
-                store.addNotification({
-                    title: "Club " + (isVisible ? "Hidden" : "Visible"),
-                    message:
-                        "The club is now visible to " +
-                        (isVisible ? "club editors only" : "all users"),
-                    type: "success",
-                    insert: "top",
-                    container: "top-right",
-                    dismiss: {
-                        duration: 5000,
-                        onScreen: true,
-                    },
-                });
+                // store.addNotification({
+                //     title: "Club " + (isVisible ? "Hidden" : "Visible"),
+                //     message:
+                //         "The club is now visible to " +
+                //         (isVisible ? "club editors only" : "all users"),
+                //     type: "success",
+                //     insert: "top",
+                //     container: "top-right",
+                //     dismiss: {
+                //         duration: 5000,
+                //         onScreen: true,
+                //     },
+                // });
             }
         });
     };

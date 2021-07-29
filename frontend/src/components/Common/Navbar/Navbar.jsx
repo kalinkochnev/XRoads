@@ -17,7 +17,7 @@ const Navbar = () => {
           </div>
         </NavLink>
         <div className="navbar-buttons">
-          <Link className="nav-item" to={`/${school}/clubs/edit`} >
+          <Link className="nav-item" to={`/${school}/edit-code/`} >
             edit club
           </Link>
         </div>

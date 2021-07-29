@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import ReactNotification from 'react-notifications-component';
-import 'react-notifications-component/dist/theme.css';
 import { useHistory } from 'react-router-dom';
 import ClubBodyDetail from '../../components/Club/Body/Body';
 import { MeetingCard } from '../../components/Club/Meeting/Meetings';
@@ -44,7 +42,6 @@ const ScreenClubDetail = ({ match: { params } }) => {
     return (
       <div>
         <Navbar school={params.schoolId}>xroads</Navbar>
-        <ReactNotification />
         <Slideshow>
           {club.slides.map(url => <AutoSlide url={url} />)}
         </Slideshow>

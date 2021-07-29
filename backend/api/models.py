@@ -14,7 +14,8 @@ class Club(models.Model):
 
     description = models.TextField()
     code = models.CharField(max_length=30, blank=True)
-
+    contact = models.EmailField(blank=True)
+    
     img = models.ImageField()
     # TODO add validator for presentation url   
     presentation_url = models.URLField(validators=[])

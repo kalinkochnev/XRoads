@@ -5,7 +5,6 @@ import { withFormik } from 'formik';
 import moment from "moment";
 import { sendRequest } from "../../../service/xroads-api";
 import { ClubContext } from "../../../screens/Club/Routes";
-import { store } from "react-notifications-component";
 
 const MeetingsEdit = () => {
     const [club, setClub] = useContext(ClubContext);
@@ -100,17 +99,17 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
                     })
                     setEvents(newEvents);
                 })
-                store.addNotification({
-                    title: "Event updated!",
-                    message: "Event " + values.name + " has been saved!",
-                    type: "success",
-                    insert: "top",
-                    container: "top-right",
-                    dismiss: {
-                        duration: 5000,
-                        onScreen: true,
-                    },
-                });
+                // store.addNotification({
+                //     title: "Event updated!",
+                //     message: "Event " + values.name + " has been saved!",
+                //     type: "success",
+                //     insert: "top",
+                //     container: "top-right",
+                //     dismiss: {
+                //         duration: 5000,
+                //         onScreen: true,
+                //     },
+                // });
             }
 
         })
@@ -126,17 +125,17 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
                     console.log(body);
                     setEvents([...events, body]);
                 })
-                store.addNotification({
-                    title: "Event Created!",
-                    message: "Event " + values.name + " has been created!",
-                    type: "success",
-                    insert: "top",
-                    container: "top-right",
-                    dismiss: {
-                        duration: 5000,
-                        onScreen: true,
-                    },
-                });
+                // store.addNotification({
+                //     title: "Event Created!",
+                //     message: "Event " + values.name + " has been created!",
+                //     type: "success",
+                //     insert: "top",
+                //     container: "top-right",
+                //     dismiss: {
+                //         duration: 5000,
+                //         onScreen: true,
+                //     },
+                // });
             }
 
         })
@@ -151,17 +150,17 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
                 response.json().then(body => {
                     setEvents(events.map(event => event.id != eventId));
                 })
-                store.addNotification({
-                    title: "Event Cancelled",
-                    message: "Event was successfully canceled",
-                    type: "success",
-                    insert: "top",
-                    container: "top-right",
-                    dismiss: {
-                        duration: 5000,
-                        onScreen: true,
-                    },
-                });
+                // store.addNotification({
+                //     title: "Event Cancelled",
+                //     message: "Event was successfully canceled",
+                //     type: "success",
+                //     insert: "top",
+                //     container: "top-right",
+                //     dismiss: {
+                //         duration: 5000,
+                //         onScreen: true,
+                //     },
+                // });
             }
 
         })
