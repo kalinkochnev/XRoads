@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Cookies } from 'react-cookie';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import ClubCode from '../../components/Club/Edit/ClubCode';
 import { useStateValue } from '../../service/State';
@@ -8,7 +9,9 @@ import ScreenClubDetail from './Page';
 
 const ClubContext = React.createContext([{}, () => { }])
 const ClubProvider = (props) => {
-    const [club, setClub] = useState({});
+    const [club, setClub] = useState({code: new Cookies().get('club_code')});
+
+    useEffect(() => {}, [club.code])
     return (
         <ClubContext.Provider value={[club, setClub]}>
             {props.children}
@@ -22,7 +25,7 @@ const SchoolRoutes = ({ match: { params: { schoolSlug } } }) => {
 
     useEffect(() => {
         dispatch({ type: 'set school', payload: schoolSlug })
-    }, [])
+    }, [state.user.school])
 
     return (
         <Switch>

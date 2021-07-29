@@ -37,21 +37,29 @@ class CanCreateEvent(permissions.BasePermission):
 
     def has_permission(self, request, view):
         try:
-            self.club = Club.objects.get(id=request.parser_context['kwargs']['club_id'])
+            self.club = Club.objects.get(slug=request.parser_context['kwargs']['club_slug'])
+            
             return self.club.code == request.parser_context['kwargs']['code']
         except Club.DoesNotExist:
             return False
 
     def has_object_permission(self, request, view, obj: Event):
-        club = Club.objects.get(id=request.parser_context['kwargs']['club_id'])
-        return club == obj.club
+        try:
+            club = Club.objects.get(slug=request.parser_context['kwargs']['club_slug'])
+            return club == obj.club
+        except Club.DoesNotExist:
+            return False
+        
 
 class EventViewset(NoListModelViewset):
     serializer_class = EventSerializer
     queryset = Event.objects.all()
-    permission_classes = [CanCreateEvent, AllowAny]
+    permission_classes = [CanCreateEvent]
+
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
 
     def get_serializer_context(self):
-        club = Club.objects.get(id=self.request.parser_context['kwargs']['club_id'])
+        club = Club.objects.get(slug=self.request.parser_context['kwargs']['club_slug'])
         return {'club': club}
     
