@@ -83,7 +83,7 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
                 <button type="submit" className="defaultButton" id="club-submit" onClick={() => updateEvent(formik.values, club, initialData)} disabled={formik.isSubmitting}>Save Event</button>
 
             }
-            <button type="reset" className="defaultButton" id="club-reset" onClick={() => handleReset(formik)}>Cancel Event</button>
+            <button type="reset" className="defaultButton outline" id="club-reset" onClick={() => handleReset(formik)}>Cancel Event</button>
         </form>
     )
 

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import moment from "moment";
 import * as utils from "./utils";
+import { Link } from "react-router-dom";
 
-const UpcomingEvents = ({ events = [], displayedClubs = [] }) => {
+const UpcomingEvents = ({ events = [], displayedClubs = [], schoolSlug = "" }) => {
     const [sortedEvents, setEvents] = useState(null);
     let isHidden = (clubId) => !displayedClubs.map(club => club.id).includes(clubId)
 
@@ -13,6 +14,7 @@ const UpcomingEvents = ({ events = [], displayedClubs = [] }) => {
             return null;
         }
         event['club'] = displayedClubs.filter(club => club.id == event.club)[0];
+        event['school'] = schoolSlug;
         return event;
     }
 
@@ -57,10 +59,20 @@ const UpcomingEvents = ({ events = [], displayedClubs = [] }) => {
         setEvents(events);
     }, [events, displayedClubs]);
 
+    if (sortedEvents != null) {
+        console.log("bloop1", Object.keys(sortedEvents).length);
+        console.log("bloop", sortedEvents.length)
+    }
     return (
         <div>
-            <p>Events</p>
-            { sortedEvents ? Object.keys(sortedEvents).map(date => <DateComp date={date} events={sortedEvents[date]}></DateComp>) : null}
+            {
+                sortedEvents == null || Object.keys(sortedEvents).length == 0 &&
+                <div className="no-results smaller">
+                    <h1>╯︵╰</h1>
+                    <h1 className="text">no events this week</h1>
+                </div>
+            }
+            {sortedEvents ? Object.keys(sortedEvents).map(date => <DateComp date={date} events={sortedEvents[date]}></DateComp>) : null}
         </div>
     );
 }
@@ -68,17 +80,20 @@ const UpcomingEvents = ({ events = [], displayedClubs = [] }) => {
 const DateComp = ({ date, events = [] }) => {
     return (
         <div>
-            <b>{utils.isToday(date) ? "Today's meetings" : utils.weekdayName(date)}</b>
+            <h3>{utils.isToday(date) ? "Today's meetings" : utils.weekdayName(date)}</h3>
             {events.map(event => <Event event={event}></Event>)}
         </div>
     );
 }
 
 const Event = ({ event }) => {
-    let startTime = timeObjToStr(strToTime(event.start));
+    let startTime = utils.timeObjToStr(utils.strToTime(event.start));
     return (
         <div>
-            <p>{startTime} · {event.club.name} ({event.name})</p>
+            <Link className="discrete-link" to={`/${event.school}/${event.club.slug}`}>
+                <p>{startTime} · {event.club.name}</p>
+                <br></br>
+            </Link>
         </div>
     )
 }

@@ -23,24 +23,23 @@ const FeaturedCard = (props) => {
         var description = "";
     }
     return (
-        <div class="featured-container">
-            <MeetingsSummary />
-            <div className="featured-club">
-                <Sticky label="Featured Club">
-                    <div className="featured-club-content">
-                        <Slideshow singleSlide>
-                            {club.slides != null ? club.slides.map(url => <AutoSlide url={url}></AutoSlide>) : null}
-                        </Slideshow>
-                        <div className="featured-club-details">
-                            <Link to={`/school/${club.school != null ? club.school : null}/clubs/${club.id}`}>
-                                <h2>{club.name}</h2>
-                                <p>{description}</p>
-                                <div className="haze-bottom" />
-                            </Link>
-                        </div>
+
+
+        <div className="featured-club">
+            <Sticky label="Featured Club">
+                <div className="featured-club-content">
+                    <Slideshow singleSlide>
+                        {club.slides != null ? club.slides.map(url => <AutoSlide url={url}></AutoSlide>) : null}
+                    </Slideshow>
+                    <div className="featured-club-details">
+                        <Link to={`/${props.schoolSlug}/${props.club.slug}`}>
+                            <h2>{club.name}</h2>
+                            <p>{description}</p>
+                            <div className="haze-bottom" />
+                        </Link>
                     </div>
-                </Sticky>
-            </div>
+                </div>
+            </Sticky>
         </div>
     );
 }
@@ -50,17 +49,11 @@ const MeetingsSummary = (props) => {
         <div className="meetings">
             <Sticky label="Upcoming Events">
                 <div className="meeting-list">
-                    <h3>Today</h3>
-                    <p>Robotics Club · 3 pm</p>
-                    <p>Model UN · 3:30 pm</p>
-                    <p>Badminton Club · 4 pm</p>
-
-                    <h3>Upcoming</h3>
-                    <p>Robotics Club · Jan 6 · 4 pm</p>
+                    {props.children}
                 </div>
             </Sticky>
         </div>
     )
 }
 
-export default FeaturedCard;
+export { FeaturedCard, MeetingsSummary };

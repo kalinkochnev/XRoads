@@ -83,7 +83,21 @@ p {
 }
 
 .defaultButton {
-  @include defaultButton()
+  @include defaultButton();
+  &.outline {
+    color: $redDefault;
+    background-color: transparent;
+    border: solid $redDefault 3.5px;
+  }
+}
+
+.discrete-link {
+  text-decoration: none;
+  color: black;
+}
+
+.discrete-link:hover {
+  text-decoration: underline;
 }
 
 .centerContent {
@@ -132,6 +146,16 @@ p {
   }
   p {
     text-align: center;
+  }
+  &.smaller {
+    padding-top: 40px;
+    h1 {
+      font-size: 40px;
+      &.text {
+        font-size: 30px;
+        line-height: 1;
+      }
+    }
   }
 }
 
