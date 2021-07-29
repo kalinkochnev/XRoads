@@ -26,7 +26,7 @@ class ClubAll(DynamicModelSerializer):
         model = Club
         fields = '__all__'
 
-ClubBasic = ClubAll.sub_serializer(fields=['id', 'name', 'img', 'is_visible', 'slug'])
+ClubBasic = ClubAll.sub_serializer(fields=['id', 'contact', 'name', 'img', 'is_visible', 'slug'])
 
 class SchoolAll(DynamicModelSerializer):
     clubs = ClubBasic(many=True)

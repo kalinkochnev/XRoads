@@ -49,7 +49,7 @@ const GeneralEdit = (props) => {
 
     // This returns a dictionary of every field and the associated value of that (ex want to know every fields input type)
     const saveClubInfo = (values, { setSubmitting }) => {
-        updateClub(club.id, values, club.code).then((res) => {
+        updateClub(club.slug, values, club.code).then((res) => {
             if (res.ok) {
                 res.json().then(() => {
                     // store.addNotification({
@@ -75,9 +75,7 @@ const GeneralEdit = (props) => {
         if (data == null) {
             return []
         }
-        if (!data.school.club_contact) {
-            fields.splice(fields.indexOf('contact'), 1)
-        }
+        
         return fields;
     }
     

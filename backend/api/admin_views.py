@@ -15,7 +15,8 @@ class IsClubAdmin(permissions.BasePermission):
 class ClubEditViewset(viewsets.GenericViewSet, mixins.UpdateModelMixin, mixins.RetrieveModelMixin):
     serializer_class = ClubEditSerializer
     queryset = Club.objects.all()
-    permission_classes = [IsClubAdmin, AllowAny]
+    permission_classes = [IsClubAdmin]
+    lookup_field = "slug"
 
     @action(detail=True, methods=['post'])
     def toggle_hide(self, request, *args, **kwargs):
