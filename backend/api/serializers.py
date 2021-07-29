@@ -9,13 +9,20 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = '__all__'
-        read_only_fields = ['club', 'views']
+        read_only_fields = ['club']
+
+    def create(self, validated_data):
+        validated_data['club'] = self.context['club']
+        return super().create(validated_data)
+
+
 
     def validate(self, data):
-        if data['start'] > data['end']:
+        if data.get('start') > data.get('end'):
             time_str = data['start'].strftime("%H:%M:%S")
             raise serializers.ValidationError(
                 "Pick a time later than " + time_str)
+       
         return data
 
 class ClubAll(DynamicModelSerializer):

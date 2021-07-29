@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "frontend"
+		},
+		{
+			"path": "xroads_django/.vscode"
 		}
 	],
 	"settings": {

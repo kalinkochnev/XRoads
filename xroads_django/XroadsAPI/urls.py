@@ -27,7 +27,7 @@ default_route.register(r'events', views.EventViewset)
 
 admin_route = DefaultRouter()
 admin_route.register(r'club/(?P<code>[a-z0-9A-Z]+)', admin_views.ClubEditViewset)
-admin_route.register(r'event/(?P<club_id>[^/.]+)/(?P<code>[a-z0-9A-Z]+)', admin_views.EventViewset)
+admin_route.register(r'event/(?P<club_slug>[^/.]+)/(?P<code>[a-z0-9A-Z]+)', admin_views.EventViewset)
 
 urlpatterns = [
     path('', include(default_route.urls)),

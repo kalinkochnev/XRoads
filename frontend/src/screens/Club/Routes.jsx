@@ -22,7 +22,7 @@ const SchoolRoutes = ({ match: { params: { schoolSlug } } }) => {
 
     useEffect(() => {
         dispatch({ type: 'set school', payload: schoolSlug })
-    }, [])
+    }, [state.user.school])
 
     return (
         <Switch>

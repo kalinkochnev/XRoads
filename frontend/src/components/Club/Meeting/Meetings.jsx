@@ -86,8 +86,8 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
     const updateEvent = (values, club, initialData) => {
         // Send PUT request to server to update event
         let eventId = initialData.id
-        let urlParams = { clubId: club.id, clubCode: club.code, eventId: eventId }
-        sendRequest('event_edit', urlParams, "PUT", values).then(response => {
+        let urlParams = { clubSlug: club.slug, clubCode: club.code, eventId: eventId }
+        sendRequest('event_edit', urlParams, "PATCH", values).then(response => {
             if (response.ok) {
                 response.json().then(body => {
                     // Update the club event state
@@ -117,7 +117,7 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
 
     const createEvent = (values, club) => {
         console.log(values)
-        let urlParams = { clubId: club.id, clubCode: club.code }
+        let urlParams = { clubSlug: club.slug, clubCode: club.code }
         sendRequest('event_create', urlParams, "POST", values).then(response => {
             if (response.ok) {
                 // Create the new event and update state
@@ -143,7 +143,7 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
 
     const cancelEvent = () => {
         let eventId = initialData.id
-        let urlParams = { clubId: club.id, clubCode: club.code, eventId: eventId }
+        let urlParams = { clubSlug: club.slug, clubCode: club.code, eventId: eventId }
         sendRequest('event_edit', urlParams, "DELETE", {}).then(response => {
             if (response.ok) {
                 // Create the new event and update state
