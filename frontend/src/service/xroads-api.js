@@ -1,3 +1,4 @@
+import { Cookies } from 'react-cookie';
 
 // To have keyworded args use this format:   :keyword_arg
 const endpoint_templates = {
@@ -48,13 +49,13 @@ function generateFetchConfig(method, body = null) {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         },
-        // credentials: 'same-origin',
+        credentials: 'same-origin',
         // mode: 'no-cors'
     };
 
-    if (['POST', 'PUT'].includes(upCasedMethod)) {
+    if (['POST', 'PUT', 'PATCH'].includes(upCasedMethod)) {
         // Get the CSRF token from the cookies
-        // config.headers = new Cookies().get('')
+        config.headers['X-CSRFToken'] = new Cookies().get('csrftoken')
         config.body = JSON.stringify(body);
     }
     return config;
@@ -80,5 +81,6 @@ export function fetchClubEdit(clubSlug, code) {
 }
 
 export function updateClub(clubSlug, updatedClub, code) {
-    return sendRequest('club_edit', { 'clubSlug': clubSlug, 'code': code }, 'PUT', updatedClub);
+    console.log(updatedClub);
+    return sendRequest('club_edit', { 'clubSlug': clubSlug, 'code': code }, 'PATCH', updatedClub);
 }

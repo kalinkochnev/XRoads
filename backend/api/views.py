@@ -1,10 +1,12 @@
 from rest_framework import status, viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
+from django.shortcuts import render
 import api.serializers as serializers
 from api.models import *
 
+def csrf(request):
+    return render(request, template_name='csrf.html')
 
 # Create your views here.
 class DistrictViewset(viewsets.ReadOnlyModelViewSet):
