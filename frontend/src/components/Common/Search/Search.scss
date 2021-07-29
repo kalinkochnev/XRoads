@@ -6,16 +6,6 @@
   margin:auto;
 }
 
-.no-results {
-  padding-top: 70px;
-}
-
-.no-results h1 {
-  color:#999;
-  text-align: center;
-  width: 100%;
-}
-
 .default-searchbar {
   /*Setting up the flexbox*/
   @extend .flex-container;
@@ -40,7 +30,7 @@
     position: relative;
     font-size: 20px;
     color: #5c5c5c;
-    font-family: "Merriwether";
+    font-family: "PT Serif";
 
     &:focus {
       outline: none;
