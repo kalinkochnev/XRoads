@@ -76,7 +76,7 @@ const GeneralEdit = (props) => {
     const Form = (formik) => (
         <form className="editBody" onSubmit={formik.handleSubmit}>
             {fieldsJSX(formik)}
-            <button type="submit" id="club-submit" disabled={formik.isSubmitting}>Save</button>
+            <button type="submit" id="club-submit" className="defaultButton" disabled={formik.isSubmitting}>Save</button>
         </form>
     )
 

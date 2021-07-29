@@ -1,0 +1,41 @@
+.meeting-list {
+    padding-bottom: 0px !important;
+    .meeting-card {
+        display: flex;
+        flex-direction: row;
+        margin-left: 5px;
+        .meet-basics {
+            flex-grow: 1;
+            min-width: 300px;
+        }
+        .meet-details {
+            margin-left: 50px;
+            min-width: 300px;
+        }
+        h2 {
+            margin-top: 0;
+        }
+    }
+}
+.meet-basics {
+    h2 {
+        display: inline-block;
+    }
+}
+.meeting-edit {
+    float: right;
+    margin-top: 35px !important;
+    margin-bottom: 0 !important;
+}
+
+@media only screen and (max-width: 600px) {
+    .meeting-list {
+        .meeting-card {
+            flex-wrap: wrap;
+            .meet-details {
+                margin-left: 0;
+                margin-top: 20px;
+            }
+        }
+    }
+}

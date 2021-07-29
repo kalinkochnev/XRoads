@@ -9,7 +9,7 @@ $slideScaleAmount: 0.25;
 
     input,
     select {
-        font-family: Raleway;
+        font-family: "PT Serif";
         font-size: 18px;
         line-height: 1.3;
         font-weight: 400;
@@ -31,7 +31,7 @@ $slideScaleAmount: 0.25;
 
     input,
     select {
-        font-family: Raleway;
+        font-family: "PT Serif";
         font-size: 20px;
         line-height: 1.3;
         font-weight: 400;
@@ -43,7 +43,7 @@ $slideScaleAmount: 0.25;
 
     textarea {
         padding: 10px;
-        font-family: Raleway;
+        font-family: "PT Serif";
         font-size: 20px;
         line-height: 1.3;
         font-weight: 400;
@@ -125,28 +125,28 @@ $slideScaleAmount: 0.25;
     }
 }
 
-.clubHeading {
-    margin-top: 30px;
-    margin-bottom: 30px;
+// .clubHeading {
+//     margin-top: 30px;
+//     margin-bottom: 30px;
 
-    h1,
-    h2 {
-        margin: 0px;
-        padding: 10px 20px 10px 20px;
-        border-left: solid 13px $redDefault;
-        line-height: .8;
-    }
+//     h1,
+//     h2 {
+//         margin: 0px;
+//         padding: 10px 20px 10px 20px;
+//         border-left: solid 13px $redDefault;
+//         line-height: .8;
+//     }
 
-    h1 {
-        display: inline-block;
-    }
-}
+//     h1 {
+//         display: inline-block;
+//     }
+// }
 
 form.clubEdit {
 
     textarea.long {
         padding: 10px;
-        font-family: Raleway;
+        font-family: "PT Serif";
         font-size: 20px;
         line-height: 1.3;
         font-weight: 400;
@@ -184,7 +184,7 @@ form.clubEdit {
         text-align: left;
         font-size: 22px;
         background-color: #ddd;
-        font-family: Raleway;
+        font-family: "PT Serif";
 
         .add {
             padding-left: 60px;
@@ -216,24 +216,6 @@ form.clubEdit {
 
 }
 
-#club-submit {
-    min-width: 125px;
-    height: 50px;
-
-    margin-top: 18px;
-    margin-bottom: 40px;
-
-    background-color: $redDefault;
-    border-style: none;
-    border-radius: 5px;
-
-    /*Changes font of submit button*/
-    color: whitesmoke;
-    font-family: "Arial", sans-serif;
-    font-weight: 700;
-    font-size: 20px;
-}
-
 .questionCard {
     $cardBorderWidth: 2px;
     $borderRadius: 10px;
@@ -247,6 +229,22 @@ form.clubEdit {
     }
 }
 
+
+.error {
+    margin-top: -25px;
+    margin-bottom: 25px;
+}
+
+.date-start-end {
+    display: flex;
+    margin-left: -25px;
+    &>* {
+        &>* {
+            width: 100%;
+        }
+        margin-left:25px;
+    }
+}
 
 
 .editorManager {
@@ -274,7 +272,7 @@ form.clubEdit {
             }
         }
         .addEditorButton {
-            @include defaultButton(150px);
+            @include defaultButton();
         }
     }
     

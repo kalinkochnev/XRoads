@@ -26,7 +26,8 @@
 
 .carousel  {
     height: 0px;
-    padding-bottom: 56.25%;
+    padding-bottom: Min(56.25%, 556px);
+    box-sizing: border-box;
     background-color: white;
 }
 .featured-club-content  {

@@ -5,6 +5,7 @@ import { withFormik } from 'formik';
 import moment from "moment";
 import { sendRequest } from "../../../service/xroads-api";
 import { ClubContext } from "../../../screens/Club/Routes";
+import "./Meetings.scss";
 
 const MeetingsEdit = () => {
     const [club, setClub] = useContext(ClubContext);
@@ -18,7 +19,7 @@ const MeetingsEdit = () => {
     return (
         <div>
             {events.map(event => <MeetingCard event={event} editable={true} state={[events, setEvents]} />)}
-            { displayAdd ? <button onClick={addEventClick}>Add event</button> : <MeetingCard event={{}} displayEdit={true} editable={true} setDisplay={setDisplay} />}
+            {displayAdd ? <button className="defaultButton" onClick={addEventClick}>Add event</button> : <MeetingCard event={{}} displayEdit={true} editable={true} setDisplay={setDisplay} />}
         </div>
     );
 }
@@ -71,15 +72,18 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
     const [fieldsJSX, getInitialValues, getValidation] = DynamicForm(fieldData, initialData);
     const Form = (formik) => (
         <form className="editBody" onSubmit={formik.handleSubmit}>
-            {fieldsJSX(formik)}
-            { Object.keys(initialData).length == 0 ?
-                <button type="submit" id="club-submit" onClick={() => createEvent(formik.values, club)} disabled={formik.isSubmitting}>"Create Event"</button>
+            <div className="date-start-end">
+                {fieldsJSX(formik, ['date', 'start', 'end'])}
+            </div>
+            {fieldsJSX(formik, ['name', 'description'])}
+            {Object.keys(initialData).length == 0 ?
+                <button type="submit" id="club-submit" className="defaultButton" onClick={() => createEvent(formik.values, club)} disabled={formik.isSubmitting}>Create Event</button>
 
                 :
-                <button type="submit" id="club-submit" onClick={() => updateEvent(formik.values, club, initialData)} disabled={formik.isSubmitting}>Save Event</button>
+                <button type="submit" className="defaultButton" id="club-submit" onClick={() => updateEvent(formik.values, club, initialData)} disabled={formik.isSubmitting}>Save Event</button>
 
             }
-            <button type="reset" id="club-reset" onClick={() => handleReset(formik)}>Cancel Event</button>
+            <button type="reset" className="defaultButton" id="club-reset" onClick={() => handleReset(formik)}>Cancel Event</button>
         </form>
     )
 
@@ -220,12 +224,18 @@ const MeetingCard = ({ event, editable = false, displayEdit = false, state = {},
     }
 
     return (
-        <div>
-            <h2>{event.name}</h2>
-            <b>{`${date_str}  ${start} — ${end}`}</b>
-            {editable ? <button onClick={handleClick}>Edit</button> : null}
-            <p>{event.description}</p>
-            <br />
+        <div className="meeting-card">
+            <div className="meet-basics">
+                <h2>{event.name}</h2>
+                {editable ? <button className="meeting-edit defaultButton" onClick={handleClick}>Edit</button> : null}
+                <br/>
+                <b>{`${date_str}  ${start} — ${end}`}</b>
+                
+            </div>
+            <div className="meet-details">
+                <p>{event.description}</p>
+                <br />
+            </div>
             {showEdit ? <MeetingForm /> : null}
         </div>
     )
