@@ -28,6 +28,8 @@ services:
       context: .
     ports:
       - "80:80"
+      - "443:443"
+
     volumes:
       - ./backend/backend/static/:/home/nginx/static/
       - ./backend/backend/media/:/home/nginx/media/
