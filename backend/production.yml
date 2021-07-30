@@ -34,6 +34,7 @@ services:
       - ./backend/backend/static/:/home/nginx/static/
       - ./backend/backend/media/:/home/nginx/media/
       - ../frontend/build/:/home/nginx/react-build/
+      - ./backend/letsencrypt/:/etc/letsencrypt/
   postgres:
     build:
       context: .
