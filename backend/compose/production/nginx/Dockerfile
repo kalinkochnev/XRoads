@@ -6,9 +6,9 @@ RUN apt-get install -y python3-certbot-nginx
 
 EXPOSE 80
 RUN rm /etc/nginx/conf.d/default.conf
-COPY compose/production/nginx/nginx.conf /etc/nginx/conf.d
+COPY compose/production/nginx/nginx.conf /etc/nginx/conf.d/xroads.club.conf
 # CMD ["nginx", "-g", "daemon off;"]
 
-COPY ./entrypoint.sh /entrypoint.sh
+COPY compose/production/nginx/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT [ "./entrypoint.sh" ]
