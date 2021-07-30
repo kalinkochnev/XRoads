@@ -21,8 +21,6 @@ services:
 
   nginx:
     image: backend_production_nginx
-    depends_on:
-      - django
     build:
       dockerfile: ./compose/production/nginx/Dockerfile
       context: .
