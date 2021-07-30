@@ -28,7 +28,9 @@
     height: 0px;
     padding-bottom: Min(56.25%, 556px);
     box-sizing: border-box;
-    background-color: white;
+    .slide {
+        background-color: white;
+    }
 }
 .featured-club-content  {
     height: 100%;

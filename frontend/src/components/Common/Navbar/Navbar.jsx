@@ -16,11 +16,14 @@ const Navbar = () => {
             <h1>xroads</h1>
           </div>
         </NavLink>
-        <div className="navbar-buttons">
-          <Link className="nav-item" to={`/${school}/edit-code/`} >
-            edit club
-          </Link>
-        </div>
+        {
+          (school != null && school != 'undefined') &&
+          <div className="navbar-buttons">
+            <Link className="nav-item" to={`/${school}/edit-code/`} >
+              edit club
+            </Link>
+          </div>
+        }
       </div>
       <AlertBar>
       </AlertBar>
