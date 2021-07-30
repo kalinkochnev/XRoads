@@ -17,6 +17,8 @@ urlpatterns += [
     path("api/", include("config.api_router")),
 ]
 
+urlpatterns = [path("backend/", include(urlpatterns))]
+
 
 
 if settings.DEBUG:
