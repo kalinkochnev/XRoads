@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import ClubCard from "../../components/Club/Card/Card";
-import FeaturedCard from "../../components/Club/Featured/Featured";
+import { FeaturedCard, MeetingsSummary } from "../../components/Club/Featured/Featured";
+import UpcomingEvents from "../../components/Club/Meeting/Upcoming";
 import Navbar from "../../components/Common/Navbar/Navbar";
 import SearchBar from "../../components/Common/Search/Search";
 import { useStateValue } from "../../service/State";
@@ -11,7 +12,7 @@ import checkURLParams from "../Routes/utils";
 const ScreenClubBrowser = ({ match: { params } }) => {
   let history = useHistory();
   const [state, dispatch] = useStateValue();
-  console.log(state); 
+  console.log(state);
   checkURLParams(params, { schoolSlug: "string" }, history);
 
   const [school, setSchool] = useState({})
@@ -47,19 +48,19 @@ const ScreenClubBrowser = ({ match: { params } }) => {
             (club) => club.featured_order == featuredOrder
           );
           if (clubs.length == 1) {
-            
+
             return clubs[0];
-            
+
           }
           return null;
         }
 
         // let club = getClubByOrder(position);
         let d = new Date
-        let UTCDays = Math.floor(d.getTime()/86400000)
+        let UTCDays = Math.floor(d.getTime() / 86400000)
         let featuredNumber = UTCDays % response.clubs.length
         let club = response.clubs[featuredNumber]
-        
+
         if (club.is_visible) {
           let slug = club.slug;
           XroadsAPI.fetchClub(slug).then((res) => {
@@ -114,24 +115,30 @@ const ScreenClubBrowser = ({ match: { params } }) => {
     }
   }, [state.user.school, allClubs]);
 
+  console.log("event", school.week_events)
+
   return (
     <div>
       <Navbar>xroads</Navbar>
       <div className="body">
-        {/* <UpcomingEvents events={school.events} displayedClubs={displayedClubs}></UpcomingEvents> */}
-        <FeaturedCard club={featured}></FeaturedCard>
+        <div class="featured-container">
+          <MeetingsSummary>
+            {<UpcomingEvents events={school.week_events} displayedClubs={displayedClubs} schoolSlug={state.user.school}></UpcomingEvents>}
+          </MeetingsSummary>
+          <FeaturedCard club={featured} schoolSlug={state.user.school}></FeaturedCard>
+        </div>
         <SearchBar
           key={clubIds}
           clubs={allClubs}
           filterClubs={searchFilter}
         ></SearchBar>
         {displayedClubs.length == 0 ? (
-            <div className="no-results">
+          <div className="no-results">
 
-              <h1>Ó╭╮Ò</h1>
-              <h1 className="text">nothing here</h1>
-            </div>) : (
-            <div></div>)}
+            <h1>Ó╭╮Ò</h1>
+            <h1 className="text">no clubs found</h1>
+          </div>) : (
+          <div></div>)}
         <div className="card-container">
           {displayedClubs.length == 0 ? (
             <div>

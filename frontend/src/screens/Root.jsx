@@ -9,9 +9,9 @@ const ScreensRoot = () => {
   return (
     <Router>
       <Switch>
-        <Route path="/:schoolSlug" component={SchoolRoutes} />
         <Route path="/help" component={HelpRoutes} />
         <Route exact path="/error" component={ErrorOcurred} />
+        <Route path="/:schoolSlug" component={SchoolRoutes} />
         <Route component={ScreenNotFound} />
       </Switch>
     </Router>

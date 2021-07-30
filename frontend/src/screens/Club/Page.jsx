@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import ClubBodyDetail from '../../components/Club/Body/Body';
-import { MeetingCard } from '../../components/Club/Meeting/Meetings';
 import Navbar from '../../components/Common/Navbar/Navbar';
 import { AutoSlide, Slideshow } from '../../components/Common/Slides/Slides';
 import { useStateValue } from '../../service/State';
@@ -42,11 +41,13 @@ const ScreenClubDetail = ({ match: { params } }) => {
     return (
       <div>
         <Navbar school={params.schoolId}>xroads</Navbar>
-        <Slideshow>
-          {club.slides.map(url => <AutoSlide url={url} />)}
-        </Slideshow>
+        <div className="big">
+          <Slideshow>
+            {club.slides.map(url => <AutoSlide url={url} />)}
+          </Slideshow>
+        </div>
+
         <ClubBodyDetail club={club} />
-        {club.events.map(event => <MeetingCard event={event} />)}
 
       </div>
     );

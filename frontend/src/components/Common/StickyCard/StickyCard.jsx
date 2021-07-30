@@ -5,7 +5,7 @@ const Sticky = (props) => {
     return (
         <div className="sticky">
             <div className="sticky-label">
-                <h3>{props.label}</h3>
+                {props.label}
             </div>
             {props.children}
         </div>
