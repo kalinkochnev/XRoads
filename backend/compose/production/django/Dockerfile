@@ -75,6 +75,7 @@ COPY --chown=django:django . ${APP_HOME}
 
 # make django owner of the WORKDIR directory as well.
 RUN chown django:django ${APP_HOME}
+RUN chown django:django /app/backend/media/
 
 USER django
 

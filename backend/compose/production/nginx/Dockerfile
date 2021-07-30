@@ -10,5 +10,6 @@ COPY compose/production/nginx/nginx.conf /etc/nginx/conf.d/xroads.club.conf
 # CMD ["nginx", "-g", "daemon off;"]
 
 COPY compose/production/nginx/entrypoint.sh /entrypoint.sh
+
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT [ "./entrypoint.sh" ]
