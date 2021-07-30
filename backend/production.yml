@@ -2,7 +2,8 @@ version: '3'
 volumes:
   production_postgres_data: {}
   production_postgres_data_backups: {}
-  production_traefik: {}
+  static_content:
+  media_content: 
 services:
   django:
     build:
@@ -16,6 +17,9 @@ services:
       - ./.envs/.production/.django
       - ./.envs/.production/.postgres
     command: /start
+    volumes:
+      - static_content:/app/staticfiles/
+      - media_content:/app/backend/media/
     ports:
       - "5000:5000"
   nginx:
@@ -31,8 +35,8 @@ services:
     links:
       - django      
     volumes:
-      - ./backend/backend/static/:/home/nginx/static/
-      - ./backend/backend/media/:/home/nginx/media/
+      - static_content:/home/nginx/static/
+      - media_content:/home/nginx/media/
       - ../frontend/build/:/home/nginx/react-build/
       - ./backend/letsencrypt/:/etc/letsencrypt/
   postgres:
@@ -45,17 +49,6 @@ services:
       - production_postgres_data_backups:/backups:z
     env_file:
       - ./.envs/.production/.postgres
-  # traefik:
-  #   build:
-  #     context: .
-  #     dockerfile: ./compose/production/traefik/Dockerfile
-  #   image: backend_production_traefik
-  #   depends_on:
-  #     - django
-  #   volumes:
-  #     - production_traefik:/etc/traefik/acme:z
-  #   ports:
-  #     - "0.0.0.0:90:80"
-  #     - "0.0.0.0:443:443"
+  
   redis:
     image: redis:5.0
