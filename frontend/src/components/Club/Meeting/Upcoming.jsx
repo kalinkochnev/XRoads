@@ -10,11 +10,13 @@ const UpcomingEvents = ({ events = [], displayedClubs = [], schoolSlug = "" }) =
     // This returns an event object which may have additional computed values,
     // Or be filtered out entirely and returns null. 
     const addEventAttrs = (event) => {
+
+        event['clubObject'] = displayedClubs.filter(club => club.id == event.club)[0];
+        event['school'] = schoolSlug;
+
         if (isHidden(event.club)) {
             return null;
         }
-        event['club'] = displayedClubs.filter(club => club.id == event.club)[0];
-        event['school'] = schoolSlug;
         return event;
     }
 
@@ -54,15 +56,14 @@ const UpcomingEvents = ({ events = [], displayedClubs = [], schoolSlug = "" }) =
         return orderedEvents;
     }
 
+
+
     useEffect(() => {
         let events = sortEvents(setup());
-        setEvents(events);
+        setEvents(sortEvents(setup()));
     }, [events, displayedClubs]);
 
-    if (sortedEvents != null) {
-        console.log("bloop1", Object.keys(sortedEvents).length);
-        console.log("bloop", sortedEvents.length)
-    }
+
     return (
         <div>
             {
@@ -90,9 +91,8 @@ const Event = ({ event }) => {
     let startTime = utils.timeObjToStr(utils.strToTime(event.start));
     return (
         <div>
-            <Link className="discrete-link" to={`/${event.school}/${event.club.slug}`}>
-                <p>{startTime} · {event.club.name}</p>
-                <br></br>
+            <Link className="discrete-link" to={`/${event.school}/${event.clubObject.slug}`}>
+                <p>{startTime} · {event.clubObject.name}</p>
             </Link>
         </div>
     )
