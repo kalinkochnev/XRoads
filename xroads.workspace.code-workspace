@@ -4,13 +4,13 @@
 			"path": "xroads_django"
 		},
 		{
+			"path": "backend2"
+		},
+		{
 			"path": "backend"
 		},
 		{
 			"path": "frontend"
-		},
-		{
-			"path": "xroads_django/.vscode"
 		}
 	],
 	"settings": {
