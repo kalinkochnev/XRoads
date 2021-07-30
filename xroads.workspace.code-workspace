@@ -1,16 +1,10 @@
 {
 	"folders": [
 		{
-			"path": "xroads_django"
-		},
-		{
 			"path": "backend"
 		},
 		{
 			"path": "frontend"
-		},
-		{
-			"path": "xroads_django/.vscode"
 		}
 	],
 	"settings": {

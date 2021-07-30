@@ -6,7 +6,7 @@ import api.serializers as serializers
 from api.models import *
 
 def csrf(request):
-    return render(request, template_name='csrf.html')
+    return render(request, template_name='backend/templates/csrf.html')
 
 # Create your views here.
 class DistrictViewset(viewsets.ReadOnlyModelViewSet):
