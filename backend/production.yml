@@ -14,11 +14,23 @@ services:
     depends_on:
       - postgres
       - redis
+      - nginx
     env_file:
       - ./.envs/.production/.django
       - ./.envs/.production/.postgres
     command: /start
 
+  nginx:
+    image: backend_production_nginx
+    build:
+      dockerfile: ./compose/production/nginx/Dockerfile
+      context: .
+    ports:
+      - "3141:80"
+    volumes:
+      - ./backend/backend/static/:/home/nginx/static/
+      - ./backend/backend/media/:/home/nginx/media/
+      - ../frontend/build/:/home/nginx/react-build/
   postgres:
     build:
       context: .
