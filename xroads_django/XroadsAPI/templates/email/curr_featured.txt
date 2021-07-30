@@ -1,5 +1,0 @@
-Hello from Xroads!
-
-Your club ({{ club.name }}) is being featured right now! Why don't you check it out?
-https://xroads.club/school/{{ school.id }}
-
