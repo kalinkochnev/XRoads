@@ -6,6 +6,8 @@ import moment from "moment";
 import { sendRequest } from "../../../service/xroads-api";
 import { ClubContext } from "../../../screens/Club/Routes";
 import "./Meetings.scss";
+import 'react-notifications/lib/notifications.css';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 
 const MeetingsEdit = () => {
     const [club, setClub] = useContext(ClubContext);
@@ -18,6 +20,7 @@ const MeetingsEdit = () => {
 
     return (
         <div>
+            <NotificationContainer />
             {events.map(event => <MeetingCard event={event} editable={true} state={[events, setEvents]} />)}
             {displayAdd ? <button className="defaultButton" onClick={addEventClick}>Add event</button> : <MeetingCard event={{}} displayEdit={true} editable={true} setDisplay={setDisplay} />}
         </div>
@@ -72,6 +75,7 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
     const [fieldsJSX, getInitialValues, getValidation] = DynamicForm(fieldData, initialData);
     const Form = (formik) => (
         <form className="editBody" onSubmit={formik.handleSubmit}>
+
             <div className="date-start-end">
                 {fieldsJSX(formik, ['date', 'start', 'end'])}
             </div>
@@ -114,6 +118,7 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
                 //         onScreen: true,
                 //     },
                 // });
+                NotificationManager.success("Event updated successfully", "Event updated")
             }
 
         })
@@ -140,6 +145,7 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
                 //         onScreen: true,
                 //     },
                 // });
+                NotificationManager.success("Event created successfully", "Event created")
             }
 
         })
@@ -165,6 +171,7 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
                 //         onScreen: true,
                 //     },
                 // });
+                NotificationManager.info("Event cancelled successfully", "Event cancelled")
             }
 
         })
@@ -184,16 +191,14 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
     }
 
     const handleReset = (formik) => {
-        if (window.confirm("Are you sure you want to cancel the event?")) {
-            if (Object.keys(initialData).length != 0) {
-                // Remove the event from the events being displayed
-                setEvents(events.filter(event => event.id != initialData.id));
-                cancelEvent()
-            } else {
-                setDisplay(true);
-            }
-            formik.resetForm()
+        if (Object.keys(initialData).length != 0) {
+            // Remove the event from the events being displayed
+            setEvents(events.filter(event => event.id != initialData.id));
+            cancelEvent()
+        } else {
+            setDisplay(true);
         }
+        formik.resetForm()
     }
 
     const formikEnhancer = withFormik({
@@ -228,9 +233,9 @@ const MeetingCard = ({ event, editable = false, displayEdit = false, state = {},
             <div className="meet-basics">
                 <h2>{event.name}</h2>
                 {editable ? <button className="meeting-edit defaultButton" onClick={handleClick}>Edit</button> : null}
-                <br/>
+                <br />
                 <b>{`${date_str}  ${start} — ${end}`}</b>
-                
+
             </div>
             <div className="meet-details">
                 <p>{event.description}</p>

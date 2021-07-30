@@ -7,6 +7,8 @@ import { sendRequest, updateClub } from "../../../service/xroads-api";
 import DynamicForm from "../../Common/Form/DynamicForm";
 import "../../Common/Form/FormStyle.scss";
 import "./Edit.scss";
+import 'react-notifications/lib/notifications.css';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 
 const fieldData = {
     presentation_url: {
@@ -54,7 +56,11 @@ const GeneralEdit = (props) => {
                     //         onScreen: true,
                     //     },
                     // });
+                    NotificationManager.success("Your club page has been updated", "Saved")
                 });
+            }
+            else {
+                NotificationManager.error("Something went wrong when updating your club page", "Error")
             }
 
         }
@@ -66,10 +72,10 @@ const GeneralEdit = (props) => {
         if (data == null) {
             return []
         }
-        
+
         return fields;
     }
-    
+
 
     const [fieldsJSX, getInitialValues, getValidation] = DynamicForm(fieldData, club, getEditableFields);
 
@@ -96,7 +102,8 @@ const GeneralEdit = (props) => {
         sendRequest("toggle_hide_club", urlArgs, "POST", {}).then((response) => {
             if (response.ok) {
                 setVisibility(!isVisible);
-                console.log("The club is now " + isVisible.toString());
+                NotificationManager.info("The club is now visible to " +
+                    (isVisible ? "club editors only" : "all users"), "Club " + (isVisible ? "Hidden" : "Visible"))
                 // store.addNotification({
                 //     title: "Club " + (isVisible ? "Hidden" : "Visible"),
                 //     message:
@@ -118,6 +125,7 @@ const GeneralEdit = (props) => {
 
     return (
         <div className="centerContent">
+            <NotificationContainer />
             <div className="editBody">
                 <label>Hide club</label>
                 <label className="switch">

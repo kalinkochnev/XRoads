@@ -4,6 +4,8 @@ import "./../Edit/Edit.scss";
 import "./Body.scss";
 import Sticky from '../../Common/StickyCard/StickyCard.jsx';
 import { MeetingCard } from '../Meeting/Meetings';
+import 'react-notifications/lib/notifications.css';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 
 const Markdown = require("react-markdown");
 
@@ -12,12 +14,18 @@ const Markdown = require("react-markdown");
 const ClubBodyDetail = (props) => {
   console.log("Received club in ClubBodyDetails", props.club);
 
+  function copyEmail() {
+    navigator.clipboard.writeText(props.club.contact);
+    NotificationManager.info("Contact email copied to clipboard", "Contact copied")
+  }
+
   return (
     <div className="centerContent">
+      <NotificationContainer />
       <div className="details">
         <div className="clubHeading">
           <h1>{props.club.name}</h1>
-          <button className="defaultButton contact">
+          <button className="defaultButton contact" onClick={copyEmail}>
             Contact
           </button>
 

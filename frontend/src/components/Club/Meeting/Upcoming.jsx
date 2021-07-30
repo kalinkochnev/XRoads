@@ -17,7 +17,6 @@ const UpcomingEvents = ({ events = [], displayedClubs = [], schoolSlug = "" }) =
         if (isHidden(event.club)) {
             return null;
         }
-
         return event;
     }
 

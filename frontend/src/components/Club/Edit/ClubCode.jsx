@@ -28,7 +28,7 @@ const ClubCode = () => {
                     history.push(url)
                 })
             } else {
-                NotificationManager.success("Bringing you to edit the club", "Success!")
+                NotificationManager.error("Not a valid club code", "Failure")
             }
 
         })
