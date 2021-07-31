@@ -125,13 +125,13 @@ const MeetingFormFunc = (initialData = {}, setDisplay = (bool) => null) => {
     }
 
     const createEvent = (values, club) => {
-        console.log(values)
+        // console.log(values)
         let urlParams = { clubSlug: club.slug, clubCode: club.code }
         sendRequest('event_create', urlParams, "POST", values).then(response => {
             if (response.ok) {
                 // Create the new event and update state
                 response.json().then(body => {
-                    console.log(body);
+                    // console.log(body);
                     setEvents([...events, body]);
                 })
                 // store.addNotification({

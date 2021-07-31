@@ -6,7 +6,7 @@ const getCondRedirect = (reason) => {
     switch (reason) {
         case UNEXPECTED_ERROR:
         default:
-            console.log(UNEXPECTED_ERROR);
+            // console.log(UNEXPECTED_ERROR);
             return '/error'
     }
 }

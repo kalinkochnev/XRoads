@@ -24,7 +24,7 @@ const ScreenClubEdit = ({ match: { params: { clubSlug } } }) => {
     XroadsAPI.fetchClubEdit(clubSlug, club.code).then(res => {
       if (res.ok) {
         res.json().then(clubRes => {
-          console.log(clubRes)
+          // console.log(clubRes)
 
           setClub(clubRes);
         });
@@ -35,7 +35,7 @@ const ScreenClubEdit = ({ match: { params: { clubSlug } } }) => {
   }, [clubSlug, club.code]);
 
   if (Object.keys(club).length == 0) {
-    console.log("Loading");
+    // console.log("Loading");
     return (
       <div>
         <Navbar>xroads</Navbar>

@@ -12,7 +12,7 @@ const Markdown = require("react-markdown");
 // TODO eventually we should not have this component existing and just have it directly in the equivalent screen
 
 const ClubBodyDetail = (props) => {
-  console.log("Received club in ClubBodyDetails", props.club);
+  // console.log("Received club in ClubBodyDetails", props.club);
 
   function copyEmail() {
     navigator.clipboard.writeText(props.club.contact);

@@ -24,7 +24,7 @@ function fillTemplate(urlName, urlArgs) {
     for (var arg of Object.keys(urlArgs)) {
         template = template.replace(`:${arg}`, urlArgs[arg])
     }
-    console.log(template)
+    // console.log(template)
     return template;
 }
 
@@ -64,7 +64,7 @@ function generateFetchConfig(method, body = null) {
 export async function sendRequest(urlName, urlArgs, method, body = null, query_params = null) {
     let query = query_params != null ? "?" + new URLSearchParams(query_params) : ""
     let result = await fetch(getUrl(urlName, urlArgs) + query, generateFetchConfig(method, body));
-    console.log(result);
+    // console.log(result);
     return result;
 }
 
@@ -81,6 +81,6 @@ export function fetchClubEdit(clubSlug, code) {
 }
 
 export function updateClub(clubSlug, updatedClub, code) {
-    console.log(updatedClub);
+    // console.log(updatedClub);
     return sendRequest('club_edit', { 'clubSlug': clubSlug, 'code': code }, 'PATCH', updatedClub);
 }

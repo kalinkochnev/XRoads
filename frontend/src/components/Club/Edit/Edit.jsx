@@ -44,7 +44,7 @@ const GeneralEdit = (props) => {
         updateClub(club.slug, values, club.code).then((res) => {
             if (res.ok) {
                 res.json().then((body) => {
-                    console.log(body);
+                    // console.log(body);
                     // store.addNotification({
                     //     title: "Saved",
                     //     message: "Club details successfully saved",

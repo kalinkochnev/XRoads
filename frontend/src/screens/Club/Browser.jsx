@@ -12,7 +12,7 @@ import checkURLParams from "../Routes/utils";
 const ScreenClubBrowser = ({ match: { params } }) => {
   let history = useHistory();
   const [state, dispatch] = useStateValue();
-  console.log(state);
+  // console.log(state);
   checkURLParams(params, { schoolSlug: "string" }, history);
 
   const [school, setSchool] = useState({})
@@ -64,10 +64,10 @@ const ScreenClubBrowser = ({ match: { params } }) => {
         if (club.is_visible) {
           let slug = club.slug;
           XroadsAPI.fetchClub(slug).then((res) => {
-            console.log("response", res)
+            // console.log("response", res)
             if (res.ok) {
               res.json().then((response) => setFeatured(response));
-              console.log("response", response)
+              // console.log("response", response)
             }
           });
           break;
@@ -82,7 +82,7 @@ const ScreenClubBrowser = ({ match: { params } }) => {
     XroadsAPI.fetchClubs(params.schoolSlug).then((res) => {
       if (res.ok) {
         return res.json().then(response => {
-          console.log(response)
+          // console.log(response)
           setSchool(response);
           let clubs = invisibleFilter(response.clubs);
           setDisplayedClubs(clubs);
@@ -98,7 +98,7 @@ const ScreenClubBrowser = ({ match: { params } }) => {
   function searchFilter(matchingIds) {
     let matchingClubs = allClubs;
     if (matchingIds.length > 0) {
-      console.log(matchingIds)
+      // console.log(matchingIds)
       matchingClubs = matchingClubs.filter((c, i) =>
         matchingIds.includes(c.id.toString())
       );
@@ -109,13 +109,13 @@ const ScreenClubBrowser = ({ match: { params } }) => {
   }
 
   useEffect(() => {
-    console.log("ClubBrowser component did mount");
+    // console.log("ClubBrowser component did mount");
     if (allClubs.length === 0) {
       loadClubs();
     }
   }, [state.user.school, allClubs]);
 
-  console.log("event", school.week_events)
+  // console.log("event", school.week_events)
 
   return (
     <div>

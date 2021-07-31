@@ -19,13 +19,13 @@ class SearchBar extends React.Component {
       searchRes: null
     }
 
-    console.log("Props", props);
+    // console.log("Props", props);
 
     this.handleChange = this.handleChange.bind(this);
     this.searchClubs = this.searchClubs.bind(this);
 
     this.clubs = props.clubs;
-    console.log("Received clubs for searching", this.props.clubs);
+    // console.log("Received clubs for searching", this.props.clubs);
 
     this.lunrIndex = lunr(function () {
       this.field("name", {
@@ -48,11 +48,11 @@ class SearchBar extends React.Component {
       searchQuery: v
     }));
     // this.clubs = this.props.clubs;
-    // console.log("Received clubs for searching", this.props.clubs);
+    // // console.log("Received clubs for searching", this.props.clubs);
   }
 
   searchClubs(e) {
-    console.log("Search clubs called with query", this.state.searchQuery);
+    // console.log("Search clubs called with query", this.state.searchQuery);
     lastSearch = this.state.searchQuery;
 
     //e.preventDefault();
@@ -60,9 +60,9 @@ class SearchBar extends React.Component {
     let searchRes = this.lunrIndex.search(this.state.searchQuery).map(function (result) {
       return result.ref;
     });
-    console.log("Lunr index is", this.lunrIndex);
+    // console.log("Lunr index is", this.lunrIndex);
 
-    console.log("Search result found", searchRes);
+    // console.log("Search result found", searchRes);
 
     this.props.filterClubs(searchRes)
     document.getElementById("search-box").blur();

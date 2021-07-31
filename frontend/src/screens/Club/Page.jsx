@@ -19,7 +19,7 @@ const ScreenClubDetail = ({ match: { params } }) => {
     XroadsAPI.fetchClub(params.clubSlug).then(res => {
       if (res.ok) {
         return res.json().then(clubRes => {
-          console.log(clubRes)
+          // console.log(clubRes)
           setClub(clubRes);
         });
       } else {
