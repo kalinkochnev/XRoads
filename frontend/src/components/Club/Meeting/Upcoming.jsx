@@ -59,7 +59,6 @@ const UpcomingEvents = ({ events = [], displayedClubs = [], schoolSlug = "" }) =
 
 
     useEffect(() => {
-        let events = sortEvents(setup());
         setEvents(sortEvents(setup()));
     }, [events, displayedClubs]);
 

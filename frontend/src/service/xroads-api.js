@@ -29,7 +29,7 @@ function fillTemplate(urlName, urlArgs) {
 }
 
 function getUrl(urlName, urlArgs) {
-    return process.env.REACT_APP_XROADS_API_ENDPOINT + fillTemplate(urlName, urlArgs);
+    return "https://xroads.club/backend" + fillTemplate(urlName, urlArgs);
 }
 
 

@@ -5,6 +5,15 @@ from pathlib import Path
 
 import environ
 
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
 # Google API key data
 with open('config/keys/api_keys.json') as f:
     GOOGLE_KEY_FILE = f

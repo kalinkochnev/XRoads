@@ -16,12 +16,11 @@
     font-family: Raleway;
     font-weight: bold;
     font-size: 20px;
-    opacity: 50%;
     transition: 0.2s;
 }
 
 .slide-arrow:hover {
-    opacity: 100%;
+    background-color: $redHover;
 }
 
 .carousel  {
