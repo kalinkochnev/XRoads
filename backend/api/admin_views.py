@@ -15,7 +15,7 @@ class IsClubAdmin(permissions.BasePermission):
 class ClubEditViewset(viewsets.GenericViewSet, mixins.UpdateModelMixin, mixins.RetrieveModelMixin):
     serializer_class = ClubEditSerializer
     queryset = Club.objects.all()
-    permission_classes = [IsClubAdmin]
+    permission_classes = [IsClubAdmin, AllowAny]
     lookup_field = "slug"
 
     @action(detail=True, methods=['post'])
@@ -54,7 +54,7 @@ class CanCreateEvent(permissions.BasePermission):
 class EventViewset(NoListModelViewset):
     serializer_class = EventSerializer
     queryset = Event.objects.all()
-    permission_classes = [CanCreateEvent]
+    permission_classes = [CanCreateEvent, AllowAny]
 
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
